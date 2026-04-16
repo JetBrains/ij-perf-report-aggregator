@@ -8,37 +8,117 @@
   >
     <section>
       <Divider title="Lagging during indexing" />
-      <GroupProjectsChart
-        v-for="chart in laggingIndexingChartsCombined"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
+      <Accordion value="0">
+        <AccordionPanel value="0">
+          <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in laggingIndexingChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel value="1">
+          <AccordionHeader>Skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in pureLaggingIndexingChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+
       <Divider title="Lagging during zephyr project indexing" />
-      <GroupProjectsChart
-        v-for="chart in laggingZephyrIndexingChartsCombined"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
+      <Accordion value="0">
+        <AccordionPanel value="0">
+          <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in laggingZephyrIndexingChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel value="1">
+          <AccordionHeader>Skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in pureLaggingZephyrIndexingChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+
       <Divider title="Lagging during completion" />
-      <GroupProjectsChart
-        v-for="chart in laggingCompletionChartsCombined"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
+      <Accordion value="0">
+        <AccordionPanel value="0">
+          <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in laggingCompletionChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel value="1">
+          <AccordionHeader>Skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in pureLaggingCompletionChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+
       <Divider title="Lagging during navigation" />
-      <GroupProjectsChart
-        v-for="chart in laggingNavigationChartsCombined"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
+      <Accordion value="0">
+        <AccordionPanel value="0">
+          <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in laggingNavigationChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel value="1">
+          <AccordionHeader>Skip heavy metric collection</AccordionHeader>
+          <AccordionContent>
+            <GroupProjectsChart
+              v-for="chart in pureLaggingNavigationChartsCombined"
+              :key="chart.definition.label"
+              :label="chart.definition.label"
+              :measure="chart.definition.measure"
+              :projects="chart.projects"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+
       <Divider title="Lagging during browsing files" />
       <GroupProjectsChart
         v-for="chart in laggingHighlightingChartsCombined"
@@ -65,132 +145,44 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 
+function createLaggingCharts(label: string, projects: string[], aliases: string[]): ChartDefinition[] {
+  return [
+    { labels: [`${label} - average, max`], measures: [["ui.lagging#average", "ui.lagging#max"]], projects, aliases },
+    { labels: [`${label} - sum`], measures: ["ui.lagging#sum"], projects, aliases },
+    { labels: [`${label} - count`], measures: ["ui.lagging#count"], projects, aliases },
+    { labels: [`${label} - percentage share`], measures: [["ui.lagging#percentage_share"]], projects, aliases },
+  ]
+}
+
 const indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
+const laggingIndexingProjects = ["radler/llvm/lagging/indexing", "radler/opencv/lagging/indexing", "radler/big_project_50k_10k_many_symbols/lagging/indexing"]
 const indexingAliases = ["LLVM", "OpenCV", "Big Project Many Symbols"]
 
-const laggingIndexingCharts: ChartDefinition[] = [
-  {
-    labels: ["Lagging during indexing - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: indexingProjects,
-    aliases: indexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - sum"],
-    measures: ["ui.lagging#sum"],
-    projects: indexingProjects,
-    aliases: indexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - count"],
-    measures: ["ui.lagging#count"],
-    projects: indexingProjects,
-    aliases: indexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - percentage share"],
-    measures: [["ui.lagging#percentage_share"]],
-    projects: indexingProjects,
-    aliases: indexingAliases,
-  },
-]
-
 const zephyrIndexingProjects = ["radler/zephyr_bap_broadcast_sink/indexing"]
+const zephyrLaggingIndexingProjects = ["radler/zephyr_bap_broadcast_sink/lagging/indexing"]
 const zephyrIndexingAliases = ["Zephyr Bap Broadcast Sink"]
-
-const laggingZephyrIndexingCharts: ChartDefinition[] = [
-  {
-    labels: ["Lagging during indexing - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: zephyrIndexingProjects,
-    aliases: zephyrIndexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - sum"],
-    measures: ["ui.lagging#sum"],
-    projects: zephyrIndexingProjects,
-    aliases: zephyrIndexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - count"],
-    measures: ["ui.lagging#count"],
-    projects: zephyrIndexingProjects,
-    aliases: zephyrIndexingAliases,
-  },
-  {
-    labels: ["Lagging during indexing - percentage share"],
-    measures: [["ui.lagging#percentage_share"]],
-    projects: zephyrIndexingProjects,
-    aliases: zephyrIndexingAliases,
-  },
-]
 
 const completionProjects = [
   "radler/fmtlib/completion/fmt.join_view (dep) (hot)",
   "radler/fmtlib/completion/std.shared_ptr (dep) (hot)",
   "radler/fmtlib/completion/std.string (hot)",
 ]
+const completionLaggingProjects = ["radler/fmtlib/lagging/completion/fmt.join_view (dep) (hot)"]
 const completionAliases = ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"]
 
-const laggingCompletionCharts: ChartDefinition[] = [
-  {
-    labels: ["Lagging during completion - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: completionProjects,
-    aliases: completionAliases,
-  },
-  {
-    labels: ["Lagging during completion - sum"],
-    measures: ["ui.lagging#sum"],
-    projects: completionProjects,
-    aliases: completionAliases,
-  },
-  {
-    labels: ["Lagging during completion - count"],
-    measures: ["ui.lagging#count"],
-    projects: completionProjects,
-    aliases: completionAliases,
-  },
-  {
-    labels: ["Lagging during completion - percentage share"],
-    measures: [["ui.lagging#percentage_share"]],
-    projects: completionProjects,
-    aliases: completionAliases,
-  },
-]
-
 const navigationProjects = ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"]
-const navigationAliases = ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"]
-
-const laggingNavigationCharts: ChartDefinition[] = [
-  {
-    labels: ["Lagging during navigation - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: navigationProjects,
-    aliases: navigationAliases,
-  },
-  {
-    labels: ["Lagging during navigation - sum"],
-    measures: ["ui.lagging#sum"],
-    projects: navigationProjects,
-    aliases: navigationAliases,
-  },
-  {
-    labels: ["Lagging during navigation - count"],
-    measures: ["ui.lagging#count"],
-    projects: navigationProjects,
-    aliases: navigationAliases,
-  },
-  {
-    labels: ["Lagging during navigation - percentage share"],
-    measures: [["ui.lagging#percentage_share"]],
-    projects: navigationProjects,
-    aliases: navigationAliases,
-  },
+const navigationLaggingProjects = [
+  "radler/luau/lagging/findUsages/class template (DenseHashTable)",
+  "radler/luau/lagging/gotoDeclaration/time.h",
+  "radler/luau/lagging/gotoDeclaration/TypeChecker.getScopes",
 ]
+const navigationAliases = ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"]
 
 const syntaxHighlightingProjects = ["radler/opencv/syntaxHighlighting/opencv"]
 const syntaxHighlightingAliases = ["syntaxHighlighting opencv"]
+
+const debugProjects = ["radler/fmtlib/debug/args-test/basic"]
+const debugAliases = ["fmtlib"]
 
 const laggingHighlightingCharts: ChartDefinition[] = [
   {
@@ -207,40 +199,18 @@ const laggingHighlightingCharts: ChartDefinition[] = [
   },
 ]
 
-const debugProjects = ["radler/fmtlib/debug/args-test/basic"]
-const debugAliases = ["fmtlib"]
+const laggingIndexingChartsCombined = combineCharts(createLaggingCharts("Lagging during indexing", indexingProjects, indexingAliases))
+const pureLaggingIndexingChartsCombined = combineCharts(createLaggingCharts("Lagging during indexing", laggingIndexingProjects, indexingAliases))
 
-const laggingDebuggingCharts: ChartDefinition[] = [
-  {
-    labels: ["Lagging during debugging - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: debugProjects,
-    aliases: debugAliases,
-  },
-  {
-    labels: ["Lagging during debugging - sum"],
-    measures: ["ui.lagging#sum"],
-    projects: debugProjects,
-    aliases: debugAliases,
-  },
-  {
-    labels: ["Lagging during debugging - count"],
-    measures: ["ui.lagging#count"],
-    projects: debugProjects,
-    aliases: debugAliases,
-  },
-  {
-    labels: ["Lagging during debugging - percentage share"],
-    measures: [["ui.lagging#percentage_share"]],
-    projects: debugProjects,
-    aliases: debugAliases,
-  },
-]
+const laggingZephyrIndexingChartsCombined = combineCharts(createLaggingCharts("Lagging during indexing", zephyrIndexingProjects, zephyrIndexingAliases))
+const pureLaggingZephyrIndexingChartsCombined = combineCharts(createLaggingCharts("Lagging during indexing", zephyrLaggingIndexingProjects, zephyrIndexingAliases))
 
-const laggingIndexingChartsCombined = combineCharts(laggingIndexingCharts)
-const laggingZephyrIndexingChartsCombined = combineCharts(laggingZephyrIndexingCharts)
-const laggingCompletionChartsCombined = combineCharts(laggingCompletionCharts)
-const laggingNavigationChartsCombined = combineCharts(laggingNavigationCharts)
+const laggingCompletionChartsCombined = combineCharts(createLaggingCharts("Lagging during completion", completionProjects, completionAliases))
+const pureLaggingCompletionChartsCombined = combineCharts(createLaggingCharts("Lagging during completion", completionLaggingProjects, completionAliases))
+
+const laggingNavigationChartsCombined = combineCharts(createLaggingCharts("Lagging during navigation", navigationProjects, navigationAliases))
+const pureLaggingNavigationChartsCombined = combineCharts(createLaggingCharts("Lagging during navigation", navigationLaggingProjects, navigationAliases))
+
 const laggingHighlightingChartsCombined = combineCharts(laggingHighlightingCharts)
-const laggingDebuggingChartsCombined = combineCharts(laggingDebuggingCharts)
+const laggingDebuggingChartsCombined = combineCharts(createLaggingCharts("Lagging during debugging", debugProjects, debugAliases))
 </script>

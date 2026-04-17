@@ -321,7 +321,7 @@ async function createTicket() {
       attachmentException.value = true
     }
 
-    if (accident.kind === AccidentKind.Regression) {
+    if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
       try {
         const llmAnalysisRequest: LlmAnalysisRequest = {
           currentBuildId: `${data.buildId}`,

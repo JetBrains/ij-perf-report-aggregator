@@ -7,7 +7,10 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"os"
 )
+
+var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
 
 type SpacePackagesClient struct {
 	spaceUrl   string

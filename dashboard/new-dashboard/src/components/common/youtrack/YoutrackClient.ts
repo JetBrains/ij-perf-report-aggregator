@@ -33,7 +33,7 @@ export class YoutrackClient {
   }
 
   async uploadAttachments(attachmentsInfo: UploadAttachmentsRequest) {
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/youtrack/uploadAttachments`
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/uploadAttachments`
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -103,7 +103,13 @@ interface Issue {
   idReadable: string
 }
 
+export enum UploadTarget {
+  YOUTRACK = "youtrack",
+  SPACE = "space",
+}
+
 export interface UploadAttachmentsRequest {
+  targets: UploadTarget[]
   issueId: string
   teamcityAttachmentInfo: {
     currentBuildId: number

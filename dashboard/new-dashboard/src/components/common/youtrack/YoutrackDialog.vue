@@ -146,7 +146,7 @@ import { Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
-import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
+import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest, UploadTarget } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
@@ -275,6 +275,7 @@ async function createTicket() {
         affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
       }
       const attachmentsInfo: UploadAttachmentsRequest = {
+        targets: [UploadTarget.YOUTRACK, UploadTarget.SPACE],
         issueId: issueResponse.issue.id,
         teamcityAttachmentInfo: {
           currentBuildId: buildId,

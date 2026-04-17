@@ -107,7 +107,6 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Post("/missingData", meta.CreatePostMissingDataRequestHandler(dbpool))
 		r.Route("/youtrack", func(r chi.Router) {
 			r.Post("/createIssue", meta.CreatePostCreateIssueByAccident(dbpool))
-			r.Post("/uploadAttachments", meta.CreatePostUploadAttachmentsToIssue())
 		})
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())
@@ -118,6 +117,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Get("/buildInfo", meta.HandleGetTeamCityBuildInfo())
 			r.Get("/artifactsExist", meta.HandleGetTeamCityArtifactsExist())
 		})
+		r.Post("/uploadAttachments", meta.CreatePostUploadAttachments())
 	})
 
 	router.Route("/api/auth", func(r chi.Router) {

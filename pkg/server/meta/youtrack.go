@@ -1,10 +1,7 @@
 package meta
 
 import (
-	"archive/zip"
-	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -15,8 +12,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -88,10 +83,9 @@ const (
 )
 
 var (
-	teamCityClient      = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
-	youtrackClient      = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-	ytAuth              = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-	spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
+	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
+	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
 )
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -251,13 +245,13 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 }
 
 type artifactCollector interface {
-	getArtifactsPath(params UploadAttachmentsToIssueRequest) string
+	getArtifactsPath(params UploadAttachmentsRequest) string
 	checkArtifact(artifactName string) bool
 }
 
 type fleetStartupCollector struct{}
 
-func (f fleetStartupCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
+func (f fleetStartupCollector) getArtifactsPath(UploadAttachmentsRequest) string {
 	return ""
 }
 
@@ -267,7 +261,7 @@ func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
 
 type fleetPerfTestCollector struct{}
 
-func (f fleetPerfTestCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
+func (f fleetPerfTestCollector) getArtifactsPath(UploadAttachmentsRequest) string {
 	return ""
 }
 
@@ -277,7 +271,7 @@ func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 
 type perfUnitTestCollector struct{}
 
-func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
+func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
 	return params.AffectedTest
 }
 
@@ -287,7 +281,7 @@ func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
 
 type perfintCollector struct{}
 
-func (f perfintCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
+func (f perfintCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
 	return strings.ReplaceAll(params.AffectedTest, "_", "-")
 }
 
@@ -316,176 +310,6 @@ func getArtifactCollector(testType string) artifactCollector {
 		return perfUnitTestCollector{}
 	default:
 		return nil
-	}
-}
-
-func createZipArchive(files *sync.Map) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	zipWriter := zip.NewWriter(buf)
-
-	var zipErr error
-	files.Range(func(key, value any) bool {
-		name, ok := key.(string)
-		if !ok {
-			zipErr = errors.New("invalid key type: expected string")
-			return false
-		}
-		data, ok := value.([]byte)
-		if !ok {
-			zipErr = errors.New("invalid value type: expected []byte")
-			return false
-		}
-
-		header := &zip.FileHeader{
-			Name:     name,
-			Method:   zip.Deflate,
-			Modified: time.Now(),
-		}
-		writer, err := zipWriter.CreateHeader(header)
-		if err != nil {
-			zipErr = err
-			return false
-		}
-		if _, err := writer.Write(data); err != nil {
-			zipErr = err
-			return false
-		}
-		return true
-	})
-
-	if zipErr != nil {
-		return nil, zipErr
-	}
-	if err := zipWriter.Close(); err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
-func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		type Exceptions struct {
-			Exceptions []string `json:"exceptions"`
-		}
-
-		var exceptions Exceptions
-		body := request.Body
-		all, err := io.ReadAll(body)
-		if err != nil {
-			handleError(writer, "cannot read body", err, &exceptions.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
-			return
-		}
-
-		defer body.Close()
-
-		var params UploadAttachmentsToIssueRequest
-		if err = json.Unmarshal(all, &params); err != nil {
-			handleError(writer, "cannot unmarshal parameters", err, &exceptions.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
-			return
-		}
-
-		errCh := make(chan error, 10)
-		// for upload to space
-		filesToZip := &sync.Map{}
-
-		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
-		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
-			builds = append(builds, *params.TeamCityAttachmentInfo.PreviousBuildId)
-		}
-
-		if params.ChartPng != nil {
-			err := youtrackClient.UploadAttachment(request.Context(), params.IssueId, *params.ChartPng, "dashboard.png")
-			if err != nil {
-				slog.Error("Failed to upload dashboard attachment to youtrack", "error", err)
-				errCh <- err
-			}
-			filesToZip.Store("dashboard.png", *params.ChartPng)
-		}
-
-		collector := getArtifactCollector(params.TestType)
-
-		if collector != nil {
-			var wg sync.WaitGroup
-			for index, buildId := range builds {
-				wg.Go(func() {
-					testArtifactPath := collector.getArtifactsPath(params)
-
-					children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
-					if err != nil {
-						slog.Error("Failed to get teamcity artifact children", "error", err)
-						errCh <- err
-						return
-					}
-
-					var filteredChildren []string
-
-					for _, str := range children {
-						if collector.checkArtifact(str) {
-							filteredChildren = append(filteredChildren, str)
-						}
-					}
-
-					var attachmentPostfix string
-					if index == 0 {
-						attachmentPostfix = "current"
-					} else {
-						attachmentPostfix = "before"
-					}
-
-					var childWg sync.WaitGroup
-					for _, str := range filteredChildren {
-						childWg.Go(func() {
-							artifact, err := teamCityClient.downloadArtifact(request.Context(), buildId, testArtifactPath+"/"+str)
-							if err != nil {
-								slog.Error("Failed to download artefacts form teamcity", "error", err)
-								errCh <- err
-								return
-							}
-
-							attachmentName := getAttachmentName(str, attachmentPostfix)
-							err = youtrackClient.UploadAttachment(request.Context(), params.IssueId, artifact, attachmentName)
-							if err != nil {
-								slog.Error("Failed to upload attachment to youtrack", "error", err)
-								errCh <- err
-								return
-							}
-							filesToZip.Store(attachmentName, artifact)
-						})
-					}
-					childWg.Wait()
-				})
-			}
-			wg.Wait()
-		}
-
-		// Create ZIP archive and upload to Space Packages
-		zipData, err := createZipArchive(filesToZip)
-		if err != nil {
-			slog.Error("Failed to create zip archive", "error", err)
-		} else {
-			err = spacePackagesClient.UploadFile(request.Context(), "platform-test-automation", "performance-regression-llm-analysis", "analyses", params.IssueId+".zip", zipData)
-			if err != nil {
-				slog.Error("Failed to upload zip archive to space", "error", err)
-			}
-		}
-
-		close(errCh)
-
-		for err := range errCh {
-			if err != nil {
-				exceptions.Exceptions = append(exceptions.Exceptions, err.Error())
-			}
-		}
-
-		if len(exceptions.Exceptions) > 0 {
-			writer.WriteHeader(http.StatusInternalServerError)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
-			return
-		}
-
-		_ = marshalAndWriteIssueResponse(writer, exceptions)
 	}
 }
 

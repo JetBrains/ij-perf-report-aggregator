@@ -72,6 +72,18 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 			return
 		}
 
+		err = spacePackagesClient.UploadFile(
+			request.Context(),
+			"platform-test-automation",
+			"performance-regression-llm-analysis",
+			"analyses/"+llmAnalysisRequest.YoutrackIssueId,
+			"degradation-data.json",
+			degradationDataJSON,
+		)
+		if err != nil {
+			slog.Error("failed to upload degradation data to space", "error", err)
+		}
+
 		buildParams := map[string]string{
 			"degradation.data":           string(degradationDataJSON),
 			"youtrack.issue.readable.id": llmAnalysisRequest.YoutrackIssueReadableId,

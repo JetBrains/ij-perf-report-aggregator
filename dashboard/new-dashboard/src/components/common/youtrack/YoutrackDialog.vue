@@ -146,7 +146,7 @@ import { Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
-import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest, UploadTarget } from "./YoutrackClient"
+import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
@@ -156,6 +156,7 @@ import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
+import { AttachmentsResponse, UploadAttachmentsClient, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/UploadAttachmentsClient"
 
 enum DownloadState {
   NOT_STARTED,
@@ -174,6 +175,7 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
+const uploadAttachmentsClient = new UploadAttachmentsClient(serverConfigurator)
 const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
@@ -228,6 +230,7 @@ async function createTicket() {
     }
 
     let issueResponse: IssueResponse
+    let attachmentsResponse: AttachmentsResponse | undefined
     try {
       issueResponse = await youtrackClient.createIssue(issueInfo)
       createdTicket.value = issueResponse.issue.idReadable
@@ -309,7 +312,15 @@ async function createTicket() {
             })
           })
       }
-      await youtrackClient.uploadAttachments(attachmentsInfo)
+      attachmentsResponse = await uploadAttachmentsClient.uploadAttachments(attachmentsInfo)
+      if (attachmentsResponse.exceptions != undefined) {
+        toast.add({
+          severity: "error",
+          summary: "Attachment Upload Failed",
+          detail: `Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? ""}`,
+          life: 8000,
+        })
+      }
     } catch (error: unknown) {
       console.error(error)
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -332,6 +343,7 @@ async function createTicket() {
           testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
           youtrackIssueReadableId: issueResponse.issue.idReadable,
           youtrackIssueId: issueResponse.issue.id,
+          spaceUploadedFiles: attachmentsResponse?.uploads[UploadTarget.SPACE] ?? [],
         }
         llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
       } catch (error: unknown) {

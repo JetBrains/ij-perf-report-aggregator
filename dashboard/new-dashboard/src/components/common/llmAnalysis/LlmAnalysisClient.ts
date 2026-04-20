@@ -8,6 +8,7 @@ export interface LlmAnalysisRequest {
   testMethodName: string | undefined
   youtrackIssueReadableId: string
   youtrackIssueId: string
+  spaceUploadedFiles: string[]
 }
 
 export class LlmAnalysisClient {

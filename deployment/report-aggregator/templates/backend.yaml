@@ -29,7 +29,10 @@ spec:
             - name: NATS
               value: "nats://nats:4222"
             - name: DATABASE_URL
-              value: {{ .Values.postgres.db_url | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: ij-meta-secret
+                  key: db_url
             - name: TEAMCITY_TOKEN
               valueFrom:
                 secretKeyRef:

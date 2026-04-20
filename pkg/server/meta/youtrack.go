@@ -418,7 +418,12 @@ func getAttachmentName(filename, suffix string) string {
 
 	nameParts := strings.Split(nameWithoutExt, "-")
 
-	updatedName := nameParts[0] + "-" + suffix
+	prefix := nameParts[0]
+	if slices.Contains(nameParts[1:], "frontend") {
+		prefix += "-frontend"
+	}
+
+	updatedName := prefix + "-" + suffix
 	return fmt.Sprintf("%s.%s", updatedName, ext)
 }
 

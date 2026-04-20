@@ -7,19 +7,21 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	CurrentBuildId          string  `json:"currentBuildId"`
-	AffectedMetric          string  `json:"affectedMetric"`
-	CurrentValue            *string `json:"currentValue"`
-	PreviousValue           *string `json:"previousValue"`
-	TestMethodName          *string `json:"testMethodName"`
-	YoutrackIssueReadableId string  `json:"youtrackIssueReadableId"`
-	YoutrackIssueId         string  `json:"youtrackIssueId"`
+	CurrentBuildId          string   `json:"currentBuildId"`
+	AffectedMetric          string   `json:"affectedMetric"`
+	CurrentValue            *string  `json:"currentValue"`
+	PreviousValue           *string  `json:"previousValue"`
+	TestMethodName          *string  `json:"testMethodName"`
+	YoutrackIssueReadableId string   `json:"youtrackIssueReadableId"`
+	YoutrackIssueId         string   `json:"youtrackIssueId"`
+	SpaceUploadedFiles      []string `json:"spaceUploadedFiles"`
 }
 
 type DegradationData struct {
-	CommitRange *CommitRange `json:"commitRange,omitempty"`
-	TestName    *string      `json:"testName,omitempty"`
-	Metric      *Metric      `json:"metric,omitempty"`
+	CommitRange   *CommitRange `json:"commitRange,omitempty"`
+	TestName      *string      `json:"testName,omitempty"`
+	Metric        *Metric      `json:"metric,omitempty"`
+	UploadedFiles []string     `json:"uploadedFiles"`
 }
 
 type CommitRange struct {
@@ -57,6 +59,7 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 				ValueBefore: llmAnalysisRequest.PreviousValue,
 				ValueAfter:  llmAnalysisRequest.CurrentValue,
 			},
+			UploadedFiles: llmAnalysisRequest.SpaceUploadedFiles,
 		}
 
 		if commits != nil {

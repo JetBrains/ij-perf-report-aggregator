@@ -26,6 +26,28 @@ const (
 	Space    UploadTarget = "space"
 )
 
+type UploadAttachmentsResponse struct {
+	Uploads    map[string][]string `json:"uploads"`
+	Exceptions []string            `json:"exceptions"`
+}
+
+type uploadResults struct {
+	mu      sync.Mutex
+	uploads map[string][]string
+}
+
+func newUploadResults() *uploadResults {
+	return &uploadResults{
+		uploads: make(map[string][]string),
+	}
+}
+
+func (ur *uploadResults) addSuccess(target UploadTarget, fileName string) {
+	ur.mu.Lock()
+	defer ur.mu.Unlock()
+	ur.uploads[string(target)] = append(ur.uploads[string(target)], fileName)
+}
+
 func (request *UploadAttachmentsRequest) ToUploaders() ([]ArtifactsUploader, error) {
 	uploaders := make([]ArtifactsUploader, 0, len(request.Targets))
 
@@ -87,7 +109,7 @@ func (u *spaceUploader) Type() UploadTarget {
 	return Space
 }
 
-func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte, fileName string, errCh chan<- error, uploadWg *sync.WaitGroup) {
+func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte, fileName string, errCh chan<- error, uploadWg *sync.WaitGroup, results *uploadResults) {
 	for _, uploader := range uploaders {
 		uploadWg.Go(func() {
 			err := uploader.Upload(ctx, file, fileName)
@@ -98,6 +120,8 @@ func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte
 				} else {
 					slog.Error("Failed to upload attachment", "target", uploader.Type(), "error", err)
 				}
+			} else {
+				results.addSuccess(uploader.Type(), fileName)
 			}
 		})
 	}
@@ -105,16 +129,12 @@ func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte
 
 func CreatePostUploadAttachments() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		type Exceptions struct {
-			Exceptions []string `json:"exceptions"`
-		}
-
-		var exceptions Exceptions
+		var response UploadAttachmentsResponse
 		body := request.Body
 		all, err := io.ReadAll(body)
 		if err != nil {
-			handleError(writer, "cannot read body", err, &exceptions.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
+			handleError(writer, "cannot read body", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
 			return
 		}
 
@@ -122,20 +142,21 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 
 		var params UploadAttachmentsRequest
 		if err = json.Unmarshal(all, &params); err != nil {
-			handleError(writer, "cannot unmarshal parameters", err, &exceptions.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
+			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
 			return
 		}
 
 		uploaders, err := params.ToUploaders()
 		if err != nil {
-			handleError(writer, "invalid upload targets", err, &exceptions.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
+			handleError(writer, "invalid upload targets", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
 			return
 		}
 
 		errCh := make(chan error, 10)
 		var uploadWg sync.WaitGroup
+		results := newUploadResults()
 
 		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
 		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
@@ -143,7 +164,7 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 		}
 
 		if params.ChartPng != nil {
-			uploadToAll(request.Context(), uploaders, *params.ChartPng, "dashboard.png", errCh, &uploadWg)
+			uploadToAll(request.Context(), uploaders, *params.ChartPng, "dashboard.png", errCh, &uploadWg, results)
 		}
 
 		collector := getArtifactCollector(params.TestType)
@@ -187,7 +208,7 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 							}
 
 							attachmentName := getAttachmentName(str, attachmentPostfix)
-							uploadToAll(request.Context(), uploaders, artifact, attachmentName, errCh, &uploadWg)
+							uploadToAll(request.Context(), uploaders, artifact, attachmentName, errCh, &uploadWg, results)
 						})
 					}
 					childWg.Wait()
@@ -201,16 +222,18 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 
 		for err := range errCh {
 			if err != nil {
-				exceptions.Exceptions = append(exceptions.Exceptions, err.Error())
+				response.Exceptions = append(response.Exceptions, err.Error())
 			}
 		}
 
-		if len(exceptions.Exceptions) > 0 {
+		response.Uploads = results.uploads
+
+		if len(response.Exceptions) > 0 {
 			writer.WriteHeader(http.StatusInternalServerError)
-			_ = marshalAndWriteIssueResponse(writer, exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
 			return
 		}
 
-		_ = marshalAndWriteIssueResponse(writer, exceptions)
+		_ = marshalAndWriteIssueResponse(writer, response)
 	}
 }

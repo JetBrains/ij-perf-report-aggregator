@@ -32,23 +32,6 @@ export class YoutrackClient {
     }
   }
 
-  async uploadAttachments(attachmentsInfo: UploadAttachmentsRequest) {
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/uploadAttachments`
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(attachmentsInfo),
-    })
-
-    const attachmentsResponse = (await response.json()) as AttachmentsResponse
-
-    if (attachmentsResponse.exceptions != undefined || !response.ok) {
-      throw new Error(`Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? ""}`)
-    }
-  }
-
   private static readonly PROJECT_MAP: Record<string, Project[]> = {
     webstorm: [{ name: "WebStorm", id: "22-96" }],
     phpstorm: [{ name: "PhpStorm", id: "22-19" }],
@@ -94,30 +77,9 @@ export interface IssueResponse {
   issue: Issue
 }
 
-export interface AttachmentsResponse {
-  exceptions: string[] | undefined
-}
-
 interface Issue {
   id: string
   idReadable: string
-}
-
-export enum UploadTarget {
-  YOUTRACK = "youtrack",
-  SPACE = "space",
-}
-
-export interface UploadAttachmentsRequest {
-  targets: UploadTarget[]
-  issueId: string
-  teamcityAttachmentInfo: {
-    currentBuildId: number
-    previousBuildId: number | undefined
-  }
-  chartPng: string | undefined
-  affectedTest: string
-  testType: string
 }
 
 export interface CreateIssueRequest {

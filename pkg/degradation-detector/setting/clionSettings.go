@@ -17,7 +17,7 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
-	branches := []string{"252", "253", "master"}
+	branches := []string{"252", "253", "261", "master"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	if err != nil {

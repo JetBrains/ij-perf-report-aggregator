@@ -20,9 +20,6 @@ importers:
       happy-dom:
         specifier: ^20.9.0
         version: 20.9.0
-      isoworker:
-        specifier: ^0.2.4
-        version: 0.2.4
       oxfmt:
         specifier: ^0.46.0
         version: 0.46.0
@@ -1511,9 +1508,6 @@ packages:
   is-what@5.5.0:
     resolution: {integrity: sha512-oG7cgbmg5kLYae2N5IVd3jm2s+vldjxJzK1pcu9LfpGuQ93MQSzo0okvRna+7y5ifrD+20FE8FvjusyGaz14fw==}
     engines: {node: '>=18'}
-
-  isoworker@0.2.4:
-    resolution: {integrity: sha512-oIN3zgTUVzu52EWYyl7zVlqNOOA+vdsUQs2DIHLDwWgs1CnOohdwopN23HmIYiZKePmjU7sQLq+J4xYjMMfsYQ==}
 
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
@@ -3325,8 +3319,6 @@ snapshots:
     optional: true
 
   is-what@5.5.0: {}
-
-  isoworker@0.2.4: {}
 
   jiti@2.6.1: {}
 

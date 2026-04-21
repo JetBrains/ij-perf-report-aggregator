@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -109,17 +110,12 @@ func (u *spaceUploader) Type() UploadTarget {
 	return Space
 }
 
-func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte, fileName string, errCh chan<- error, uploadWg *sync.WaitGroup, results *uploadResults) {
+func uploadToAll(ctx context.Context, uploaders []ArtifactsUploader, file []byte, fileName string, handleUploadErrors func(string, error, UploadTarget), uploadWg *sync.WaitGroup, results *uploadResults) {
 	for _, uploader := range uploaders {
 		uploadWg.Go(func() {
 			err := uploader.Upload(ctx, file, fileName)
 			if err != nil {
-				if uploader.Type() == YouTrack {
-					slog.Error("Failed to upload attachment to youtrack", "error", err)
-					errCh <- err
-				} else {
-					slog.Error("Failed to upload attachment", "target", uploader.Type(), "error", err)
-				}
+				handleUploadErrors("Failed to upload attachment", err, uploader.Type())
 			} else {
 				results.addSuccess(uploader.Type(), fileName)
 			}
@@ -154,7 +150,22 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 			return
 		}
 
-		errCh := make(chan error, 10)
+		var exceptionsMu sync.Mutex
+		logAndAddException := func(message string, err error) {
+			slog.Error(message, "error", err)
+			exceptionsMu.Lock()
+			defer exceptionsMu.Unlock()
+			response.Exceptions = append(response.Exceptions,
+				fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
+		}
+		handleUploadError := func(message string, err error, target UploadTarget) {
+			if target == YouTrack {
+				logAndAddException(message, err)
+			} else {
+				slog.Error(message, "target", target, "error", err)
+			}
+		}
+
 		var uploadWg sync.WaitGroup
 		results := newUploadResults()
 
@@ -164,7 +175,7 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 		}
 
 		if params.ChartPng != nil {
-			uploadToAll(request.Context(), uploaders, *params.ChartPng, "dashboard.png", errCh, &uploadWg, results)
+			uploadToAll(request.Context(), uploaders, *params.ChartPng, "dashboard.png", handleUploadError, &uploadWg, results)
 		}
 
 		collector := getArtifactCollector(params.TestType)
@@ -177,8 +188,7 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 
 					children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
 					if err != nil {
-						slog.Error("Failed to get teamcity artifact children", "error", err)
-						errCh <- err
+						logAndAddException("Failed to get teamcity artifact children", err)
 						return
 					}
 
@@ -202,13 +212,12 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 						childWg.Go(func() {
 							artifact, err := teamCityClient.downloadArtifact(request.Context(), buildId, testArtifactPath+"/"+str)
 							if err != nil {
-								slog.Error("Failed to download artefacts form teamcity", "error", err)
-								errCh <- err
+								logAndAddException("Failed to download artifacts from teamcity", err)
 								return
 							}
 
 							attachmentName := getAttachmentName(str, attachmentPostfix)
-							uploadToAll(request.Context(), uploaders, artifact, attachmentName, errCh, &uploadWg, results)
+							uploadToAll(request.Context(), uploaders, artifact, attachmentName, handleUploadError, &uploadWg, results)
 						})
 					}
 					childWg.Wait()
@@ -218,13 +227,6 @@ func CreatePostUploadAttachments() http.HandlerFunc {
 		}
 
 		uploadWg.Wait()
-		close(errCh)
-
-		for err := range errCh {
-			if err != nil {
-				response.Exceptions = append(response.Exceptions, err.Error())
-			}
-		}
 
 		response.Uploads = results.uploads
 

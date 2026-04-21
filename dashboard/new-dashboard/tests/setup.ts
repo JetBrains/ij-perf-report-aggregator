@@ -32,3 +32,5 @@ Object.defineProperty(globalThis, "localStorage", {
   writable: true,
   configurable: true,
 })
+
+globalThis.fetch = () => Promise.resolve(new Response("", { status: 200 }))

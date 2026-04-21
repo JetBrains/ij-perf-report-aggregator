@@ -22,7 +22,7 @@ export default defineConfig({
     root: "dashboard/new-dashboard",
     include: [...configDefaults.include, "**/*.{test,spec}.ts"],
     globals: true,
-    environment: "jsdom",
+    environment: "happy-dom",
     setupFiles: ["tests/setup.ts"],
     testTimeout: 10000,
   },

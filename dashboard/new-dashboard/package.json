@@ -17,7 +17,6 @@
     "vue-router": "5.0.4"
   },
   "devDependencies": {
-    "@types/humanize-duration": "^3.27.4",
-    "@types/sanitize-html": "^2.16.1"
+    "@types/humanize-duration": "^3.27.4"
   }
 }

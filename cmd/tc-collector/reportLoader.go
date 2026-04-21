@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/json-iterator/go"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -274,7 +274,7 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
 	t.storeSessionIdCookie(response)
 
 	var changeList ChangeList
-	err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&changeList)
+	err = json.NewDecoder(response.Body).Decode(&changeList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}

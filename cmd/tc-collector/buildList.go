@@ -1,11 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
-
-	"github.com/json-iterator/go"
 )
 
 type BuildList struct {
@@ -98,7 +97,7 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
 	t.storeSessionIdCookie(response)
 
 	var result BuildList
-	err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&result)
+	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse builds: %w", err)
 	}

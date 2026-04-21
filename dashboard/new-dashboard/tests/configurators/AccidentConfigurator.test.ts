@@ -1,7 +1,5 @@
-import { http, HttpResponse } from "msw"
-import { setupServer } from "msw/node"
 import { createPinia, setActivePinia } from "pinia"
-import { expect, beforeAll, afterAll, describe, it, afterEach } from "vitest"
+import { expect, beforeAll, afterEach, describe, it, vi } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
@@ -11,41 +9,28 @@ import { AccidentsConfiguratorForStartup } from "../../src/configurators/acciden
 
 describe("Branch configurator", () => {
   let timeRangeConfigurator: TimeRangeConfigurator
-
-  const server = setupServer()
+  const serverUrl = "http://localhost:7474"
 
   beforeAll(() => {
-    server.listen()
     setActivePinia(createPinia())
     const persistence = new PersistentStateManager("test-dashboard", {}, useRouter())
     timeRangeConfigurator = new TimeRangeConfigurator(persistence)
   })
 
   afterEach(() => {
-    server.resetHandlers()
-  })
-
-  afterAll(() => {
-    server.close()
+    vi.restoreAllMocks()
   })
 
   it("valid query to create accident for startup", async () => {
-    const serverUrl = "http://localhost:7474"
-    let receivedBody: unknown
-    const testPromise = new Promise<void>((resolve) => {
-      server.use(
-        http.post(serverUrl + "/api/meta/accidents/", async (req) => {
-          receivedBody = await req.request.json()
-          resolve()
-          return HttpResponse.json({})
-        })
-      )
-    })
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(() => Promise.resolve(new Response("1", { status: 200 })))
 
     const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     await configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Regression)
-    await testPromise
-    expect(receivedBody).toStrictEqual({
+
+    expect(fetchSpy).toHaveBeenCalledWith(serverUrl + "/api/meta/accidents/", expect.objectContaining({ method: "POST" }))
+    const accidentCall = fetchSpy.mock.calls.find(([url]) => url === serverUrl + "/api/meta/accidents/")
+    const [, init] = accidentCall!
+    expect(JSON.parse(init!.body as string)).toStrictEqual({
       date: "Dec 17, 2023, 5:53 AM",
       affected_test: "RM/diaspora",
       reason: "test",
@@ -57,22 +42,14 @@ describe("Branch configurator", () => {
   })
 
   it("valid query to create accident with stacktrace for startup", async () => {
-    const serverUrl = "http://localhost:7474"
-    let receivedBody: unknown
-    const testPromise = new Promise<void>((resolve) => {
-      server.use(
-        http.post(serverUrl + "/api/meta/accidents/", async (req) => {
-          receivedBody = await req.request.json()
-          resolve()
-          return HttpResponse.json({})
-        })
-      )
-    })
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(() => Promise.resolve(new Response("1", { status: 200 })))
 
     const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     await configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Exception, "some trace")
-    await testPromise
-    expect(receivedBody).toStrictEqual({
+
+    const accidentCall = fetchSpy.mock.calls.find(([url]) => url === serverUrl + "/api/meta/accidents/")
+    const [, init] = accidentCall!
+    expect(JSON.parse(init!.body as string)).toStrictEqual({
       date: "Dec 17, 2023, 5:53 AM",
       affected_test: "RM/diaspora",
       reason: "test",

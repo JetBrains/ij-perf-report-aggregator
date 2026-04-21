@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
-	"github.com/cenkalti/backoff/v4"
+	"github.com/cenkalti/backoff/v5"
 )
 
 type ArtifactItem struct {
@@ -99,20 +99,18 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 }
 
 func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
-	bo := backoff.NewExponentialBackOff(backoff.WithMaxElapsedTime(15*time.Second), backoff.WithMaxInterval(5*time.Second))
-	var result []byte
-	err := backoff.Retry(func() error {
-		if err := ctx.Err(); err != nil {
-			return backoff.Permanent(fmt.Errorf("context cancelled or deadline exceeded: %w", err))
-		}
-
+	bo := backoff.NewExponentialBackOff()
+	bo.MaxInterval = 5 * time.Second
+	result, err := backoff.Retry(ctx, func() ([]byte, error) {
 		data, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
 		if err != nil || data == nil {
-			return fmt.Errorf("download failed: %w", err)
+			return nil, fmt.Errorf("download failed: %w", err)
 		}
-		result = data
-		return nil
-	}, bo)
+		return data, nil
+	},
+		backoff.WithBackOff(bo),
+		backoff.WithMaxElapsedTime(15*time.Second),
+	)
 	if err != nil {
 		return nil, errors.New("maximum retries reached, download failed")
 	}

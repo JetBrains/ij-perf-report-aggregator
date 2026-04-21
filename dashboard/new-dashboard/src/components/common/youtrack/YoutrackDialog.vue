@@ -313,7 +313,7 @@ async function createTicket() {
           })
       }
       attachmentsResponse = await uploadAttachmentsClient.uploadAttachments(attachmentsInfo)
-      if (attachmentsResponse.exceptions != undefined) {
+      if (attachmentsResponse.exceptions?.length) {
         toast.add({
           severity: "error",
           summary: "Attachment Upload Failed",

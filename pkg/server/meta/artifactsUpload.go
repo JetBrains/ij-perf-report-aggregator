@@ -28,25 +28,25 @@ const (
 )
 
 type UploadAttachmentsResponse struct {
-	Uploads    map[string][]string `json:"uploads"`
-	Exceptions []string            `json:"exceptions"`
+	Uploads    map[UploadTarget][]string `json:"uploads"`
+	Exceptions []string                  `json:"exceptions"`
 }
 
 type uploadResults struct {
 	mu      sync.Mutex
-	uploads map[string][]string
+	uploads map[UploadTarget][]string
 }
 
 func newUploadResults() *uploadResults {
 	return &uploadResults{
-		uploads: make(map[string][]string),
+		uploads: make(map[UploadTarget][]string),
 	}
 }
 
 func (ur *uploadResults) addSuccess(target UploadTarget, fileName string) {
 	ur.mu.Lock()
 	defer ur.mu.Unlock()
-	ur.uploads[string(target)] = append(ur.uploads[string(target)], fileName)
+	ur.uploads[target] = append(ur.uploads[target], fileName)
 }
 
 func (request *UploadAttachmentsRequest) ToUploaders() ([]ArtifactsUploader, error) {

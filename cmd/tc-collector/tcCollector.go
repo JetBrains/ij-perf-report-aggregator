@@ -14,6 +14,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -22,7 +23,6 @@ import (
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nats-io/nats.go"
-	"go.uber.org/atomic"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -38,7 +38,7 @@ type Collector struct {
 
 	logger *slog.Logger
 
-	tcSessionId atomic.String
+	tcSessionId atomic.Pointer[string]
 
 	installerBuildIdToInfo map[int]*InstallerInfo
 	buildIdToInfo          map[int]*BuildInfo
@@ -268,7 +268,7 @@ func (t *Collector) storeSessionIdCookie(response *http.Response) {
 	cookie := getTcSessionIdCookie(response.Cookies())
 	// TC doesn't set cookie if it was already set for request
 	if cookie != "" {
-		t.tcSessionId.Store(cookie)
+		t.tcSessionId.Store(&cookie)
 	}
 }
 
@@ -415,9 +415,8 @@ func (t *Collector) createRequest(ctx context.Context, requestURL string) (*http
 		return nil, fmt.Errorf("cannot create request: %w", err)
 	}
 
-	sessionId := t.tcSessionId.Load()
-	if sessionId != "" {
-		request.AddCookie(&http.Cookie{Name: "TCSESSIONID", Value: sessionId})
+	if sessionId := t.tcSessionId.Load(); sessionId != nil && *sessionId != "" {
+		request.AddCookie(&http.Cookie{Name: "TCSESSIONID", Value: *sessionId})
 	}
 	request.Header.Add("Authorization", "Bearer "+os.Getenv("TC_TOKEN"))
 

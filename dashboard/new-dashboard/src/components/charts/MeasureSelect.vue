@@ -34,6 +34,9 @@
         />
       </div>
     </template>
+    <template #option="{ option }">
+      <span v-tooltip.right="getMetricDescription(option)?.description">{{ option }}</span>
+    </template>
     <template #dropdownicon>
       <span class="hidden" />
     </template>
@@ -59,6 +62,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed, ref, watch } from "vue"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
+import { getMetricDescription } from "../../shared/metricsDescription"
 
 interface Props {
   configurator: MeasureConfigurator | SimpleMeasureConfigurator

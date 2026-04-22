@@ -34,7 +34,7 @@
     </StickyToolbar>
     <main class="flex">
       <div
-        v-if="measureConfigurator.selected.value != null"
+        v-if="scenarios.length > 0 && measureConfigurator.selected.value != null && measureConfigurator.selected.value.length > 0"
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
@@ -50,6 +50,18 @@
             @chart-closed="onChartClosed"
           />
         </template>
+      </div>
+      <div
+        v-else-if="scenarios.length === 0"
+        class="flex flex-1 items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+      >
+        Select a test and a metric to see charts
+      </div>
+      <div
+        v-else
+        class="flex flex-1 items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+      >
+        Select a metric to see charts
       </div>
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>

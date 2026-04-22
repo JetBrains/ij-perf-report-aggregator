@@ -110,20 +110,46 @@
               @chart-closed="onTestChartClosed"
             />
           </template>
-        </span>
-        <span v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics && measureConfigurator.selected.value != null && measureConfigurator.selected.value?.length > 0">
-          <template
-            v-for="scenario in scenarios"
-            :key="scenario"
+          <span
+            v-if="!scenarioConfigurator.selected.value?.length"
+            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
           >
-            <GroupProjectsChart
-              :measure="measureConfigurator.selected.value"
-              :projects="[scenario]"
-              :label="scenario"
-              :can-be-closed="true"
-              @chart-closed="onMeasureChartClosed"
-            />
+            Select a test and a metric to see charts
+          </span>
+          <span
+            v-else-if="!measureConfigurator.selected.value?.length"
+            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+          >
+            Select a metric to see charts
+          </span>
+        </span>
+        <span v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics">
+          <template v-if="measureConfigurator.selected.value != null && measureConfigurator.selected.value.length > 0">
+            <template
+              v-for="scenario in scenarios"
+              :key="scenario"
+            >
+              <GroupProjectsChart
+                :measure="measureConfigurator.selected.value"
+                :projects="[scenario]"
+                :label="scenario"
+                :can-be-closed="true"
+                @chart-closed="onMeasureChartClosed"
+              />
+            </template>
           </template>
+          <span
+            v-else-if="!measureConfigurator.selected.value?.length"
+            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+          >
+            Select a metric to see charts
+          </span>
+          <span
+            v-else
+            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+          >
+            Select a test and a metric to see charts
+          </span>
         </span>
       </div>
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />

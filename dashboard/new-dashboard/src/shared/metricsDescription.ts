@@ -109,6 +109,13 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["searchEverywhere_*", "Time to fill all search everywhere results"],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
+  [
+    "attempt.mad.ms",
+    metricInfo(
+      "MAD (Median Absolute Deviation) of attempt durations in ms. The MAD is a robust statistic, being more resilient to outliers in a data set than the standard deviation.",
+      "https://en.m.wikipedia.org/wiki/Median_absolute_deviation"
+    ),
+  ],
   ...GRADLE_METRICS_NEW_DASHBOARD,
 
   // Workspace Model

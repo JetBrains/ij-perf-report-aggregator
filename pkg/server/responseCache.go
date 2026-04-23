@@ -25,15 +25,17 @@ func (ch *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type ResponseCacheManager struct {
-	cache *fastcache.Cache
+	cache   *fastcache.Cache
+	metrics *PrometheusMetrics
 }
 
-func NewResponseCacheManager() (*ResponseCacheManager, error) {
+func NewResponseCacheManager(metrics *PrometheusMetrics) *ResponseCacheManager {
 	cacheSize := 1000 * 1000 * 1000
 	cache := fastcache.New(cacheSize)
 	return &ResponseCacheManager{
-		cache: cache,
-	}, nil
+		cache:   cache,
+		metrics: metrics,
+	}
 }
 
 func (rcm *ResponseCacheManager) CreateHandler(handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) http.Handler {
@@ -68,6 +70,7 @@ func computeEtag(result []byte) string {
 
 func (rcm *ResponseCacheManager) Clear() {
 	rcm.cache.Reset()
+	rcm.metrics.ObserveCacheClear()
 }
 
 func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) {
@@ -75,8 +78,20 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 
 	cacheKey := generateCacheKey(request)
 	value := rcm.cache.Get(nil, cacheKey)
+
+	var lookup string
+	switch {
+	case value != nil && request.Header.Get("Cache-Control") != "no-cache":
+		lookup = "hit"
+	case value != nil:
+		lookup = "bypass"
+	default:
+		lookup = "miss"
+	}
+	rcm.metrics.ObserveCacheLookup(lookup)
+
 	var result []byte
-	if value != nil && request.Header.Get("Cache-Control") != "no-cache" {
+	if lookup == "hit" {
 		var err error
 		result, err = decompressData(value)
 		if err != nil {

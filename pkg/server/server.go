@@ -53,6 +53,8 @@ func Serve(dbUrl string, natsUrl string) error {
 		dbUrl: dbUrl,
 	}
 
+	prometheusMetrics := NewPrometheusMetrics()
+
 	defer func() {
 		statsServer.nameToDbPool.Range(func(_, pool any) bool {
 			p, ok := pool.(*puddle.Pool[*ch.Client])
@@ -63,11 +65,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		})
 	}()
 
-	cacheManager, err := NewResponseCacheManager()
-	if err != nil {
-		return err
-	}
-
+	cacheManager := NewResponseCacheManager(prometheusMetrics)
 	router := chi.NewRouter()
 
 	disposer := util.NewDisposer()
@@ -81,6 +79,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		slog.Info("no nats server configured")
 	}
 
+	router.Use(prometheusMetrics.Middleware)
 	router.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -90,6 +89,8 @@ func Serve(dbUrl string, natsUrl string) error {
 	}).Handler)
 	router.Use(middleware.Heartbeat("/health-check"))
 	router.Use(middleware.Recoverer)
+
+	router.Handle("/api/metrics", prometheusMetrics.Handler())
 
 	router.Get("/api/meta/degradations", CreateGetDegradationsHandler(dbpool))
 

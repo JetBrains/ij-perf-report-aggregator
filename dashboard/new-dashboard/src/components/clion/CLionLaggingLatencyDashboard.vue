@@ -8,7 +8,7 @@
   >
     <section>
       <Divider title="Lagging during indexing" />
-      <Accordion value="0">
+      <Accordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -36,7 +36,7 @@
       </Accordion>
 
       <Divider title="Lagging during zephyr project indexing" />
-      <Accordion value="0">
+      <Accordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -64,7 +64,7 @@
       </Accordion>
 
       <Divider title="Lagging during completion" />
-      <Accordion value="0">
+      <Accordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -92,7 +92,7 @@
       </Accordion>
 
       <Divider title="Lagging during navigation" />
-      <Accordion value="0">
+      <Accordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>

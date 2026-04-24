@@ -65,7 +65,19 @@
     <Column
       field="description"
       header="Description"
-    ></Column>
+    >
+      <template #body="slotProps">
+        <span
+          v-if="slotProps.data.description"
+        >{{ slotProps.data.description }}</span>
+        <span
+          v-else
+          class="italic text-gray-400"
+        >
+          (no description yet)
+        </span>
+      </template>
+    </Column>
     <Column
       field="url"
       header="URL"
@@ -110,8 +122,10 @@ interface Metric {
   isMain: boolean
 }
 const metricsLists: Metric[] = []
+const seenNames = new Set<string>()
 for (const [name, value] of metricsDescription) {
   const isMain = isMainMetric(name)
+  seenNames.add(name)
   if (typeof value === "string") {
     metricsLists.push({
       name,
@@ -124,6 +138,15 @@ for (const [name, value] of metricsDescription) {
       description: value.description,
       url: value.url,
       isMain,
+    })
+  }
+}
+for (const name of mainMetricsSet) {
+  if (!seenNames.has(name)) {
+    metricsLists.push({
+      name,
+      description: "",
+      isMain: true,
     })
   }
 }

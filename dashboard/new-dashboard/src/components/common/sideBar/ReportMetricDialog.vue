@@ -92,6 +92,15 @@
       :in-dialog="true"
       @copy-accident="copy"
     />
+    <Message
+      v-if="misclickWarning"
+      severity="warn"
+      :closable="false"
+      class="mb-4"
+    >
+      <div class="font-medium">{{ misclickWarning.title }}</div>
+      <div class="text-sm">{{ misclickWarning.detail }}</div>
+    </Message>
     <!-- Footer buttons -->
     <template #footer>
       <div v-if="accidentToEdit == null">
@@ -142,6 +151,7 @@ import { useToast } from "primevue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
 import { generateDefaultReason } from "./AccidentUtils"
+import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import { useStorage } from "@vueuse/core"
 
@@ -178,6 +188,8 @@ const reason = ref(generateReason())
 const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 
 const build = computed(() => data?.build ?? data?.buildId.toString())
+
+const misclickWarning = computed(() => detectPossibleMisclick(data, accidentType.value))
 
 async function reportRegression() {
   if (reason.value.trim().length < 5) {

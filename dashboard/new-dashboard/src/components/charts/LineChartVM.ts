@@ -58,11 +58,33 @@ export class LineChartVM {
             sidebarVm.close()
           } else {
             this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
-            const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }))
+            const seriesContext = this.extractSeriesContext(chartManager, params)
+            const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }), seriesContext)
             sidebarVm.show(infoData)
           }
         }
       }
+    }
+  }
+
+  private extractSeriesContext(chartManager: ChartManager, params: ECElementEvent): { seriesValues: number[] | undefined; pointIndex: number | undefined } {
+    try {
+      const option = chartManager.chart.getOption() as { series?: unknown[]; dataset?: unknown[] }
+      const seriesIndex = params.seriesIndex ?? 0
+      const seriesOption = option.series?.[seriesIndex] as { datasetIndex?: number } | undefined
+      const datasetIndex = seriesOption?.datasetIndex ?? seriesIndex
+      const datasetEntry = option.dataset?.[datasetIndex] as { source?: unknown[] } | undefined
+      const source = datasetEntry?.source
+      if (!Array.isArray(source)) return { seriesValues: undefined, pointIndex: params.dataIndex }
+      // When scaling is on, MeasureConfigurator replaces source[1] with scale-to-median values
+      // and appends the original unscaled values at the end. Use those so the heuristic stays
+      // on the same scale as InfoData.rawValue / previousValue (both unscaled).
+      const valuesColumn = this.settings.scaling ? source.at(-1) : source[1]
+      if (!Array.isArray(valuesColumn)) return { seriesValues: undefined, pointIndex: params.dataIndex }
+      const values = (valuesColumn as unknown[]).map((v) => (typeof v === "number" && Number.isFinite(v) ? v : Number.NaN))
+      return { seriesValues: values, pointIndex: params.dataIndex }
+    } catch {
+      return { seriesValues: undefined, pointIndex: params.dataIndex }
     }
   }
 

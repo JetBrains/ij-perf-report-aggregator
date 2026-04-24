@@ -255,7 +255,8 @@ export function getInfoDataFrom(
   params: CallbackDataParams | CallbackDataParams[],
   valueUnit: ValueUnit,
   accidentsConfigurator: AccidentsConfigurator | null,
-  chartDataUrl: string
+  chartDataUrl: string,
+  seriesContext?: { seriesValues: number[] | undefined; pointIndex: number | undefined }
 ): InfoData {
   const accidents = accidentsConfigurator?.value
   if (Array.isArray(params) && params.length > 1) {
@@ -279,6 +280,11 @@ export function getInfoDataFrom(
       buildIdNext: undefined,
       formattedCurrentValue: undefined,
       formattedPreviousValue: undefined,
+      previousValue: undefined,
+      nextValue: undefined,
+      metricType: info.type,
+      seriesValues: seriesContext?.seriesValues,
+      pointIndex: seriesContext?.pointIndex,
     }
   }
   if (Array.isArray(params)) {
@@ -294,15 +300,19 @@ export function getInfoDataFrom(
   let buildIdPrevious: number | undefined
   let buildIdNext: number | undefined
   let formattedPreviousValue: string | undefined
+  let previousValue: number | undefined
+  let nextValue: number | undefined
   if (delta != undefined) {
     if (delta.prev != null) {
       deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", info.type)
       buildIdPrevious = delta.prevBuildId
       formattedPreviousValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(delta.prev) : delta.prev, info.type)
+      previousValue = delta.prev
     }
     if (delta.next != null) {
       deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
       buildIdNext = delta.nextBuildId
+      nextValue = delta.next
     }
   }
   return {
@@ -315,6 +325,11 @@ export function getInfoDataFrom(
     buildIdNext,
     formattedCurrentValue: showValue,
     formattedPreviousValue,
+    previousValue,
+    nextValue,
+    metricType: info.type,
+    seriesValues: seriesContext?.seriesValues,
+    pointIndex: seriesContext?.pointIndex,
   }
 }
 

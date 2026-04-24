@@ -35,6 +35,11 @@ export interface InfoData {
   mode: string | undefined
   formattedCurrentValue: string | undefined
   formattedPreviousValue: string | undefined
+  previousValue: number | undefined
+  nextValue: number | undefined
+  metricType: string | undefined
+  seriesValues: number[] | undefined
+  pointIndex: number | undefined
 }
 
 class Description {

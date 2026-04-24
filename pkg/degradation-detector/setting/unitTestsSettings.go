@@ -106,6 +106,14 @@ var teamConfigs = []teamConfig{
 		AnalysisSettings: degradationOnlyAnalysisSettings(),
 	},
 	{
+		Team:         "phpstorm",
+		SlackChannel: "phpstorm-performance-degradations",
+		Packages: []string{
+			"com.jetbrains.php",
+		},
+		AnalysisSettings: degradationOnlyAnalysisSettings(),
+	},
+	{
 		Team:         "lsp",
 		SlackChannel: "kotlin-lsp-alerts",
 		Packages: []string{

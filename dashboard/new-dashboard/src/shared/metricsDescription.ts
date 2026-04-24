@@ -107,6 +107,41 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme")],
   //others
   ["searchEverywhere_*", "Time to fill all search everywhere results"],
+  ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
+  //indexing / VFS / VCS indexing
+  ["dumbModeWithPauses", "Total time spent in dumb mode (indexes not ready), including pauses like GC and UI freezes"],
+  ["vfs_initial_refresh", "Duration of the initial VFS refresh that syncs on-disk files with the VFS cache on project opening"],
+  ["vcs-log-indexing", "Duration of VCS Log background indexing of commits for fast search and filtering"],
+  //build
+  ["build_compilation_duration", "Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager)"],
+  //search everywhere
+  ["searchEverywhere", "End-to-end time of a Search Everywhere operation: popup invocation, typing, and optional selection/closing"],
+  ["searchEverywhere_dialog_shown", "Time from triggering Search Everywhere until the popup is fully displayed"],
+  //vcs
+  ["showFileHistory", "Time from invoking Show File History until the initial data pack is loaded and rendered"],
+  //menus
+  ["%expandMainMenu", "Time to recursively expand all actions in the main menu bar (GROUP_MAIN_MENU)"],
+  ["%expandProjectMenu", "Time to expand the Project View context menu popup (GROUP_PROJECT_VIEW_POPUP)"],
+  ["%expandEditorMenu", "Time to expand the editor right-click context menu (GROUP_EDITOR_POPUP)"],
+  //new file
+  ["createKotlinFile", "Time to create a new Kotlin file via the New File template action"],
+  ["createJavaFile", "Time to create a new Java class/file via the New File action (JavaDirectoryService.createClass)"],
+  //highlighting
+  ["highlighting", "Total time of background daemon syntax and semantic highlighting analysis on a file"],
+  ["typingCodeAnalyzing", "Time of daemon code analysis triggered after typing, from typing completion until daemon finishes"],
+  //rename
+  ["startInlineRename", "Sum time of all inline rename invocations, from trigger through template preparation and editor setup"],
+  //debug
+  ["debugRunConfiguration", "Time from launching a debug run configuration until the debugger first pauses at a breakpoint"],
+  ["debugStep_into", "Time from invoking Step Into in the debugger until the next sessionPaused callback fires"],
+  //AI completion quality
+  ["MatchedRatio", "Average length of accepted completion minus prefix, normalized by expected text (AI completion quality)"],
+  ["SyntaxErrorsSessionRatio", "Ratio of completion sessions that left syntax errors in the resulting code"],
+  ["EditSimilarity", "Maximum Levenshtein-based similarity between proposed completion suggestions and expected text"],
+  //benchmark
+  ["attempt.mean.ms", "Mean duration in milliseconds across all benchmark attempt spans"],
+  //gc
+  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "https://github.com/chewiebug/GCViewer#readme")],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
   [

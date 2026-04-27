@@ -123,21 +123,30 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     // each column value it is an index of producer value
     let seriesName = ""
     let measureName = ""
+    const metadata: { isBranchDimension: boolean; measureName: string; seriesName: string }[] = []
     for (const [i, index] of item.entries()) {
       const producer = producers[i]
       producer.mutate(index)
+      const producerMeasureName = producer.getMeasureName(index)
+      const producerSeriesName = producer.getSeriesName(index)
       if (i !== 0) {
         measureName += " – "
       }
-      measureName += producer.getMeasureName(index)
+      measureName += producerMeasureName
 
-      const title = producer.getSeriesName(index)
+      const title = producerSeriesName
       if (title.length > 0) {
         if (seriesName.length > 0) {
           seriesName += " – "
         }
         seriesName += title
       }
+
+      metadata.push({
+        isBranchDimension: producer.isBranchDimension === true,
+        measureName: producerMeasureName,
+        seriesName: producerSeriesName,
+      })
     }
 
     serializedQuery.push(structuredClone(query))
@@ -162,6 +171,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
 
     configuration.seriesNames.push(seriesName)
     configuration.measureNames.push(measureName)
+    configuration.seriesMetadata.push(metadata)
   }
 
   if (serializedQuery.length > 0) {

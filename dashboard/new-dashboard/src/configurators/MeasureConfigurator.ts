@@ -3,7 +3,7 @@ import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { deepEqual } from "fast-equals"
 import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
-import { ref, Ref, shallowRef } from "vue"
+import { ref, Ref, shallowRef, toRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
@@ -50,7 +50,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   readonly showAllMetrics = ref(false)
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.selected, true)
+    return combineLatest([refToObservable(this.selected, true), refToObservable(toRef(useSettingsStore(), "groupBranchesIntoSingleChart"))])
   }
 
   setSelected(value: string[] | string | null) {
@@ -263,7 +263,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   ) {}
 
   createObservable(): Observable<unknown> {
-    return combineLatest([refToObservable(this.skipZeroValues), refToObservable(this.measures)])
+    return combineLatest([refToObservable(this.skipZeroValues), refToObservable(this.measures), refToObservable(toRef(useSettingsStore(), "groupBranchesIntoSingleChart"))])
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -448,7 +448,50 @@ class MergeResults {
   }
 }
 
-function mergeSeries(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration) {
+function sortSeriesDataByTime(seriesData: (string | number)[][]): (string | number)[][] {
+  if (seriesData.length === 0 || seriesData[0].length < 2) {
+    return seriesData
+  }
+
+  const order = seriesData[0].map((_, index) => index).toSorted((left, right) => Number(seriesData[0][left]) - Number(seriesData[0][right]))
+
+  return seriesData.map((row) => order.map((index) => row[index]))
+}
+
+function toSeriesMeta(measureName: string, seriesName: string) {
+  return {
+    id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
+    seriesName,
+    measureName,
+  }
+}
+
+function getSeriesMeta(dataIndex: number, configuration: DataQueryExecutorConfiguration) {
+  const rawSeriesName = configuration.seriesNames[dataIndex]
+  const rawMeasureName = configuration.measureNames[dataIndex]
+  return toSeriesMeta(rawMeasureName, rawSeriesName)
+}
+
+function getBranchMergedSeriesMeta(dataIndex: number, configuration: DataQueryExecutorConfiguration) {
+  const metadata = configuration.seriesMetadata[dataIndex]
+  if (metadata == null || metadata.length === 0) return getSeriesMeta(dataIndex, configuration)
+
+  const buildCompositeName = (field: "measureName" | "seriesName"): string => {
+    const parts = metadata
+      .filter((entry) => !entry.isBranchDimension)
+      .map((entry) => entry[field])
+      .filter((entry) => entry.length > 0)
+    return parts.join(" – ")
+  }
+
+  const rawMeasureName = configuration.measureNames[dataIndex]
+  const measureName = buildCompositeName("measureName") || rawMeasureName
+  const seriesName = buildCompositeName("seriesName") || measureName
+
+  return toSeriesMeta(measureName, seriesName)
+}
+
+function mergeSeries(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration, groupBranchesIntoSingleChart: boolean) {
   const mergedDataList: DataQueryResult = []
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
@@ -458,8 +501,9 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
       console.log("Serie is empty and will be hidden: " + configuration.seriesNames[dataIndex])
       continue
     }
-    const measureName = configuration.measureNames[dataIndex]
-    let seriesName = configuration.seriesNames[dataIndex]
+    const mergedSeriesMeta = groupBranchesIntoSingleChart ? getBranchMergedSeriesMeta(dataIndex, configuration) : getSeriesMeta(dataIndex, configuration)
+    const measureName = mergedSeriesMeta.measureName
+    let seriesName = mergedSeriesMeta.seriesName
     //fleet
     if (seriesName == "" && (seriesData.length == 6 || seriesData.length == 10)) {
       seriesName = seriesData[4][0] as string
@@ -468,13 +512,14 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
       seriesName = seriesData[6][0] as string
     }
     seriesName = measureNameToLabel(seriesName)
-    const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+    const id = mergedSeriesMeta.id
     if (seriesIdsToIndex.has(id)) {
       const seriesIndex = seriesIdsToIndex.get(id) as number
       const values = mergedDataList[seriesIndex]
       for (const [i, seriesDatum] of seriesData.entries()) {
         values[i] = i < values.length ? [...values[i], ...seriesDatum] : [...seriesDatum]
       }
+      mergedDataList[seriesIndex] = sortSeriesDataByTime(values)
     } else {
       const newId = mergedDataList.push(seriesData) - 1
       seriesIdsToIndex.set(id, newId)
@@ -504,9 +549,8 @@ async function configureChart(
   const dataset: DatasetOption[] = []
 
   //merge series with the same name
-  const mergeResults = mergeSeries(dataList, configuration)
-
   const settings = useSettingsStore()
+  const mergeResults = mergeSeries(dataList, configuration, settings.groupBranchesIntoSingleChart)
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

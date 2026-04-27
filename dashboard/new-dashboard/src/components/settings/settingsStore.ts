@@ -9,6 +9,7 @@ export const useSettingsStore = defineStore("settingsStore", () => {
   const storedFlexibleYZero = useStorage("floatingNull", false)
   const storedRemoveOutliers = useStorage("removeOutliers", false)
   const storedGroupBranches = useStorage("groupBranches", true)
+  const storedGroupBranchesIntoSingleChart = useStorage("groupBranchesIntoSingleChart", false)
   const storedFadeOnHover = useStorage("fadeOnHover", false)
 
   const scaling = computed({
@@ -55,6 +56,13 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
+  const groupBranchesIntoSingleChart = computed({
+    get: () => storedGroupBranchesIntoSingleChart.value,
+    set(value) {
+      storedGroupBranchesIntoSingleChart.value = value
+    },
+  })
+
   const fadeOnHover = computed({
     get: () => storedFadeOnHover.value,
     set(value) {
@@ -62,5 +70,5 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, groupBranches, fadeOnHover }
+  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, groupBranches, groupBranchesIntoSingleChart, fadeOnHover }
 })

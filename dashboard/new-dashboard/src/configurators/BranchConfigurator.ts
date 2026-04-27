@@ -48,6 +48,7 @@ export class BranchConfigurator extends DimensionConfigurator {
     const filter: DataQueryFilter = { f: this.name, v: "" }
     const values = Array.isArray(value) ? [...value] : [value]
     configuration.queryProducers.push({
+      isBranchDimension: true,
       size(): number {
         return values.length
       },

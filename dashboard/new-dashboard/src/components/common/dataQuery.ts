@@ -124,6 +124,8 @@ export interface ServerConfigurator extends DataQueryConfigurator {
 }
 
 export interface QueryProducer {
+  isBranchDimension?: boolean
+
   size(): number
 
   /**
@@ -156,6 +158,7 @@ export class SimpleQueryProducer implements QueryProducer {
 export class DataQueryExecutorConfiguration {
   public seriesNames: string[] = []
   readonly measureNames: string[] = []
+  readonly seriesMetadata: { isBranchDimension: boolean; measureName: string; seriesName: string }[][] = []
 
   readonly queryProducers: QueryProducer[] = []
 

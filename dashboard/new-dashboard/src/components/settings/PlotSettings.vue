@@ -14,6 +14,7 @@
     <DetectChangesSwitch class="mb-2" />
     <FlexibleZeroOnYAxis class="mb-2" />
     <RemoveOutliersSwitch class="mb-2" />
+    <GroupBranchesIntoSingleChartSwitch class="mb-2" />
     <FadeOnHoverSwitch />
   </Popover>
 </template>
@@ -30,6 +31,7 @@ import FlexibleZeroOnYAxis from "./FlexibleYZeroSwitch.vue"
 import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
 import RemoveOutliersSwitch from "./RemoveOutliersSwitch.vue"
 import FadeOnHoverSwitch from "./FadeOnHoverSwitch.vue"
+import GroupBranchesIntoSingleChartSwitch from "./GroupBranchesIntoSingleChartSwitch.vue"
 import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"

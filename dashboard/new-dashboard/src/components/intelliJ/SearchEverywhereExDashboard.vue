@@ -69,6 +69,16 @@ const chartsDeclaration: ChartDefinition[] = [
   ...seCharts("Symbol", "symbol"),
   ...seCharts("File", "file"),
   ...seCharts("Lucene Files", "lucene-files"),
+  {
+    labels: ["Lucene Files - Index Creation Time - Cold", "Lucene Files - Index Size (KB) - Cold"],
+    measures: ["searchEverywhereLuceneFilesIndexAll", "searchEverywhereLuceneIndexSize"],
+    projects: seProjects("go-to-lucene-files", ["Kotlin", "Editor", "Runtime"]),
+  },
+  {
+    labels: ["Lucene Files - Index Creation Time - Warm", "Lucene Files - Index Size (KB) - Warm"],
+    measures: ["searchEverywhereLuceneFilesIndexAll", "searchEverywhereLuceneIndexSize"],
+    projects: seProjects("go-to-lucene-files-with-warmup", ["Kotlin", "Editor", "Runtime"]),
+  },
   ...seChartsCustom("File", "file", fuzzyFilesPatterns, "fuzzy"),
   {
     labels: ["Warm Search Everywhere Insert", "Warm SE First Element Insert"],

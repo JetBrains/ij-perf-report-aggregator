@@ -101,7 +101,7 @@ func (m *PrometheusMetrics) Middleware(next http.Handler) http.Handler {
 
 		labels := prometheus.Labels{
 			"method":      r.Method,
-			"route":       routeLabel(r),
+			"route":       routeLabel(sanitizeRoutePattern(routePattern(r))),
 			"status_code": strconv.Itoa(statusCode),
 		}
 
@@ -137,13 +137,15 @@ func routePattern(r *http.Request) string {
 	return pattern
 }
 
-func routeLabel(r *http.Request) string {
-	pattern := sanitizeRoutePattern(routePattern(r))
+// routeLabel returns the Prometheus `route` label for a request.
+// Anything chi did not route (404s, scanner traffic, early-middleware rejects)
+// collapses into a single "unmatched" bucket — without this, security scans
+// generate one series per unique path and break Prometheus scraping.
+func routeLabel(pattern string) string {
 	if pattern != "" && !isHighCardinalityRouteLabel(pattern) {
 		return pattern
 	}
-
-	return coarseRouteLabel(r.URL.Path)
+	return "unmatched"
 }
 
 func sanitizeRoutePattern(pattern string) string {
@@ -165,8 +167,4 @@ func isHighCardinalityRouteLabel(label string) bool {
 	return len(label) > maxRouteLabelLength ||
 		strings.Contains(label, "://") ||
 		strings.ContainsAny(label, "?%")
-}
-
-func coarseRouteLabel(string) string {
-	return "unmatched"
 }

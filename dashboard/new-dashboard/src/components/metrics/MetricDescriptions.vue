@@ -67,9 +67,7 @@
       header="Description"
     >
       <template #body="slotProps">
-        <span
-          v-if="slotProps.data.description"
-        >{{ slotProps.data.description }}</span>
+        <span v-if="slotProps.data.description">{{ slotProps.data.description }}</span>
         <span
           v-else
           class="italic text-gray-400"

@@ -6,6 +6,25 @@ import (
 	"strings"
 )
 
+type UploadAttachmentsRequest struct {
+	IssueId                string                 `json:"issueId"`
+	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
+	AffectedTest           string                 `json:"affectedTest"`
+	ChartPng               *[]byte                `json:"chartPng"`
+	TestType               string                 `json:"testType"`
+}
+
+type UploadAttachmentsResponse struct {
+	Uploads    []string `json:"uploads"`
+	Exceptions []string `json:"exceptions"`
+}
+
+type teamCityArtifact struct {
+	BuildId      int
+	ArtifactPath string
+	FileName     string
+}
+
 type artifactCollector interface {
 	getArtifactsPath(params UploadAttachmentsRequest) string
 	checkArtifact(artifactName string) bool

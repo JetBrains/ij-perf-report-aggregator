@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"bytes"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -81,7 +82,7 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 			"performance-regression-llm-analysis",
 			"analyses/"+llmAnalysisRequest.YoutrackIssueId,
 			"degradation-data.json",
-			degradationDataJSON,
+			bytes.NewReader(degradationDataJSON),
 		)
 		if err != nil {
 			slog.Error("failed to upload degradation data to space", "error", err)

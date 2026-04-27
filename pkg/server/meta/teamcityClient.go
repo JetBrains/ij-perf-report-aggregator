@@ -125,20 +125,13 @@ func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId i
 	return children, nil
 }
 
-func (client *TeamCityClient) downloadArtifact(ctx context.Context, buildId int, filePath string) ([]byte, error) {
+func (client *TeamCityClient) getDownloadArtifactResponse(ctx context.Context, buildId int, filePath string) (*http.Response, error) {
 	endpoint := fmt.Sprintf("/app/rest/builds/id:%d/artifacts/content/%s", buildId, filePath)
 	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
+	return resp, nil
 }
 
 func (client *TeamCityClient) getTestHistoryUrl(ctx context.Context, testName string) (string, error) {

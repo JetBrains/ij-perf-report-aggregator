@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
@@ -131,28 +132,43 @@ func (client *YoutrackClient) GetCustomFields(ctx context.Context, projectId str
 	return customFields, nil
 }
 
-func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId string, file []byte, fileName string) error {
-	var body bytes.Buffer
-	writer := multipart.NewWriter(&body)
+const maxAttachmentSize = 95 * 1024 * 1024 // 95 MB
 
-	part, err := writer.CreateFormFile("file", fileName)
-	if err != nil {
-		return fmt.Errorf("error creating form file: %w", err)
+func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId string, content io.Reader, fileName string, contentLength int64) error {
+	if contentLength > maxAttachmentSize {
+		return fmt.Errorf("YouTrack: attachment size of the file %s exceeds maximum allowed size of 95 MB", fileName)
 	}
 
-	_, err = io.Copy(part, bytes.NewReader(file))
-	if err != nil {
-		return fmt.Errorf("error copying file data: %w", err)
-	}
-
-	writer.Close()
-
-	err = client.waitIssueIsCreated(ctx, issueId)
+	err := client.waitIssueIsCreated(ctx, issueId)
 	if err != nil {
 		return fmt.Errorf("issue was not created: %w", err)
 	}
 
-	_, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", &body, map[string]string{"Content-Type": writer.FormDataContentType()})
+	pr, pw := io.Pipe()
+	writer := multipart.NewWriter(pw)
+	contentType := writer.FormDataContentType()
+
+	go func() {
+		part, err := writer.CreateFormFile("file", fileName)
+		if err != nil {
+			_ = pw.CloseWithError(fmt.Errorf("error creating form file: %w", err))
+			return
+		}
+
+		_, err = io.Copy(part, content)
+		if err != nil {
+			_ = pw.CloseWithError(fmt.Errorf("error copying file data: %w", err))
+			return
+		}
+
+		if err := writer.Close(); err != nil {
+			_ = pw.CloseWithError(fmt.Errorf("error closing multipart writer: %w", err))
+			return
+		}
+		_ = pw.Close()
+	}()
+
+	_, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", pr, map[string]string{"Content-Type": contentType})
 	if err != nil {
 		return fmt.Errorf("error uploading attachment: %w", err)
 	}
@@ -218,4 +234,130 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 		return fmt.Errorf("checking whether the issue is created failed after 5 retries: %w", err)
 	}
 	return nil
+}
+
+func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		var response UploadAttachmentsResponse
+		body := request.Body
+		all, err := io.ReadAll(body)
+		if err != nil {
+			handleError(writer, "cannot read body", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
+			return
+		}
+		defer body.Close()
+
+		var params UploadAttachmentsRequest
+		if err = json.Unmarshal(all, &params); err != nil {
+			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
+			return
+		}
+
+		var exceptionsMu sync.Mutex
+		logAndAddException := func(message string, err error) {
+			slog.Error(message, "error", err)
+			exceptionsMu.Lock()
+			defer exceptionsMu.Unlock()
+			response.Exceptions = append(response.Exceptions,
+				fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
+		}
+
+		var uploadsMu sync.Mutex
+		addSuccess := func(fileName string) {
+			uploadsMu.Lock()
+			defer uploadsMu.Unlock()
+			response.Uploads = append(response.Uploads, fileName)
+		}
+
+		var uploadWg sync.WaitGroup
+		ctx := request.Context()
+
+		if params.ChartPng != nil {
+			uploadWg.Go(func() {
+				contentLength := int64(len(*params.ChartPng))
+				err := youtrackClient.UploadAttachment(ctx, params.IssueId, bytes.NewReader(*params.ChartPng), "dashboard.png", contentLength)
+				if err != nil {
+					logAndAddException("Failed to upload chart PNG", err)
+				} else {
+					addSuccess("dashboard.png")
+				}
+			})
+		}
+
+		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
+		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
+			builds = append(builds, *params.TeamCityAttachmentInfo.PreviousBuildId)
+		}
+
+		collector := getArtifactCollector(params.TestType)
+
+		if collector != nil {
+			var wg sync.WaitGroup
+			for index, buildId := range builds {
+				wg.Go(func() {
+					testArtifactPath := collector.getArtifactsPath(params)
+
+					children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
+					if err != nil {
+						logAndAddException("Failed to get teamcity artifact children", err)
+						return
+					}
+
+					var filteredChildren []string
+					for _, str := range children {
+						if collector.checkArtifact(str) {
+							filteredChildren = append(filteredChildren, str)
+						}
+					}
+
+					var attachmentPostfix string
+					if index == 0 {
+						attachmentPostfix = "current"
+					} else {
+						attachmentPostfix = "before"
+					}
+
+					for _, str := range filteredChildren {
+						artifact := teamCityArtifact{
+							BuildId:      buildId,
+							ArtifactPath: testArtifactPath + "/" + str,
+							FileName:     getAttachmentName(str, attachmentPostfix),
+						}
+						uploadWg.Go(func() {
+							resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
+							if err != nil {
+								logAndAddException("Failed to download artifact from TeamCity", err)
+								return
+							}
+							defer resp.Body.Close()
+
+							err = youtrackClient.UploadAttachment(ctx, params.IssueId, resp.Body, artifact.FileName, resp.ContentLength)
+							if err != nil {
+								logAndAddException("Failed to upload attachment", err)
+							} else {
+								addSuccess(artifact.FileName)
+							}
+						})
+					}
+				})
+			}
+			wg.Wait()
+		}
+
+		uploadWg.Wait()
+
+		if len(response.Exceptions) > 0 {
+			if len(response.Uploads) > 0 {
+				writer.WriteHeader(http.StatusMultiStatus)
+			} else {
+				writer.WriteHeader(http.StatusInternalServerError)
+			}
+			_ = marshalAndWriteIssueResponse(writer, response)
+			return
+		}
+
+		_ = marshalAndWriteIssueResponse(writer, response)
+	}
 }

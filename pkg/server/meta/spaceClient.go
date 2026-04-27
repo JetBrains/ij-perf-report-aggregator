@@ -3,11 +3,13 @@ package meta
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"os"
+	"sync"
 )
 
 var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
@@ -24,10 +26,10 @@ func NewSpacePackagesClient(spaceUrl, spaceToken string) *SpacePackagesClient {
 	}
 }
 
-func (client *SpacePackagesClient) UploadFile(ctx context.Context, project string, packageName string, remoteFolder string, fileName string, file []byte) error {
+func (client *SpacePackagesClient) UploadFile(ctx context.Context, project string, packageName string, remoteFolder string, fileName string, body io.Reader) error {
 	endpoint := fmt.Sprintf("/files/p/%s/%s/%s/%s", project, packageName, remoteFolder, fileName)
 
-	_, err := client.doRequest(ctx, endpoint, http.MethodPut, bytes.NewReader(file), nil)
+	_, err := client.doRequest(ctx, endpoint, http.MethodPut, body, nil)
 	if err != nil {
 		return fmt.Errorf("error uploading file: %w", err)
 	}
@@ -66,4 +68,116 @@ func (client *SpacePackagesClient) doRequest(ctx context.Context, endpoint strin
 	}
 
 	return bodyBytes, nil
+}
+
+func CreatePostSpaceUploadAttachments() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		var response UploadAttachmentsResponse
+		body := request.Body
+		all, err := io.ReadAll(body)
+		if err != nil {
+			handleError(writer, "cannot read body", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
+			return
+		}
+		defer body.Close()
+
+		var params UploadAttachmentsRequest
+		if err = json.Unmarshal(all, &params); err != nil {
+			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, response)
+			return
+		}
+
+		var uploadsMu sync.Mutex
+		addSuccess := func(fileName string) {
+			uploadsMu.Lock()
+			defer uploadsMu.Unlock()
+			response.Uploads = append(response.Uploads, fileName)
+		}
+
+		logError := func(message string, err error) {
+			slog.Error(message, "error", err)
+		}
+
+		var uploadWg sync.WaitGroup
+		ctx := request.Context()
+
+		remoteFolder := "analyses/" + params.IssueId
+
+		if params.ChartPng != nil {
+			uploadWg.Go(func() {
+				err := spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", remoteFolder, "dashboard.png", bytes.NewReader(*params.ChartPng))
+				if err != nil {
+					logError("Failed to upload chart PNG to Space", err)
+				} else {
+					addSuccess("dashboard.png")
+				}
+			})
+		}
+
+		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
+		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
+			builds = append(builds, *params.TeamCityAttachmentInfo.PreviousBuildId)
+		}
+
+		collector := getArtifactCollector(params.TestType)
+
+		if collector != nil {
+			var wg sync.WaitGroup
+			for index, buildId := range builds {
+				wg.Go(func() {
+					testArtifactPath := collector.getArtifactsPath(params)
+
+					children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
+					if err != nil {
+						logError("Failed to get teamcity artifact children", err)
+						return
+					}
+
+					var filteredChildren []string
+					for _, str := range children {
+						if collector.checkArtifact(str) {
+							filteredChildren = append(filteredChildren, str)
+						}
+					}
+
+					var attachmentPostfix string
+					if index == 0 {
+						attachmentPostfix = "current"
+					} else {
+						attachmentPostfix = "before"
+					}
+
+					for _, str := range filteredChildren {
+						artifact := teamCityArtifact{
+							BuildId:      buildId,
+							ArtifactPath: testArtifactPath + "/" + str,
+							FileName:     getAttachmentName(str, attachmentPostfix),
+						}
+						uploadWg.Go(func() {
+							resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
+							if err != nil {
+								logError("Failed to download artifact from TeamCity", err)
+								return
+							}
+							defer resp.Body.Close()
+
+							err = spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", remoteFolder, artifact.FileName, resp.Body)
+							if err != nil {
+								logError("Failed to upload attachment to Space", err)
+							} else {
+								addSuccess(artifact.FileName)
+							}
+						})
+					}
+				})
+			}
+			wg.Wait()
+		}
+
+		uploadWg.Wait()
+
+		_ = marshalAndWriteIssueResponse(writer, response)
+	}
 }

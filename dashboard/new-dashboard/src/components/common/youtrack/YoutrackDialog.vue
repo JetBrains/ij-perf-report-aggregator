@@ -11,7 +11,7 @@
           id="label"
           v-model="label"
           class="w-full"
-          :disabled="downloadState != DownloadState.NOT_STARTED"
+          :disabled="progressState != ProgressState.NOT_STARTED"
         />
         <label for="label">Label</label>
       </FloatLabel>
@@ -21,7 +21,7 @@
       placeholder="Project"
       :options="projects"
       option-label="name"
-      :disabled="downloadState != DownloadState.NOT_STARTED"
+      :disabled="progressState != ProgressState.NOT_STARTED"
     >
       <template #value="{ value }">
         <div class="group inline-flex justify-center font-medium">
@@ -40,7 +40,7 @@
     <!-- Footer buttons -->
     <template #footer>
       <div
-        v-if="downloadState == DownloadState.NOT_STARTED"
+        v-if="progressState == ProgressState.NOT_STARTED"
         class="flex justify-end space-x-2"
       >
         <Button
@@ -96,7 +96,7 @@
         </div>
         <div class="flex justify-between items-center mt-10">
           <div>Uploading attachments</div>
-          <div v-if="downloadState == DownloadState.STARTED">
+          <div v-if="progressState == ProgressState.UPLOADING_ATTACHMENTS">
             <i class="pi pi-spin pi-spinner"></i>
           </div>
           <div
@@ -111,7 +111,7 @@
             >
           </div>
           <div
-            v-else
+            v-else-if="progressState == ProgressState.FINISHED"
             class="icon-wrapper"
           >
             <i class="pi pi-times-circle"></i>
@@ -119,22 +119,40 @@
           </div>
         </div>
         <div
-          v-if="llmAnalysisBuildUrl.length > 0"
+          v-if="llmAnalysisState !== LlmAnalysisState.NOT_STARTED"
           class="flex justify-between items-center mt-10"
         >
           <div>
-            LLM Analysis was launched:
+            LLM Analysis:
+            <template v-if="llmAnalysisState === LlmAnalysisState.PREPARING"> preparation... </template>
             <a
+              v-else-if="llmAnalysisState === LlmAnalysisState.DONE && llmAnalysisBuildUrl.length > 0"
               target="_blank"
               class="link-like-text"
               :href="llmAnalysisBuildUrl"
             >
               View TC Build
             </a>
+            <template v-else-if="llmAnalysisState === LlmAnalysisState.FAILED"> failed </template>
           </div>
           <div class="icon-wrapper">
-            <i class="pi pi-verified"></i>
-            <span class="tooltip-text">Experimental feature, the results will be published to YT ticket</span>
+            <i
+              v-if="llmAnalysisState === LlmAnalysisState.PREPARING"
+              class="pi pi-spin pi-spinner"
+            ></i>
+            <i
+              v-else-if="llmAnalysisState === LlmAnalysisState.DONE"
+              class="pi pi-verified"
+            ></i>
+            <i
+              v-else-if="llmAnalysisState === LlmAnalysisState.FAILED"
+              class="pi pi-times-circle"
+            ></i>
+            <span
+              v-if="llmAnalysisState === LlmAnalysisState.DONE"
+              class="tooltip-text"
+              >Experimental feature, the results will be published to YT ticket</span
+            >
           </div>
         </div>
       </div>
@@ -146,7 +164,7 @@ import { Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
-import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
+import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
@@ -156,12 +174,20 @@ import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
-import { AttachmentsResponse, UploadAttachmentsClient, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/UploadAttachmentsClient"
+import { SpaceClient } from "../space/SpaceClient"
 
-enum DownloadState {
+enum ProgressState {
   NOT_STARTED,
-  STARTED,
+  CREATING_ISSUE,
+  UPLOADING_ATTACHMENTS,
   FINISHED,
+}
+
+enum LlmAnalysisState {
+  NOT_STARTED,
+  PREPARING,
+  DONE,
+  FAILED,
 }
 
 const router = useRouter()
@@ -175,7 +201,7 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
-const uploadAttachmentsClient = new UploadAttachmentsClient(serverConfigurator)
+const spaceClient = new SpaceClient(serverConfigurator)
 const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
@@ -183,7 +209,8 @@ const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
 const llmAnalysisBuildUrl = ref("")
-const downloadState = ref(DownloadState.NOT_STARTED)
+const llmAnalysisState = ref(LlmAnalysisState.NOT_STARTED)
+const progressState = ref(ProgressState.NOT_STARTED)
 const label = ref(generateLabel())
 
 function generateLabel(): string {
@@ -205,153 +232,168 @@ async function createTicket() {
     })
     return
   }
+  if (data == null) throw new Error("There is no info data")
+  if (accident == null) throw new Error("There is no accident")
+  if (accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
+
+  progressState.value = ProgressState.CREATING_ISSUE
+
+  const buildId = data.buildId
+  const affectedMetric = data.series[0].metricName ?? ""
+  const spaceUrls = await getSpaceUrl(data, serverConfigurator)
+
+  const issueInfo: CreateIssueRequest = {
+    accidentId: `${accident.id}`,
+    ticketLabel: label.value,
+    projectId: project.value.id,
+    buildLink: data.artifactsUrl,
+    changesLink: spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl,
+    testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
+    dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
+    affectedMetric,
+    delta: data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
+    currentValue: data.formattedCurrentValue ?? "",
+    previousValue: data.formattedPreviousValue ?? "",
+    testType: dbTypeStore().dbType,
+  }
+
+  let issueResponse: IssueResponse
   try {
-    if (data == null) throw new Error("There is no info data")
-    if (accident == null) throw new Error("There is no accident")
-    if (accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
-    downloadState.value = DownloadState.STARTED
-    const buildId = data.buildId
-    const affectedMetric = data.series[0].metricName ?? ""
-    const spaceUrls = await getSpaceUrl(data, serverConfigurator)
-
-    const issueInfo: CreateIssueRequest = {
-      accidentId: `${accident.id}`,
-      ticketLabel: label.value,
-      projectId: project.value.id,
-      buildLink: data.artifactsUrl,
-      changesLink: spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl,
-      testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-      dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
-      affectedMetric,
-      delta: data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
-      currentValue: data.formattedCurrentValue ?? "",
-      previousValue: data.formattedPreviousValue ?? "",
-      testType: dbTypeStore().dbType,
-    }
-
-    let issueResponse: IssueResponse
-    let attachmentsResponse: AttachmentsResponse | undefined
-    try {
-      issueResponse = await youtrackClient.createIssue(issueInfo)
-      createdTicket.value = issueResponse.issue.idReadable
-      if (issueResponse.exceptions) {
-        console.error(`Issue was created, but with some problems:\n ${issueResponse.exceptions.join("\n")}`)
-        toast.add({
-          severity: "warn",
-          summary: "Issue Created with Problems",
-          detail: `YouTrack issue was created but with some problems:\n${issueResponse.exceptions.join("\n")}`,
-          life: 8000,
-        })
-        createException.value = true
-      }
-    } catch (error: unknown) {
-      console.error(error)
-      const errorMessage = error instanceof Error ? error.message : String(error)
+    issueResponse = await youtrackClient.createIssue(issueInfo)
+    createdTicket.value = issueResponse.issue.idReadable
+    if (issueResponse.exceptions) {
+      console.error(`Issue was created, but with some problems:\n ${issueResponse.exceptions.join("\n")}`)
       toast.add({
-        severity: "error",
-        summary: "Issue Creation Failed",
-        detail: `Failed to create YouTrack issue: ${errorMessage}`,
-        life: 8000,
-      })
-      createException.value = true
-      return
-    }
-
-    try {
-      await accidentConfigurator.reloadAccidentData(accident.id)
-    } catch (error: unknown) {
-      console.error(error)
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      toast.add({
-        severity: "error",
-        summary: "Accident Data Reload Failed",
-        detail: `Failed to reload accident data: ${errorMessage}`,
+        severity: "warn",
+        summary: "Issue Created with Problems",
+        detail: `YouTrack issue was created but with some problems:\n${issueResponse.exceptions.join("\n")}`,
         life: 8000,
       })
       createException.value = true
     }
+  } catch (error: unknown) {
+    console.error(error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    toast.add({
+      severity: "error",
+      summary: "Issue Creation Failed",
+      detail: `Failed to create YouTrack issue: ${errorMessage}`,
+      life: 8000,
+    })
+    createException.value = true
+    return
+  }
 
-    try {
-      let affectedTest = accident.affectedTest
+  try {
+    await accidentConfigurator.reloadAccidentData(accident.id)
+  } catch (error: unknown) {
+    console.error(error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    toast.add({
+      severity: "error",
+      summary: "Accident Data Reload Failed",
+      detail: `Failed to reload accident data: ${errorMessage}`,
+      life: 8000,
+    })
+    createException.value = true
+  }
 
-      if (affectedTest.endsWith(affectedMetric)) {
-        affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
-      }
-      const attachmentsInfo: UploadAttachmentsRequest = {
-        targets: [UploadTarget.YOUTRACK, UploadTarget.SPACE],
-        issueId: issueResponse.issue.id,
-        teamcityAttachmentInfo: {
-          currentBuildId: buildId,
-          previousBuildId: undefined,
-        },
-        affectedTest,
-        chartPng: undefined,
-        testType: dbTypeStore().dbType,
-      }
-      if (accident.kind != AccidentKind.Exception) {
-        attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
-        attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
-          .then((res) => res.blob())
-          .then((blob) => {
-            return new Promise<string>((resolve, reject) => {
-              const reader = new FileReader()
+  let affectedTest = accident.affectedTest
 
-              reader.addEventListener("loadend", () => {
-                if (typeof reader.result === "string") {
-                  resolve(reader.result.split(",")[1])
-                } else {
-                  reject(new Error("FileReader result is not a string"))
-                }
-              })
+  if (affectedTest.endsWith(affectedMetric)) {
+    affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
+  }
+  const attachmentsInfo: UploadAttachmentsRequest = {
+    issueId: issueResponse.issue.id,
+    teamcityAttachmentInfo: {
+      currentBuildId: buildId,
+      previousBuildId: undefined,
+    },
+    affectedTest,
+    chartPng: undefined,
+    testType: dbTypeStore().dbType,
+  }
+  if (accident.kind != AccidentKind.Exception) {
+    attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
+    attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
 
-              reader.addEventListener("error", () => {
-                reject(new Error("Error reading blob as data URL"))
-              })
-
-              reader.readAsDataURL(blob)
-            })
+          reader.addEventListener("loadend", () => {
+            if (typeof reader.result === "string") {
+              resolve(reader.result.split(",")[1])
+            } else {
+              reject(new Error("FileReader result is not a string"))
+            }
           })
-      }
-      attachmentsResponse = await uploadAttachmentsClient.uploadAttachments(attachmentsInfo)
-      if (attachmentsResponse.exceptions?.length) {
+
+          reader.addEventListener("error", () => {
+            reject(new Error("Error reading blob as data URL"))
+          })
+
+          reader.readAsDataURL(blob)
+        })
+      })
+  }
+
+  progressState.value = ProgressState.UPLOADING_ATTACHMENTS
+  youtrackClient
+    .uploadAttachments(attachmentsInfo)
+    .then((response) => {
+      progressState.value = ProgressState.FINISHED
+      if (response.exceptions?.length) {
         toast.add({
           severity: "error",
           summary: "Attachment Upload Failed",
-          detail: `Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? ""}`,
+          detail: `Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`,
           life: 8000,
         })
+        attachmentException.value = true
       }
-    } catch (error: unknown) {
-      console.error(error)
+      return response
+    })
+    .catch((error: unknown) => {
+      console.error("YouTrack attachment upload failed:", error)
       const errorMessage = error instanceof Error ? error.message : String(error)
       toast.add({
         severity: "error",
         summary: "Attachment Upload Failed",
-        detail: `Failed to upload attachments to YouTrack issue: ${errorMessage}`,
+        detail: `Failed to upload attachments to YouTrack: ${errorMessage}`,
         life: 8000,
       })
       attachmentException.value = true
-    }
+    })
 
-    if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
-      try {
-        const llmAnalysisRequest: LlmAnalysisRequest = {
-          currentBuildId: `${data.buildId}`,
-          currentValue: data.formattedCurrentValue || undefined,
-          previousValue: data.formattedPreviousValue || undefined,
-          affectedMetric,
-          testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-          youtrackIssueReadableId: issueResponse.issue.idReadable,
-          youtrackIssueId: issueResponse.issue.id,
-          spaceUploadedFiles: attachmentsResponse?.uploads[UploadTarget.SPACE] ?? [],
+  if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
+    llmAnalysisState.value = LlmAnalysisState.PREPARING
+
+    spaceClient
+      .uploadAttachments(attachmentsInfo)
+      .then(async (response) => {
+        try {
+          const llmAnalysisRequest: LlmAnalysisRequest = {
+            currentBuildId: `${data.buildId}`,
+            currentValue: data.formattedCurrentValue || undefined,
+            previousValue: data.formattedPreviousValue || undefined,
+            affectedMetric,
+            testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
+            youtrackIssueReadableId: issueResponse.issue.idReadable,
+            youtrackIssueId: issueResponse.issue.id,
+            spaceUploadedFiles: response.uploads ?? [],
+          }
+          llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
+          llmAnalysisState.value = LlmAnalysisState.DONE
+        } catch (error) {
+          console.error("LLM Analysis start failed:", error)
+          llmAnalysisState.value = LlmAnalysisState.FAILED
         }
-        llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
-      } catch (error: unknown) {
-        console.error(error)
-      }
-    }
-  } finally {
-    downloadState.value = DownloadState.FINISHED
+      })
+      .catch((error: unknown) => {
+        console.error("Space attachment upload for LLM analysis failed:", error)
+        llmAnalysisState.value = LlmAnalysisState.FAILED
+      })
   }
 }
 </script>

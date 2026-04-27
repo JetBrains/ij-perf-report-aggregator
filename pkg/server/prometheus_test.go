@@ -149,6 +149,40 @@ func TestPrometheusMetricsEndpointCollapsesWildcardRoutes(t *testing.T) {
 	}
 }
 
+func TestPrometheusMetricsLabelsUnmatchedRoutes(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+
+	router := chi.NewRouter()
+	router.Use(metrics.Middleware)
+	router.Handle("/metrics", metrics.Handler())
+
+	scannerPath := "/scanner/probe/" + strings.Repeat("xyz", 40)
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, httptest.NewRequest(http.MethodPost, scannerPath, http.NoBody))
+
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("unexpected unmatched route status: got %d, want %d", response.Code, http.StatusNotFound)
+	}
+
+	metricFamilies := scrapeMetrics(t, router)
+
+	requestCount := getCounterValue(t, metricFamilies["ij_perf_http_requests_total"], map[string]string{
+		"method":      http.MethodPost,
+		"route":       "unmatched",
+		"status_code": "404",
+	})
+	if requestCount != 1 {
+		t.Fatalf("unexpected unmatched route counter value: got %v, want 1", requestCount)
+	}
+
+	metricsText := metricsBody(t, router)
+	if strings.Contains(metricsText, scannerPath) {
+		t.Fatalf("metrics output leaked raw scanner path %q", scannerPath)
+	}
+}
+
 func scrapeMetrics(t *testing.T, handler http.Handler) map[string]*dto.MetricFamily {
 	t.Helper()
 

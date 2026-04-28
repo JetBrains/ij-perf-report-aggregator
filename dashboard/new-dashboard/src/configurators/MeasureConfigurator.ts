@@ -359,12 +359,11 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         field.n = measure
         valueFieldName = measure
       } else {
+        field.n = structureName
         if (measure.endsWith(".end")) {
-          field.n = structureName
           field.subName = "end"
           field.sql = `(${structureName}.start+${structureName}.${valueName})`
         } else {
-          field.n = structureName
           field.subName = valueName
         }
 

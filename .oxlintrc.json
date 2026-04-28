@@ -54,8 +54,10 @@
     "no-negated-condition": "off",
     "no-nested-ternary": "off",
     "no-null": "off",
+    "no-hooks": "off",
     "no-shadow": "off",
     "no-ternary": "off",
+    "no-underscore-dangle": "off",
     "no-unassigned-import": "off",
     "no-unnecessary-array-flat-depth": "off",
     "no-unsafe-enum-comparison": "off",
@@ -68,6 +70,7 @@
     "prefer-await-to-then": "off",
     "prefer-destructuring": "off",
     "prefer-enum-initializers": "off",
+    "prefer-expect-assertions": "off",
     "prefer-readonly-parameter-types": "off",
     "prefer-template": "off",
     "prefer-top-level-await": "off",
@@ -87,7 +90,9 @@
     "unicorn/prefer-global-this": "off",
     "unicorn/require-post-message-target-origin": "off",
     "unicorn/switch-case-braces": "off",
-    "vitest/prefer-called-once": "off"
+    "vitest/no-hooks": "off",
+    "vitest/prefer-called-once": "off",
+    "vitest/prefer-expect-assertions": "off"
   },
   "ignorePatterns": [
     "**/zstd-module.ts",

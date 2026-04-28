@@ -74,16 +74,16 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     if (duration === "all") {
       return true
     }
+    let sql: string
     if (this.customRange.value == "") {
-      const sql = `>${toClickhouseSql(parseDuration(duration))}`
-      query.addFilter({ f: "generated_time", q: sql })
+      sql = `>${toClickhouseSql(parseDuration(duration))}`
     } else {
       const between = this.customRange.value.split(":")
       const startDate = this.getSQLDateTime(between[0])
       const endDate = this.getSQLDateTime(between[1])
-      const sql = `BETWEEN toDateTime('${startDate} 00:00:00') AND toDateTime('${endDate} 23:59:59')`
-      query.addFilter({ f: "generated_time", q: sql })
+      sql = `BETWEEN toDateTime('${startDate} 00:00:00') AND toDateTime('${endDate} 23:59:59')`
     }
+    query.addFilter({ f: "generated_time", q: sql })
     return true
   }
 

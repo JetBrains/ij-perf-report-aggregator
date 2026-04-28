@@ -2,7 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-  {{- toYaml .Values.ingress.annotations | nindent 4 }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location = /api/metrics {
+        access_log off;
+        return 403;
+      }
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   labels:
     app: report-aggregator
     {{- include "common.labels" . | nindent 4 }}
@@ -65,7 +72,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-  {{- toYaml .Values.ingressBackend.annotations | nindent 4 }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location = /api/metrics {
+        access_log off;
+        return 403;
+      }
+    {{- with .Values.ingressBackend.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   labels:
     app: report-aggregator
     {{- include "common.labels" . | nindent 4 }}

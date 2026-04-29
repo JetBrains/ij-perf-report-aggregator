@@ -164,6 +164,7 @@ import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigura
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
 import { uploadAttachments, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/uploadAttachmentsUtils"
+import { getFirstAndLastCommit } from "../../../util/changes"
 
 enum ProgressState {
   NOT_STARTED,
@@ -376,8 +377,9 @@ async function createTicket() {
     uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.Space)
       .then(async (response) => {
         try {
+          const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
           const llmAnalysisRequest: LlmAnalysisRequest = {
-            currentBuildId: `${data.buildId}`,
+            commitRevisions: firstCommit && lastCommit ? { firstCommit, lastCommit } : null,
             currentValue: data.formattedCurrentValue || undefined,
             previousValue: data.formattedPreviousValue || undefined,
             affectedMetric,

@@ -1,7 +1,12 @@
 import { ServerConfigurator } from "../dataQuery"
 
+export interface CommitRevisions {
+  firstCommit: string
+  lastCommit: string
+}
+
 export interface LlmAnalysisRequest {
-  currentBuildId: string
+  commitRevisions: CommitRevisions | null
   currentValue: string | undefined
   previousValue: string | undefined
   affectedMetric: string

@@ -8,14 +8,14 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	CurrentBuildId          string   `json:"currentBuildId"`
-	AffectedMetric          string   `json:"affectedMetric"`
-	CurrentValue            *string  `json:"currentValue"`
-	PreviousValue           *string  `json:"previousValue"`
-	TestMethodName          *string  `json:"testMethodName"`
-	YoutrackIssueReadableId string   `json:"youtrackIssueReadableId"`
-	YoutrackIssueId         string   `json:"youtrackIssueId"`
-	SpaceUploadedFiles      []string `json:"spaceUploadedFiles"`
+	CommitRevisions         *CommitRevisions `json:"commitRevisions"`
+	AffectedMetric          string           `json:"affectedMetric"`
+	CurrentValue            *string          `json:"currentValue"`
+	PreviousValue           *string          `json:"previousValue"`
+	TestMethodName          *string          `json:"testMethodName"`
+	YoutrackIssueReadableId string           `json:"youtrackIssueReadableId"`
+	YoutrackIssueId         string           `json:"youtrackIssueId"`
+	SpaceUploadedFiles      []string         `json:"spaceUploadedFiles"`
 }
 
 type DegradationData struct {
@@ -47,12 +47,6 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 			return
 		}
 
-		var commits *CommitRevisions
-		commits, err = teamCityClient.getChanges(request.Context(), llmAnalysisRequest.CurrentBuildId)
-		if err != nil {
-			slog.Error("cannot get commits from build", "buildId", llmAnalysisRequest.CurrentBuildId, "error", err)
-		}
-
 		degradationData := DegradationData{
 			TestName: llmAnalysisRequest.TestMethodName,
 			Metric: &Metric{
@@ -63,10 +57,10 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 			UploadedFiles: llmAnalysisRequest.SpaceUploadedFiles,
 		}
 
-		if commits != nil {
+		if llmAnalysisRequest.CommitRevisions != nil {
 			degradationData.CommitRange = &CommitRange{
-				FromSha: commits.FirstCommit,
-				ToSha:   commits.LastCommit,
+				FromSha: llmAnalysisRequest.CommitRevisions.FirstCommit,
+				ToSha:   llmAnalysisRequest.CommitRevisions.LastCommit,
 			}
 		}
 

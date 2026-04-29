@@ -16,6 +16,18 @@ export function base64ToHex(base64: string): string {
   return hex
 }
 
+export async function getFirstAndLastCommit(db: string, id: number): Promise<{ firstCommit: string | null; lastCommit: string | null }> {
+  const changesMerged = await calculateChanges(db, id)
+  if (changesMerged == null) {
+    return { firstCommit: null, lastCommit: null }
+  }
+  const changesUnmerged = changesMerged.flatMap((chunk) => chunk.split("%2C"))
+  return {
+    firstCommit: changesUnmerged.at(-1) ?? null,
+    lastCommit: changesUnmerged[0] ?? null,
+  }
+}
+
 export function calculateChanges(db: string, id: number): Promise<string[] | null> {
   return new Promise((resolve, _) => {
     const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))

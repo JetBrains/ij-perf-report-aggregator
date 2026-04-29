@@ -177,7 +177,7 @@ import { computed, onMounted, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
-import { calculateChanges } from "../../../util/changes"
+import { getFirstAndLastCommit } from "../../../util/changes"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { useRouter } from "vue-router"
@@ -213,12 +213,9 @@ const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= 
 
 const firstCommit = ref()
 const lastCommit = ref()
-const changesMerged = await calculateChanges(serverConfigurator.db, data.installerId ?? data.buildId)
-const changesUnmerged = changesMerged?.flatMap((chunk) => chunk.split("%2C")) as string[] | null
-if (Array.isArray(changesUnmerged)) {
-  firstCommit.value = changesUnmerged.at(-1) ?? null
-  lastCommit.value = changesUnmerged[0] ?? null
-}
+const { firstCommit: first, lastCommit: last } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
+firstCommit.value = first
+lastCommit.value = last
 
 const router = useRouter()
 const bisectClient = new BisectClient(serverConfigurator)

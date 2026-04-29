@@ -129,6 +129,9 @@ func (client *TeamCityClient) getDownloadArtifactResponse(ctx context.Context, b
 	endpoint := fmt.Sprintf("/app/rest/builds/id:%d/artifacts/content/%s", buildId, filePath)
 	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
+		if resp != nil {
+			resp.Body.Close()
+		}
 		return nil, err
 	}
 	return resp, nil

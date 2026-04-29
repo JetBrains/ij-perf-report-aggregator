@@ -145,6 +145,8 @@ func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId stri
 	}
 
 	pr, pw := io.Pipe()
+	defer pr.Close()
+
 	writer := multipart.NewWriter(pw)
 	contentType := writer.FormDataContentType()
 
@@ -239,114 +241,41 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var response UploadAttachmentsResponse
-		body := request.Body
-		all, err := io.ReadAll(body)
-		if err != nil {
-			handleError(writer, "cannot read body", err, &response.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, response)
-			return
-		}
-		defer body.Close()
-
 		var params UploadAttachmentsRequest
-		if err = json.Unmarshal(all, &params); err != nil {
-			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
-			_ = marshalAndWriteIssueResponse(writer, response)
+		decoder := json.NewDecoder(request.Body)
+		defer request.Body.Close()
+		err := decoder.Decode(&params)
+		if err != nil {
+			http.Error(writer, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		var exceptionsMu sync.Mutex
-		logAndAddException := func(message string, err error) {
-			slog.Error(message, "error", err)
-			exceptionsMu.Lock()
-			defer exceptionsMu.Unlock()
-			response.Exceptions = append(response.Exceptions,
-				fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
-		}
-
-		var uploadsMu sync.Mutex
-		addSuccess := func(fileName string) {
-			uploadsMu.Lock()
-			defer uploadsMu.Unlock()
-			response.Uploads = append(response.Uploads, fileName)
-		}
-
-		var uploadWg sync.WaitGroup
+		var mu sync.Mutex
 		ctx := request.Context()
 
-		if params.ChartPng != nil {
-			uploadWg.Go(func() {
-				contentLength := int64(len(*params.ChartPng))
-				err := youtrackClient.UploadAttachment(ctx, params.IssueId, bytes.NewReader(*params.ChartPng), "dashboard.png", contentLength)
-				if err != nil {
-					logAndAddException("Failed to upload chart PNG", err)
-				} else {
-					addSuccess("dashboard.png")
-				}
-			})
+		config := UploadConfig{
+			UploadChartPng: func(ctx context.Context, chartData []byte) error {
+				contentLength := int64(len(chartData))
+				return youtrackClient.UploadAttachment(ctx, params.IssueId, bytes.NewReader(chartData), "dashboard.png", contentLength)
+			},
+			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
+				return youtrackClient.UploadAttachment(ctx, params.IssueId, artifact.Body, artifact.FileName, artifact.ContentLength)
+			},
+			OnError: func(message string, err error) {
+				slog.Error(message, "error", err)
+				mu.Lock()
+				defer mu.Unlock()
+				response.Exceptions = append(response.Exceptions,
+					fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
+			},
+			OnSuccess: func(fileName string) {
+				mu.Lock()
+				defer mu.Unlock()
+				response.Uploads = append(response.Uploads, fileName)
+			},
 		}
 
-		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
-		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
-			builds = append(builds, *params.TeamCityAttachmentInfo.PreviousBuildId)
-		}
-
-		collector := getArtifactCollector(params.TestType)
-
-		if collector != nil {
-			var wg sync.WaitGroup
-			for index, buildId := range builds {
-				wg.Go(func() {
-					testArtifactPath := collector.getArtifactsPath(params)
-
-					children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
-					if err != nil {
-						logAndAddException("Failed to get teamcity artifact children", err)
-						return
-					}
-
-					var filteredChildren []string
-					for _, str := range children {
-						if collector.checkArtifact(str) {
-							filteredChildren = append(filteredChildren, str)
-						}
-					}
-
-					var attachmentPostfix string
-					if index == 0 {
-						attachmentPostfix = "current"
-					} else {
-						attachmentPostfix = "before"
-					}
-
-					for _, str := range filteredChildren {
-						artifact := teamCityArtifact{
-							BuildId:      buildId,
-							ArtifactPath: testArtifactPath + "/" + str,
-							FileName:     getAttachmentName(str, attachmentPostfix),
-						}
-						uploadWg.Go(func() {
-							resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
-							if err != nil {
-								logAndAddException("Failed to download artifact from TeamCity", err)
-								return
-							}
-							defer resp.Body.Close()
-
-							err = youtrackClient.UploadAttachment(ctx, params.IssueId, resp.Body, artifact.FileName, resp.ContentLength)
-							if err != nil {
-								logAndAddException("Failed to upload attachment", err)
-							} else {
-								addSuccess(artifact.FileName)
-							}
-						})
-					}
-				})
-			}
-			wg.Wait()
-		}
-
-		uploadWg.Wait()
+		ProcessAndUploadArtifacts(ctx, params, config)
 
 		if len(response.Exceptions) > 0 {
 			if len(response.Uploads) > 0 {
@@ -354,10 +283,7 @@ func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 			} else {
 				writer.WriteHeader(http.StatusInternalServerError)
 			}
-			_ = marshalAndWriteIssueResponse(writer, response)
-			return
 		}
-
 		_ = marshalAndWriteIssueResponse(writer, response)
 	}
 }

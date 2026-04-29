@@ -119,37 +119,26 @@
           </div>
         </div>
         <div
-          v-if="llmAnalysisState !== LlmAnalysisState.NOT_STARTED"
+          v-if="llmAnalysisDisplay.active"
           class="flex justify-between items-center mt-10"
         >
           <div>
             LLM Analysis:
-            <template v-if="llmAnalysisState === LlmAnalysisState.PREPARING"> preparation... </template>
+            <template v-if="llmAnalysisDisplay.preparing"> preparation... </template>
             <a
-              v-else-if="llmAnalysisState === LlmAnalysisState.DONE && llmAnalysisBuildUrl.length > 0"
+              v-else-if="llmAnalysisDisplay.done && llmAnalysisBuildUrl.length > 0"
               target="_blank"
               class="link-like-text"
               :href="llmAnalysisBuildUrl"
             >
               View TC Build
             </a>
-            <template v-else-if="llmAnalysisState === LlmAnalysisState.FAILED"> failed </template>
+            <template v-else-if="llmAnalysisDisplay.failed"> failed </template>
           </div>
           <div class="icon-wrapper">
-            <i
-              v-if="llmAnalysisState === LlmAnalysisState.PREPARING"
-              class="pi pi-spin pi-spinner"
-            ></i>
-            <i
-              v-else-if="llmAnalysisState === LlmAnalysisState.DONE"
-              class="pi pi-verified"
-            ></i>
-            <i
-              v-else-if="llmAnalysisState === LlmAnalysisState.FAILED"
-              class="pi pi-times-circle"
-            ></i>
+            <i :class="llmAnalysisDisplay.icon"></i>
             <span
-              v-if="llmAnalysisState === LlmAnalysisState.DONE"
+              v-if="llmAnalysisDisplay.done"
               class="tooltip-text"
               >Experimental feature, the results will be published to YT ticket</span
             >
@@ -160,11 +149,11 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { Ref, ref } from "vue"
+import { computed, Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
-import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
+import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
@@ -174,7 +163,7 @@ import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
-import { SpaceClient } from "../space/SpaceClient"
+import { uploadAttachments, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/uploadAttachmentsUtils"
 
 enum ProgressState {
   NOT_STARTED,
@@ -201,7 +190,6 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
-const spaceClient = new SpaceClient(serverConfigurator)
 const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
@@ -212,6 +200,15 @@ const llmAnalysisBuildUrl = ref("")
 const llmAnalysisState = ref(LlmAnalysisState.NOT_STARTED)
 const progressState = ref(ProgressState.NOT_STARTED)
 const label = ref(generateLabel())
+
+const llmAnalysisDisplay = computed(() => ({
+  active: llmAnalysisState.value !== LlmAnalysisState.NOT_STARTED,
+  preparing: llmAnalysisState.value === LlmAnalysisState.PREPARING,
+  done: llmAnalysisState.value === LlmAnalysisState.DONE,
+  failed: llmAnalysisState.value === LlmAnalysisState.FAILED,
+  icon:
+    llmAnalysisState.value === LlmAnalysisState.PREPARING ? "pi pi-spin pi-spinner" : llmAnalysisState.value === LlmAnalysisState.DONE ? "pi pi-verified" : "pi pi-times-circle",
+}))
 
 function generateLabel(): string {
   if (data == null || accident == null) return ""
@@ -339,8 +336,7 @@ async function createTicket() {
   }
 
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
-  youtrackClient
-    .uploadAttachments(attachmentsInfo)
+  uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.YouTrack)
     .then((response) => {
       progressState.value = ProgressState.FINISHED
       if (response.exceptions?.length) {
@@ -355,6 +351,7 @@ async function createTicket() {
       return response
     })
     .catch((error: unknown) => {
+      progressState.value = ProgressState.FINISHED
       console.error("YouTrack attachment upload failed:", error)
       const errorMessage = error instanceof Error ? error.message : String(error)
       toast.add({
@@ -369,8 +366,7 @@ async function createTicket() {
   if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING
 
-    spaceClient
-      .uploadAttachments(attachmentsInfo)
+    uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.Space)
       .then(async (response) => {
         try {
           const llmAnalysisRequest: LlmAnalysisRequest = {

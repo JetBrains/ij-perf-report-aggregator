@@ -83,7 +83,7 @@
                 <InputText
                   id="requester"
                   v-model="requester"
-                  :disabeld="requester !== undefined && requester !== ''"
+                  :disabled="!!userEmail"
                 />
                 <label for="requester">Requester</label>
               </FloatLabel>
@@ -203,7 +203,8 @@ const buildType = computedAsync(
   null
 )
 const buildId = ref(data.buildId.toString())
-const requester = ref(useUserStore().user?.email)
+const userEmail = useUserStore().user?.email
+const requester = ref(userEmail)
 const methodName = data.description.value?.methodName ?? ""
 const fullClassName = ref(methodName.slice(0, Math.max(0, methodName.lastIndexOf("#"))))
 const targetValue: Ref<string | null> = ref(null)

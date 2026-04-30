@@ -79,7 +79,7 @@
                         id="requester"
                         v-model="email"
                         class="w-full"
-                        :disabled="email !== undefined && email !== ''"
+                        :disabled="!!userEmail"
                       />
                       <label for="requester">Requester</label>
                     </FloatLabel>
@@ -212,7 +212,8 @@ async function startBisect() {
   }
 }
 
-const email = computed(() => useUserStore().user?.email)
+const userEmail = useUserStore().user?.email
+const email = ref(userEmail)
 onMounted(async () => {
   try {
     const changes = await bisectClient.fetchTeamCityChanges(buildId)

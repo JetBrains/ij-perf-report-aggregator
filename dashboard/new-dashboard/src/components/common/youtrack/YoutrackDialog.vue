@@ -216,6 +216,22 @@ function generateLabel(): string {
   if (accident.reason !== defaultReason) return accident.reason
   return `${accident.kind} ${defaultReason} ${data.mode ? `on ${data.mode} mode` : ""}`
 }
+
+function reportAttachmentFailure(message: string, error?: unknown) {
+  let detail = message
+  if (error !== undefined) {
+    console.error(message, error)
+    detail = `${message}: ${error instanceof Error ? error.message : String(error)}`
+  }
+  toast.add({
+    severity: "error",
+    summary: "Attachment Upload Failed",
+    detail,
+    life: 8000,
+  })
+  attachmentException.value = true
+  progressState.value = ProgressState.FINISHED
+}
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
 
@@ -312,55 +328,46 @@ async function createTicket() {
   }
   if (accident.kind != AccidentKind.Exception) {
     attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
-    attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
-      .then((res) => res.blob())
-      .then((blob) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader()
+    try {
+      attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
+        .then((res) => res.blob())
+        .then((blob) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
 
-          reader.addEventListener("loadend", () => {
-            if (typeof reader.result === "string") {
-              resolve(reader.result.split(",")[1])
-            } else {
-              reject(new Error("FileReader result is not a string"))
-            }
+            reader.addEventListener("loadend", () => {
+              if (typeof reader.result === "string") {
+                resolve(reader.result.split(",")[1])
+              } else {
+                reject(new Error("FileReader result is not a string"))
+              }
+            })
+
+            reader.addEventListener("error", () => {
+              reject(new Error("Error reading blob as data URL"))
+            })
+
+            reader.readAsDataURL(blob)
           })
-
-          reader.addEventListener("error", () => {
-            reject(new Error("Error reading blob as data URL"))
-          })
-
-          reader.readAsDataURL(blob)
         })
-      })
+    } catch (error: unknown) {
+      reportAttachmentFailure("Failed to prepare chart for upload", error)
+      return
+    }
   }
 
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
   uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.YouTrack)
     .then((response) => {
-      progressState.value = ProgressState.FINISHED
       if (response.exceptions?.length) {
-        toast.add({
-          severity: "error",
-          summary: "Attachment Upload Failed",
-          detail: `Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`,
-          life: 8000,
-        })
-        attachmentException.value = true
+        reportAttachmentFailure(`Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`)
+      } else {
+        progressState.value = ProgressState.FINISHED
       }
       return response
     })
     .catch((error: unknown) => {
-      progressState.value = ProgressState.FINISHED
-      console.error("YouTrack attachment upload failed:", error)
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      toast.add({
-        severity: "error",
-        summary: "Attachment Upload Failed",
-        detail: `Failed to upload attachments to YouTrack: ${errorMessage}`,
-        life: 8000,
-      })
-      attachmentException.value = true
+      reportAttachmentFailure("Failed to upload attachments to YouTrack", error)
     })
 
   if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {

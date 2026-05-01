@@ -129,6 +129,20 @@ func (m *PrometheusMetrics) Middleware(next http.Handler) http.Handler {
 	})
 }
 
+func (m *PrometheusMetrics) ObserveCacheLookup(result string) {
+	if m == nil {
+		return
+	}
+	m.responseCacheRequestsTotal.WithLabelValues(result).Inc()
+}
+
+func (m *PrometheusMetrics) ObserveCacheClear() {
+	if m == nil {
+		return
+	}
+	m.responseCacheClearsTotal.Inc()
+}
+
 func (m *PrometheusMetrics) shouldRecordUser(user string, now time.Time) bool {
 	m.userSeenMu.Lock()
 	defer m.userSeenMu.Unlock()
@@ -145,20 +159,6 @@ func userLabel(email string) string {
 		return email[:at]
 	}
 	return email
-}
-
-func (m *PrometheusMetrics) ObserveCacheLookup(result string) {
-	if m == nil {
-		return
-	}
-	m.responseCacheRequestsTotal.WithLabelValues(result).Inc()
-}
-
-func (m *PrometheusMetrics) ObserveCacheClear() {
-	if m == nil {
-		return
-	}
-	m.responseCacheClearsTotal.Inc()
 }
 
 func routePattern(r *http.Request) string {

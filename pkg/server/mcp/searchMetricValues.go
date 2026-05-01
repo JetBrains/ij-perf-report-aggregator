@@ -60,14 +60,14 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	perTable := func(r tableRef) (string, []any) {
 		var sb strings.Builder
 		fmt.Fprintf(&sb,
-			"select '%s' as db_name, '%s' as table_name, "+
-				"toString(generated_time) as gen_time, tc_build_id as build_id, "+
+			"select ? as db_name, ? as table_name, "+
+				"generated_time as gen_time, tc_build_id as build_id, "+
 				"toFloat64(`measures.value`[idx]) as value "+
 				"from %s.%s array join arrayEnumerate(`measures.name`) as idx "+
 				"where project = ? and `measures.name`[idx] = ? "+
 				"and generated_time > subtractDays(now(), ?)",
-			r.Database, r.Table, quoteIdentifier(r.Database), quoteIdentifier(r.Table))
-		args := []any{in.Project, in.MetricName, days}
+			quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+		args := []any{r.Database, r.Table, in.Project, in.MetricName, days}
 		if in.Branch != "" {
 			sb.WriteString(" and branch = ?")
 			args = append(args, in.Branch)
@@ -80,7 +80,7 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	}
 
 	innerSQL, args := buildUnion(tables, perTable)
-	sql := "select db_name, table_name, gen_time, build_id, value from (" +
+	sql := "select db_name, table_name, toString(gen_time) as gen_time, build_id, value from (" +
 		innerSQL + ") as u order by gen_time desc limit ?"
 	args = append(args, limit)
 

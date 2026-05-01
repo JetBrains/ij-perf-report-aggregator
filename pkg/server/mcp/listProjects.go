@@ -42,9 +42,9 @@ func (s *service) listProjects(ctx context.Context, _ *sdk.CallToolRequest, in l
 
 	perTable := func(r tableRef) (string, []any) {
 		var sb strings.Builder
-		fmt.Fprintf(&sb, "select distinct '%s' as db_name, '%s' as table_name, project as project_name from %s.%s where generated_time > subtractDays(now(), ?)",
-			r.Database, r.Table, quoteIdentifier(r.Database), quoteIdentifier(r.Table))
-		args := []any{days}
+		fmt.Fprintf(&sb, "select distinct ? as db_name, ? as table_name, project as project_name from %s.%s where generated_time > subtractDays(now(), ?)",
+			quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+		args := []any{r.Database, r.Table, days}
 		if in.Branch != "" {
 			sb.WriteString(" and branch = ?")
 			args = append(args, in.Branch)

@@ -156,6 +156,9 @@ func (s *service) resolveTables(ctx context.Context, db, table string) ([]tableR
 		return nil, err
 	}
 	if db == "" && table == "" {
+		if len(all) == 0 {
+			return nil, fmt.Errorf("no known tables available")
+		}
 		return all, nil
 	}
 	out := make([]tableRef, 0, 4)
@@ -222,7 +225,7 @@ func validateIdentifier(field, value string) error {
 	}
 	for _, r := range value {
 		if !(r == '_' || (r >= '0' && r <= '9') || (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')) {
-			return fmt.Errorf("%s contains invalid character: %q", field, value)
+			return fmt.Errorf("%s contains invalid character %q", field, r)
 		}
 	}
 	return nil

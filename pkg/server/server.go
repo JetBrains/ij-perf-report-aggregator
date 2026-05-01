@@ -16,6 +16,7 @@ import (
 
 	"github.com/ClickHouse/ch-go"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/mcp"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/andybalholm/brotli"
@@ -132,6 +133,8 @@ func Serve(dbUrl string, natsUrl string) error {
 
 	router.Post("/api/evaluateMetric*", statsServer.CreateProcessMetricDataHandler())
 	router.Post("/api/compareByOwner", statsServer.CreateCompareByOwnerHandler(dbpool))
+
+	mcp.Register(dbUrl, router.Handle)
 
 	router.Group(func(r chi.Router) {
 		compressor := middleware.NewCompressor(5)

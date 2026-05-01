@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
@@ -146,6 +147,63 @@ func TestPrometheusMetricsEndpointCollapsesWildcardRoutes(t *testing.T) {
 	metricsText := metricsBody(t, router)
 	if strings.Contains(metricsText, requestPath) {
 		t.Fatalf("metrics output leaked raw request path %q", requestPath)
+	}
+}
+
+func TestPrometheusMetricsDebouncesUserRequests(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+
+	router := chi.NewRouter()
+	router.Use(metrics.Middleware)
+	router.Handle("/metrics", metrics.Handler())
+	router.Get("/test", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	send := func() {
+		req := httptest.NewRequest(http.MethodGet, "/test", http.NoBody)
+		req.Header.Set("X-Auth-Request-Email", "Alice@example.com")
+		router.ServeHTTP(httptest.NewRecorder(), req)
+	}
+
+	for range 5 {
+		send()
+	}
+
+	userLabels := map[string]string{"user": "alice"}
+	if got := getCounterValue(t, scrapeMetrics(t, router)["ij_perf_http_user_requests_total"], userLabels); got != 1 {
+		t.Fatalf("debounced user counter: got %v, want 1", got)
+	}
+
+	metrics.userSeenMu.Lock()
+	metrics.userLastSeen["alice"] = time.Now().Add(-2 * metrics.userSeenWindow)
+	metrics.userSeenMu.Unlock()
+	send()
+
+	if got := getCounterValue(t, scrapeMetrics(t, router)["ij_perf_http_user_requests_total"], userLabels); got != 2 {
+		t.Fatalf("user counter after window elapsed: got %v, want 2", got)
+	}
+}
+
+func TestPrometheusMetricsSkipsAnonymousUserRequests(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+
+	router := chi.NewRouter()
+	router.Use(metrics.Middleware)
+	router.Handle("/metrics", metrics.Handler())
+	router.Get("/test", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	router.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/test", http.NoBody))
+
+	metricsText := metricsBody(t, router)
+	if strings.Contains(metricsText, "ij_perf_http_user_requests_total") {
+		t.Fatalf("anonymous request produced ij_perf_http_user_requests_total series:\n%s", metricsText)
 	}
 }
 

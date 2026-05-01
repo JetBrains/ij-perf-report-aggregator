@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -20,9 +21,14 @@ type PrometheusMetrics struct {
 	inFlightRequests    prometheus.Gauge
 	httpRequestsTotal   *prometheus.CounterVec
 	httpRequestDuration *prometheus.HistogramVec
+	httpUserRequests    *prometheus.CounterVec
 
 	responseCacheRequestsTotal *prometheus.CounterVec
 	responseCacheClearsTotal   prometheus.Counter
+
+	userSeenWindow time.Duration
+	userSeenMu     sync.Mutex
+	userLastSeen   map[string]time.Time
 }
 
 const maxRouteLabelLength = 64
@@ -52,6 +58,12 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 			Help:      "Latency of HTTP requests handled by the backend.",
 			Buckets:   []float64{0.01, 0.025, 0.05, .1, .25, .5, 1, 2.5, 5, 10, 30, 60, 120, 300},
 		}, []string{"method", "route", "status_code"}),
+		httpUserRequests: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "ij_perf",
+			Subsystem: "http",
+			Name:      "user_requests_total",
+			Help:      "Active-user activity counter, debounced to roughly one increment per user per minute so it isn't dominated by chatty page loads. Only authenticated requests (with X-Auth-Request-Email) are counted. Label is the local-part of the email. Use count(count by (user) (rate(...[5m]))) for unique active users.",
+		}, []string{"user"}),
 		responseCacheRequestsTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "ij_perf",
 			Subsystem: "response_cache",
@@ -64,6 +76,8 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 			Name:      "clears_total",
 			Help:      "Total number of response-cache clear operations.",
 		}),
+		userSeenWindow: time.Minute,
+		userLastSeen:   make(map[string]time.Time),
 	}
 
 	registry.MustRegister(
@@ -72,6 +86,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 		metrics.inFlightRequests,
 		metrics.httpRequestsTotal,
 		metrics.httpRequestDuration,
+		metrics.httpUserRequests,
 		metrics.responseCacheRequestsTotal,
 		metrics.responseCacheClearsTotal,
 	)
@@ -107,7 +122,29 @@ func (m *PrometheusMetrics) Middleware(next http.Handler) http.Handler {
 
 		m.httpRequestsTotal.With(labels).Inc()
 		m.httpRequestDuration.With(labels).Observe(time.Since(start).Seconds())
+
+		if user := userLabel(r.Header.Get("X-Auth-Request-Email")); user != "" && m.shouldRecordUser(user, time.Now()) {
+			m.httpUserRequests.WithLabelValues(user).Inc()
+		}
 	})
+}
+
+func (m *PrometheusMetrics) shouldRecordUser(user string, now time.Time) bool {
+	m.userSeenMu.Lock()
+	defer m.userSeenMu.Unlock()
+	if last, ok := m.userLastSeen[user]; ok && now.Sub(last) < m.userSeenWindow {
+		return false
+	}
+	m.userLastSeen[user] = now
+	return true
+}
+
+func userLabel(email string) string {
+	email = strings.ToLower(email)
+	if at := strings.IndexByte(email, '@'); at > 0 {
+		return email[:at]
+	}
+	return email
 }
 
 func (m *PrometheusMetrics) ObserveCacheLookup(result string) {

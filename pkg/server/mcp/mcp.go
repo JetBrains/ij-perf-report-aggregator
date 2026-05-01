@@ -5,6 +5,7 @@ package mcp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -157,7 +158,7 @@ func (s *service) resolveTables(ctx context.Context, db, table string) ([]tableR
 	}
 	if db == "" && table == "" {
 		if len(all) == 0 {
-			return nil, fmt.Errorf("no known tables available")
+			return nil, errors.New("no known tables available")
 		}
 		return all, nil
 	}

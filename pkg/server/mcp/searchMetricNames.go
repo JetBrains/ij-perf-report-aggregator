@@ -47,9 +47,9 @@ func (s *service) searchMetricNames(ctx context.Context, _ *sdk.CallToolRequest,
 
 	perTable := func(r tableRef) (string, []any) {
 		var sb strings.Builder
-		fmt.Fprintf(&sb, "select '%s' as db_name, '%s' as table_name, arrayJoin(`measures.name`) as metric_name from %s.%s where generated_time > subtractDays(now(), ?) and project = ?",
-			r.Database, r.Table, quoteIdentifier(r.Database), quoteIdentifier(r.Table))
-		args := []any{days, in.Project}
+		fmt.Fprintf(&sb, "select ? as db_name, ? as table_name, arrayJoin(`measures.name`) as metric_name from %s.%s where generated_time > subtractDays(now(), ?) and project = ?",
+			quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+		args := []any{r.Database, r.Table, days, in.Project}
 		if in.Branch != "" {
 			sb.WriteString(" and branch = ?")
 			args = append(args, in.Branch)

@@ -53,6 +53,14 @@ func Register(dbUrl string, handle func(string, http.Handler)) {
 		Description: "List all (database, table) pairs the server can query. Useful as a discovery starting point.",
 	}, s.listTablesTool)
 
+	sdk.AddTool(server, &sdk.Tool{
+		Name: "get_build",
+		Description: "Look up a TeamCity build by its tc_build_id. Returns build-level metadata at the response root " +
+			"(branch, build_time, machine, teamcity_url, first_commit, last_commit) and the list of distinct " +
+			"(database, table, project) tuples this build produced data for. Use search_metric_values afterwards " +
+			"to fetch actual measurements for any project of interest.",
+	}, s.getBuild)
+
 	// Stateless mode: each HTTP request is independent so the handler works behind a
 	// load balancer with multiple replicas (the in-memory session map is otherwise
 	// per-pod and breaks across round-robin requests).
@@ -75,8 +83,10 @@ type service struct {
 const tablesTTL = 10 * time.Minute
 
 type tableRef struct {
-	Database string `json:"database"`
-	Table    string `json:"table"`
+	Database       string `json:"database"`
+	Table          string `json:"table"`
+	HasBuildTime   bool   `json:"-"`
+	HasInstallerID bool   `json:"-"`
 }
 
 func (s *service) openConnection(database string) (driver.Conn, error) {
@@ -111,9 +121,11 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	defer conn.Close()
 
 	rows, err := conn.Query(ctx, `
-		select database, table
+		select database, table,
+		       sum(name = 'build_time') > 0 as has_build_time,
+		       sum(name = 'tc_installer_build_id') > 0 as has_installer_id
 		from system.columns
-		where name in ('measures.name', 'project')
+		where name in ('measures.name', 'project', 'build_time', 'tc_installer_build_id')
 		group by database, table
 		having sum(name = 'measures.name') > 0 and sum(name = 'project') > 0
 		order by database, table
@@ -126,7 +138,7 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	out := make([]tableRef, 0, 64)
 	for rows.Next() {
 		var r tableRef
-		if err := rows.Scan(&r.Database, &r.Table); err != nil {
+		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID); err != nil {
 			return nil, fmt.Errorf("scan: %w", err)
 		}
 		out = append(out, r)

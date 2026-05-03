@@ -357,7 +357,7 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/c6i/
     // noinspection SpellCheckingInspection
     groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-  } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-")) {
+  } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-") || machine.startsWith("intellij-linux-performance-tiny-aws-on-demand-i-")) {
     // https://aws.amazon.com/ec2/instance-types/c6i/
     // noinspection SpellCheckingInspection
     groupName = "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"

@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -36,28 +37,21 @@ func (s *service) searchMetricNames(ctx context.Context, _ *sdk.CallToolRequest,
 		return nil, searchMetricNamesOutput{}, errors.New("project is required")
 	}
 	if in.Branch == "" {
-		in.Branch = "master"
+		in.Branch = defaultBranch
 	}
 	tables, err := s.resolveTables(ctx, in.Database, in.Table)
 	if err != nil {
 		return nil, searchMetricNamesOutput{}, err
 	}
-	days := clamp(in.Days, 365, 30)
-	limit := clamp(in.Limit, 5000, 500)
+	days := min(max(cmp.Or(in.Days, 30), 1), 365)
+	limit := min(max(cmp.Or(in.Limit, 500), 1), 5000)
 
 	perTable := func(r tableRef) (string, []any) {
 		var sb strings.Builder
 		fmt.Fprintf(&sb, "select ? as db_name, ? as table_name, arrayJoin(`measures.name`) as metric_name from %s.%s where generated_time > subtractDays(now(), ?) and project = ?",
-			quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+			r.Database, r.Table)
 		args := []any{r.Database, r.Table, days, in.Project}
-		if in.Branch != "" {
-			sb.WriteString(" and branch = ?")
-			args = append(args, in.Branch)
-		}
-		if in.Machine != "" {
-			sb.WriteString(" and machine like ?")
-			args = append(args, in.Machine)
-		}
+		args = appendBranchMachine(&sb, args, in.Branch, in.Machine)
 		return sb.String(), args
 	}
 
@@ -70,11 +64,10 @@ func (s *service) searchMetricNames(ctx context.Context, _ *sdk.CallToolRequest,
 	sql += " order by db_name, table_name, metric_name limit ?"
 	args = append(args, limit)
 
-	rows, conn, err := s.query(ctx, sql, args)
+	rows, err := s.db.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, searchMetricNamesOutput{}, err
+		return nil, searchMetricNamesOutput{}, fmt.Errorf("search_metric_names: %w", err)
 	}
-	defer conn.Close()
 	defer rows.Close()
 
 	out := searchMetricNamesOutput{Rows: make([]metricNameRow, 0, 64)}

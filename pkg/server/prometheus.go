@@ -29,6 +29,7 @@ type PrometheusMetrics struct {
 	userSeenWindow time.Duration
 	userSeenMu     sync.Mutex
 	userLastSeen   map[string]time.Time
+	now            func() time.Time
 }
 
 const maxRouteLabelLength = 64
@@ -78,6 +79,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 		}),
 		userSeenWindow: time.Minute,
 		userLastSeen:   make(map[string]time.Time),
+		now:            time.Now,
 	}
 
 	registry.MustRegister(
@@ -123,7 +125,7 @@ func (m *PrometheusMetrics) Middleware(next http.Handler) http.Handler {
 		m.httpRequestsTotal.With(labels).Inc()
 		m.httpRequestDuration.With(labels).Observe(time.Since(start).Seconds())
 
-		if user := userLabel(r.Header.Get("X-Auth-Request-Email")); user != "" && m.shouldRecordUser(user, time.Now()) {
+		if user := userLabel(r.Header.Get("X-Auth-Request-Email")); user != "" && m.shouldRecordUser(user, m.now()) {
 			m.httpUserRequests.WithLabelValues(user).Inc()
 		}
 	})

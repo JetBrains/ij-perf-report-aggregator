@@ -154,6 +154,8 @@ func TestPrometheusMetricsDebouncesUserRequests(t *testing.T) {
 	t.Parallel()
 
 	metrics := NewPrometheusMetrics()
+	fakeNow := time.Now()
+	metrics.now = func() time.Time { return fakeNow }
 
 	router := chi.NewRouter()
 	router.Use(metrics.Middleware)
@@ -177,9 +179,7 @@ func TestPrometheusMetricsDebouncesUserRequests(t *testing.T) {
 		t.Fatalf("debounced user counter: got %v, want 1", got)
 	}
 
-	metrics.userSeenMu.Lock()
-	metrics.userLastSeen["alice"] = time.Now().Add(-2 * metrics.userSeenWindow)
-	metrics.userSeenMu.Unlock()
+	fakeNow = fakeNow.Add(2 * metrics.userSeenWindow)
 	send()
 
 	if got := getCounterValue(t, scrapeMetrics(t, router)["ij_perf_http_user_requests_total"], userLabels); got != 2 {

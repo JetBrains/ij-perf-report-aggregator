@@ -33,6 +33,7 @@ type PrometheusMetrics struct {
 }
 
 const maxRouteLabelLength = 64
+const maxUserLabelLength = 64
 
 var chiPathParamPattern = regexp.MustCompile(`\{[^}/]+\}`)
 
@@ -155,12 +156,35 @@ func (m *PrometheusMetrics) shouldRecordUser(user string, now time.Time) bool {
 	return true
 }
 
+const userEmailDomain = "@jetbrains.com"
+
+// userLabel extracts a Prometheus-safe user label from X-Auth-Request-Email.
+// Restricted to @jetbrains.com to bound label cardinality (the auth proxy
+// gates the header, but defense-in-depth keeps a misconfigured upstream from
+// growing userLastSeen and the metric series unboundedly).
 func userLabel(email string) string {
-	email = strings.ToLower(email)
-	if at := strings.IndexByte(email, '@'); at > 0 {
-		return email[:at]
+	if email == "" {
+		return ""
 	}
-	return email
+	email = strings.ToLower(email)
+	if !strings.HasSuffix(email, userEmailDomain) {
+		return ""
+	}
+	local := email[:len(email)-len(userEmailDomain)]
+	if local == "" || len(local) > maxUserLabelLength || !isValidLocalPart(local) {
+		return ""
+	}
+	return local
+}
+
+func isValidLocalPart(s string) bool {
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.' || c == '-' || c == '_') {
+			return false
+		}
+	}
+	return true
 }
 
 func routePattern(r *http.Request) string {

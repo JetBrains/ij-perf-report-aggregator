@@ -166,7 +166,7 @@ func TestPrometheusMetricsDebouncesUserRequests(t *testing.T) {
 
 	send := func() {
 		req := httptest.NewRequest(http.MethodGet, "/test", http.NoBody)
-		req.Header.Set("X-Auth-Request-Email", "Alice@example.com")
+		req.Header.Set("X-Auth-Request-Email", "Alice@jetbrains.com")
 		router.ServeHTTP(httptest.NewRecorder(), req)
 	}
 
@@ -204,6 +204,33 @@ func TestPrometheusMetricsSkipsAnonymousUserRequests(t *testing.T) {
 	metricsText := metricsBody(t, router)
 	if strings.Contains(metricsText, "ij_perf_http_user_requests_total") {
 		t.Fatalf("anonymous request produced ij_perf_http_user_requests_total series:\n%s", metricsText)
+	}
+}
+
+func TestUserLabel(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		email string
+		want  string
+	}{
+		{"alice@jetbrains.com", "alice"},
+		{"Alice.Smith@JetBrains.com", "alice.smith"},
+		{"first_last-1@jetbrains.com", "first_last-1"},
+		{strings.Repeat("a", 64) + "@jetbrains.com", strings.Repeat("a", 64)},
+		{strings.Repeat("a", 65) + "@jetbrains.com", ""},
+		{"alice@example.com", ""},
+		{"alice@evil.com.jetbrains.com.attacker.com", ""},
+		{"@jetbrains.com", ""},
+		{"alice b@jetbrains.com", ""},
+		{"a/b@jetbrains.com", ""},
+		{"", ""},
+		{"not-an-email", ""},
+	}
+	for _, c := range cases {
+		if got := userLabel(c.email); got != c.want {
+			t.Errorf("userLabel(%q) = %q, want %q", c.email, got, c.want)
+		}
 	}
 }
 

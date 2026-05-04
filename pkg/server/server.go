@@ -134,7 +134,9 @@ func Serve(dbUrl string, natsUrl string) error {
 	router.Post("/api/evaluateMetric*", statsServer.CreateProcessMetricDataHandler())
 	router.Post("/api/compareByOwner", statsServer.CreateCompareByOwnerHandler(dbpool))
 
-	mcp.Register(dbUrl, router.Handle)
+	if err := mcp.Register(dbUrl, router.Handle); err != nil {
+		return err
+	}
 
 	router.Group(func(r chi.Router) {
 		compressor := middleware.NewCompressor(5)

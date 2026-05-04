@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -56,7 +57,7 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 		// Only tables with tc_installer_build_id can join the per-database `installer`
 		// table. Others get an empty Array(String) so UNION ALL columns line up.
 		commitsExpr := "[]::Array(String) as installer_changes"
-		fromExpr := fmt.Sprintf("from %s.%s", quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+		fromExpr := fmt.Sprintf("from %s.%s", r.Database, r.Table)
 		whereExpr := "where tc_build_id = ?"
 		args := []any{r.Database, r.Table, in.BuildID}
 		if r.HasInstallerID {
@@ -67,9 +68,7 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 				"from %s.%s r left join (select id, changes from %s.installer where id in "+
 					"(select tc_installer_build_id from %s.%s where tc_build_id = ?)) i "+
 					"on r.tc_installer_build_id = i.id",
-				quoteIdentifier(r.Database), quoteIdentifier(r.Table),
-				quoteIdentifier(r.Database),
-				quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+				r.Database, r.Table, r.Database, r.Database, r.Table)
 			whereExpr = "where r.tc_build_id = ?"
 			args = []any{r.Database, r.Table, in.BuildID, in.BuildID}
 		}
@@ -92,11 +91,10 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 		"bld_time, installer_changes " +
 		"from (" + innerSQL + ") as u order by gen_time desc"
 
-	rows, conn, err := s.query(ctx, sql, args)
+	rows, err := s.db.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, getBuildOutput{}, err
+		return nil, getBuildOutput{}, fmt.Errorf("get_build: %w", err)
 	}
-	defer conn.Close()
 	defer rows.Close()
 
 	out := getBuildOutput{
@@ -174,18 +172,15 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 // caller treats absent commits as "this build doesn't expose them".
 func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID int64) []string {
 	if err := validateIdentifier("database", db); err != nil {
+		slog.Warn("mcp: skipping installer fallback, invalid database identifier", "db", db, "err", err)
 		return nil
 	}
-	conn, err := s.openConnection("system")
-	if err != nil {
-		return nil
-	}
-	defer conn.Close()
 	sql := fmt.Sprintf(
 		"select arrayMap(c -> toString(c), changes) from %s.installer where id = ? limit 1",
-		quoteIdentifier(db))
-	rows, err := conn.Query(ctx, sql, buildID)
+		db)
+	rows, err := s.db.Query(ctx, sql, buildID)
 	if err != nil {
+		slog.Warn("mcp: installer fallback query failed", "db", db, "build_id", buildID, "err", err)
 		return nil
 	}
 	defer rows.Close()
@@ -194,38 +189,33 @@ func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID 
 	}
 	var changes []string
 	if err := rows.Scan(&changes); err != nil {
+		slog.Warn("mcp: installer fallback scan failed", "db", db, "build_id", buildID, "err", err)
 		return nil
 	}
 	return changes
-}
-
-// commitRange returns the (first, last) commit pair from an installer changes array.
-// The collector stores commits newest-first as base64 raw-std SHA1 bytes; we decode
-// to hex and truncate (see shortCommitLen) to keep LLM token usage low.
-func commitRange(changes []string) (string, string) {
-	if len(changes) == 0 {
-		return "", ""
-	}
-	first := decodeCommit(changes[len(changes)-1])
-	last := decodeCommit(changes[0])
-	return first, last
 }
 
 // shortCommitLen matches git's default short SHA length — long enough to be
 // unambiguous in IntelliJ-sized repos while keeping LLM token cost low.
 const shortCommitLen = 12
 
-func decodeCommit(s string) string {
-	if s == "" {
-		return ""
+// commitRange returns the (oldest, newest) commit pair from an installer changes
+// array. The collector stores commits newest-first as base64 raw-std SHA-1 bytes;
+// we decode to hex and truncate. A non-base64 input is returned as-is so a future
+// format switch (e.g. raw hex) doesn't silently corrupt output.
+func commitRange(changes []string) (string, string) {
+	if len(changes) == 0 {
+		return "", ""
 	}
-	b, err := base64.RawStdEncoding.DecodeString(s)
-	if err != nil {
-		return s
+	decode := func(s string) string {
+		if s == "" {
+			return ""
+		}
+		b, err := base64.RawStdEncoding.DecodeString(s)
+		if err != nil {
+			return s
+		}
+		return hex.EncodeToString(b)[:min(len(b)*2, shortCommitLen)]
 	}
-	full := hex.EncodeToString(b)
-	if len(full) > shortCommitLen {
-		return full[:shortCommitLen]
-	}
-	return full
+	return decode(changes[len(changes)-1]), decode(changes[0])
 }

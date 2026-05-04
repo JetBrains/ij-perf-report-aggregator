@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"sync"
@@ -17,12 +18,77 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Register builds the MCP server, registers the tools, and mounts the Streamable HTTP handler
-// at /api/mcp (and /api/mcp/* for session continuation) on the given handle function.
-// The /api/ prefix matches the existing ingress routing used by the deployed backend.
-func Register(dbUrl string, handle func(string, http.Handler)) {
-	s := &service{dbUrl: dbUrl}
+// chConn is the narrow slice of clickhouse-go that the MCP service depends on.
+// Production wires a real driver.Conn via driverConnAdapter; tests pass a fake.
+type chConn interface {
+	Query(ctx context.Context, query string, args ...any) (chRows, error)
+	Close() error
+}
 
+// chRows is the subset of driver.Rows used by tools (Next/Scan/Err/Close only).
+type chRows interface {
+	Next() bool
+	Scan(dest ...any) error
+	Err() error
+	Close() error
+}
+
+// Register opens a long-lived ClickHouse connection pool, builds the MCP server,
+// and mounts the Streamable HTTP handler at /api/mcp (and /api/mcp/* for session
+// continuation) on the given handle function. The /api/ prefix matches the
+// existing ingress routing used by the deployed backend.
+func Register(dbUrl string, handle func(string, http.Handler)) error {
+	conn, err := clickhouse.Open(&clickhouse.Options{
+		Addr: []string{dbUrl},
+		Auth: clickhouse.Auth{Database: "system"},
+		Settings: map[string]any{
+			"readonly":         1,
+			"max_query_size":   1000000,
+			"max_memory_usage": 3221225472,
+		},
+		DialTimeout:     5 * time.Second,
+		ConnMaxLifetime: time.Hour,
+	})
+	if err != nil {
+		return fmt.Errorf("mcp: open clickhouse: %w", err)
+	}
+	s := newService(driverConnAdapter{conn: conn})
+	server := s.buildServer()
+
+	// Stateless mode: each HTTP request is independent so the handler works behind a
+	// load balancer with multiple replicas (the in-memory session map is otherwise
+	// per-pod and breaks across round-robin requests).
+	handler := sdk.NewStreamableHTTPHandler(
+		func(*http.Request) *sdk.Server { return server },
+		&sdk.StreamableHTTPOptions{Stateless: true},
+	)
+	handle("/api/mcp", handler)
+	handle("/api/mcp/*", handler)
+	return nil
+}
+
+type service struct {
+	db chConn
+
+	tablesMu     sync.Mutex
+	tablesCache  []tableRef
+	tablesCached time.Time
+}
+
+const tablesTTL = 10 * time.Minute
+
+type tableRef struct {
+	Database       string `json:"database"`
+	Table          string `json:"table"`
+	HasBuildTime   bool   `json:"-"`
+	HasInstallerID bool   `json:"-"`
+}
+
+func newService(db chConn) *service {
+	return &service{db: db}
+}
+
+func (s *service) buildServer() *sdk.Server {
 	server := sdk.NewServer(&sdk.Implementation{
 		Name:    "ij-perf-report-aggregator",
 		Version: "v1.0.0",
@@ -61,66 +127,34 @@ func Register(dbUrl string, handle func(string, http.Handler)) {
 			"to fetch actual measurements for any project of interest.",
 	}, s.getBuild)
 
-	// Stateless mode: each HTTP request is independent so the handler works behind a
-	// load balancer with multiple replicas (the in-memory session map is otherwise
-	// per-pod and breaks across round-robin requests).
-	handler := sdk.NewStreamableHTTPHandler(
-		func(*http.Request) *sdk.Server { return server },
-		&sdk.StreamableHTTPOptions{Stateless: true},
-	)
-	handle("/api/mcp", handler)
-	handle("/api/mcp/*", handler)
+	return server
 }
 
-type service struct {
-	dbUrl string
-
-	tablesMu     sync.Mutex
-	tablesCache  []tableRef
-	tablesCached time.Time
+// driverConnAdapter wraps a clickhouse-go driver.Conn into the package-local chConn.
+type driverConnAdapter struct {
+	conn driver.Conn
 }
 
-const tablesTTL = 10 * time.Minute
-
-type tableRef struct {
-	Database       string `json:"database"`
-	Table          string `json:"table"`
-	HasBuildTime   bool   `json:"-"`
-	HasInstallerID bool   `json:"-"`
+func (a driverConnAdapter) Query(ctx context.Context, sql string, args ...any) (chRows, error) {
+	return a.conn.Query(ctx, sql, args...)
 }
 
-func (s *service) openConnection(database string) (driver.Conn, error) {
-	if database == "" {
-		database = "system"
-	}
-	return clickhouse.Open(&clickhouse.Options{
-		Addr: []string{s.dbUrl},
-		Auth: clickhouse.Auth{Database: database},
-		Settings: map[string]any{
-			"readonly":         1,
-			"max_query_size":   1000000,
-			"max_memory_usage": 3221225472,
-		},
-		DialTimeout:     5 * time.Second,
-		ConnMaxLifetime: time.Hour,
-	})
-}
+func (a driverConnAdapter) Close() error { return a.conn.Close() }
 
 // listTables returns every (database, table) pair that has both `project` and `measures.name` columns.
 func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	s.tablesMu.Lock()
-	defer s.tablesMu.Unlock()
 	if time.Since(s.tablesCached) < tablesTTL && s.tablesCache != nil {
-		return s.tablesCache, nil
+		cached := s.tablesCache
+		s.tablesMu.Unlock()
+		return cached, nil
 	}
+	s.tablesMu.Unlock()
 
-	conn, err := s.openConnection("system")
-	if err != nil {
-		return nil, fmt.Errorf("open connection: %w", err)
-	}
-	defer conn.Close()
-
-	rows, err := conn.Query(ctx, `
+	// Query without holding the cache mutex so a slow ClickHouse round-trip
+	// doesn't serialize concurrent callers behind it. If two callers race to
+	// refresh, last writer wins — both get correct data.
+	rows, err := s.db.Query(ctx, `
 		select database, table,
 		       sum(name = 'build_time') > 0 as has_build_time,
 		       sum(name = 'tc_installer_build_id') > 0 as has_installer_id
@@ -141,13 +175,23 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID); err != nil {
 			return nil, fmt.Errorf("scan: %w", err)
 		}
+		// Tools interpolate r.Database/r.Table directly into SQL. Drop anything that
+		// doesn't fit the safe-identifier shape so we never produce a query that
+		// needs quoting; in practice every real perf-report table satisfies this.
+		if validateIdentifier("database", r.Database) != nil || validateIdentifier("table", r.Table) != nil {
+			slog.Warn("mcp: skipping non-identifier table name", "db", r.Database, "table", r.Table)
+			continue
+		}
 		out = append(out, r)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows: %w", err)
 	}
+
+	s.tablesMu.Lock()
 	s.tablesCache = out
 	s.tablesCached = time.Now()
+	s.tablesMu.Unlock()
 	return out, nil
 }
 
@@ -203,22 +247,10 @@ func (s *service) listTablesTool(ctx context.Context, _ *sdk.CallToolRequest, _ 
 	return nil, listTablesOutput{Tables: all, Count: len(all)}, nil
 }
 
-func (s *service) query(ctx context.Context, sql string, args []any) (driver.Rows, driver.Conn, error) {
-	conn, err := s.openConnection("system")
-	if err != nil {
-		return nil, nil, fmt.Errorf("open connection: %w", err)
-	}
-	rows, err := conn.Query(ctx, sql, args...)
-	if err != nil {
-		conn.Close()
-		return nil, nil, fmt.Errorf("query failed: %w", err)
-	}
-	return rows, conn, nil
-}
-
 func buildUnion(tables []tableRef, perTable func(tableRef) (string, []any)) (string, []any) {
 	var sb strings.Builder
-	args := make([]any, 0, len(tables)*4)
+	sb.Grow(len(tables) * 600)
+	args := make([]any, 0, len(tables)*5)
 	for i, r := range tables {
 		if i > 0 {
 			sb.WriteString(" union all ")
@@ -232,6 +264,22 @@ func buildUnion(tables []tableRef, perTable func(tableRef) (string, []any)) (str
 	return sb.String(), args
 }
 
+// appendBranchMachine writes the optional `and branch = ?` / `and machine like ?` clauses
+// shared by every list/search tool, returning the (possibly extended) args slice.
+func appendBranchMachine(sb *strings.Builder, args []any, branch, machine string) []any {
+	if branch != "" {
+		sb.WriteString(" and branch = ?")
+		args = append(args, branch)
+	}
+	if machine != "" {
+		sb.WriteString(" and machine like ?")
+		args = append(args, machine)
+	}
+	return args
+}
+
+const defaultBranch = "master"
+
 func validateIdentifier(field, value string) error {
 	if value == "" {
 		return fmt.Errorf("%s is required", field)
@@ -242,21 +290,4 @@ func validateIdentifier(field, value string) error {
 		}
 	}
 	return nil
-}
-
-func quoteIdentifier(name string) string {
-	return "`" + name + "`"
-}
-
-func clamp(v, maxVal, defaultVal int) int {
-	if v == 0 {
-		return defaultVal
-	}
-	if v < 1 {
-		return 1
-	}
-	if v > maxVal {
-		return maxVal
-	}
-	return v
 }

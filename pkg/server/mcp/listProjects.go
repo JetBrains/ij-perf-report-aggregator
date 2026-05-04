@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"strings"
@@ -31,28 +32,21 @@ type listProjectsOutput struct {
 
 func (s *service) listProjects(ctx context.Context, _ *sdk.CallToolRequest, in listProjectsInput) (*sdk.CallToolResult, listProjectsOutput, error) {
 	if in.Branch == "" {
-		in.Branch = "master"
+		in.Branch = defaultBranch
 	}
 	tables, err := s.resolveTables(ctx, in.Database, in.Table)
 	if err != nil {
 		return nil, listProjectsOutput{}, err
 	}
-	days := clamp(in.Days, 365, 30)
-	limit := clamp(in.Limit, 5000, 500)
+	days := min(max(cmp.Or(in.Days, 30), 1), 365)
+	limit := min(max(cmp.Or(in.Limit, 500), 1), 5000)
 
 	perTable := func(r tableRef) (string, []any) {
 		var sb strings.Builder
 		fmt.Fprintf(&sb, "select distinct ? as db_name, ? as table_name, project as project_name from %s.%s where generated_time > subtractDays(now(), ?)",
-			quoteIdentifier(r.Database), quoteIdentifier(r.Table))
+			r.Database, r.Table)
 		args := []any{r.Database, r.Table, days}
-		if in.Branch != "" {
-			sb.WriteString(" and branch = ?")
-			args = append(args, in.Branch)
-		}
-		if in.Machine != "" {
-			sb.WriteString(" and machine like ?")
-			args = append(args, in.Machine)
-		}
+		args = appendBranchMachine(&sb, args, in.Branch, in.Machine)
 		if in.ProjectPattern != "" {
 			sb.WriteString(" and project like ?")
 			args = append(args, in.ProjectPattern)
@@ -64,11 +58,10 @@ func (s *service) listProjects(ctx context.Context, _ *sdk.CallToolRequest, in l
 	sql := "select db_name, table_name, project_name from (" + innerSQL + ") as u order by db_name, table_name, project_name limit ?"
 	args = append(args, limit)
 
-	rows, conn, err := s.query(ctx, sql, args)
+	rows, err := s.db.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, listProjectsOutput{}, err
+		return nil, listProjectsOutput{}, fmt.Errorf("list_projects: %w", err)
 	}
-	defer conn.Close()
 	defer rows.Close()
 
 	out := listProjectsOutput{Rows: make([]projectRow, 0, 64)}

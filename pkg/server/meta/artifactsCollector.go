@@ -73,7 +73,12 @@ func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsRequest)
 }
 
 func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
-	return artifactName == "log.zip"
+	switch artifactName {
+	case "log.zip", "testlog.zip", "metrics.performance.json":
+		return true
+	default:
+		return false
+	}
 }
 
 type perfintCollector struct{}

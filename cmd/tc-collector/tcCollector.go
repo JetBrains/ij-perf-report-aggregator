@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"runtime"
+	"slices"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -187,8 +188,7 @@ func collectBuildConfiguration(taskContext context.Context, httpClient *http.Cli
 
 	logger.Info("load reports", "buildCount", totalCount, "buildTypeId", buildTypeId, "since", since)
 
-	for i := len(buildsToLoad) - 1; i >= 0; i-- {
-		builds := buildsToLoad[i]
+	for i, builds := range slices.Backward(buildsToLoad) {
 		if len(builds) == 0 {
 			continue
 		}

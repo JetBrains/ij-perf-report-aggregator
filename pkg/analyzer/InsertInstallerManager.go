@@ -55,7 +55,7 @@ func (t *InsertInstallerManager) Insert(id int, changes []string) error {
 		}
 	}
 
-	batch, err := t.InsertManager.PrepareForAppend()
+	batch, err := t.InsertManager.PrepareForAppend() //nolint:clickhouselint // batch is owned by InsertManager and reused across appends until flushed; closing here would discard buffered rows
 	if err != nil {
 		return err
 	}

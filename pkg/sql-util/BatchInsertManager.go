@@ -71,7 +71,7 @@ func (t *BatchInsertManager) GetQueuedItemCount() int {
 }
 
 func (t *BatchInsertManager) ScheduleSendBatch() {
-	batch := t.prepareForFlush()
+	batch := t.prepareForFlush() //nolint:clickhouselint // batch ownership transfers to sendBatch which calls Send/Abort; defensive Close here would race with the goroutine
 	if batch != nil {
 		t.group.Go(func() error {
 			return t.sendBatch(batch)
@@ -80,7 +80,7 @@ func (t *BatchInsertManager) ScheduleSendBatch() {
 }
 
 func (t *BatchInsertManager) SendBatchNow() error {
-	batch := t.prepareForFlush()
+	batch := t.prepareForFlush() //nolint:clickhouselint // batch ownership transfers to sendBatch which calls Send/Abort
 	if batch != nil {
 		return t.sendBatch(batch)
 	}

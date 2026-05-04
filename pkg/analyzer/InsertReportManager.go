@@ -217,7 +217,7 @@ var projectIdToName = map[string]string{
 }
 
 func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *slog.Logger) error {
-	batch, err := t.InsertManager.PrepareForAppend()
+	batch, err := t.InsertManager.PrepareForAppend() //nolint:clickhouselint // batch is owned by InsertManager and reused across appends until flushed; closing here would discard buffered rows
 	if err != nil {
 		return err
 	}

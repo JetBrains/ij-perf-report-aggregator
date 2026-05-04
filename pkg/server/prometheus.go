@@ -32,8 +32,10 @@ type PrometheusMetrics struct {
 	now            func() time.Time
 }
 
-const maxRouteLabelLength = 64
-const maxUserLabelLength = 64
+const (
+	maxRouteLabelLength = 64
+	maxUserLabelLength  = 64
+)
 
 var chiPathParamPattern = regexp.MustCompile(`\{[^}/]+\}`)
 
@@ -178,7 +180,7 @@ func userLabel(email string) string {
 }
 
 func isValidLocalPart(s string) bool {
-	for i := 0; i < len(s); i++ {
+	for i := range len(s) {
 		c := s[i]
 		if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.' || c == '-' || c == '_') {
 			return false

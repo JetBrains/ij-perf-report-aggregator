@@ -64,7 +64,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 			Namespace: "ij_perf",
 			Subsystem: "http",
 			Name:      "user_requests_total",
-			Help:      "Active-user activity counter, debounced to roughly one increment per user per minute so it isn't dominated by chatty page loads. Only authenticated requests (with X-Auth-Request-Email) are counted. Label is the local-part of the email. Use count(count by (user) (rate(...[5m]))) for unique active users.",
+			Help:      "Active-user activity counter, debounced to roughly one increment per user per minute so it isn't dominated by chatty page loads. Only authenticated requests (with X-Auth-Request-Email) are counted. Label is the local-part of the email. Use count(rate(ij_perf_http_user_requests_total[5m]) > 0) for unique active users in the window — the > 0 filter excludes users whose counter is flat over the range.",
 		}, []string{"user"}),
 		responseCacheRequestsTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "ij_perf",

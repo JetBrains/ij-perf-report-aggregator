@@ -148,6 +148,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue"
+import { storeToRefs } from "pinia"
 import { BisectClient } from "../common/sideBar/BisectClient"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { useUserStore } from "../../shared/useUserStore"
@@ -212,8 +213,15 @@ async function startBisect() {
   }
 }
 
-const userEmail = useUserStore().user?.email
-const email = ref(userEmail)
+const { user } = storeToRefs(useUserStore())
+const userEmail = computed(() => user.value?.email)
+const emailOverride = ref("")
+const email = computed({
+  get: () => emailOverride.value || userEmail.value || "",
+  set: (val: string) => {
+    emailOverride.value = val
+  },
+})
 onMounted(async () => {
   try {
     const changes = await bisectClient.fetchTeamCityChanges(buildId)

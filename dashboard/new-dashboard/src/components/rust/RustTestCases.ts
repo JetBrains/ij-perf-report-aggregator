@@ -215,4 +215,15 @@ export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
       "org.rust.benchmarks.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test generated keys - generated_keys",
     ],
   },
+  {
+    label: "Web Libraries Model",
+    projects: ["com.intellij.rustrover.webLibraries.benchmarks.axum.AxumRoutesBenchmarkTest.benchmark model building for single crate - AxumRoutesModel.forCrate"],
+  },
+  {
+    label: "Web Libraries Resolver",
+    projects: [
+      "com.intellij.rustrover.webLibraries.benchmarks.axum.AxumRoutesBenchmarkTest.benchmark getVariants first 10 - RsAxumUrlResolver.getVariants-first-10",
+      "com.intellij.rustrover.webLibraries.benchmarks.axum.AxumRoutesBenchmarkTest.benchmark getVariants for whole project - RsAxumUrlResolver.getVariants",
+    ],
+  },
 ]

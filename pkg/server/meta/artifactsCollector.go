@@ -35,6 +35,7 @@ type UploadConfig struct {
 	OnError        func(buildId int, message string, err error)
 	OnSuccess      func(buildId int, fileName string)
 	SkipPostfix    bool
+	BuildsToSkip   map[int]struct{}
 }
 
 type artifactCollector interface {
@@ -141,15 +142,18 @@ func getAttachmentName(filename, suffix string) string {
 func ProcessAndUploadArtifacts(ctx context.Context, params UploadAttachmentsRequest, config UploadConfig) {
 	var uploadWg sync.WaitGroup
 
+	//todo: figure out what to do with screenshots
 	if params.ChartPng != nil && config.UploadChartPng != nil {
-		uploadWg.Go(func() {
-			err := config.UploadChartPng(ctx, params.ChartPng)
-			if err != nil {
-				config.OnError(params.TeamCityAttachmentInfo.CurrentBuildId, "Failed to upload chart PNG", err)
-			} else {
-				config.OnSuccess(params.TeamCityAttachmentInfo.CurrentBuildId, "dashboard.png")
-			}
-		})
+		if _, skip := config.BuildsToSkip[params.TeamCityAttachmentInfo.CurrentBuildId]; !skip {
+			uploadWg.Go(func() {
+				err := config.UploadChartPng(ctx, params.ChartPng)
+				if err != nil {
+					config.OnError(params.TeamCityAttachmentInfo.CurrentBuildId, "Failed to upload chart PNG", err)
+				} else {
+					config.OnSuccess(params.TeamCityAttachmentInfo.CurrentBuildId, "dashboard.png")
+				}
+			})
+		}
 	}
 
 	builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
@@ -165,6 +169,9 @@ func ProcessAndUploadArtifacts(ctx context.Context, params UploadAttachmentsRequ
 
 	var wg sync.WaitGroup
 	for index, buildId := range builds {
+		if _, skip := config.BuildsToSkip[buildId]; skip {
+			continue
+		}
 		wg.Go(func() {
 			processBuildsArtifacts(ctx, buildId, index, params, collector, config, &uploadWg)
 		})

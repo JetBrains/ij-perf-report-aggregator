@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -12,6 +13,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -97,6 +99,11 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 		var mu sync.Mutex
 		ctx := request.Context()
 
+		skip, alreadyUploaded := computeBuildsToSkip(ctx, metaDb, params.TeamCityAttachmentInfo)
+		if len(alreadyUploaded) > 0 {
+			response.Uploads = alreadyUploaded
+		}
+
 		config := UploadConfig{
 			UploadChartPng: func(ctx context.Context, chartData []byte) error {
 				folder := fmt.Sprintf("analyses/%d", params.TeamCityAttachmentInfo.CurrentBuildId)
@@ -124,7 +131,8 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 				}
 				response.Uploads[buildId] = append(response.Uploads[buildId], fileName)
 			},
-			SkipPostfix: true,
+			SkipPostfix:  true,
+			BuildsToSkip: skip,
 		}
 
 		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
@@ -168,4 +176,46 @@ func recordSpaceUploadedArtifacts(
 		}
 	}
 	return nil
+}
+
+type TcBuildSpaceUpload struct {
+	Files         []string
+	SuccessStatus bool
+}
+
+func getSpaceUploads(ctx context.Context, metaDb *pgxpool.Pool, buildId int) (*TcBuildSpaceUpload, error) {
+	var upload TcBuildSpaceUpload
+	err := metaDb.QueryRow(ctx,
+		"SELECT success, uploaded_files FROM space_uploaded_artifacts WHERE build_id = $1",
+		strconv.Itoa(buildId)).Scan(&upload.SuccessStatus, &upload.Files)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &upload, nil
+}
+
+func computeBuildsToSkip(ctx context.Context, metaDb *pgxpool.Pool, info TeamCityAttachmentInfo) (map[int]struct{}, map[int][]string) {
+	buildIds := []int{info.CurrentBuildId}
+	if info.PreviousBuildId != nil {
+		buildIds = append(buildIds, *info.PreviousBuildId)
+	}
+
+	skip := make(map[int]struct{})
+	alreadyUploaded := make(map[int][]string)
+	for _, buildId := range buildIds {
+		upload, err := getSpaceUploads(ctx, metaDb, buildId)
+		if err != nil {
+			slog.Warn("failed to query previous space upload status", "buildId", buildId, "error", err)
+			continue
+		}
+		if upload != nil && upload.SuccessStatus {
+			skip[buildId] = struct{}{}
+			alreadyUploaded[buildId] = upload.Files
+			slog.Info("skipping space upload for build (already uploaded successfully)", "buildId", buildId, "files", upload.Files)
+		}
+	}
+	return skip, alreadyUploaded
 }

@@ -376,6 +376,9 @@ export function getMachineGroupName(machine: string): string {
     machine.startsWith("intellij-linux-2204-aws-m5dn-lt") ||
     machine.startsWith("intellij-linux-2204-large-disk-aws-1") ||
     machine.startsWith("intellij-linux-2004-large-disk-aws-1") ||
+    machine.startsWith("intellij-linux-2204-large-disk-aws-2-i") ||
+    machine.startsWith("intellij-linux-2204-large-disk-aws-3-i") ||
+    machine.startsWith("intellij-linux-2204-large-disk-aws-4-i") ||
     machine.startsWith("intellij-linux-2204-aws-2-i") ||
     machine.startsWith("intellij-linux-2204-aws-1-i") ||
     machine.startsWith("intellij-linux-2204-aws-4-i-") ||

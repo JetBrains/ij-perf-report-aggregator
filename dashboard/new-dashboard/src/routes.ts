@@ -212,8 +212,10 @@ enum ROUTES {
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   AIAPrivacyDashboard = `${ROUTE_PREFIX.ML}/dev/aiaPrivacyDashboard`,
+  DataGripTests = `${ROUTE_PREFIX.DataGrip}/${TEST_ROUTE}`,
   DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
+  DataGripDataGridRenderingDashboard = `${ROUTE_PREFIX.DataGrip}/dataGridRendering`,
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
   AIACompletionDashboard = `${ROUTE_PREFIX.AIA}/completion`,
   AIACodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/codeGeneration`,
@@ -1011,6 +1013,14 @@ const DATAGRIP: Product = {
         {
           url: ROUTES.DataGripIndexingDashboard,
           label: "Indexing",
+        },
+        {
+          url: ROUTES.DataGripDataGridRenderingDashboard,
+          label: "Data Grid Rendering",
+        },
+        {
+          url: ROUTES.DataGripTests,
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -2268,6 +2278,17 @@ const vcsRoutes = [
 
 const datagripRoutes = [
   {
+    path: ROUTES.DataGripTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "datagrip",
+      initialMachine: "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)",
+      withInstaller: false,
+    },
+    meta: { pageTitle: "DataGrip Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
     path: ROUTES.DataGripProductMetricsDashboard,
     component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
     meta: { pageTitle: "DataGrip product metrics" },
@@ -2276,6 +2297,11 @@ const datagripRoutes = [
     path: ROUTES.DataGripIndexingDashboard,
     component: () => import("./components/datagrip/IndexingDashboard.vue"),
     meta: { pageTitle: "DataGrip Indexing dashboard" },
+  },
+  {
+    path: ROUTES.DataGripDataGridRenderingDashboard,
+    component: () => import("./components/datagrip/DataGridRenderingDashboard.vue"),
+    meta: { pageTitle: "DataGrip Data Grid Rendering dashboard" },
   },
 ]
 

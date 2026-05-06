@@ -10,16 +10,10 @@ import (
 )
 
 type UploadAttachmentsRequest struct {
-	IssueId                string                 `json:"issueId"`
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
 	AffectedTest           string                 `json:"affectedTest"`
 	ChartPng               []byte                 `json:"chartPng"`
 	TestType               string                 `json:"testType"`
-}
-
-type UploadAttachmentsResponse struct {
-	Uploads    []string `json:"uploads"`
-	Exceptions []string `json:"exceptions"`
 }
 
 type teamCityArtifact struct {
@@ -29,6 +23,7 @@ type teamCityArtifact struct {
 }
 
 type UploadArtifact struct {
+	BuildId       int
 	FileName      string
 	Body          io.Reader
 	ContentLength int64
@@ -37,8 +32,9 @@ type UploadArtifact struct {
 type UploadConfig struct {
 	UploadChartPng func(ctx context.Context, chartData []byte) error
 	UploadArtifact func(ctx context.Context, artifact UploadArtifact) error
-	OnError        func(message string, err error)
-	OnSuccess      func(fileName string)
+	OnError        func(buildId int, message string, err error)
+	OnSuccess      func(buildId int, fileName string)
+	SkipPostfix    bool
 }
 
 type artifactCollector interface {
@@ -149,9 +145,9 @@ func ProcessAndUploadArtifacts(ctx context.Context, params UploadAttachmentsRequ
 		uploadWg.Go(func() {
 			err := config.UploadChartPng(ctx, params.ChartPng)
 			if err != nil {
-				config.OnError("Failed to upload chart PNG", err)
+				config.OnError(params.TeamCityAttachmentInfo.CurrentBuildId, "Failed to upload chart PNG", err)
 			} else {
-				config.OnSuccess("dashboard.png")
+				config.OnSuccess(params.TeamCityAttachmentInfo.CurrentBuildId, "dashboard.png")
 			}
 		})
 	}
@@ -190,7 +186,7 @@ func processBuildsArtifacts(
 
 	children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
 	if err != nil {
-		config.OnError("Failed to get teamcity artifact children", err)
+		config.OnError(buildId, "Failed to get teamcity artifact children", err)
 		return
 	}
 
@@ -202,35 +198,42 @@ func processBuildsArtifacts(
 	}
 
 	var attachmentPostfix string
-	if index == 0 {
-		attachmentPostfix = "current"
-	} else {
-		attachmentPostfix = "before"
+	if !config.SkipPostfix {
+		if index == 0 {
+			attachmentPostfix = "current"
+		} else {
+			attachmentPostfix = "before"
+		}
 	}
 
 	for _, str := range filteredChildren {
+		fileName := str
+		if !config.SkipPostfix {
+			fileName = getAttachmentName(str, attachmentPostfix)
+		}
 		artifact := teamCityArtifact{
 			BuildId:      buildId,
 			ArtifactPath: testArtifactPath + "/" + str,
-			FileName:     getAttachmentName(str, attachmentPostfix),
+			FileName:     fileName,
 		}
 		uploadWg.Go(func() {
 			resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
 			if err != nil {
-				config.OnError("Failed to download artifact from TeamCity", err)
+				config.OnError(artifact.BuildId, "Failed to download artifact from TeamCity", err)
 				return
 			}
 			defer resp.Body.Close()
 
 			err = config.UploadArtifact(ctx, UploadArtifact{
+				BuildId:       artifact.BuildId,
 				FileName:      artifact.FileName,
 				Body:          resp.Body,
 				ContentLength: resp.ContentLength,
 			})
 			if err != nil {
-				config.OnError("Failed to upload attachment", err)
+				config.OnError(artifact.BuildId, "Failed to upload attachment", err)
 			} else {
-				config.OnSuccess(artifact.FileName)
+				config.OnSuccess(artifact.BuildId, artifact.FileName)
 			}
 		})
 	}

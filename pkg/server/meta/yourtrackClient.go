@@ -238,10 +238,20 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 	return nil
 }
 
+type YoutrackUploadAttachmentsRequest struct {
+	UploadAttachmentsRequest
+	IssueId string `json:"issueId"`
+}
+
+type YoutrackUploadAttachmentsResponse struct {
+	Uploads    []string `json:"uploads"`
+	Exceptions []string `json:"exceptions"`
+}
+
 func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var response UploadAttachmentsResponse
-		var params UploadAttachmentsRequest
+		var response YoutrackUploadAttachmentsResponse
+		var params YoutrackUploadAttachmentsRequest
 		decoder := json.NewDecoder(request.Body)
 		defer request.Body.Close()
 		err := decoder.Decode(&params)
@@ -261,21 +271,21 @@ func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
 				return youtrackClient.UploadAttachment(ctx, params.IssueId, artifact.Body, artifact.FileName, artifact.ContentLength)
 			},
-			OnError: func(message string, err error) {
+			OnError: func(_ int, message string, err error) {
 				slog.Error(message, "error", err)
 				mu.Lock()
 				defer mu.Unlock()
 				response.Exceptions = append(response.Exceptions,
 					fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 			},
-			OnSuccess: func(fileName string) {
+			OnSuccess: func(_ int, fileName string) {
 				mu.Lock()
 				defer mu.Unlock()
 				response.Uploads = append(response.Uploads, fileName)
 			},
 		}
 
-		ProcessAndUploadArtifacts(ctx, params, config)
+		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
 
 		if len(response.Exceptions) > 0 {
 			if len(response.Uploads) > 0 {

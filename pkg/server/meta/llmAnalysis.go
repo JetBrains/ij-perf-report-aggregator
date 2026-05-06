@@ -3,6 +3,7 @@ package meta
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -23,6 +24,13 @@ type LLMAnalysisRequest struct {
 	FirstCommitRevision *string `json:"firstCommitRevision,omitempty"`
 	LastCommitRevision  *string `json:"lastCommitRevision,omitempty"`
 	TestMethodName      *string `json:"testMethodName,omitempty"`
+}
+
+type LlmAnalysisRun struct {
+	Id         int    `json:"id"`
+	Date       string `json:"date"`
+	RunBuildId string `json:"runBuildId"`
+	State      string `json:"state"`
 }
 
 type DegradationData struct {
@@ -109,11 +117,22 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		if weburlPtr != nil {
 			weburl := *weburlPtr
 			runBuildId := weburl[strings.LastIndex(weburl, "/")+1:]
-			_ = updateLlmAnalysisRunBuildId(request.Context(), metaDb, id, runBuildId)
+			state := "queued"
+			if err := updateLlmAnalysisRun(request.Context(), metaDb, id, LlmAnalysisRunUpdate{
+				RunBuildId: &runBuildId,
+				State:      &state,
+			}); err != nil {
+				http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
 
-			byteSlice := []byte(weburl)
-			_, err = writer.Write(byteSlice)
-			if err != nil {
+			writer.Header().Set("Content-Type", "application/json")
+			if err := json.NewEncoder(writer).Encode(LlmAnalysisRun{
+				Id:         id,
+				Date:       llmAnalysisRequest.Date,
+				RunBuildId: runBuildId,
+				State:      state,
+			}); err != nil {
 				http.Error(writer, "Failed to write response: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -123,13 +142,50 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
-func updateLlmAnalysisRunBuildId(ctx context.Context, metaDb *pgxpool.Pool, id int, runBuildId string) error {
-	_, err := metaDb.Exec(ctx,
-		"UPDATE llm_analysis_runs SET run_build_id = $1 WHERE id = $2",
-		runBuildId, id)
-	if err != nil {
-		slog.Error("cannot execute update llm_analysis_runs.run_build_id query", "error", err,
-			"id", id, "runBuildId", runBuildId)
+type LlmAnalysisRunUpdate struct {
+	RunBuildId       *string
+	State            *string
+	LlmGuiltyCommits *[]string
+	LlmComment       *string
+	UserRate         *bool
+	UserComment      *string
+}
+
+func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, id int, u LlmAnalysisRunUpdate) error {
+	var setClauses []string
+	var args []any
+	add := func(column string, value any) {
+		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, len(args)+1))
+		args = append(args, value)
+	}
+	if u.RunBuildId != nil {
+		add("run_build_id", *u.RunBuildId)
+	}
+	if u.State != nil {
+		add("state", *u.State)
+	}
+	if u.LlmGuiltyCommits != nil {
+		add("llm_guilty_commits", *u.LlmGuiltyCommits)
+	}
+	if u.LlmComment != nil {
+		add("llm_comment", *u.LlmComment)
+	}
+	if u.UserRate != nil {
+		add("user_rate", *u.UserRate)
+	}
+	if u.UserComment != nil {
+		add("user_comment", *u.UserComment)
+	}
+
+	if len(setClauses) == 0 {
+		return nil
+	}
+	args = append(args, id)
+	sql := fmt.Sprintf("UPDATE llm_analysis_runs SET %s WHERE id = $%d",
+		strings.Join(setClauses, ", "), len(args))
+
+	if _, err := metaDb.Exec(ctx, sql, args...); err != nil {
+		slog.Error("cannot execute update llm_analysis_runs query", "error", err, "id", id, "sql", sql)
 		return err
 	}
 	return nil

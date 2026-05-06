@@ -112,7 +112,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Post("/uploadAttachments", meta.CreatePostYoutrackUploadAttachments())
 		})
 		r.Route("/space", func(r chi.Router) {
-			r.Post("/uploadAttachments", meta.CreatePostSpaceUploadAttachments())
+			r.Post("/uploadAttachments", meta.CreatePostSpaceUploadAttachments(dbpool))
 		})
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())

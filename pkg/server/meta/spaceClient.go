@@ -9,7 +9,10 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
@@ -70,10 +73,19 @@ func (client *SpacePackagesClient) doRequest(ctx context.Context, endpoint strin
 	return bodyBytes, nil
 }
 
-func CreatePostSpaceUploadAttachments() http.HandlerFunc {
+type SpaceUploadAttachmentsRequest struct {
+	UploadAttachmentsRequest
+}
+
+type SpaceUploadAttachmentsResponse struct {
+	Uploads    map[int][]string `json:"uploads"`
+	Exceptions map[int][]string `json:"exceptions"`
+}
+
+func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var response UploadAttachmentsResponse
-		var params UploadAttachmentsRequest
+		var response SpaceUploadAttachmentsResponse
+		var params SpaceUploadAttachmentsRequest
 		decoder := json.NewDecoder(request.Body)
 		defer request.Body.Close()
 		err := decoder.Decode(&params)
@@ -82,28 +94,78 @@ func CreatePostSpaceUploadAttachments() http.HandlerFunc {
 			return
 		}
 
-		var uploadsMu sync.Mutex
+		var mu sync.Mutex
 		ctx := request.Context()
-		remoteFolder := "analyses/" + params.IssueId
 
 		config := UploadConfig{
 			UploadChartPng: func(ctx context.Context, chartData []byte) error {
-				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", remoteFolder, "dashboard.png", bytes.NewReader(chartData))
+				folder := fmt.Sprintf("analyses/%d", params.TeamCityAttachmentInfo.CurrentBuildId)
+				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, "dashboard.png", bytes.NewReader(chartData))
 			},
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
-				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", remoteFolder, artifact.FileName, artifact.Body)
+				folder := fmt.Sprintf("analyses/%d", artifact.BuildId)
+				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, artifact.FileName, artifact.Body)
 			},
-			OnError: func(message string, err error) {
+			OnError: func(buildId int, message string, err error) {
 				slog.Error(message, "error", err)
+				mu.Lock()
+				defer mu.Unlock()
+				if response.Exceptions == nil {
+					response.Exceptions = make(map[int][]string)
+				}
+				response.Exceptions[buildId] = append(response.Exceptions[buildId],
+					fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 			},
-			OnSuccess: func(fileName string) {
-				uploadsMu.Lock()
-				defer uploadsMu.Unlock()
-				response.Uploads = append(response.Uploads, fileName)
+			OnSuccess: func(buildId int, fileName string) {
+				mu.Lock()
+				defer mu.Unlock()
+				if response.Uploads == nil {
+					response.Uploads = make(map[int][]string)
+				}
+				response.Uploads[buildId] = append(response.Uploads[buildId], fileName)
 			},
+			SkipPostfix: true,
 		}
 
-		ProcessAndUploadArtifacts(ctx, params, config)
+		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
+
+		if err := recordSpaceUploadedArtifacts(ctx, metaDb, response); err != nil {
+			slog.Error("failed to record space uploaded artifacts", "error", err)
+		}
+
 		_ = marshalAndWriteIssueResponse(writer, response)
 	}
+}
+
+func recordSpaceUploadedArtifacts(
+	ctx context.Context,
+	metaDb *pgxpool.Pool,
+	resp SpaceUploadAttachmentsResponse,
+) error {
+	buildIds := make(map[int]struct{}, len(resp.Uploads)+len(resp.Exceptions))
+	for id := range resp.Uploads {
+		buildIds[id] = struct{}{}
+	}
+	for id := range resp.Exceptions {
+		buildIds[id] = struct{}{}
+	}
+
+	const stmt = `
+		INSERT INTO space_uploaded_artifacts (build_id, uploaded_files, success)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (build_id) DO UPDATE
+		SET uploaded_files = EXCLUDED.uploaded_files,
+		    success        = EXCLUDED.success`
+
+	for buildId := range buildIds {
+		files := resp.Uploads[buildId]
+		if files == nil {
+			files = []string{}
+		}
+		success := len(resp.Exceptions[buildId]) == 0
+		if _, err := metaDb.Exec(ctx, stmt, strconv.Itoa(buildId), files, success); err != nil {
+			return fmt.Errorf("insert space_uploaded_artifacts for build %d: %w", buildId, err)
+		}
+	}
+	return nil
 }

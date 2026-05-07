@@ -11,6 +11,9 @@ export interface RunLlmAnalysisResult {
 }
 
 export async function runLlmAnalysis(serverConfigurator: ServerConfigurator, data: InfoData, attachmentsInfo: UploadAttachmentsRequest): Promise<RunLlmAnalysisResult> {
+  if (data.buildIdPrevious == null) {
+    throw new Error("Previous build is required to run LLM analysis")
+  }
   await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
   const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
   const request: LlmAnalysisRequest = {
@@ -18,7 +21,7 @@ export async function runLlmAnalysis(serverConfigurator: ServerConfigurator, dat
     project: data.projectName,
     metric: data.series[0]?.metricName ?? "",
     currentBuildId: String(data.buildId),
-    prevBuildId: data.buildIdPrevious == null ? undefined : String(data.buildIdPrevious),
+    prevBuildId: String(data.buildIdPrevious),
     currentValue: data.formattedCurrentValue ?? undefined,
     previousValue: data.formattedPreviousValue ?? undefined,
     userName: useUserStore().user?.name ?? undefined,

@@ -10,7 +10,7 @@ CREATE TABLE llm_analysis_runs
   project               VARCHAR(255) NOT NULL,
   metric                VARCHAR(255) NOT NULL,
   current_build_id      VARCHAR(20)  NOT NULL,
-  prev_build_id         VARCHAR(20),
+  prev_build_id         VARCHAR(20)  NOT NULL,
   current_value         VARCHAR(50),
   previous_value        VARCHAR(50),
   user_name             VARCHAR(100),

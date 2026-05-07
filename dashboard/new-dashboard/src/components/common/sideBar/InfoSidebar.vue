@@ -292,7 +292,7 @@
           Bisect
         </Button>
         <Button
-          v-if="data != null"
+          v-if="data != null && data.buildIdPrevious != null"
           label="Run LLM Analysis"
           text
           :loading="llmAnalysisPreparing"

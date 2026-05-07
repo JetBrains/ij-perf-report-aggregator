@@ -5,7 +5,7 @@ export interface LlmAnalysisRequest {
   project: string
   metric: string
   currentBuildId: string
-  prevBuildId?: string
+  prevBuildId: string
   currentValue?: string
   previousValue?: string
   userName?: string

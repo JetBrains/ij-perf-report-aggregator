@@ -17,7 +17,7 @@ type LLMAnalysisRequest struct {
 	Project             string  `json:"project"`
 	Metric              string  `json:"metric"`
 	CurrentBuildId      string  `json:"currentBuildId"`
-	PrevBuildId         *string `json:"prevBuildId,omitempty"`
+	PrevBuildId         string  `json:"prevBuildId"`
 	CurrentValue        *string `json:"currentValue,omitempty"`
 	PreviousValue       *string `json:"previousValue,omitempty"`
 	UserName            *string `json:"userName,omitempty"`
@@ -108,7 +108,8 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			"llm.analysis.id": strconv.Itoa(id),
 		}
 
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
+		//TODO: remove staging after testing
+		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_staging_PerformanceDegradationAnalyzer", buildParams)
 		if err != nil {
 			http.Error(writer, "Failed to start LLM analysis: "+err.Error(), http.StatusInternalServerError)
 			return

@@ -99,18 +99,18 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 		var mu sync.Mutex
 		ctx := request.Context()
 
-		skip, alreadyUploaded := computeBuildsToSkip(ctx, metaDb, params.TeamCityAttachmentInfo)
+		skip, alreadyUploaded := computeBuildsToSkip(ctx, metaDb, params.TeamCityAttachmentInfo, params.ProjectName)
 		if len(alreadyUploaded) > 0 {
 			response.Uploads = alreadyUploaded
 		}
 
 		config := UploadConfig{
 			UploadChartPng: func(ctx context.Context, chartData []byte) error {
-				folder := fmt.Sprintf("analyses/%d", params.TeamCityAttachmentInfo.CurrentBuildId)
+				folder := fmt.Sprintf("analyses/%d/%s", params.TeamCityAttachmentInfo.CurrentBuildId, params.ProjectName)
 				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, "dashboard.png", bytes.NewReader(chartData))
 			},
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
-				folder := fmt.Sprintf("analyses/%d", artifact.BuildId)
+				folder := fmt.Sprintf("analyses/%d/%s", artifact.BuildId, params.ProjectName)
 				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, artifact.FileName, artifact.Body)
 			},
 			OnError: func(buildId int, message string, err error) {
@@ -137,7 +137,7 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
 
-		if err := recordSpaceUploadedArtifacts(ctx, metaDb, response); err != nil {
+		if err := recordSpaceUploadedArtifacts(ctx, metaDb, params.ProjectName, response); err != nil {
 			slog.Error("failed to record space uploaded artifacts", "error", err)
 		}
 
@@ -148,6 +148,7 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 func recordSpaceUploadedArtifacts(
 	ctx context.Context,
 	metaDb *pgxpool.Pool,
+	project string,
 	resp SpaceUploadAttachmentsResponse,
 ) error {
 	buildIds := make(map[int]struct{}, len(resp.Uploads)+len(resp.Exceptions))
@@ -159,9 +160,9 @@ func recordSpaceUploadedArtifacts(
 	}
 
 	const stmt = `
-		INSERT INTO space_uploaded_artifacts (build_id, uploaded_files, success)
-		VALUES ($1, $2, $3)
-		ON CONFLICT (build_id) DO UPDATE
+		INSERT INTO space_uploaded_artifacts (build_id, project, uploaded_files, success)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (build_id, project) DO UPDATE
 		SET uploaded_files = EXCLUDED.uploaded_files,
 		    success        = EXCLUDED.success`
 
@@ -171,8 +172,8 @@ func recordSpaceUploadedArtifacts(
 			files = []string{}
 		}
 		success := len(resp.Exceptions[buildId]) == 0
-		if _, err := metaDb.Exec(ctx, stmt, strconv.Itoa(buildId), files, success); err != nil {
-			return fmt.Errorf("insert space_uploaded_artifacts for build %d: %w", buildId, err)
+		if _, err := metaDb.Exec(ctx, stmt, strconv.Itoa(buildId), project, files, success); err != nil {
+			return fmt.Errorf("insert space_uploaded_artifacts for build %d project %s: %w", buildId, project, err)
 		}
 	}
 	return nil
@@ -183,11 +184,11 @@ type TcBuildSpaceUpload struct {
 	SuccessStatus bool
 }
 
-func getSpaceUploads(ctx context.Context, metaDb *pgxpool.Pool, buildId int) (*TcBuildSpaceUpload, error) {
+func getSpaceUploads(ctx context.Context, metaDb *pgxpool.Pool, buildId int, project string) (*TcBuildSpaceUpload, error) {
 	var upload TcBuildSpaceUpload
 	err := metaDb.QueryRow(ctx,
-		"SELECT success, uploaded_files FROM space_uploaded_artifacts WHERE build_id = $1",
-		strconv.Itoa(buildId)).Scan(&upload.SuccessStatus, &upload.Files)
+		"SELECT success, uploaded_files FROM space_uploaded_artifacts WHERE build_id = $1 AND project = $2",
+		strconv.Itoa(buildId), project).Scan(&upload.SuccessStatus, &upload.Files)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
@@ -197,7 +198,7 @@ func getSpaceUploads(ctx context.Context, metaDb *pgxpool.Pool, buildId int) (*T
 	return &upload, nil
 }
 
-func computeBuildsToSkip(ctx context.Context, metaDb *pgxpool.Pool, info TeamCityAttachmentInfo) (map[int]struct{}, map[int][]string) {
+func computeBuildsToSkip(ctx context.Context, metaDb *pgxpool.Pool, info TeamCityAttachmentInfo, project string) (map[int]struct{}, map[int][]string) {
 	buildIds := []int{info.CurrentBuildId}
 	if info.PreviousBuildId != nil {
 		buildIds = append(buildIds, *info.PreviousBuildId)
@@ -206,15 +207,15 @@ func computeBuildsToSkip(ctx context.Context, metaDb *pgxpool.Pool, info TeamCit
 	skip := make(map[int]struct{})
 	alreadyUploaded := make(map[int][]string)
 	for _, buildId := range buildIds {
-		upload, err := getSpaceUploads(ctx, metaDb, buildId)
+		upload, err := getSpaceUploads(ctx, metaDb, buildId, project)
 		if err != nil {
-			slog.Warn("failed to query previous space upload status", "buildId", buildId, "error", err)
+			slog.Warn("failed to query previous space upload status", "buildId", buildId, "project", project, "error", err)
 			continue
 		}
 		if upload != nil && upload.SuccessStatus {
 			skip[buildId] = struct{}{}
 			alreadyUploaded[buildId] = upload.Files
-			slog.Info("skipping space upload for build (already uploaded successfully)", "buildId", buildId, "files", upload.Files)
+			slog.Info("skipping space upload for build (already uploaded successfully)", "buildId", buildId, "project", project, "files", upload.Files)
 		}
 	}
 	return skip, alreadyUploaded

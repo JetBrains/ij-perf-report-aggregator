@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
-import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
+import { buildUrl, getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
@@ -163,7 +163,7 @@ import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
-import { uploadAttachments, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/uploadAttachmentsUtils"
+import { uploadAttachmentsToSpace, uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 import { getFirstAndLastCommit } from "../../../util/changes"
 
 enum ProgressState {
@@ -312,18 +312,12 @@ async function createTicket() {
     createException.value = true
   }
 
-  let affectedTest = accident.affectedTest
-
-  if (affectedTest.endsWith(affectedMetric)) {
-    affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
-  }
   const attachmentsInfo: UploadAttachmentsRequest = {
-    issueId: issueResponse.issue.id,
     teamcityAttachmentInfo: {
       currentBuildId: buildId,
       previousBuildId: undefined,
     },
-    affectedTest,
+    projectName: data.projectName,
     chartPng: undefined,
     testType: dbTypeStore().dbType,
   }
@@ -358,7 +352,7 @@ async function createTicket() {
   }
 
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
-  uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.YouTrack)
+  uploadAttachmentsToYoutrack(serverConfigurator, { ...attachmentsInfo, issueId: issueResponse.issue.id })
     .then((response) => {
       if (response.exceptions?.length) {
         reportAttachmentFailure(`Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`)
@@ -372,33 +366,33 @@ async function createTicket() {
     })
 
   if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
-    llmAnalysisState.value = LlmAnalysisState.PREPARING
-
-    uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.Space)
-      .then(async (response) => {
-        try {
-          const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
-          const llmAnalysisRequest: LlmAnalysisRequest = {
-            commitRevisions: firstCommit && lastCommit ? { firstCommit, lastCommit } : null,
-            currentValue: data.formattedCurrentValue || undefined,
-            previousValue: data.formattedPreviousValue || undefined,
-            affectedMetric,
-            testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-            youtrackIssueReadableId: issueResponse.issue.idReadable,
-            youtrackIssueId: issueResponse.issue.id,
-            spaceUploadedFiles: response.uploads ?? [],
-          }
-          llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
-          llmAnalysisState.value = LlmAnalysisState.DONE
-        } catch (error) {
-          console.error("LLM Analysis start failed:", error)
-          llmAnalysisState.value = LlmAnalysisState.FAILED
+    const runLlmAnalysis = async () => {
+      llmAnalysisState.value = LlmAnalysisState.PREPARING
+      try {
+        await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
+        const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
+        const llmAnalysisRequest: LlmAnalysisRequest = {
+          date: data.date,
+          project: data.projectName,
+          metric: affectedMetric,
+          currentBuildId: String(data.buildId),
+          prevBuildId: data.buildIdPrevious == null ? undefined : String(data.buildIdPrevious),
+          currentValue: data.formattedCurrentValue || undefined,
+          previousValue: data.formattedPreviousValue || undefined,
+          userName: accident.userName || undefined,
+          firstCommitRevision: firstCommit ?? undefined,
+          lastCommitRevision: lastCommit ?? undefined,
+          testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
         }
-      })
-      .catch((error: unknown) => {
-        console.error("Space attachment upload for LLM analysis failed:", error)
+        const run = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
+        llmAnalysisBuildUrl.value = buildUrl(Number(run.runBuildId))
+        llmAnalysisState.value = LlmAnalysisState.DONE
+      } catch (error) {
+        console.error("LLM Analysis start failed:", error)
         llmAnalysisState.value = LlmAnalysisState.FAILED
-      })
+      }
+    }
+    void runLlmAnalysis()
   }
 }
 </script>

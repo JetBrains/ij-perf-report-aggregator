@@ -11,7 +11,7 @@ import (
 
 type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
-	AffectedTest           string                 `json:"affectedTest"`
+	ProjectName            string                 `json:"projectname"`
 	ChartPng               []byte                 `json:"chartPng"`
 	TestType               string                 `json:"testType"`
 }
@@ -19,7 +19,6 @@ type UploadAttachmentsRequest struct {
 type teamCityArtifact struct {
 	BuildId      int
 	ArtifactPath string
-	FileName     string
 }
 
 type UploadArtifact struct {
@@ -66,7 +65,7 @@ func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 type perfUnitTestCollector struct{}
 
 func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
-	return params.AffectedTest
+	return params.ProjectName
 }
 
 func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
@@ -81,7 +80,7 @@ func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
 type perfintCollector struct{}
 
 func (f perfintCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
-	return strings.ReplaceAll(params.AffectedTest, "_", "-")
+	return strings.ReplaceAll(params.ProjectName, "_", "-")
 }
 
 func (f perfintCollector) checkArtifact(artifactName string) bool {
@@ -221,7 +220,6 @@ func processBuildsArtifacts(
 		artifact := teamCityArtifact{
 			BuildId:      buildId,
 			ArtifactPath: testArtifactPath + "/" + str,
-			FileName:     fileName,
 		}
 		uploadWg.Go(func() {
 			resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
@@ -233,14 +231,14 @@ func processBuildsArtifacts(
 
 			err = config.UploadArtifact(ctx, UploadArtifact{
 				BuildId:       artifact.BuildId,
-				FileName:      artifact.FileName,
+				FileName:      fileName,
 				Body:          resp.Body,
 				ContentLength: resp.ContentLength,
 			})
 			if err != nil {
 				config.OnError(artifact.BuildId, "Failed to upload attachment", err)
 			} else {
-				config.OnSuccess(artifact.BuildId, artifact.FileName)
+				config.OnSuccess(artifact.BuildId, fileName)
 			}
 		})
 	}

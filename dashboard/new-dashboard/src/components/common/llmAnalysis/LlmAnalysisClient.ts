@@ -1,19 +1,24 @@
 import { ServerConfigurator } from "../dataQuery"
 
-export interface CommitRevisions {
-  firstCommit: string
-  lastCommit: string
+export interface LlmAnalysisRequest {
+  date: string
+  project: string
+  metric: string
+  currentBuildId: string
+  prevBuildId?: string
+  currentValue?: string
+  previousValue?: string
+  userName?: string
+  firstCommitRevision?: string
+  lastCommitRevision?: string
+  testMethodName?: string
 }
 
-export interface LlmAnalysisRequest {
-  commitRevisions: CommitRevisions | null
-  currentValue: string | undefined
-  previousValue: string | undefined
-  affectedMetric: string
-  testMethodName: string | undefined
-  youtrackIssueReadableId: string
-  youtrackIssueId: string
-  spaceUploadedFiles: string[]
+export interface LlmAnalysisRun {
+  id: number
+  date: string
+  runBuildId: string
+  state: string
 }
 
 export class LlmAnalysisClient {
@@ -23,7 +28,7 @@ export class LlmAnalysisClient {
     this.serverConfigurator = serverConfigurator
   }
 
-  async sendLlmAnalysisRequest(request: LlmAnalysisRequest): Promise<string> {
+  async sendLlmAnalysisRequest(request: LlmAnalysisRequest): Promise<LlmAnalysisRun> {
     const url = `${this.serverConfigurator?.serverUrl}/api/meta/teamcity/startLlmAnalysis`
     const response = await fetch(url, {
       method: "POST",
@@ -37,6 +42,6 @@ export class LlmAnalysisClient {
       const errorMessage = await response.text()
       throw new Error(`Failed to send LLM analysis request: ${response.statusText} ${errorMessage}`)
     }
-    return response.text()
+    return (await response.json()) as LlmAnalysisRun
   }
 }

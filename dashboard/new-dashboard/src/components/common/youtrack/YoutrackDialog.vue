@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
-import { buildUrl, getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
+import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
@@ -162,9 +162,8 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
-import { uploadAttachmentsToSpace, uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
-import { getFirstAndLastCommit } from "../../../util/changes"
+import { runLlmAnalysis } from "../llmAnalysis/runLlmAnalysis"
+import { uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 enum ProgressState {
   NOT_STARTED,
@@ -191,7 +190,6 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
-const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
 const createdTicket = ref("")
@@ -366,33 +364,16 @@ async function createTicket() {
     })
 
   if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
-    const runLlmAnalysis = async () => {
-      llmAnalysisState.value = LlmAnalysisState.PREPARING
-      try {
-        await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
-        const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
-        const llmAnalysisRequest: LlmAnalysisRequest = {
-          date: data.date,
-          project: data.projectName,
-          metric: affectedMetric,
-          currentBuildId: String(data.buildId),
-          prevBuildId: data.buildIdPrevious == null ? undefined : String(data.buildIdPrevious),
-          currentValue: data.formattedCurrentValue || undefined,
-          previousValue: data.formattedPreviousValue || undefined,
-          userName: accident.userName || undefined,
-          firstCommitRevision: firstCommit ?? undefined,
-          lastCommitRevision: lastCommit ?? undefined,
-          testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-        }
-        const run = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
-        llmAnalysisBuildUrl.value = buildUrl(Number(run.runBuildId))
+    llmAnalysisState.value = LlmAnalysisState.PREPARING
+    void runLlmAnalysis(serverConfigurator, data, attachmentsInfo)
+      .then(({ buildUrl: url }) => {
+        llmAnalysisBuildUrl.value = url
         llmAnalysisState.value = LlmAnalysisState.DONE
-      } catch (error) {
+      })
+      .catch((error: unknown) => {
         console.error("LLM Analysis start failed:", error)
         llmAnalysisState.value = LlmAnalysisState.FAILED
-      }
-    }
-    void runLlmAnalysis()
+      })
   }
 }
 </script>

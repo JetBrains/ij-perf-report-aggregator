@@ -291,6 +291,13 @@
           <BeakerIcon class="w-4 h-4 mr-1.5" />
           Bisect
         </Button>
+        <Button
+          v-if="data != null"
+          label="Run LLM Analysis"
+          text
+          :loading="llmAnalysisPreparing"
+          @click="runLlmAnalysis"
+        />
       </div>
     </div>
   </div>
@@ -346,6 +353,9 @@ import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigura
 import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
+import { useToast } from "primevue/usetoast"
+import { runLlmAnalysis as runLlmAnalysisHelper } from "../llmAnalysis/runLlmAnalysis"
+import { UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
@@ -384,6 +394,46 @@ const serverConfigurator = injectOrNull(serverConfiguratorKey)
 const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
+
+const toast = useToast()
+const llmAnalysisPreparing = ref(false)
+
+async function runLlmAnalysis() {
+  const d = vm.data.value
+  if (d == null || serverConfigurator == null) return
+
+  llmAnalysisPreparing.value = true
+
+  const attachmentsInfo: UploadAttachmentsRequest = {
+    teamcityAttachmentInfo: {
+      currentBuildId: d.buildId,
+      previousBuildId: d.buildIdPrevious,
+    },
+    projectName: d.projectName,
+    chartPng: undefined,
+    testType: dbTypeStore().dbType,
+  }
+
+  try {
+    const { buildUrl: url } = await runLlmAnalysisHelper(serverConfigurator, d, attachmentsInfo)
+    toast.add({
+      severity: "success",
+      summary: "LLM Analysis Started",
+      detail: `View TC build: ${url}`,
+      life: 15000,
+    })
+  } catch (error) {
+    console.error("LLM Analysis start failed:", error)
+    toast.add({
+      severity: "error",
+      summary: "LLM Analysis Failed",
+      detail: `Failed to start LLM analysis: ${error instanceof Error ? error.message : String(error)}`,
+      life: 8000,
+    })
+  } finally {
+    llmAnalysisPreparing.value = false
+  }
+}
 
 const youtrackClient = new YoutrackClient(serverConfigurator)
 provide(youtrackClientKey, youtrackClient)

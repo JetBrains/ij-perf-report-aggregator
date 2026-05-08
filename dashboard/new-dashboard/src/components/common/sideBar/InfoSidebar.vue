@@ -230,6 +230,11 @@
         :in-dialog="false"
       />
 
+      <LlmAnalysisRuns
+        :data="data"
+        :runs-refresh-trigger="runsRefreshTrigger"
+      />
+
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
@@ -316,6 +321,7 @@
     :data="data!!"
     :accident-configurator="accidentsConfigurator"
     :timerange-configurator="timerangeConfigurator"
+    @llm-analysis-launched="runsRefreshTrigger++"
   />
   <StacktraceModal
     v-if="showStacktrace"
@@ -355,6 +361,7 @@ import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
 import { useToast } from "primevue/usetoast"
 import { runLlmAnalysis as runLlmAnalysisHelper } from "../llmAnalysis/runLlmAnalysis"
+import LlmAnalysisRuns from "./LlmAnalysisRuns.vue"
 import { UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 const { timerangeConfigurator } = defineProps<{
@@ -397,6 +404,7 @@ const data = computed(() => vm.data.value)
 
 const toast = useToast()
 const llmAnalysisPreparing = ref(false)
+const runsRefreshTrigger = ref(0)
 
 async function runLlmAnalysis() {
   const d = vm.data.value
@@ -416,6 +424,7 @@ async function runLlmAnalysis() {
 
   try {
     const { buildUrl: url } = await runLlmAnalysisHelper(serverConfigurator, d, attachmentsInfo)
+    runsRefreshTrigger.value++
     toast.add({
       severity: "success",
       summary: "LLM Analysis Started",

@@ -188,6 +188,8 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
   timerangeConfigurator: TimeRangeConfigurator
 }>()
 
+const emit = defineEmits<{ llmAnalysisLaunched: [] }>()
+
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const toast = useToast()
@@ -369,6 +371,7 @@ async function createTicket() {
       .then(({ buildUrl: url }) => {
         llmAnalysisBuildUrl.value = url
         llmAnalysisState.value = LlmAnalysisState.DONE
+        emit("llmAnalysisLaunched")
       })
       .catch((error: unknown) => {
         console.error("LLM Analysis start failed:", error)

@@ -6,6 +6,7 @@ CREATE TABLE llm_analysis_runs
 (
 -- fields that inserted on creation and not subject to change:
   id                    SERIAL PRIMARY KEY,
+  created_at            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   date                  DATE         NOT NULL,
   project               VARCHAR(255) NOT NULL,
   metric                VARCHAR(255) NOT NULL,
@@ -19,6 +20,7 @@ CREATE TABLE llm_analysis_runs
   test_method_name      VARCHAR(255),
 -- fields that inserted on update and subject to change:
   run_build_id          VARCHAR(20),
+  -- valid values: not_started | queued | in_progress | success | failed
   state                 VARCHAR(50)  NOT NULL DEFAULT 'not_started',
 -- fields that inserted on update and not a subject to change:
   llm_guilty_commits    VARCHAR(40)[],
@@ -27,6 +29,9 @@ CREATE TABLE llm_analysis_runs
   user_rate             BOOLEAN,
   user_comment          TEXT
 );
+
+CREATE INDEX idx_llm_analysis_runs_lookup
+  ON llm_analysis_runs (date, project, metric, current_build_id, prev_build_id);
 
 -- Junction table: LLM runs <-> accidents (many-to-many)
 CREATE TABLE llm_run_accidents

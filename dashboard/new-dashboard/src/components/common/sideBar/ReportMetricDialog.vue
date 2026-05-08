@@ -87,6 +87,23 @@
         >Create YouTrack issue</label
       >
     </div>
+    <div
+      v-if="canShowLlmAnalysisToggle"
+      class="flex items-center mb-4"
+    >
+      <ToggleSwitch
+        v-model="withLlmAnalysis"
+        input-id="withLlmAnalysis"
+        :disabled="!llmAnalysisAvailable"
+      />
+      <label
+        for="withLlmAnalysis"
+        class="ml-2"
+        :class="{ 'opacity-50': !llmAnalysisAvailable }"
+      >
+        With LLM Analysis
+      </label>
+    </div>
     <RelatedAccidents
       :data="data"
       :accidents-configurator="accidentsConfigurator"
@@ -167,9 +184,13 @@ const toast = useToast()
 const showDialog = defineModel<boolean>("showDialog")
 const createIssue = defineModel<boolean>("createIssue")
 const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
+const withLlmAnalysisModel = defineModel<boolean>("withLlmAnalysis")
+
+const emit = defineEmits<{ requestLlmAnalysis: [] }>()
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
+const withLlmAnalysis = useStorage("withLlmAnalysis", true)
 
 function inferKindFromData(d: InfoData | null): AccidentKind {
   const value = d?.series[0]?.rawValue
@@ -189,6 +210,10 @@ watch(
     reason.value = newVal?.reason ?? ""
   }
 )
+
+const canShowLlmAnalysisToggle = computed(() => data?.series.length == 1 && data?.buildIdPrevious != null)
+const llmAnalysisAvailable = computed(() => reportMetricOnly.value && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement))
+const effectiveWithLlmAnalysis = computed(() => canShowLlmAnalysisToggle.value && llmAnalysisAvailable.value && withLlmAnalysis.value)
 
 function generateReason(): string {
   if (data == null) return ""
@@ -231,9 +256,13 @@ async function reportRegression() {
         throw new Error("Failed to create accident - no ID returned")
       }
 
+      const shouldRunLlm = effectiveWithLlmAnalysis.value
       if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
+        withLlmAnalysisModel.value = shouldRunLlm
         createIssue.value = true
+      } else if (shouldRunLlm) {
+        emit("requestLlmAnalysis")
       }
     } catch (error: unknown) {
       console.error("Failed to report accident", error)
@@ -277,6 +306,8 @@ async function updateRegression() {
 watch(reportMetricOnly, (newValue) => {
   if (newValue) {
     reportAllInBuild.value = false
+  } else {
+    withLlmAnalysis.value = false
   }
 })
 
@@ -284,6 +315,7 @@ watch(reportAllInBuild, (newValue) => {
   if (newValue) {
     reportMetricOnly.value = false
     createIssueCheckbox.value = false
+    withLlmAnalysis.value = false
   }
 })
 
@@ -292,6 +324,15 @@ watch(createIssueCheckbox, (newValue) => {
     reportAllInBuild.value = false
   }
 })
+
+watch(
+  () => accidentType.value,
+  (kind) => {
+    if (kind !== AccidentKind.Regression && kind !== AccidentKind.Improvement) {
+      withLlmAnalysis.value = false
+    }
+  }
+)
 
 function copy(accident: { kind: string; reason: string }) {
   reason.value = accident.reason

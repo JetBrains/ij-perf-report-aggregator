@@ -311,8 +311,10 @@
     v-model:show-dialog="showDialog"
     v-model:create-issue="showYoutrackDialog"
     v-model:accident-to-edit="accidentToEdit"
+    v-model:with-llm-analysis="withLlmAnalysisRequested"
     :accidents-configurator="accidentsConfigurator"
     :data="data"
+    @request-llm-analysis="runLlmAnalysis"
   />
   <YoutrackDialog
     v-if="showYoutrackDialog"
@@ -321,6 +323,7 @@
     :data="data!!"
     :accident-configurator="accidentsConfigurator"
     :timerange-configurator="timerangeConfigurator"
+    :with-llm-analysis="withLlmAnalysisRequested"
     @llm-analysis-launched="runsRefreshTrigger++"
   />
   <StacktraceModal
@@ -360,9 +363,8 @@ import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
 import { useToast } from "primevue/usetoast"
-import { runLlmAnalysis as runLlmAnalysisHelper } from "../llmAnalysis/runLlmAnalysis"
+import { runLlmAnalysisWithToast } from "../llmAnalysis/runLlmAnalysis"
 import LlmAnalysisRuns from "./LlmAnalysisRuns.vue"
-import { UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
@@ -375,6 +377,7 @@ const showStacktrace = ref(false)
 const showBisectDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
+const withLlmAnalysisRequested = ref(true)
 
 const buildCounter = computedAsync(async () => {
   const buildId = vm.data.value?.buildId
@@ -411,34 +414,10 @@ async function runLlmAnalysis() {
   if (d == null || serverConfigurator == null) return
 
   llmAnalysisPreparing.value = true
-
-  const attachmentsInfo: UploadAttachmentsRequest = {
-    teamcityAttachmentInfo: {
-      currentBuildId: d.buildId,
-      previousBuildId: d.buildIdPrevious,
-    },
-    projectName: d.projectName,
-    chartPng: undefined,
-    testType: dbTypeStore().dbType,
-  }
-
   try {
-    const { buildUrl: url } = await runLlmAnalysisHelper(serverConfigurator, d, attachmentsInfo)
-    runsRefreshTrigger.value++
-    toast.add({
-      severity: "success",
-      summary: "LLM Analysis Started",
-      detail: `View TC build: ${url}`,
-      life: 15000,
-    })
-  } catch (error) {
-    console.error("LLM Analysis start failed:", error)
-    toast.add({
-      severity: "error",
-      summary: "LLM Analysis Failed",
-      detail: `Failed to start LLM analysis: ${error instanceof Error ? error.message : String(error)}`,
-      life: 8000,
-    })
+    if (await runLlmAnalysisWithToast(serverConfigurator, d, toast)) {
+      runsRefreshTrigger.value++
+    }
   } finally {
     llmAnalysisPreparing.value = false
   }

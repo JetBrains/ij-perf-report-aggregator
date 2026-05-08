@@ -181,11 +181,18 @@ enum LlmAnalysisState {
 
 const router = useRouter()
 
-const { data, accident, accidentConfigurator, timerangeConfigurator } = defineProps<{
+const {
+  data,
+  accident,
+  accidentConfigurator,
+  timerangeConfigurator,
+  withLlmAnalysis = true,
+} = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
   timerangeConfigurator: TimeRangeConfigurator
+  withLlmAnalysis?: boolean
 }>()
 
 const emit = defineEmits<{ llmAnalysisLaunched: [] }>()
@@ -365,7 +372,7 @@ async function createTicket() {
       reportAttachmentFailure("Failed to upload attachments to YouTrack", error)
     })
 
-  if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
+  if (withLlmAnalysis && (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement)) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING
     void runLlmAnalysis(serverConfigurator, data, attachmentsInfo)
       .then(({ buildUrl: url }) => {

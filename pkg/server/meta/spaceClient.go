@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -105,10 +104,6 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		config := UploadConfig{
-			UploadChartPng: func(ctx context.Context, chartData []byte) error {
-				folder := fmt.Sprintf("analyses/%d/%s", params.TeamCityAttachmentInfo.CurrentBuildId, params.ProjectName)
-				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, "dashboard.png", bytes.NewReader(chartData))
-			},
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
 				folder := fmt.Sprintf("analyses/%d/%s", artifact.BuildId, params.ProjectName)
 				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, artifact.FileName, artifact.Body)
@@ -135,7 +130,7 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 			BuildsToSkip: skip,
 		}
 
-		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
+		ProcessAndUploadTeamcityArtifacts(ctx, params.UploadAttachmentsRequest, config)
 
 		if err := recordSpaceUploadedArtifacts(ctx, metaDb, params.ProjectName, response); err != nil {
 			slog.Error("failed to record space uploaded artifacts", "error", err)

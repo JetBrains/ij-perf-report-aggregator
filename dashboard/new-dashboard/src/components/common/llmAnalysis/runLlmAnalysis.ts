@@ -42,7 +42,6 @@ export async function runLlmAnalysisWithToast(serverConfigurator: ServerConfigur
       previousBuildId: data.buildIdPrevious,
     },
     projectName: data.projectName,
-    chartPng: undefined,
     testType: dbTypeStore().dbType,
   }
   try {

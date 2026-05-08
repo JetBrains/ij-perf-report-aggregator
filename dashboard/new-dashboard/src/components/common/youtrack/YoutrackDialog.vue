@@ -325,13 +325,13 @@ async function createTicket() {
       previousBuildId: undefined,
     },
     projectName: data.projectName,
-    chartPng: undefined,
     testType: dbTypeStore().dbType,
   }
+  let chartPng: string | undefined
   if (accident.kind != AccidentKind.Exception) {
     attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
     try {
-      attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
+      chartPng = await fetch(data.chartDataUrl)
         .then((res) => res.blob())
         .then((blob) => {
           return new Promise<string>((resolve, reject) => {
@@ -359,7 +359,7 @@ async function createTicket() {
   }
 
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
-  uploadAttachmentsToYoutrack(serverConfigurator, { ...attachmentsInfo, issueId: issueResponse.issue.id })
+  uploadAttachmentsToYoutrack(serverConfigurator, { ...attachmentsInfo, issueId: issueResponse.issue.id, chartPng })
     .then((response) => {
       if (response.exceptions?.length) {
         reportAttachmentFailure(`Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`)

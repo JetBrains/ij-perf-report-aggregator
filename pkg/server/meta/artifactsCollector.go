@@ -12,7 +12,6 @@ import (
 type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
 	ProjectName            string                 `json:"projectname"`
-	ChartPng               []byte                 `json:"chartPng"`
 	TestType               string                 `json:"testType"`
 }
 
@@ -29,7 +28,6 @@ type UploadArtifact struct {
 }
 
 type UploadConfig struct {
-	UploadChartPng func(ctx context.Context, chartData []byte) error
 	UploadArtifact func(ctx context.Context, artifact UploadArtifact) error
 	OnError        func(buildId int, message string, err error)
 	OnSuccess      func(buildId int, fileName string)
@@ -136,24 +134,10 @@ func getAttachmentName(filename, suffix string) string {
 	return fmt.Sprintf("%s.%s", updatedName, ext)
 }
 
-// ProcessAndUploadArtifacts handles the common logic for fetching artifacts
+// ProcessAndUploadTeamcityArtifacts handles the common logic for fetching artifacts
 // from TeamCity and uploading them via the provided config
-func ProcessAndUploadArtifacts(ctx context.Context, params UploadAttachmentsRequest, config UploadConfig) {
+func ProcessAndUploadTeamcityArtifacts(ctx context.Context, params UploadAttachmentsRequest, config UploadConfig) {
 	var uploadWg sync.WaitGroup
-
-	//todo: figure out what to do with screenshots
-	if params.ChartPng != nil && config.UploadChartPng != nil {
-		if _, skip := config.BuildsToSkip[params.TeamCityAttachmentInfo.CurrentBuildId]; !skip {
-			uploadWg.Go(func() {
-				err := config.UploadChartPng(ctx, params.ChartPng)
-				if err != nil {
-					config.OnError(params.TeamCityAttachmentInfo.CurrentBuildId, "Failed to upload chart PNG", err)
-				} else {
-					config.OnSuccess(params.TeamCityAttachmentInfo.CurrentBuildId, "dashboard.png")
-				}
-			})
-		}
-	}
 
 	builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
 	if params.TeamCityAttachmentInfo.PreviousBuildId != nil {

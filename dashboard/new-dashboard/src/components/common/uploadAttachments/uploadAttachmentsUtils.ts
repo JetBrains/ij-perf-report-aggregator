@@ -6,12 +6,12 @@ export interface UploadAttachmentsRequest {
     previousBuildId: number | undefined
   }
   projectName: string
-  chartPng: string | undefined
   testType: string
 }
 
 export interface YoutrackUploadAttachmentsRequest extends UploadAttachmentsRequest {
   issueId: string
+  chartPng?: string
 }
 
 export interface YoutrackUploadAttachmentsResponse {

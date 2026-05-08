@@ -240,7 +240,8 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 
 type YoutrackUploadAttachmentsRequest struct {
 	UploadAttachmentsRequest
-	IssueId string `json:"issueId"`
+	IssueId  string `json:"issueId"`
+	ChartPng []byte `json:"chartPng,omitempty"`
 }
 
 type YoutrackUploadAttachmentsResponse struct {
@@ -264,10 +265,6 @@ func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 		ctx := request.Context()
 
 		config := UploadConfig{
-			UploadChartPng: func(ctx context.Context, chartData []byte) error {
-				contentLength := int64(len(chartData))
-				return youtrackClient.UploadAttachment(ctx, params.IssueId, bytes.NewReader(chartData), "dashboard.png", contentLength)
-			},
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
 				return youtrackClient.UploadAttachment(ctx, params.IssueId, artifact.Body, artifact.FileName, artifact.ContentLength)
 			},
@@ -285,7 +282,25 @@ func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 			},
 		}
 
-		ProcessAndUploadArtifacts(ctx, params.UploadAttachmentsRequest, config)
+		var chartWg sync.WaitGroup
+		if len(params.ChartPng) > 0 {
+			chartData := params.ChartPng
+			chartWg.Go(func() {
+				err := youtrackClient.UploadAttachment(ctx, params.IssueId, bytes.NewReader(chartData), "dashboard.png", int64(len(chartData)))
+				mu.Lock()
+				defer mu.Unlock()
+				if err != nil {
+					slog.Error("Failed to upload chart PNG", "error", err)
+					response.Exceptions = append(response.Exceptions,
+						fmt.Sprintf("Message: Failed to upload chart PNG. Error: %s", err.Error()))
+				} else {
+					response.Uploads = append(response.Uploads, "dashboard.png")
+				}
+			})
+		}
+
+		ProcessAndUploadTeamcityArtifacts(ctx, params.UploadAttachmentsRequest, config)
+		chartWg.Wait()
 
 		if len(response.Exceptions) > 0 {
 			if len(response.Uploads) > 0 {

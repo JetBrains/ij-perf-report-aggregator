@@ -201,6 +201,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			KTIJ,
 			WEB,
 			WI,
+			CLION,
 		}
 
 		if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {

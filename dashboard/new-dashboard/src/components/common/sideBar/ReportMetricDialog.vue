@@ -181,12 +181,7 @@ function inferKindFromData(d: InfoData | null): AccidentKind {
 }
 
 const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
-const isKindAutoDetected = computed(
-  () =>
-    accidentToEdit.value == null &&
-    inferKindFromData(data) === AccidentKind.Improvement &&
-    accidentType.value === AccidentKind.Improvement
-)
+const isKindAutoDetected = computed(() => accidentToEdit.value == null && inferKindFromData(data) === AccidentKind.Improvement && accidentType.value === AccidentKind.Improvement)
 watch(
   () => accidentToEdit.value,
   (newVal) => {

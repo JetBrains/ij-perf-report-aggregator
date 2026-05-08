@@ -4,7 +4,7 @@
   "dependencies": {
     "@heroicons/vue": "2.2.0",
     "@primevue/core": "^4.5.5",
-    "@vueuse/core": "^14.2.1",
+    "@vueuse/core": "^14.3.0",
     "echarts": "6.0.0",
     "fast-equals": "6.0.0",
     "humanize-duration": "3.33.2",
@@ -13,7 +13,7 @@
     "pragmastat": "12.1.0",
     "primevue": "4.5.5",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.33",
+    "vue": "3.5.34",
     "vue-router": "5.0.6"
   },
   "devDependencies": {

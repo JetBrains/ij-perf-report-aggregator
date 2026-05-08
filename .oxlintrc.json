@@ -76,6 +76,7 @@
     "prefer-top-level-await": "off",
     "require-hook": "off",
     "require-typed-ref": "off",
+    "require-unicode-regexp": "off",
     "return-await": "off",
     "sort-imports": "off",
     "sort-keys": "off",
@@ -86,13 +87,16 @@
     "unicorn/no-immediate-mutation": "off",
     "unicorn/no-nested-ternary": "off",
     "unicorn/no-null": "off",
+    "unicorn/no-negated-condition": "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/prefer-global-this": "off",
     "unicorn/require-post-message-target-origin": "off",
     "unicorn/switch-case-braces": "off",
     "vitest/no-hooks": "off",
+    "vitest/require-hook": "off",
     "vitest/prefer-called-once": "off",
-    "vitest/prefer-expect-assertions": "off"
+    "vitest/prefer-expect-assertions": "off",
+    "vitest/prefer-lowercase-title": "off"
   },
   "ignorePatterns": [
     "**/zstd-module.ts",

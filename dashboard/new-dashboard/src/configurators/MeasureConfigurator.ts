@@ -555,7 +555,7 @@ async function configureChart(
 
     let isNotEmpty = false
     for (const data of seriesData) {
-      isNotEmpty = isNotEmpty || data.length > 0
+      isNotEmpty ||= data.length > 0
     }
     if (isNotEmpty) {
       // noinspection SuspiciousTypeOfGuard

@@ -116,13 +116,15 @@ func Serve(dbUrl string, natsUrl string) error {
 		})
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())
-			r.Post("/startLlmAnalysis", meta.CreatePostStartLlmAnalysis(dbpool))
-			r.Get("/llmAnalysisRuns", meta.CreateGetLlmAnalysisRuns(dbpool))
 			r.Get("/changes", meta.HandleGetTeamCityChanges())
 			r.Get("/buildType", meta.HandleGetTeamCityBuildType())
 			r.Get("/buildCounter", meta.HandleGetTeamCityBuildCounter())
 			r.Get("/buildInfo", meta.HandleGetTeamCityBuildInfo())
 			r.Get("/artifactsExist", meta.HandleGetTeamCityArtifactsExist())
+		})
+		r.Route("/llm", func(r chi.Router) {
+			r.Post("/startAnalysis", meta.CreatePostStartLlmAnalysis(dbpool))
+			r.Get("/analysisRuns", meta.CreateGetLlmAnalysisRuns(dbpool))
 		})
 	})
 

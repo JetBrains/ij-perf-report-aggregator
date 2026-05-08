@@ -114,13 +114,12 @@ import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureC
 import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS } from "../../../util/mainMetrics"
+import { openTestDrilldown } from "../../../util/testDrilldown"
 import MeasureSelect from "../../charts/MeasureSelect.vue"
 import BranchSelect from "../BranchSelect.vue"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import StickyToolbar from "../StickyToolbar.vue"
-import { dbTypeStore } from "../../../shared/dbTypes"
-import { DBType } from "../sideBar/InfoSidebar"
 import { modeSelectLabelFormat } from "../../../shared/labels"
 import DimensionSelect from "../../charts/DimensionSelect.vue"
 import { createTestModeConfigurator } from "../../../configurators/TestModeConfigurator"
@@ -294,19 +293,8 @@ function compareBranches(
 }
 
 function handleNavigateToTest(project: string, metric: string) {
-  const currentRoute = router.currentRoute.value
-  const parts = currentRoute.path.split("/")
-  parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  const testURL = parts.join("/")
-
-  const queryParams = new URLSearchParams(currentRoute.query as Record<string, string>)
-  queryParams.delete("branch")
-  queryParams.set("project", project)
-  queryParams.set("measure", metric)
-  queryParams.delete("metrics")
-  queryParams.delete("tests")
-
-  window.open(router.resolve(`${testURL}?${queryParams.toString()}&branch=${branch1.value}&branch=${branch2.value}`).href, "_blank")
+  const branches = [branch1.value, branch2.value].filter((b): b is string => b != null)
+  openTestDrilldown(router, { project, measure: metric, branches })
 }
 </script>
 

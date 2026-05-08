@@ -5,6 +5,8 @@ import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutor
 export declare type DataQueryResult = (string | number)[][][]
 export declare type DataQueryConsumer = (data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
 
+export const SERIES_NAME_SEPARATOR = " – "
+
 interface Result {
   readonly isLoading: boolean
   readonly data: DataQueryResult | null
@@ -127,14 +129,14 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       const producer = producers[i]
       producer.mutate(index)
       if (i !== 0) {
-        measureName += " – "
+        measureName += SERIES_NAME_SEPARATOR
       }
       measureName += producer.getMeasureName(index)
 
       const title = producer.getSeriesName(index)
       if (title.length > 0) {
         if (seriesName.length > 0) {
-          seriesName += " – "
+          seriesName += SERIES_NAME_SEPARATOR
         }
         seriesName += title
       }

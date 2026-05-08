@@ -1,5 +1,6 @@
 <template>
   <LineChart
+    v-if="renderMode === 'charts'"
     :title="label"
     :value-unit="valueUnit"
     :measures="measureArray"
@@ -12,14 +13,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, watch } from "vue"
+import { computed, inject, onUnmounted, Ref, ref, watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { injectOrError } from "../../shared/injectionKeys"
-import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { compareSectionsRegistryKey, dashboardConfiguratorsKey, renderModeKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
 import LineChart from "./LineChart.vue"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
+import { CompareSectionConfig, RenderMode } from "./compareMode"
 
 interface Props {
   label: string
@@ -67,4 +69,40 @@ watch(
   },
   { immediate: true }
 )
+
+const renderMode = inject(renderModeKey, ref<RenderMode>("charts"))
+const compareRegistry = inject(compareSectionsRegistryKey, null)
+
+const sectionId = compareRegistry?.nextSectionId() ?? null
+
+function buildSectionConfig(): CompareSectionConfig | null {
+  if (sectionId == null) return null
+  return {
+    id: sectionId,
+    label,
+    measure,
+    projects,
+    aliases,
+    machines,
+    valueUnit,
+  }
+}
+
+if (compareRegistry != null && sectionId != null) {
+  const initial = buildSectionConfig()
+  if (initial != null) compareRegistry.register(initial)
+
+  watch(
+    () => [label, measure, projects, aliases, machines, valueUnit],
+    () => {
+      const config = buildSectionConfig()
+      if (config != null) compareRegistry.register(config)
+    },
+    { deep: true }
+  )
+
+  onUnmounted(() => {
+    compareRegistry.unregister(sectionId)
+  })
+}
 </script>

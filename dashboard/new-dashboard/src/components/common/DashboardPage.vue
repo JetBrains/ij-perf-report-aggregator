@@ -17,12 +17,31 @@
       </template>
     </DashboardToolbar>
 
+    <SelectButton
+      v-if="canCompare"
+      v-model="renderMode"
+      :options="renderModeOptions"
+      option-label="label"
+      option-value="value"
+      :allow-empty="false"
+      class="self-start"
+    />
+
     <main class="flex">
       <div
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <slot :averages-configurators="averagesConfigurators" />
+        <CompareTable v-if="renderMode === 'compare'" />
+        <!-- v-show keeps the slot mounted in compare mode (chart components must stay mounted to keep -->
+        <!-- their CompareSectionsRegistry entries alive) but hides it so non-compare-aware dashboard -->
+        <!-- content doesn't sit alongside the table. -->
+        <div
+          v-show="renderMode === 'charts'"
+          class="flex flex-col gap-6"
+        >
+          <slot :averages-configurators="averagesConfigurators" />
+        </div>
       </div>
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>
@@ -30,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, useTemplateRef } from "vue"
+import { computed, provide, ref, useTemplateRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -40,8 +59,19 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import {
+  accidentsConfiguratorKey,
+  branchConfiguratorKey,
+  compareSectionsRegistryKey,
+  containerKey,
+  dashboardConfiguratorsKey,
+  renderModeKey,
+  serverConfiguratorKey,
+  sidebarVmKey,
+} from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
+import CompareTable from "../charts/CompareTable.vue"
+import { CompareSectionsRegistry, RenderMode } from "../charts/compareMode"
 import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
@@ -152,6 +182,30 @@ if (testModeConfigurator != null) {
 }
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
+provide(branchConfiguratorKey, branchConfigurator)
+
+const renderMode = ref<RenderMode>("charts")
+const renderModeOptions = [
+  { label: "Charts", value: "charts" },
+  { label: "Compare with base", value: "compare" },
+]
+const compareRegistry = new CompareSectionsRegistry()
+provide(renderModeKey, renderMode)
+provide(compareSectionsRegistryKey, compareRegistry)
+
+const canCompare = computed(() => {
+  if (branchConfigurator == null) return false
+  const sel = branchConfigurator.selected.value
+  const count = sel == null ? 0 : Array.isArray(sel) ? sel.length : 1
+  return count >= 2
+})
+
+// Drop back to charts when the user narrows to a single branch: comparing master to itself is degenerate.
+watch(canCompare, (allowed) => {
+  if (!allowed && renderMode.value === "compare") {
+    renderMode.value = "charts"
+  }
+})
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

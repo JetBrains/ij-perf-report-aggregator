@@ -10,6 +10,7 @@
         v-model="accidentType"
         placeholder="Event Type"
         :options="getAccidentTypes()"
+        :class="{ 'auto-detected-kind': isKindAutoDetected }"
       >
         <template #value="{ value }">
           <div class="group inline-flex justify-center font-medium">
@@ -169,11 +170,27 @@ const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
-const accidentType = ref(accidentToEdit.value?.kind ?? "Regression")
+
+function inferKindFromData(d: InfoData | null): AccidentKind {
+  const value = d?.series[0]?.rawValue
+  const prev = d?.previousValue
+  if (value == null || prev == null || !Number.isFinite(value) || !Number.isFinite(prev)) {
+    return AccidentKind.Regression
+  }
+  return value < prev ? AccidentKind.Improvement : AccidentKind.Regression
+}
+
+const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
+const isKindAutoDetected = computed(
+  () =>
+    accidentToEdit.value == null &&
+    inferKindFromData(data) === AccidentKind.Improvement &&
+    accidentType.value === AccidentKind.Improvement
+)
 watch(
   () => accidentToEdit.value,
   (newVal) => {
-    accidentType.value = newVal?.kind ?? "Regression"
+    accidentType.value = newVal?.kind ?? inferKindFromData(data)
     reason.value = newVal?.reason ?? ""
   }
 )
@@ -294,3 +311,11 @@ function getAccidentTypes(): string[] {
   return values
 }
 </script>
+
+<style scoped>
+.auto-detected-kind {
+  outline: 1px dashed var(--p-primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+</style>

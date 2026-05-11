@@ -3,7 +3,9 @@
     v-show="vm.visible.value"
     class="infoSidebar ml-5 text-gray-500 dark:text-gray-300 relative"
   >
-    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid border-gray-200 dark:border-gray-700 rounded-md px-5 pt-7 pb-5 overflow-y-auto overflow-x-hidden shadow-lg bg-white dark:bg-transparent">
+    <div
+      class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid border-gray-200 dark:border-gray-700 rounded-md px-5 pt-7 pb-5 overflow-y-auto overflow-x-hidden shadow-lg bg-white dark:bg-transparent"
+    >
       <div
         v-if="useScrollStore().isScrolled"
         class="sticky min-h-10"
@@ -140,20 +142,30 @@
           class="flex gap-1.5 items-center"
         >
           <ArrowLeftIcon class="w-4 h-4 flex-none" />
-          <span>{{ splitDelta(data.deltaPrevious).main }}<span
-            v-if="splitDelta(data.deltaPrevious).percent"
-            :class="getDeltaColor(data.deltaPrevious)"
-          > ({{ splitDelta(data.deltaPrevious).percent }})</span></span>
+          <span
+            >{{ splitDelta(data.deltaPrevious).main
+            }}<span
+              v-if="splitDelta(data.deltaPrevious).percent"
+              :class="getDeltaColor(data.deltaPrevious)"
+            >
+              ({{ splitDelta(data.deltaPrevious).percent }})</span
+            ></span
+          >
         </span>
         <span
           v-if="data?.deltaNext"
           class="flex gap-1.5 items-center"
         >
           <ArrowRightIcon class="w-4 h-4 flex-none" />
-          <span>{{ splitDelta(data.deltaNext).main }}<span
-            v-if="splitDelta(data.deltaNext).percent"
-            :class="getDeltaColor(data.deltaNext)"
-          > ({{ splitDelta(data.deltaNext).percent }})</span></span>
+          <span
+            >{{ splitDelta(data.deltaNext).main
+            }}<span
+              v-if="splitDelta(data.deltaNext).percent"
+              :class="getDeltaColor(data.deltaNext)"
+            >
+              ({{ splitDelta(data.deltaNext).percent }})</span
+            ></span
+          >
         </span>
 
         <span class="flex gap-1.5 items-center">
@@ -258,7 +270,7 @@
       </div>
 
       <div
-        v-if="(accidentsConfigurator != null) || (bisectSupported && data != null)"
+        v-if="accidentsConfigurator != null || (bisectSupported && data != null)"
         class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700"
       >
         <Button

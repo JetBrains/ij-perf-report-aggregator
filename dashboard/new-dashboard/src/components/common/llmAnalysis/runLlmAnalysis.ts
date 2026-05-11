@@ -12,7 +12,12 @@ export interface RunLlmAnalysisResult {
   buildUrl: string
 }
 
-export async function runLlmAnalysis(serverConfigurator: ServerConfigurator, data: InfoData, attachmentsInfo: UploadAttachmentsRequest): Promise<RunLlmAnalysisResult> {
+export async function runLlmAnalysis(
+  serverConfigurator: ServerConfigurator,
+  data: InfoData,
+  attachmentsInfo: UploadAttachmentsRequest,
+  ytIssueId?: string
+): Promise<RunLlmAnalysisResult> {
   if (data.buildIdPrevious == null) {
     throw new Error("Previous build is required to run LLM analysis")
   }
@@ -30,6 +35,7 @@ export async function runLlmAnalysis(serverConfigurator: ServerConfigurator, dat
     firstCommitRevision: firstCommit ?? undefined,
     lastCommitRevision: lastCommit ?? undefined,
     testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
+    ytIssueId: ytIssueId ?? undefined,
   }
   const run = await new LlmAnalysisClient(serverConfigurator).sendLlmAnalysisRequest(request)
   return { run, buildUrl: buildUrl(Number(run.runBuildId)) }

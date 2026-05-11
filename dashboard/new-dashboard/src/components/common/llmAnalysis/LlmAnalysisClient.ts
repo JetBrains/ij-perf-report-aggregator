@@ -12,6 +12,7 @@ export interface LlmAnalysisRequest {
   firstCommitRevision?: string
   lastCommitRevision?: string
   testMethodName?: string
+  ytIssueId?: string
 }
 
 export enum LlmAnalysisState {

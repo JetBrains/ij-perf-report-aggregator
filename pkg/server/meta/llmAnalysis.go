@@ -27,6 +27,7 @@ type LLMAnalysisRequest struct {
 	FirstCommitRevision *string `json:"firstCommitRevision,omitempty"`
 	LastCommitRevision  *string `json:"lastCommitRevision,omitempty"`
 	TestMethodName      *string `json:"testMethodName,omitempty"`
+	YtIssueId           *string `json:"ytIssueId,omitempty"`
 }
 
 type LlmAnalysisRun struct {
@@ -107,6 +108,9 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		buildParams := map[string]string{
 			"llm.analysis.id": strconv.Itoa(id),
+		}
+		if llmAnalysisRequest.YtIssueId != nil && *llmAnalysisRequest.YtIssueId != "" {
+			buildParams["youtrack.issue.id"] = *llmAnalysisRequest.YtIssueId
 		}
 
 		//TODO: remove staging after testing

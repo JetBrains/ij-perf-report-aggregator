@@ -374,7 +374,7 @@ async function createTicket() {
 
   if (withLlmAnalysis && (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement)) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING
-    void runLlmAnalysis(serverConfigurator, data, attachmentsInfo)
+    void runLlmAnalysis(serverConfigurator, data, attachmentsInfo, issueResponse.issue.idReadable)
       .then(({ buildUrl: url }) => {
         llmAnalysisBuildUrl.value = url
         llmAnalysisState.value = LlmAnalysisState.DONE

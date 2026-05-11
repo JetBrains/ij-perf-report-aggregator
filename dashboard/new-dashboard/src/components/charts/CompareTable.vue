@@ -480,4 +480,17 @@ onUnmounted(() => {
 .compare-cell-improvement-warn {
   background-color: rgba(132, 204, 22, 0.12);
 }
+
+.dark-mode .compare-cell-degradation-severe {
+  background-color: rgba(248, 113, 113, 0.22);
+}
+.dark-mode .compare-cell-degradation-warn {
+  background-color: rgba(251, 146, 60, 0.18);
+}
+.dark-mode .compare-cell-improvement-severe {
+  background-color: rgba(74, 222, 128, 0.22);
+}
+.dark-mode .compare-cell-improvement-warn {
+  background-color: rgba(163, 230, 53, 0.2);
+}
 </style>

@@ -109,8 +109,11 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		buildParams := map[string]string{
 			"llm.analysis.id": strconv.Itoa(id),
 		}
-		if llmAnalysisRequest.YtIssueId != nil && *llmAnalysisRequest.YtIssueId != "" {
+		if llmAnalysisRequest.YtIssueId != nil {
 			buildParams["youtrack.issue.id"] = *llmAnalysisRequest.YtIssueId
+		}
+		if email := request.Header.Get("X-Auth-Request-Email"); email != "" {
+			buildParams["user.email"] = email
 		}
 
 		//TODO: remove staging after testing

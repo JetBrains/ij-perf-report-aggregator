@@ -76,6 +76,8 @@ function stateIconClass(state: LlmAnalysisState): string {
       return "pi pi-verified"
     case LlmAnalysisState.Failed:
       return "pi pi-times-circle"
+    case LlmAnalysisState.Cancelled:
+      return "pi pi-ban"
     default:
       return ""
   }
@@ -91,6 +93,8 @@ function stateTooltip(state: LlmAnalysisState): string {
       return "Success"
     case LlmAnalysisState.Failed:
       return "Failed"
+    case LlmAnalysisState.Cancelled:
+      return "Cancelled"
     default:
       return ""
   }
@@ -123,5 +127,9 @@ function formatCreatedAt(iso: string): string {
 
 .llm-analysis-runs .pi-times-circle {
   color: #ef4444;
+}
+
+.llm-analysis-runs .pi-ban {
+  color: #6b7280;
 }
 </style>

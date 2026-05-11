@@ -20,6 +20,7 @@ export enum LlmAnalysisState {
   InProgress = "in_progress",
   Success = "success",
   Failed = "failed",
+  Cancelled = "cancelled",
 }
 
 export interface LlmAnalysisRun {

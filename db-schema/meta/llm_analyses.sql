@@ -20,7 +20,7 @@ CREATE TABLE llm_analysis_runs
   test_method_name      VARCHAR(255),
 -- fields that inserted on update and subject to change:
   run_build_id          VARCHAR(20),
-  -- valid values: not_started | queued | in_progress | success | failed
+  -- valid values: not_started | queued | in_progress | success | failed | cancelled
   state                 VARCHAR(50)  NOT NULL DEFAULT 'not_started',
 -- fields that inserted on update and not a subject to change:
   llm_guilty_commits    VARCHAR(40)[],

@@ -125,6 +125,8 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Route("/llm", func(r chi.Router) {
 			r.Post("/startAnalysis", meta.CreatePostStartLlmAnalysis(dbpool))
 			r.Get("/analysisRuns", meta.CreateGetLlmAnalysisRuns(dbpool))
+			r.Get("/analysisRunData", meta.CreateGetLlmAnalysisRunData(dbpool))
+			r.Post("/updateAnalysisRun", meta.CreatePostUpdateLlmAnalysisRun(dbpool))
 		})
 	})
 

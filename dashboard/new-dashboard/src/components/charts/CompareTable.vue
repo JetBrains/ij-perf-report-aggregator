@@ -38,7 +38,6 @@
       class="p-datatable-sm"
       sort-field="absDiffPercent"
       :sort-order="-1"
-      @row-click="onRowClick"
     >
       <Column
         field="sectionLabel"
@@ -49,7 +48,20 @@
         field="project"
         header="Project"
         :sortable="true"
-      />
+      >
+        <template #body="slotProps">
+          <div class="flex items-center">
+            <div>{{ slotProps.data.project }}</div>
+            <div class="ml-2">
+              <Button
+                icon="pi pi-external-link"
+                class="p-button-rounded p-button-text p-button-sm"
+                @click="() => handleNavigateToTest(slotProps.data)"
+              />
+            </div>
+          </div>
+        </template>
+      </Column>
       <Column
         field="metric"
         header="Metric"
@@ -408,8 +420,7 @@ function formatRowRange(row: CompareRow, lo: number, hi: number): string {
   return `${formatRowValue(row, lo)} – ${formatRowValue(row, hi)}`
 }
 
-function onRowClick(event: { data: CompareRow }): void {
-  const row = event.data
+function handleNavigateToTest(row: CompareRow): void {
   const sel = selection.value
   const branches = sel == null ? null : [sel.base, ...sel.compared]
   openTestDrilldown(router, { project: row.project, measure: row.metric, branches })

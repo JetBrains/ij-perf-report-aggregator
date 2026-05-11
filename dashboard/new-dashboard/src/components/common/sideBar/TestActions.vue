@@ -3,8 +3,9 @@
     v-if="testActions.length > 0"
     :label="testActions[0].label"
     :model="testActions.slice(1)"
+    size="small"
     link
-    icon="pi pi-chart-line"
+    icon="pi pi-external-link"
     @click="testActions[0].command"
   />
 </template>

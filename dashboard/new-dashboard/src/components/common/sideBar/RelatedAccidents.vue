@@ -22,7 +22,7 @@
                   autoHide: false,
                   showDelay: 500,
                 }"
-                class="flex gap-1.5"
+                class="flex gap-1.5 items-start"
               >
                 <span v-if="inDialog">
                   <DocumentDuplicateIcon
@@ -30,11 +30,13 @@
                     @click="copy(accident)"
                   />
                 </span>
-                &bull;
+                <span
+                  class="mt-1.5 w-1.5 h-1.5 rounded-full flex-none"
+                  :class="accident.kind == 'Regression' ? 'bg-red-400' : 'bg-green-400'"
+                />
                 <!-- eslint-disable vue/no-v-html -->
                 <span
-                  class="w-full"
-                  :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
+                  class="w-full text-gray-500 dark:text-gray-300"
                   v-html="replaceToLink(accident.reason)"
                 />
                 <GlobeAltIcon

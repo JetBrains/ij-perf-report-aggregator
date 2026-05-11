@@ -3,24 +3,21 @@
     v-show="vm.visible.value"
     class="infoSidebar ml-5 text-gray-500 dark:text-gray-300 relative"
   >
-    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid rounded-md p-5 overflow-y-auto overflow-x-hidden">
+    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid border-gray-200 dark:border-gray-700 rounded-md px-5 pt-7 pb-5 overflow-y-auto overflow-x-hidden shadow-lg bg-white dark:bg-transparent">
       <div
         v-if="useScrollStore().isScrolled"
         class="sticky min-h-10"
       ></div>
-      <span class="flex justify-between uppercase text-xs">
-        {{ data?.title }}
+      <span
+        v-tooltip.left="'Close'"
+        class="infoSidebar_icon absolute top-6 right-4 text-base pi pi-plus rotate-45 cursor-pointer transition duration-150 ease-out text-gray-500 hover:text-gray-800 dark:hover:text-gray-100"
+        @click="handleCloseClick"
+      />
 
-        <span
-          class="infoSidebar_icon text-sm pi pi-plus rotate-45 cursor-pointer transition duration-150 ease-out relative"
-          @click="handleCloseClick"
-        />
-      </span>
-
-      <div class="flex gap-1.5 font-medium text-base items-center break-all">
+      <div class="flex gap-1.5 font-semibold text-base items-center break-all pr-7 pb-3 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
         <span
           v-if="data?.series.length == 1"
-          class="w-3 h-3 rounded-full"
+          class="w-3 h-3 rounded-full flex-none"
           :style="{ backgroundColor: data?.series[0].color }"
         />
         <span v-if="data?.series.length == 1">
@@ -142,15 +139,21 @@
           v-if="data?.deltaPrevious"
           class="flex gap-1.5 items-center"
         >
-          <ArrowLeftIcon class="w-4 h-4" />
-          {{ data?.deltaPrevious }}
+          <ArrowLeftIcon class="w-4 h-4 flex-none" />
+          <span>{{ splitDelta(data.deltaPrevious).main }}<span
+            v-if="splitDelta(data.deltaPrevious).percent"
+            :class="getDeltaColor(data.deltaPrevious)"
+          > ({{ splitDelta(data.deltaPrevious).percent }})</span></span>
         </span>
         <span
           v-if="data?.deltaNext"
           class="flex gap-1.5 items-center"
         >
-          <ArrowRightIcon class="w-4 h-4" />
-          {{ data?.deltaNext }}
+          <ArrowRightIcon class="w-4 h-4 flex-none" />
+          <span>{{ splitDelta(data.deltaNext).main }}<span
+            v-if="splitDelta(data.deltaNext).percent"
+            :class="getDeltaColor(data.deltaNext)"
+          > ({{ splitDelta(data.deltaNext).percent }})</span></span>
         </span>
 
         <span class="flex gap-1.5 items-center">
@@ -181,11 +184,13 @@
               }"
               class="flex items-start justify-between gap-1.5"
             >
-              &bull;
+              <span
+                class="mt-1.5 w-1.5 h-1.5 rounded-full flex-none"
+                :class="accident.kind == 'Regression' || accident.kind == 'InferredRegression' ? 'bg-red-400' : 'bg-green-400'"
+              />
               <!-- eslint-disable vue/no-v-html -->
               <span
-                class="w-full"
-                :class="accident.kind == 'Regression' || accident.kind == 'InferredRegression' ? 'text-red-500' : 'text-green-500'"
+                class="w-full text-gray-700 dark:text-gray-200"
                 v-html="replaceToLink(accident.reason)"
               />
               <GlobeAltIcon
@@ -213,7 +218,7 @@
         :in-dialog="false"
       />
 
-      <div class="flex gap-4 text-primary dark:text-primary-dark">
+      <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getChangesUrl"
@@ -248,22 +253,33 @@
           @click.middle="openSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />
-          Changes
+          Commits
         </a>
       </div>
 
-      <Button
-        v-if="accidentsConfigurator != null"
-        label="Report Event"
-        text
-        @click="createAccident()"
-      />
-      <Button
-        v-if="bisectSupported && data != null"
-        label="Bisect"
-        text
-        @click="showBisectDialog = true"
-      />
+      <div
+        v-if="(accidentsConfigurator != null) || (bisectSupported && data != null)"
+        class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700"
+      >
+        <Button
+          v-if="accidentsConfigurator != null"
+          outlined
+          class="flex-1 justify-center"
+          @click="createAccident()"
+        >
+          <ExclamationTriangleIcon class="w-4 h-4 mr-1.5" />
+          Report Event
+        </Button>
+        <Button
+          v-if="bisectSupported && data != null"
+          outlined
+          class="flex-1 justify-center"
+          @click="showBisectDialog = true"
+        >
+          <BeakerIcon class="w-4 h-4 mr-1.5" />
+          Bisect
+        </Button>
+      </div>
     </div>
   </div>
   <ReportMetricDialog
@@ -427,6 +443,18 @@ function getTooltipForMetric(metricName: string | undefined) {
 function getURLStyle() {
   return "underline decoration-dotted hover:no-underline"
 }
+
+function getDeltaColor(delta: string): string {
+  if (delta.includes("-")) return "text-red-500"
+  if (delta.includes("+")) return "text-green-600"
+  return ""
+}
+
+function splitDelta(delta: string): { main: string; percent: string } {
+  const m = /^(.+?)\s*\(([^)]+)\)\s*$/.exec(delta)
+  if (m) return { main: m[1], percent: m[2] }
+  return { main: delta, percent: "" }
+}
 </script>
 <style>
 .infoSidebar {
@@ -435,7 +463,7 @@ function getURLStyle() {
 }
 
 .infoSidebarContent {
-  height: calc(100vh - 15em);
+  max-height: calc(100vh - 2em);
 }
 
 .infoSidebar_icon::after {
@@ -451,5 +479,9 @@ function getURLStyle() {
 
 .p-splitbutton-button {
   @apply w-full;
+}
+
+.p-splitbutton-dropdown {
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 </style>

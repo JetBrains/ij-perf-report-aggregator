@@ -4,7 +4,6 @@ DROP TABLE IF EXISTS llm_analysis_runs;
 
 CREATE TABLE llm_analysis_runs
 (
--- fields that inserted on creation and not subject to change:
   id                    SERIAL PRIMARY KEY,
   created_at            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   date                  DATE         NOT NULL,
@@ -18,15 +17,11 @@ CREATE TABLE llm_analysis_runs
   first_commit_revision VARCHAR(40),
   last_commit_revision  VARCHAR(40),
   test_method_name      VARCHAR(255),
--- fields that inserted on update and subject to change:
   run_build_id          VARCHAR(20),
-  -- valid values: not_started | queued | in_progress | success | failed | cancelled
   state                 VARCHAR(50)  NOT NULL DEFAULT 'not_started',
--- fields that inserted on update and not a subject to change:
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
   total_cost_usd        NUMERIC(10, 4),
--- fields that inserted on update and subject to change:
   user_rate             BOOLEAN,
   user_comment          TEXT
 );

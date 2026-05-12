@@ -146,7 +146,6 @@ enum ROUTES {
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormProductMetricsDashboard = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}`,
-  WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
   WebStormDashboardDelicateProjects = `${ROUTE_PREFIX.WebStorm}/dashboardDelicateProjects`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}Dev`,
@@ -744,10 +743,6 @@ const WEBSTORM: Product = {
         {
           url: ROUTES.WebStormProductMetricsDashboard,
           label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.WebStormDashboard,
-          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.WebStormDashboardBuiltInVsNEXT,
@@ -1747,11 +1742,6 @@ const webstormRoutes = [
     path: ROUTES.WebStormProductMetricsDashboard,
     component: () => import("./components/webstorm/ProductMetricsDashboard.vue"),
     meta: { pageTitle: "WebStorm product metrics" },
-  },
-  {
-    path: ROUTES.WebStormDashboard,
-    component: () => import("./components/webstorm/PerformanceDashboard.vue"),
-    meta: { pageTitle: "WebStorm Performance dashboard" },
   },
   {
     path: ROUTES.WebStormTests,

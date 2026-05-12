@@ -240,6 +240,7 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 
 type YoutrackUploadAttachmentsRequest struct {
 	UploadAttachmentsRequest
+
 	IssueId  string `json:"issueId"`
 	ChartPng []byte `json:"chartPng,omitempty"`
 }
@@ -292,7 +293,7 @@ func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 				if err != nil {
 					slog.Error("Failed to upload chart PNG", "error", err)
 					response.Exceptions = append(response.Exceptions,
-						fmt.Sprintf("Message: Failed to upload chart PNG. Error: %s", err.Error()))
+						"Message: Failed to upload chart PNG. Error: "+err.Error())
 				} else {
 					response.Uploads = append(response.Uploads, "dashboard.png")
 				}

@@ -185,7 +185,7 @@ func getSpaceUploads(ctx context.Context, metaDb *pgxpool.Pool, buildId int, pro
 		"SELECT success, uploaded_files FROM space_uploaded_artifacts WHERE build_id = $1 AND project = $2",
 		strconv.Itoa(buildId), project).Scan(&upload.SuccessStatus, &upload.Files)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, nil
+		return nil, pgx.ErrNoRows
 	}
 	if err != nil {
 		return nil, err
@@ -203,11 +203,14 @@ func computeBuildsToSkip(ctx context.Context, metaDb *pgxpool.Pool, info TeamCit
 	alreadyUploaded := make(map[int][]string)
 	for _, buildId := range buildIds {
 		upload, err := getSpaceUploads(ctx, metaDb, buildId, project)
+		if errors.Is(err, pgx.ErrNoRows) {
+			continue
+		}
 		if err != nil {
 			slog.Warn("failed to query previous space upload status", "buildId", buildId, "project", project, "error", err)
 			continue
 		}
-		if upload != nil && upload.SuccessStatus {
+		if upload.SuccessStatus {
 			skip[buildId] = struct{}{}
 			alreadyUploaded[buildId] = upload.Files
 			slog.Info("skipping space upload for build (already uploaded successfully)", "buildId", buildId, "project", project, "files", upload.Files)

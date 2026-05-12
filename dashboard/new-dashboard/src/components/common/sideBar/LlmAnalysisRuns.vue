@@ -16,7 +16,8 @@
             <span
               v-tooltip.top="run.createdAt"
               class="text-xs"
-            >{{ formatCreatedAt(run.createdAt) }}</span>
+              >{{ formatCreatedAt(run.createdAt) }}</span
+            >
             <span class="flex gap-1.5 items-center">
               <a
                 v-if="run.runBuildId"

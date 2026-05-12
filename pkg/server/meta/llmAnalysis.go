@@ -117,8 +117,7 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			buildParams["user.email"] = email
 		}
 
-		//TODO: remove staging after testing
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_staging_PerformanceDegradationAnalyzer", buildParams)
+		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
 		if err != nil {
 			http.Error(writer, "Failed to start LLM analysis: "+err.Error(), http.StatusInternalServerError)
 			return

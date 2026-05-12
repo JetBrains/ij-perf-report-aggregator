@@ -298,11 +298,14 @@
         </Button>
         <Button
           v-if="data != null && data.buildIdPrevious != null"
-          label="Run LLM Analysis"
-          text
+          outlined
+          class="flex-1 justify-center"
           :loading="llmAnalysisPreparing"
           @click="runLlmAnalysis"
-        />
+        >
+          <SparklesIcon class="w-4 h-4 mr-1.5" />
+          Run LLM Analysis
+        </Button>
       </div>
     </div>
   </div>

@@ -87,6 +87,7 @@ type LlmAnalysisRunUpdate struct {
 	LlmComment       *string           `json:"llmComment,omitempty"`
 	UserRate         *bool             `json:"userRate,omitempty"`
 	UserComment      *string           `json:"userComment,omitempty"`
+	TotalCostUsd     *float64          `json:"totalCostUsd,omitempty"`
 }
 
 func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -303,6 +304,9 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, u LlmAnalys
 	}
 	if u.UserComment != nil {
 		add("user_comment", *u.UserComment)
+	}
+	if u.TotalCostUsd != nil {
+		add("total_cost_usd", *u.TotalCostUsd)
 	}
 
 	if len(setClauses) == 0 {

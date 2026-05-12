@@ -25,6 +25,7 @@ CREATE TABLE llm_analysis_runs
 -- fields that inserted on update and not a subject to change:
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
+  total_cost_usd        NUMERIC(10, 4),
 -- fields that inserted on update and subject to change:
   user_rate             BOOLEAN,
   user_comment          TEXT

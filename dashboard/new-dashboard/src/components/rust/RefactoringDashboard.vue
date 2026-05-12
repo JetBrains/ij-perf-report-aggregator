@@ -36,6 +36,20 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Move Small File"
+        measure="execute_editor_rust.rspromotemoduletodirectoryaction"
+        :projects="rustRefactoringTestCases.moveSmallFile"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Move Big File"
+        measure="execute_editor_rust.rspromotemoduletodirectoryaction"
+        :projects="rustRefactoringTestCases.moveBigFile"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Optimize Imports Small File"
         measure="execute_editor_optimizeimports"
         :projects="rustRefactoringTestCases.optimizeImportsSmallFile"

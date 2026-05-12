@@ -190,6 +190,8 @@ export const rustRefactoringTestCases = {
   renameHighUseFn: ["rename high usage fn/inlineRename/renameHighUseFn"],
   renameLowUseStruct: ["rename low usage struct/inlineRename/renameLowUseStruct"],
   renameHighUseStruct: ["rename high usage struct/inlineRename/renameHighUseStruct"],
+  moveSmallFile: ["move small file/moveModule/moveSmallFile"],
+  moveBigFile: ["move big file/moveModule/moveBigFile"],
   optimizeImportsSmallFile: ["refactoring/optimizeImportsSmall/optimizeImports/optimizeImportsSmall"],
   optimizeImportsBigFile: ["refactoring/optimizeImportsBig/optimizeImports/optimizeImportsBig"],
 }

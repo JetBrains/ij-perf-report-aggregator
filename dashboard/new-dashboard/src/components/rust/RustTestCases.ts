@@ -185,6 +185,14 @@ export const rustLocalInspectionCases = [
   "clippy/local-inspection/clippy_lints/src/write/empty_string.rs",
 ]
 export const rustDebuggerTestCases = ["hello-world/Debugger performance test", "hello-world-async/Debugger performance test", "bevy-application/Debugger performance test"]
+export const rustRefactoringTestCases = {
+  renameLowUseFn: ["renameLowUsageFunction/inlineRename/renameLowUsageFunction"],
+  renameHighUseFn: ["rename high usage fn/inlineRename/renameHighUseFn"],
+  renameLowUseStruct: ["rename low usage struct/inlineRename/renameLowUseStruct"],
+  renameHighUseStruct: ["rename high usage struct/inlineRename/renameHighUseStruct"],
+  optimizeImportsSmallFile: ["refactoring/optimizeImportsSmall/optimizeImports/optimizeImportsSmall"],
+  optimizeImportsBigFile: ["refactoring/optimizeImportsBig/optimizeImports/optimizeImportsBig"],
+}
 export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
   {
     label: "Find Usages",

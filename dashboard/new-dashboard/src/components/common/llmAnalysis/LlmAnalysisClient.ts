@@ -1,4 +1,5 @@
 import { ServerConfigurator } from "../dataQuery"
+import { SpaceUploadAttachmentsResponse } from "../uploadAttachments/uploadAttachmentsUtils"
 
 export interface LlmAnalysisRequest {
   date: string
@@ -13,15 +14,13 @@ export interface LlmAnalysisRequest {
   lastCommitRevision?: string
   testMethodName?: string
   ytIssueId?: string
+  spaceAttachments?: SpaceUploadAttachmentsResponse
 }
 
 export enum LlmAnalysisState {
-  NotStarted = "not_started",
-  Queued = "queued",
   InProgress = "in_progress",
   Success = "success",
   Failed = "failed",
-  Cancelled = "cancelled",
 }
 
 export interface LlmAnalysisRun {

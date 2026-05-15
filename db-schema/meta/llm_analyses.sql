@@ -18,7 +18,7 @@ CREATE TABLE llm_analysis_runs
   last_commit_revision  VARCHAR(40),
   test_method_name      VARCHAR(255),
   run_build_id          VARCHAR(20),
-  state                 VARCHAR(50)  NOT NULL DEFAULT 'not_started',
+  state                 VARCHAR(50)  NOT NULL DEFAULT 'in_progress',
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
   total_cost_usd        NUMERIC(10, 4),

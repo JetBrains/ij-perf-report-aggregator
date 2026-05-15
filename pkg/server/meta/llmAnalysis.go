@@ -3,7 +3,6 @@ package meta
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -16,18 +15,19 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	Date                string  `json:"date"`
-	Project             string  `json:"project"`
-	Metric              string  `json:"metric"`
-	CurrentBuildId      string  `json:"currentBuildId"`
-	PrevBuildId         string  `json:"prevBuildId"`
-	CurrentValue        *string `json:"currentValue,omitempty"`
-	PreviousValue       *string `json:"previousValue,omitempty"`
-	UserName            *string `json:"userName,omitempty"`
-	FirstCommitRevision *string `json:"firstCommitRevision,omitempty"`
-	LastCommitRevision  *string `json:"lastCommitRevision,omitempty"`
-	TestMethodName      *string `json:"testMethodName,omitempty"`
-	YtIssueId           *string `json:"ytIssueId,omitempty"`
+	Date                string                          `json:"date"`
+	Project             string                          `json:"project"`
+	Metric              string                          `json:"metric"`
+	CurrentBuildId      string                          `json:"currentBuildId"`
+	PrevBuildId         string                          `json:"prevBuildId"`
+	CurrentValue        *string                         `json:"currentValue,omitempty"`
+	PreviousValue       *string                         `json:"previousValue,omitempty"`
+	UserName            *string                         `json:"userName,omitempty"`
+	FirstCommitRevision *string                         `json:"firstCommitRevision,omitempty"`
+	LastCommitRevision  *string                         `json:"lastCommitRevision,omitempty"`
+	TestMethodName      *string                         `json:"testMethodName,omitempty"`
+	YtIssueId           *string                         `json:"ytIssueId,omitempty"`
+	SpaceAttachments    *SpaceUploadAttachmentsResponse `json:"spaceAttachments,omitempty"`
 }
 
 type LlmAnalysisRun struct {
@@ -38,40 +38,18 @@ type LlmAnalysisRun struct {
 	State      string `json:"state"`
 }
 
-type BuildUploadedFiles struct {
-	BuildId       string   `json:"build_id"`
-	UploadedFiles []string `json:"uploaded_files"`
-}
-
-type LlmAnalysisRunData struct {
-	Project               string             `json:"project"`
-	Metric                string             `json:"metric"`
-	CurrentBuildArtifacts BuildUploadedFiles `json:"current_build_artifacts"`
-	PrevBuildArtifacts    BuildUploadedFiles `json:"prev_build_artifacts"`
-	CurrentValue          *string            `json:"current_value,omitempty"`
-	PreviousValue         *string            `json:"previous_value,omitempty"`
-	FirstCommitRevision   *string            `json:"first_commit_revision,omitempty"`
-	LastCommitRevision    *string            `json:"last_commit_revision,omitempty"`
-	TestMethodName        *string            `json:"test_method_name,omitempty"`
-}
-
 type LlmAnalysisState string
 
 const (
-	LlmAnalysisStateNotStarted LlmAnalysisState = "not_started"
-	LlmAnalysisStateQueued     LlmAnalysisState = "queued"
 	LlmAnalysisStateInProgress LlmAnalysisState = "in_progress"
 	LlmAnalysisStateSuccess    LlmAnalysisState = "success"
 	LlmAnalysisStateFailed     LlmAnalysisState = "failed"
-	LlmAnalysisStateCancelled  LlmAnalysisState = "cancelled"
 )
 
 func (s *LlmAnalysisState) UnmarshalText(text []byte) error {
 	v := LlmAnalysisState(text)
 	switch v {
-	case LlmAnalysisStateNotStarted, LlmAnalysisStateQueued,
-		LlmAnalysisStateInProgress, LlmAnalysisStateSuccess,
-		LlmAnalysisStateFailed, LlmAnalysisStateCancelled:
+	case LlmAnalysisStateInProgress, LlmAnalysisStateSuccess, LlmAnalysisStateFailed:
 		*s = v
 		return nil
 	default:
@@ -107,48 +85,51 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
+		analysisData, err := json.Marshal(llmAnalysisRequest)
+		if err != nil {
+			http.Error(writer, "Failed to marshal analysis data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		buildParams := map[string]string{
 			"llm.analysis.id": strconv.Itoa(id),
-		}
-		if llmAnalysisRequest.YtIssueId != nil {
-			buildParams["youtrack.issue.id"] = *llmAnalysisRequest.YtIssueId
+			"analysis.data":   string(analysisData),
 		}
 		if email := request.Header.Get("X-Auth-Request-Email"); email != "" {
 			buildParams["user.email"] = email
 		}
 
 		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
-		if err != nil {
-			http.Error(writer, "Failed to start LLM analysis: "+err.Error(), http.StatusInternalServerError)
+		if err != nil || weburlPtr == nil {
+			markLlmAnalysisFailed(request.Context(), metaDb, id)
+			if err != nil {
+				http.Error(writer, "Failed to start LLM analysis: "+err.Error(), http.StatusInternalServerError)
+			} else {
+				http.Error(writer, "TC response doesn't have weburl", http.StatusInternalServerError)
+			}
 			return
 		}
 
-		if weburlPtr != nil {
-			weburl := *weburlPtr
-			runBuildId := weburl[strings.LastIndex(weburl, "/")+1:]
-			state := LlmAnalysisStateQueued
-			if err := updateLlmAnalysisRun(request.Context(), metaDb, LlmAnalysisRunUpdate{
-				Id:         id,
-				RunBuildId: &runBuildId,
-				State:      &state,
-			}); err != nil {
-				http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
+		weburl := *weburlPtr
+		runBuildId := weburl[strings.LastIndex(weburl, "/")+1:]
+		if err := updateLlmAnalysisRun(request.Context(), metaDb, LlmAnalysisRunUpdate{
+			Id:         id,
+			RunBuildId: &runBuildId,
+		}); err != nil {
+			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-			writer.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(writer).Encode(LlmAnalysisRun{
-				Id:         id,
-				Date:       llmAnalysisRequest.Date,
-				CreatedAt:  createdAt.Format(time.RFC3339),
-				RunBuildId: runBuildId,
-				State:      string(state),
-			}); err != nil {
-				http.Error(writer, "Failed to write response: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-		} else {
-			http.Error(writer, "TC response doesn't have weburl", http.StatusInternalServerError)
+		writer.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(writer).Encode(LlmAnalysisRun{
+			Id:         id,
+			Date:       llmAnalysisRequest.Date,
+			CreatedAt:  createdAt.Format(time.RFC3339),
+			RunBuildId: runBuildId,
+			State:      string(LlmAnalysisStateInProgress),
+		}); err != nil {
+			http.Error(writer, "Failed to write response: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
 	}
 }
@@ -210,54 +191,6 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
-func CreateGetLlmAnalysisRunData(metaDb *pgxpool.Pool) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		idStr := request.URL.Query().Get("id")
-		if idStr == "" {
-			writer.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			writer.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		var data LlmAnalysisRunData
-		var currentBuildId, prevBuildId string
-		row := metaDb.QueryRow(request.Context(),
-			"SELECT project, metric, current_build_id, prev_build_id, current_value, previous_value, "+
-				"first_commit_revision, last_commit_revision, test_method_name "+
-				"FROM llm_analysis_runs WHERE id = $1",
-			id)
-		if err := row.Scan(&data.Project, &data.Metric, &currentBuildId, &prevBuildId,
-			&data.CurrentValue, &data.PreviousValue, &data.FirstCommitRevision,
-			&data.LastCommitRevision, &data.TestMethodName); err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
-				writer.WriteHeader(http.StatusNotFound)
-				return
-			}
-			slog.Error("unable to execute select llm_analysis_runs by id query", "error", err, "id", id)
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		filesByBuildId, err := fetchUploadedFilesForBuilds(request.Context(), metaDb, data.Project, []string{currentBuildId, prevBuildId})
-		if err != nil {
-			slog.Error("unable to fetch uploaded files for builds", "error", err, "id", id)
-			writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		data.CurrentBuildArtifacts = BuildUploadedFiles{BuildId: currentBuildId, UploadedFiles: filesByBuildId[currentBuildId]}
-		data.PrevBuildArtifacts = BuildUploadedFiles{BuildId: prevBuildId, UploadedFiles: filesByBuildId[prevBuildId]}
-
-		writer.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(writer).Encode(data); err != nil {
-			slog.Error("unable to write llm_analysis_run_data response", "error", err)
-		}
-	}
-}
-
 func CreatePostUpdateLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var u LlmAnalysisRunUpdate
@@ -276,6 +209,13 @@ func CreatePostUpdateLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		writer.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func markLlmAnalysisFailed(ctx context.Context, metaDb *pgxpool.Pool, id int) {
+	state := LlmAnalysisStateFailed
+	if err := updateLlmAnalysisRun(ctx, metaDb, LlmAnalysisRunUpdate{Id: id, State: &state}); err != nil {
+		slog.Error("cannot mark llm_analysis_run as failed", "error", err, "id", id)
 	}
 }
 
@@ -320,37 +260,6 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, u LlmAnalys
 		return err
 	}
 	return nil
-}
-
-func fetchUploadedFilesForBuilds(ctx context.Context, metaDb *pgxpool.Pool, project string, buildIds []string) (map[string][]string, error) {
-	result := make(map[string][]string, len(buildIds))
-	for _, buildId := range buildIds {
-		result[buildId] = []string{}
-	}
-
-	rows, err := metaDb.Query(ctx,
-		"SELECT build_id, uploaded_files FROM space_uploaded_artifacts WHERE project = $1 AND build_id = ANY($2)",
-		project, buildIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var buildId string
-		var files []string
-		if err := rows.Scan(&buildId, &files); err != nil {
-			return nil, err
-		}
-		if files == nil {
-			files = []string{}
-		}
-		result[buildId] = files
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return result, nil
 }
 
 func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMAnalysisRequest) (int, time.Time, error) {

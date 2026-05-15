@@ -69,7 +69,7 @@ export class LlmAnalysesConfigurator {
       projectName: data.projectName,
       testType: dbTypeStore().dbType,
     }
-    await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
+    const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
     const request: LlmAnalysisRequest = {
       date: data.date,
@@ -84,6 +84,7 @@ export class LlmAnalysesConfigurator {
       lastCommitRevision: lastCommit ?? undefined,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
+      spaceAttachments,
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

@@ -51,15 +51,12 @@ const runs = computed(() => llmAnalysesConfigurator.value.value)
 
 function stateIconClass(state: LlmAnalysisState): string {
   switch (state) {
-    case LlmAnalysisState.Queued:
     case LlmAnalysisState.InProgress:
       return "pi pi-spin pi-spinner"
     case LlmAnalysisState.Success:
       return "pi pi-verified"
     case LlmAnalysisState.Failed:
       return "pi pi-times-circle"
-    case LlmAnalysisState.Cancelled:
-      return "pi pi-ban"
     default:
       return ""
   }
@@ -67,16 +64,12 @@ function stateIconClass(state: LlmAnalysisState): string {
 
 function stateTooltip(state: LlmAnalysisState): string {
   switch (state) {
-    case LlmAnalysisState.Queued:
-      return "Queued"
     case LlmAnalysisState.InProgress:
       return "In progress"
     case LlmAnalysisState.Success:
       return "Success"
     case LlmAnalysisState.Failed:
       return "Failed"
-    case LlmAnalysisState.Cancelled:
-      return "Cancelled"
     default:
       return ""
   }
@@ -109,9 +102,5 @@ function formatCreatedAt(iso: string): string {
 
 .llm-analysis-runs .pi-times-circle {
   color: #ef4444;
-}
-
-.llm-analysis-runs .pi-ban {
-  color: #6b7280;
 }
 </style>

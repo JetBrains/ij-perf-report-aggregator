@@ -1,6 +1,6 @@
 <template>
   <Accordion
-    v-if="visibleRuns.length > 0"
+    v-if="runs.length > 0"
     value="0"
     class="llm-analysis-runs"
   >
@@ -9,7 +9,7 @@
       <AccordionContent>
         <ul class="gap-1.5 break-all">
           <li
-            v-for="run in visibleRuns"
+            v-for="run in runs"
             :key="run.id"
             class="flex items-center justify-between gap-1.5"
           >
@@ -40,33 +40,14 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue"
-import { computedAsync } from "@vueuse/core"
-import { injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey } from "../../../shared/keys"
-import { LlmAnalysisClient, LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
-import { buildUrl, InfoData } from "./InfoSidebar"
+import { injectOrError } from "../../../shared/injectionKeys"
+import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
+import { LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
+import { buildUrl } from "./InfoSidebar"
 
-const { data, runsRefreshTrigger } = defineProps<{
-  data: InfoData | null
-  runsRefreshTrigger: number
-}>()
+const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
 
-const serverConfigurator = injectOrNull(serverConfiguratorKey)
-
-const llmAnalysisRuns = computedAsync(async () => {
-  const metric = data?.series[0]?.metricName
-  if (data == null || serverConfigurator == null || data.buildIdPrevious == null || !metric) return []
-  void runsRefreshTrigger
-  return await new LlmAnalysisClient(serverConfigurator).getLlmAnalysisRuns({
-    date: data.date,
-    project: data.projectName,
-    metric,
-    currentBuildId: String(data.buildId),
-    prevBuildId: String(data.buildIdPrevious),
-  })
-}, [])
-
-const visibleRuns = computed(() => llmAnalysisRuns.value.filter((r) => r.state !== LlmAnalysisState.NotStarted))
+const runs = computed(() => llmAnalysesConfigurator.value.value)
 
 function stateIconClass(state: LlmAnalysisState): string {
   switch (state) {

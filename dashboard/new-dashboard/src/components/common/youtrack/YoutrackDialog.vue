@@ -155,6 +155,7 @@ import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSide
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"
@@ -162,7 +163,6 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { runLlmAnalysis } from "../llmAnalysis/runLlmAnalysis"
 import { uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 enum ProgressState {
@@ -181,21 +181,13 @@ enum LlmAnalysisState {
 
 const router = useRouter()
 
-const {
-  data,
-  accident,
-  accidentConfigurator,
-  timerangeConfigurator,
-  withLlmAnalysis = true,
-} = defineProps<{
+const { data, accident, accidentConfigurator, llmAnalysesConfigurator, timerangeConfigurator } = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
+  llmAnalysesConfigurator: LlmAnalysesConfigurator
   timerangeConfigurator: TimeRangeConfigurator
-  withLlmAnalysis?: boolean
 }>()
-
-const emit = defineEmits<{ llmAnalysisLaunched: [] }>()
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
@@ -372,13 +364,13 @@ async function createTicket() {
       reportAttachmentFailure("Failed to upload attachments to YouTrack", error)
     })
 
-  if (withLlmAnalysis && (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement)) {
+  if (llmAnalysesConfigurator.canStart(data) && (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement)) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING
-    void runLlmAnalysis(serverConfigurator, data, attachmentsInfo, issueResponse.issue.idReadable)
+    void llmAnalysesConfigurator
+      .startRun(data, issueResponse.issue.idReadable)
       .then(({ buildUrl: url }) => {
         llmAnalysisBuildUrl.value = url
         llmAnalysisState.value = LlmAnalysisState.DONE
-        emit("llmAnalysisLaunched")
       })
       .catch((error: unknown) => {
         console.error("LLM Analysis start failed:", error)

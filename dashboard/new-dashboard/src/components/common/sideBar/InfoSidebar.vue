@@ -230,10 +230,7 @@
         :in-dialog="false"
       />
 
-      <LlmAnalysisRuns
-        :data="data"
-        :runs-refresh-trigger="runsRefreshTrigger"
-      />
+      <LlmAnalysisRuns />
 
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a
@@ -297,10 +294,10 @@
           Bisect
         </Button>
         <Button
-          v-if="data != null && data.buildIdPrevious != null"
+          v-if="llmAnalysesConfigurator.canStart(data)"
           outlined
           class="flex-1 justify-center"
-          :loading="llmAnalysisPreparing"
+          :loading="isLlmAnalysisStarting"
           @click="runLlmAnalysis"
         >
           <SparklesIcon class="w-4 h-4 mr-1.5" />
@@ -314,10 +311,9 @@
     v-model:show-dialog="showDialog"
     v-model:create-issue="showYoutrackDialog"
     v-model:accident-to-edit="accidentToEdit"
-    v-model:with-llm-analysis="withLlmAnalysisRequested"
     :accidents-configurator="accidentsConfigurator"
+    :llm-analyses-configurator="llmAnalysesConfigurator"
     :data="data"
-    @request-llm-analysis="runLlmAnalysis"
   />
   <YoutrackDialog
     v-if="showYoutrackDialog"
@@ -325,9 +321,8 @@
     :accident="accidentToEdit!!"
     :data="data!!"
     :accident-configurator="accidentsConfigurator"
+    :llm-analyses-configurator="llmAnalysesConfigurator"
     :timerange-configurator="timerangeConfigurator"
-    :with-llm-analysis="withLlmAnalysisRequested"
-    @llm-analysis-launched="runsRefreshTrigger++"
   />
   <StacktraceModal
     v-if="showStacktrace"
@@ -344,10 +339,12 @@
   </Suspense>
 </template>
 <script setup lang="ts">
-import { computed, provide, Ref, ref } from "vue"
+import { computed, provide, Ref, ref, watch } from "vue"
 import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
+import { startLlmAnalysisWithToast } from "./LlmAnalysisUtils"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
+import { accidentsConfiguratorKey, llmAnalysesConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
 import { checkTeamcityArtifactsExist, getTeamcityBuildCounter, getTeamcityBuildType } from "../../../util/artifacts"
 import { replaceToLink } from "../../../util/linkReplacer"
@@ -366,7 +363,6 @@ import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
 import { useToast } from "primevue/usetoast"
-import { runLlmAnalysisWithToast } from "../llmAnalysis/runLlmAnalysis"
 import LlmAnalysisRuns from "./LlmAnalysisRuns.vue"
 
 const { timerangeConfigurator } = defineProps<{
@@ -380,7 +376,6 @@ const showStacktrace = ref(false)
 const showBisectDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
-const withLlmAnalysisRequested = ref(true)
 
 const buildCounter = computedAsync(async () => {
   const buildId = vm.data.value?.buildId
@@ -409,20 +404,26 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 const data = computed(() => vm.data.value)
 
 const toast = useToast()
-const llmAnalysisPreparing = ref(false)
-const runsRefreshTrigger = ref(0)
+const llmAnalysesConfigurator = new LlmAnalysesConfigurator(serverConfigurator)
+provide(llmAnalysesConfiguratorKey, llmAnalysesConfigurator)
+watch(
+  () => vm.data.value,
+  (d) => {
+    llmAnalysesConfigurator.data.value = d
+  },
+  { immediate: true }
+)
+
+const isLlmAnalysisStarting = ref(false)
 
 async function runLlmAnalysis() {
   const d = vm.data.value
-  if (d == null || serverConfigurator == null) return
-
-  llmAnalysisPreparing.value = true
+  if (d == null) return
+  isLlmAnalysisStarting.value = true
   try {
-    if (await runLlmAnalysisWithToast(serverConfigurator, d, toast)) {
-      runsRefreshTrigger.value++
-    }
+    await startLlmAnalysisWithToast(llmAnalysesConfigurator, d, toast)
   } finally {
-    llmAnalysisPreparing.value = false
+    isLlmAnalysisStarting.value = false
   }
 }
 

@@ -87,23 +87,6 @@
         >Create YouTrack issue</label
       >
     </div>
-    <div
-      v-if="canShowLlmAnalysisToggle"
-      class="flex items-center mb-4"
-    >
-      <ToggleSwitch
-        v-model="withLlmAnalysis"
-        input-id="withLlmAnalysis"
-        :disabled="!llmAnalysisAvailable"
-      />
-      <label
-        for="withLlmAnalysis"
-        class="ml-2"
-        :class="{ 'opacity-50': !llmAnalysisAvailable }"
-      >
-        With LLM Analysis
-      </label>
-    </div>
     <RelatedAccidents
       :data="data"
       :accidents-configurator="accidentsConfigurator"
@@ -167,15 +150,18 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { computed, ref, watch } from "vue"
 import { useToast } from "primevue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
+import { startLlmAnalysisWithToast } from "./LlmAnalysisUtils"
 import { InfoData } from "./InfoSidebar"
 import { generateDefaultReason } from "./AccidentUtils"
 import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import { useStorage } from "@vueuse/core"
 
-const { data, accidentsConfigurator } = defineProps<{
+const { data, accidentsConfigurator, llmAnalysesConfigurator } = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
+  llmAnalysesConfigurator: LlmAnalysesConfigurator
 }>()
 
 const createIssueCheckbox = ref(false)
@@ -184,13 +170,9 @@ const toast = useToast()
 const showDialog = defineModel<boolean>("showDialog")
 const createIssue = defineModel<boolean>("createIssue")
 const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
-const withLlmAnalysisModel = defineModel<boolean>("withLlmAnalysis")
-
-const emit = defineEmits<{ requestLlmAnalysis: [] }>()
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
-const withLlmAnalysis = useStorage("withLlmAnalysis", true)
 
 function inferKindFromData(d: InfoData | null): AccidentKind {
   const value = d?.series[0]?.rawValue
@@ -211,9 +193,12 @@ watch(
   }
 )
 
-const canShowLlmAnalysisToggle = computed(() => data?.series.length == 1 && data?.buildIdPrevious != null)
-const llmAnalysisAvailable = computed(() => reportMetricOnly.value && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement))
-const effectiveWithLlmAnalysis = computed(() => canShowLlmAnalysisToggle.value && llmAnalysisAvailable.value && withLlmAnalysis.value)
+const shouldRunLlmAnalysis = computed(
+  () =>
+    llmAnalysesConfigurator.canStart(data) &&
+    reportMetricOnly.value &&
+    (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
+)
 
 function generateReason(): string {
   if (data == null) return ""
@@ -256,13 +241,12 @@ async function reportRegression() {
         throw new Error("Failed to create accident - no ID returned")
       }
 
-      const shouldRunLlm = effectiveWithLlmAnalysis.value
+      const shouldRunLlm = shouldRunLlmAnalysis.value
       if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
-        withLlmAnalysisModel.value = shouldRunLlm
         createIssue.value = true
       } else if (shouldRunLlm) {
-        emit("requestLlmAnalysis")
+        void startLlmAnalysisWithToast(llmAnalysesConfigurator, value, toast)
       }
     } catch (error: unknown) {
       console.error("Failed to report accident", error)
@@ -306,8 +290,6 @@ async function updateRegression() {
 watch(reportMetricOnly, (newValue) => {
   if (newValue) {
     reportAllInBuild.value = false
-  } else {
-    withLlmAnalysis.value = false
   }
 })
 
@@ -315,7 +297,6 @@ watch(reportAllInBuild, (newValue) => {
   if (newValue) {
     reportMetricOnly.value = false
     createIssueCheckbox.value = false
-    withLlmAnalysis.value = false
   }
 })
 
@@ -324,15 +305,6 @@ watch(createIssueCheckbox, (newValue) => {
     reportAllInBuild.value = false
   }
 })
-
-watch(
-  () => accidentType.value,
-  (kind) => {
-    if (kind !== AccidentKind.Regression && kind !== AccidentKind.Improvement) {
-      withLlmAnalysis.value = false
-    }
-  }
-)
 
 function copy(accident: { kind: string; reason: string }) {
   reason.value = accident.reason

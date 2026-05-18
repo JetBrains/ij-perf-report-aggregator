@@ -23,7 +23,7 @@
                 v-if="run.runBuildId"
                 :href="buildUrl(Number(run.runBuildId))"
                 target="_blank"
-                :class="getURLStyle()"
+                class="underline decoration-dotted hover:no-underline"
               >
                 TC build
               </a>
@@ -73,10 +73,6 @@ function stateTooltip(state: LlmAnalysisState): string {
     default:
       return ""
   }
-}
-
-function getURLStyle() {
-  return "underline decoration-dotted hover:no-underline"
 }
 
 function formatCreatedAt(iso: string): string {

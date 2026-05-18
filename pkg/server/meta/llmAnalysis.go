@@ -95,19 +95,18 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			buildParams["user.email"] = email
 		}
 
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
-		if err != nil || weburlPtr == nil {
+		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
+		if err != nil || buildResp == nil || buildResp.Id == 0 {
 			markLlmAnalysisFailed(request.Context(), metaDb, id)
 			if err != nil {
 				http.Error(writer, "Failed to start LLM analysis: "+err.Error(), http.StatusInternalServerError)
 			} else {
-				http.Error(writer, "TC response doesn't have weburl", http.StatusInternalServerError)
+				http.Error(writer, "TC response doesn't have a build id", http.StatusInternalServerError)
 			}
 			return
 		}
 
-		weburl := *weburlPtr
-		runBuildId := weburl[strings.LastIndex(weburl, "/")+1:]
+		runBuildId := strconv.FormatInt(buildResp.Id, 10)
 		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, LlmAnalysisRunPatch{
 			RunBuildId: &runBuildId,
 		}); err != nil {
@@ -158,8 +157,6 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		defer rows.Close()
-
 		runs, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (LlmAnalysisRun, error) {
 			var run LlmAnalysisRun
 			var createdAt time.Time

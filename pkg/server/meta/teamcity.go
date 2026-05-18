@@ -193,15 +193,14 @@ func CreatePostStartBisect() http.HandlerFunc {
 			buildParams = generateParamsForPerfRun(bisectReq)
 		}
 
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangesetOnSpace", buildParams)
+		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangesetOnSpace", buildParams)
 		if err != nil {
 			http.Error(writer, "Failed to start bisect: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if weburlPtr != nil {
-			byteSlice := []byte(*weburlPtr)
-			_, err = writer.Write(byteSlice)
+		if buildResp != nil && buildResp.WebURL != "" {
+			_, err = writer.Write([]byte(buildResp.WebURL))
 			if err != nil {
 				http.Error(writer, "Failed to write response: "+err.Error(), http.StatusInternalServerError)
 				return

@@ -11,7 +11,7 @@ import (
 
 type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
-	ProjectName            string                 `json:"projectname"`
+	ProjectName            string                 `json:"projectName"`
 	TestType               string                 `json:"testType"`
 }
 

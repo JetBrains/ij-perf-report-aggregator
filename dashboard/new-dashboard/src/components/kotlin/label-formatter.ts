@@ -1,4 +1,4 @@
-const KOTLIN_TEST_REGEXP = new RegExp("_with_library_cache_k.+")
+const KOTLIN_TEST_REGEXP = /_with_library_cache_k.+/
 export function replaceKotlinName(name: string) {
   if (name.indexOf("/") > 0) {
     const project = name.slice(0, name.indexOf("/"))

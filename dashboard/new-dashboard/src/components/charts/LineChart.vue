@@ -195,7 +195,7 @@ function setupChartOnVisibility() {
     { immediate: true }
   )
   // If the chart is not visible, still try to create it after a delay
-  setTimeout(function () {
+  setTimeout(() => {
     if (chartVm == null) {
       createChart()
     }

@@ -24,7 +24,8 @@ export class LlmAnalysesConfigurator {
       const d = this.data.value
       if (this.canStart(d)) {
         void this.loadRuns(d as InfoData)
-      } else {
+      }
+      else {
         this.value.value = []
       }
     })
@@ -40,11 +41,7 @@ export class LlmAnalysesConfigurator {
       this.value.value = []
       return
     }
-    this.value.value = await this.client.getLlmAnalysisRuns({
-      project: data.projectName,
-      metric,
-      currentBuildId: String(data.buildId),
-    })
+    this.value.value = await this.client.getLlmAnalysisRuns(data.projectName, metric, String(data.buildId))
   }
 
   async startRun(data: InfoData, ytIssueId?: string): Promise<RunLlmAnalysisResult> {
@@ -62,10 +59,10 @@ export class LlmAnalysesConfigurator {
     const attachmentsInfo: UploadAttachmentsRequest = {
       teamcityAttachmentInfo: {
         currentBuildId: data.buildId,
-        previousBuildId: data.buildIdPrevious,
+        previousBuildId: data.buildIdPrevious
       },
       projectName: data.projectName,
-      testType: dbTypeStore().dbType,
+      testType: dbTypeStore().dbType
     }
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
@@ -81,7 +78,7 @@ export class LlmAnalysesConfigurator {
       lastCommitRevision: lastCommit ?? undefined,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
-      spaceAttachments,
+      spaceAttachments
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

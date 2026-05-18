@@ -2,7 +2,7 @@ import { ServerConfigurator } from "../dataQuery"
 import { SpaceUploadAttachmentsResponse } from "../uploadAttachments/uploadAttachmentsUtils"
 
 export interface LlmAnalysisRequest {
-project: string
+  project: string
   metric: string
   currentBuildId: string
   prevBuildId: string
@@ -29,12 +29,6 @@ export interface LlmAnalysisRun {
   state: LlmAnalysisState
 }
 
-export interface LlmAnalysisRunsQuery {
-  project: string
-  metric: string
-  currentBuildId: string
-}
-
 export class LlmAnalysisClient {
   private readonly serverConfigurator: ServerConfigurator | null
 
@@ -47,9 +41,9 @@ export class LlmAnalysisClient {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(request)
     })
 
     if (!response.ok) {
@@ -59,8 +53,8 @@ export class LlmAnalysisClient {
     return (await response.json()) as LlmAnalysisRun
   }
 
-  async getLlmAnalysisRuns(query: LlmAnalysisRunsQuery): Promise<LlmAnalysisRun[]> {
-    const params = new URLSearchParams(query as unknown as Record<string, string>)
+  async getLlmAnalysisRuns(project: string, metric: string, currentBuildId: string): Promise<LlmAnalysisRun[]> {
+    const params = new URLSearchParams({ project, metric, currentBuildId })
     const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analysisRuns?${params.toString()}`
     const response = await fetch(url)
     if (!response.ok) {

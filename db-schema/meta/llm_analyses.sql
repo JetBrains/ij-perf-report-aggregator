@@ -20,26 +20,8 @@ CREATE TABLE llm_analysis_runs
   state                 VARCHAR(50)  NOT NULL DEFAULT 'in_progress',
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
-  total_cost_usd        NUMERIC(10, 4),
-  user_rate             BOOLEAN,
-  user_comment          TEXT
+  total_cost_usd        NUMERIC(10, 4)
 );
 
 CREATE INDEX idx_llm_analysis_runs_lookup
   ON llm_analysis_runs (project, metric, current_build_id);
-
--- Junction table: LLM runs <-> accidents (many-to-many)
-CREATE TABLE llm_run_accidents
-(
-  llm_run_id  INTEGER NOT NULL REFERENCES llm_analysis_runs (id) ON DELETE CASCADE,
-  accident_id INTEGER NOT NULL REFERENCES accidents (id) ON DELETE CASCADE,
-  PRIMARY KEY (llm_run_id, accident_id)
-);
-
--- Junction table: LLM runs <-> YouTrack issues (many-to-many)
-CREATE TABLE llm_run_yt_issues
-(
-  llm_run_id  INTEGER     NOT NULL REFERENCES llm_analysis_runs (id) ON DELETE CASCADE,
-  yt_issue_id VARCHAR(20) NOT NULL,
-  PRIMARY KEY (llm_run_id, yt_issue_id)
-);

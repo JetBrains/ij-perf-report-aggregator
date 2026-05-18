@@ -194,10 +194,7 @@ watch(
 )
 
 const shouldRunLlmAnalysis = computed(
-  () =>
-    llmAnalysesConfigurator.canStart(data) &&
-    reportMetricOnly.value &&
-    (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
+  () => llmAnalysesConfigurator.canStart(data) && reportMetricOnly.value && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
 )
 
 function generateReason(): string {

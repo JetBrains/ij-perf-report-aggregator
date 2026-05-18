@@ -41,9 +41,9 @@ export class LlmAnalysisClient {
     const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     })
 
     if (!response.ok) {

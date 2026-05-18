@@ -37,7 +37,7 @@ export class LlmAnalysisClient {
   }
 
   async sendLlmAnalysisRequest(request: LlmAnalysisRequest): Promise<LlmAnalysisRun> {
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/startAnalysis`
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses`
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -55,7 +55,7 @@ export class LlmAnalysisClient {
 
   async getLlmAnalysisRuns(project: string, metric: string, currentBuildId: string): Promise<LlmAnalysisRun[]> {
     const params = new URLSearchParams({ project, metric, currentBuildId })
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analysisRuns?${params.toString()}`
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses?${params.toString()}`
     const response = await fetch(url)
     if (!response.ok) {
       const errorMessage = await response.text()

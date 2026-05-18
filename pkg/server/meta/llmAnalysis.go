@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -55,8 +56,7 @@ func (s *LlmAnalysisState) UnmarshalText(text []byte) error {
 	}
 }
 
-type LlmAnalysisRunUpdate struct {
-	Id               int               `json:"id"`
+type LlmAnalysisRunPatch struct {
 	RunBuildId       *string           `json:"runBuildId,omitempty"`
 	State            *LlmAnalysisState `json:"state,omitempty"`
 	LlmGuiltyCommits *[]string         `json:"llmGuiltyCommits,omitempty"`
@@ -108,8 +108,7 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		weburl := *weburlPtr
 		runBuildId := weburl[strings.LastIndex(weburl, "/")+1:]
-		if err := updateLlmAnalysisRun(request.Context(), metaDb, LlmAnalysisRunUpdate{
-			Id:         id,
+		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, LlmAnalysisRunPatch{
 			RunBuildId: &runBuildId,
 		}); err != nil {
 			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
@@ -132,19 +131,28 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		query := request.URL.Query()
-		project := query.Get("project")
-		metric := query.Get("metric")
-		currentBuildId := query.Get("currentBuildId")
-		if project == "" || metric == "" || currentBuildId == "" {
-			writer.WriteHeader(http.StatusBadRequest)
+		var whereClauses []string
+		var args []any
+		addFilter := func(column, value string) {
+			if value == "" {
+				return
+			}
+			args = append(args, value)
+			whereClauses = append(whereClauses, fmt.Sprintf("%s = $%d", column, len(args)))
+		}
+		addFilter("project", query.Get("project"))
+		addFilter("metric", query.Get("metric"))
+		addFilter("current_build_id", query.Get("currentBuildId"))
+
+		if len(whereClauses) == 0 {
+			http.Error(writer, "at least one filter is required", http.StatusBadRequest)
 			return
 		}
 
-		rows, err := metaDb.Query(request.Context(),
-			"SELECT id, created_at, run_build_id, state FROM analyses "+
-				"WHERE project = $1 AND metric = $2 AND current_build_id = $3 "+
-				"ORDER BY id DESC",
-			project, metric, currentBuildId)
+		sql := "SELECT id, created_at, run_build_id, state FROM analyses WHERE " +
+			strings.Join(whereClauses, " AND ") + " ORDER BY id DESC"
+
+		rows, err := metaDb.Query(request.Context(), sql, args...)
 		if err != nil {
 			slog.Error("unable to execute select analyses query", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
@@ -182,20 +190,21 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
-func CreatePostUpdateLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var u LlmAnalysisRunUpdate
+		id, err := strconv.Atoi(chi.URLParam(request, "id"))
+		if err != nil || id <= 0 {
+			http.Error(writer, "invalid id", http.StatusBadRequest)
+			return
+		}
+		var patch LlmAnalysisRunPatch
 		decoder := json.NewDecoder(request.Body)
 		defer request.Body.Close()
-		if err := decoder.Decode(&u); err != nil {
+		if err := decoder.Decode(&patch); err != nil {
 			http.Error(writer, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-		if u.Id <= 0 {
-			http.Error(writer, "id is required", http.StatusBadRequest)
-			return
-		}
-		if err := updateLlmAnalysisRun(request.Context(), metaDb, u); err != nil {
+		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, patch); err != nil {
 			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -205,43 +214,43 @@ func CreatePostUpdateLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 func markLlmAnalysisFailed(ctx context.Context, metaDb *pgxpool.Pool, id int) {
 	state := LlmAnalysisStateFailed
-	if err := updateLlmAnalysisRun(ctx, metaDb, LlmAnalysisRunUpdate{Id: id, State: &state}); err != nil {
+	if err := updateLlmAnalysisRun(ctx, metaDb, id, LlmAnalysisRunPatch{State: &state}); err != nil {
 		slog.Error("cannot mark llm_analysis_run as failed", "error", err, "id", id)
 	}
 }
 
-func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, u LlmAnalysisRunUpdate) error {
+func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, id int, patch LlmAnalysisRunPatch) error {
 	var setClauses []string
 	var args []any
 	add := func(column string, value any) {
 		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, len(args)+1))
 		args = append(args, value)
 	}
-	if u.RunBuildId != nil {
-		add("run_build_id", *u.RunBuildId)
+	if patch.RunBuildId != nil {
+		add("run_build_id", *patch.RunBuildId)
 	}
-	if u.State != nil {
-		add("state", string(*u.State))
+	if patch.State != nil {
+		add("state", string(*patch.State))
 	}
-	if u.LlmGuiltyCommits != nil {
-		add("llm_guilty_commits", *u.LlmGuiltyCommits)
+	if patch.LlmGuiltyCommits != nil {
+		add("llm_guilty_commits", *patch.LlmGuiltyCommits)
 	}
-	if u.LlmComment != nil {
-		add("llm_comment", *u.LlmComment)
+	if patch.LlmComment != nil {
+		add("llm_comment", *patch.LlmComment)
 	}
-	if u.TotalCostUsd != nil {
-		add("total_cost_usd", *u.TotalCostUsd)
+	if patch.TotalCostUsd != nil {
+		add("total_cost_usd", *patch.TotalCostUsd)
 	}
 
 	if len(setClauses) == 0 {
 		return nil
 	}
-	args = append(args, u.Id)
+	args = append(args, id)
 	sql := fmt.Sprintf("UPDATE analyses SET %s WHERE id = $%d",
 		strings.Join(setClauses, ", "), len(args))
 
 	if _, err := metaDb.Exec(ctx, sql, args...); err != nil {
-		slog.Error("cannot execute update analyses query", "error", err, "id", u.Id, "sql", sql)
+		slog.Error("cannot execute update analyses query", "error", err, "id", id, "sql", sql)
 		return err
 	}
 	return nil

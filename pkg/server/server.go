@@ -122,10 +122,10 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Get("/buildInfo", meta.HandleGetTeamCityBuildInfo())
 			r.Get("/artifactsExist", meta.HandleGetTeamCityArtifactsExist())
 		})
-		r.Route("/llm", func(r chi.Router) {
-			r.Post("/startAnalysis", meta.CreatePostStartLlmAnalysis(dbpool))
-			r.Get("/analysisRuns", meta.CreateGetLlmAnalysisRuns(dbpool))
-			r.Post("/updateAnalysisRun", meta.CreatePostUpdateLlmAnalysisRun(dbpool))
+		r.Route("/llm/analyses", func(r chi.Router) {
+			r.Post("/", meta.CreatePostStartLlmAnalysis(dbpool))
+			r.Get("/", meta.CreateGetLlmAnalysisRuns(dbpool))
+			r.Patch("/{id}", meta.CreatePatchLlmAnalysisRun(dbpool))
 		})
 	})
 

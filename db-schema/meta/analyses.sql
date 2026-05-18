@@ -1,8 +1,6 @@
-DROP TABLE IF EXISTS llm_run_accidents;
-DROP TABLE IF EXISTS llm_run_yt_issues;
-DROP TABLE IF EXISTS llm_analysis_runs;
+DROP TABLE IF EXISTS analyses;
 
-CREATE TABLE llm_analysis_runs
+CREATE TABLE analyses
 (
   id                    SERIAL PRIMARY KEY,
   created_at            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -17,11 +15,12 @@ CREATE TABLE llm_analysis_runs
   last_commit_revision  VARCHAR(40),
   test_method_name      VARCHAR(255),
   run_build_id          VARCHAR(20),
+  yt_issue_id           VARCHAR(20),
   state                 VARCHAR(50)  NOT NULL DEFAULT 'in_progress',
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
   total_cost_usd        NUMERIC(10, 4)
 );
 
-CREATE INDEX idx_llm_analysis_runs_lookup
-  ON llm_analysis_runs (project, metric, current_build_id);
+CREATE INDEX idx_analysis_lookup
+  ON analyses (project, metric, current_build_id);

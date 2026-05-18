@@ -143,12 +143,12 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		rows, err := metaDb.Query(request.Context(),
-			"SELECT id, created_at, run_build_id, state FROM llm_analysis_runs "+
+			"SELECT id, created_at, run_build_id, state FROM analyses "+
 				"WHERE project = $1 AND metric = $2 AND current_build_id = $3 "+
 				"ORDER BY id DESC",
 			project, metric, currentBuildId)
 		if err != nil {
-			slog.Error("unable to execute select llm_analysis_runs query", "error", err)
+			slog.Error("unable to execute select analyses query", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -168,7 +168,7 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return run, nil
 		})
 		if err != nil {
-			slog.Error("unable to collect llm_analysis_runs rows", "error", err)
+			slog.Error("unable to collect analyses rows", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -179,7 +179,7 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(runs); err != nil {
-			slog.Error("unable to write llm_analysis_runs response", "error", err)
+			slog.Error("unable to write analyses response", "error", err)
 		}
 	}
 }
@@ -245,11 +245,11 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, u LlmAnalys
 		return nil
 	}
 	args = append(args, u.Id)
-	sql := fmt.Sprintf("UPDATE llm_analysis_runs SET %s WHERE id = $%d",
+	sql := fmt.Sprintf("UPDATE analyses SET %s WHERE id = $%d",
 		strings.Join(setClauses, ", "), len(args))
 
 	if _, err := metaDb.Exec(ctx, sql, args...); err != nil {
-		slog.Error("cannot execute update llm_analysis_runs query", "error", err, "id", u.Id, "sql", sql)
+		slog.Error("cannot execute update analyses query", "error", err, "id", u.Id, "sql", sql)
 		return err
 	}
 	return nil
@@ -259,13 +259,13 @@ func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMA
 	var id int
 	var createdAt time.Time
 	idRow := metaDb.QueryRow(ctx,
-		"INSERT INTO llm_analysis_runs (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, first_commit_revision, last_commit_revision, test_method_name) "+
-			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, created_at",
+		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id, created_at",
 		params.Project, params.Metric, params.CurrentBuildId,
 		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName,
-		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName)
+		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId)
 	if err := idRow.Scan(&id, &createdAt); err != nil {
-		slog.Error("cannot execute insert llm_analysis_runs query", "error", err,
+		slog.Error("cannot execute insert analyses query", "error", err,
 			"project", params.Project, "metric", params.Metric)
 		return 0, time.Time{}, err
 	}

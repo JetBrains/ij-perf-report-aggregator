@@ -6,7 +6,6 @@ CREATE TABLE llm_analysis_runs
 (
   id                    SERIAL PRIMARY KEY,
   created_at            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-  date                  DATE         NOT NULL,
   project               VARCHAR(255) NOT NULL,
   metric                VARCHAR(255) NOT NULL,
   current_build_id      VARCHAR(20)  NOT NULL,
@@ -27,7 +26,7 @@ CREATE TABLE llm_analysis_runs
 );
 
 CREATE INDEX idx_llm_analysis_runs_lookup
-  ON llm_analysis_runs (date, project, metric, current_build_id, prev_build_id);
+  ON llm_analysis_runs (project, metric, current_build_id);
 
 -- Junction table: LLM runs <-> accidents (many-to-many)
 CREATE TABLE llm_run_accidents

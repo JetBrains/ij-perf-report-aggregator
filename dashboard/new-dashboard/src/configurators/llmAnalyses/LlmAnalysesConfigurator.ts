@@ -41,11 +41,9 @@ export class LlmAnalysesConfigurator {
       return
     }
     this.value.value = await this.client.getLlmAnalysisRuns({
-      date: data.date,
       project: data.projectName,
       metric,
       currentBuildId: String(data.buildId),
-      prevBuildId: String(data.buildIdPrevious),
     })
   }
 
@@ -72,7 +70,6 @@ export class LlmAnalysesConfigurator {
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
     const request: LlmAnalysisRequest = {
-      date: data.date,
       project: data.projectName,
       metric,
       currentBuildId: String(data.buildId),

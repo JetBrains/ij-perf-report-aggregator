@@ -2,8 +2,7 @@ import { ServerConfigurator } from "../dataQuery"
 import { SpaceUploadAttachmentsResponse } from "../uploadAttachments/uploadAttachmentsUtils"
 
 export interface LlmAnalysisRequest {
-  date: string
-  project: string
+project: string
   metric: string
   currentBuildId: string
   prevBuildId: string
@@ -25,18 +24,15 @@ export enum LlmAnalysisState {
 
 export interface LlmAnalysisRun {
   id: number
-  date: string
   createdAt: string
   runBuildId: string
   state: LlmAnalysisState
 }
 
 export interface LlmAnalysisRunsQuery {
-  date: string
   project: string
   metric: string
   currentBuildId: string
-  prevBuildId: string
 }
 
 export class LlmAnalysisClient {

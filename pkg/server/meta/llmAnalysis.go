@@ -61,8 +61,6 @@ type LlmAnalysisRunUpdate struct {
 	State            *LlmAnalysisState `json:"state,omitempty"`
 	LlmGuiltyCommits *[]string         `json:"llmGuiltyCommits,omitempty"`
 	LlmComment       *string           `json:"llmComment,omitempty"`
-	UserRate         *bool             `json:"userRate,omitempty"`
-	UserComment      *string           `json:"userComment,omitempty"`
 	TotalCostUsd     *float64          `json:"totalCostUsd,omitempty"`
 }
 
@@ -230,12 +228,6 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, u LlmAnalys
 	}
 	if u.LlmComment != nil {
 		add("llm_comment", *u.LlmComment)
-	}
-	if u.UserRate != nil {
-		add("user_rate", *u.UserRate)
-	}
-	if u.UserComment != nil {
-		add("user_comment", *u.UserComment)
 	}
 	if u.TotalCostUsd != nil {
 		add("total_cost_usd", *u.TotalCostUsd)

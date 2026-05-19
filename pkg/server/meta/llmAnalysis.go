@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -62,6 +63,17 @@ type LlmAnalysisRunPatch struct {
 	LlmGuiltyCommits *[]string         `json:"llmGuiltyCommits,omitempty"`
 	LlmComment       *string           `json:"llmComment,omitempty"`
 	TotalCostUsd     *float64          `json:"totalCostUsd,omitempty"`
+}
+
+var sha1HexRegex = regexp.MustCompile(`^[a-fA-F0-9]{40}$`)
+
+func validateLlmGuiltyCommits(commits []string) error {
+	for i, c := range commits {
+		if !sha1HexRegex.MatchString(c) {
+			return fmt.Errorf("llmGuiltyCommits[%d] is not a 40-char hex SHA: %q", i, c)
+		}
+	}
+	return nil
 }
 
 func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -200,6 +212,12 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 		if err := decoder.Decode(&patch); err != nil {
 			http.Error(writer, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
+		}
+		if patch.LlmGuiltyCommits != nil {
+			if err := validateLlmGuiltyCommits(*patch.LlmGuiltyCommits); err != nil {
+				http.Error(writer, err.Error(), http.StatusBadRequest)
+				return
+			}
 		}
 		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, patch); err != nil {
 			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)

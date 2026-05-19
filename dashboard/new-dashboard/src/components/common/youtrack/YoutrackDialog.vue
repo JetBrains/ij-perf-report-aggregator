@@ -155,6 +155,7 @@ import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSide
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"
@@ -162,9 +163,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
-import { uploadAttachments, UploadAttachmentsRequest, UploadTarget } from "../uploadAttachments/uploadAttachmentsUtils"
-import { getFirstAndLastCommit } from "../../../util/changes"
+import { uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
 
 enum ProgressState {
   NOT_STARTED,
@@ -182,16 +181,16 @@ enum LlmAnalysisState {
 
 const router = useRouter()
 
-const { data, accident, accidentConfigurator, timerangeConfigurator } = defineProps<{
+const { data, accident, accidentConfigurator, llmAnalysesConfigurator, timerangeConfigurator } = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
+  llmAnalysesConfigurator: LlmAnalysesConfigurator
   timerangeConfigurator: TimeRangeConfigurator
 }>()
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
-const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
 const createdTicket = ref("")
@@ -312,25 +311,19 @@ async function createTicket() {
     createException.value = true
   }
 
-  let affectedTest = accident.affectedTest
-
-  if (affectedTest.endsWith(affectedMetric)) {
-    affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
-  }
   const attachmentsInfo: UploadAttachmentsRequest = {
-    issueId: issueResponse.issue.id,
     teamcityAttachmentInfo: {
       currentBuildId: buildId,
       previousBuildId: undefined,
     },
-    affectedTest,
-    chartPng: undefined,
+    projectName: data.projectName,
     testType: dbTypeStore().dbType,
   }
+  let chartPng: string | undefined
   if (accident.kind != AccidentKind.Exception) {
     attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
     try {
-      attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
+      chartPng = await fetch(data.chartDataUrl)
         .then((res) => res.blob())
         .then((blob) => {
           return new Promise<string>((resolve, reject) => {
@@ -358,9 +351,9 @@ async function createTicket() {
   }
 
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
-  uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.YouTrack)
+  uploadAttachmentsToYoutrack(serverConfigurator, { ...attachmentsInfo, issueId: issueResponse.issue.id, chartPng })
     .then((response) => {
-      if (response.exceptions?.length) {
+      if (response.exceptions.length > 0) {
         reportAttachmentFailure(`Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`)
       } else {
         progressState.value = ProgressState.FINISHED
@@ -371,32 +364,16 @@ async function createTicket() {
       reportAttachmentFailure("Failed to upload attachments to YouTrack", error)
     })
 
-  if (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement) {
+  if (llmAnalysesConfigurator.canStart(data) && (accident.kind === AccidentKind.Regression || accident.kind === AccidentKind.Improvement)) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING
-
-    uploadAttachments(serverConfigurator, attachmentsInfo, UploadTarget.Space)
-      .then(async (response) => {
-        try {
-          const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
-          const llmAnalysisRequest: LlmAnalysisRequest = {
-            commitRevisions: firstCommit && lastCommit ? { firstCommit, lastCommit } : null,
-            currentValue: data.formattedCurrentValue || undefined,
-            previousValue: data.formattedPreviousValue || undefined,
-            affectedMetric,
-            testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-            youtrackIssueReadableId: issueResponse.issue.idReadable,
-            youtrackIssueId: issueResponse.issue.id,
-            spaceUploadedFiles: response.uploads ?? [],
-          }
-          llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
-          llmAnalysisState.value = LlmAnalysisState.DONE
-        } catch (error) {
-          console.error("LLM Analysis start failed:", error)
-          llmAnalysisState.value = LlmAnalysisState.FAILED
-        }
+    void llmAnalysesConfigurator
+      .startRun(data, issueResponse.issue.idReadable)
+      .then(({ buildUrl: url }) => {
+        llmAnalysisBuildUrl.value = url
+        llmAnalysisState.value = LlmAnalysisState.DONE
       })
       .catch((error: unknown) => {
-        console.error("Space attachment upload for LLM analysis failed:", error)
+        console.error("LLM Analysis start failed:", error)
         llmAnalysisState.value = LlmAnalysisState.FAILED
       })
   }

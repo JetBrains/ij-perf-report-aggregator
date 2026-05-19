@@ -112,16 +112,20 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Post("/uploadAttachments", meta.CreatePostYoutrackUploadAttachments())
 		})
 		r.Route("/space", func(r chi.Router) {
-			r.Post("/uploadAttachments", meta.CreatePostSpaceUploadAttachments())
+			r.Post("/uploadAttachments", meta.CreatePostSpaceUploadAttachments(dbpool))
 		})
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())
-			r.Post("/startLlmAnalysis", meta.CreatePostStartLlmAnalysis())
 			r.Get("/changes", meta.HandleGetTeamCityChanges())
 			r.Get("/buildType", meta.HandleGetTeamCityBuildType())
 			r.Get("/buildCounter", meta.HandleGetTeamCityBuildCounter())
 			r.Get("/buildInfo", meta.HandleGetTeamCityBuildInfo())
 			r.Get("/artifactsExist", meta.HandleGetTeamCityArtifactsExist())
+		})
+		r.Route("/llm/analyses", func(r chi.Router) {
+			r.Post("/", meta.CreatePostStartLlmAnalysis(dbpool))
+			r.Get("/", meta.CreateGetLlmAnalysisRuns(dbpool))
+			r.Patch("/{id}", meta.CreatePatchLlmAnalysisRun(dbpool))
 		})
 	})
 

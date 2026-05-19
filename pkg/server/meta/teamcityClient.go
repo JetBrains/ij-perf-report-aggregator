@@ -187,6 +187,7 @@ type Property struct {
 
 type BuildResponse struct {
 	XMLName xml.Name `xml:"build"`
+	Id      int64    `xml:"id,attr"`
 	WebURL  string   `xml:"webUrl,attr"`
 }
 
@@ -279,7 +280,7 @@ func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*
 	return revisions, nil
 }
 
-func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, params map[string]string) (*string, error) {
+func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, params map[string]string) (*BuildResponse, error) {
 	endpoint := "/app/rest/buildQueue"
 
 	properties := Properties{
@@ -313,6 +314,7 @@ func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, pa
 
 	req.Header.Set("Authorization", "Bearer "+client.authToken)
 	req.Header.Set("Content-Type", "application/xml")
+	req.Header.Set("Accept", "application/xml")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -335,5 +337,5 @@ func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, pa
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshaling XML: %w", err)
 	}
-	return &buildResponse.WebURL, nil
+	return &buildResponse, nil
 }

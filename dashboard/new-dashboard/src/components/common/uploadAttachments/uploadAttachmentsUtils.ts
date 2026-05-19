@@ -1,44 +1,49 @@
 import { ServerConfigurator } from "../dataQuery"
 
-export enum UploadTarget {
-  YouTrack = "youtrack",
-  Space = "space",
-}
-
 export interface UploadAttachmentsRequest {
-  issueId: string
   teamcityAttachmentInfo: {
     currentBuildId: number
     previousBuildId: number | undefined
   }
-  chartPng: string | undefined
-  affectedTest: string
+  projectName: string
   testType: string
 }
 
-export interface UploadAttachmentsResponse {
-  uploads: string[]
-  exceptions: string[] | undefined
+export interface YoutrackUploadAttachmentsRequest extends UploadAttachmentsRequest {
+  issueId: string
+  chartPng?: string
 }
 
-export async function uploadAttachments(
-  serverConfigurator: ServerConfigurator | null,
-  request: UploadAttachmentsRequest,
-  target: UploadTarget
-): Promise<UploadAttachmentsResponse> {
-  const url = `${serverConfigurator?.serverUrl}/api/meta/${target}/uploadAttachments`
-  const response = await fetch(url, {
+export interface YoutrackUploadAttachmentsResponse {
+  uploads: string[]
+  exceptions: string[]
+}
+
+export interface SpaceUploadAttachmentsResponse {
+  uploads: Record<number, string[]>
+  exceptions: Record<number, string[]>
+}
+
+export function uploadAttachmentsToYoutrack(serverConfigurator: ServerConfigurator | null, request: YoutrackUploadAttachmentsRequest): Promise<YoutrackUploadAttachmentsResponse> {
+  return postUpload(serverConfigurator, "youtrack", request)
+}
+
+export function uploadAttachmentsToSpace(serverConfigurator: ServerConfigurator | null, request: UploadAttachmentsRequest): Promise<SpaceUploadAttachmentsResponse> {
+  return postUpload(serverConfigurator, "space", request)
+}
+
+async function postUpload<TResponse>(serverConfigurator: ServerConfigurator | null, target: "youtrack" | "space", body: unknown): Promise<TResponse> {
+  const response = await fetch(`${serverConfigurator?.serverUrl}/api/meta/${target}/uploadAttachments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(body),
   })
 
   if (!response.ok) {
-    const serviceName = target === UploadTarget.YouTrack ? "YouTrack" : "Space"
-    throw new Error(`Failed to upload attachments to ${serviceName}. HTTP error: ${response.status}`)
+    throw new Error(`Failed to upload attachments to ${target}. HTTP error: ${response.status}`)
   }
 
-  return (await response.json()) as UploadAttachmentsResponse
+  return (await response.json()) as TResponse
 }

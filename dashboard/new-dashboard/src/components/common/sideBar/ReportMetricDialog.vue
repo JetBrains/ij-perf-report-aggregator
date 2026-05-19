@@ -150,15 +150,18 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { computed, ref, watch } from "vue"
 import { useToast } from "primevue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
+import { startLlmAnalysisWithToast } from "./LlmAnalysisUtils"
 import { InfoData } from "./InfoSidebar"
 import { generateDefaultReason } from "./AccidentUtils"
 import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import { useStorage } from "@vueuse/core"
 
-const { data, accidentsConfigurator } = defineProps<{
+const { data, accidentsConfigurator, llmAnalysesConfigurator } = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
+  llmAnalysesConfigurator: LlmAnalysesConfigurator
 }>()
 
 const createIssueCheckbox = ref(false)
@@ -188,6 +191,10 @@ watch(
     accidentType.value = newVal?.kind ?? inferKindFromData(data)
     reason.value = newVal?.reason ?? ""
   }
+)
+
+const shouldRunLlmAnalysis = computed(
+  () => llmAnalysesConfigurator.canStart(data) && reportMetricOnly.value && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
 )
 
 function generateReason(): string {
@@ -231,9 +238,12 @@ async function reportRegression() {
         throw new Error("Failed to create accident - no ID returned")
       }
 
+      const shouldRunLlm = shouldRunLlmAnalysis.value
       if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
         createIssue.value = true
+      } else if (shouldRunLlm) {
+        void startLlmAnalysisWithToast(llmAnalysesConfigurator, value, toast)
       }
     } catch (error: unknown) {
       console.error("Failed to report accident", error)

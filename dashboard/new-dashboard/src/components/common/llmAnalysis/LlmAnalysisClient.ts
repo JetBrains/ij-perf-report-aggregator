@@ -1,19 +1,32 @@
 import { ServerConfigurator } from "../dataQuery"
-
-export interface CommitRevisions {
-  firstCommit: string
-  lastCommit: string
-}
+import { SpaceUploadAttachmentsResponse } from "../uploadAttachments/uploadAttachmentsUtils"
 
 export interface LlmAnalysisRequest {
-  commitRevisions: CommitRevisions | null
-  currentValue: string | undefined
-  previousValue: string | undefined
-  affectedMetric: string
-  testMethodName: string | undefined
-  youtrackIssueReadableId: string
-  youtrackIssueId: string
-  spaceUploadedFiles: string[]
+  project: string
+  metric: string
+  currentBuildId: string
+  prevBuildId: string
+  spaceAttachments: SpaceUploadAttachmentsResponse
+  currentValue?: string
+  previousValue?: string
+  userName?: string
+  firstCommitRevision?: string
+  lastCommitRevision?: string
+  testMethodName?: string
+  ytIssueId?: string
+}
+
+export enum LlmAnalysisState {
+  InProgress = "in_progress",
+  Success = "success",
+  Failed = "failed",
+}
+
+export interface LlmAnalysisRun {
+  id: number
+  createdAt: string
+  runBuildId: string
+  state: LlmAnalysisState
 }
 
 export class LlmAnalysisClient {
@@ -23,8 +36,8 @@ export class LlmAnalysisClient {
     this.serverConfigurator = serverConfigurator
   }
 
-  async sendLlmAnalysisRequest(request: LlmAnalysisRequest): Promise<string> {
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/teamcity/startLlmAnalysis`
+  async sendLlmAnalysisRequest(request: LlmAnalysisRequest): Promise<LlmAnalysisRun> {
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses`
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -37,6 +50,17 @@ export class LlmAnalysisClient {
       const errorMessage = await response.text()
       throw new Error(`Failed to send LLM analysis request: ${response.statusText} ${errorMessage}`)
     }
-    return response.text()
+    return (await response.json()) as LlmAnalysisRun
+  }
+
+  async getLlmAnalysisRuns(project: string, metric: string, currentBuildId: string): Promise<LlmAnalysisRun[]> {
+    const params = new URLSearchParams({ project, metric, currentBuildId })
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses?${params.toString()}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Failed to fetch LLM analysis runs: ${response.statusText} ${errorMessage}`)
+    }
+    return (await response.json()) as LlmAnalysisRun[]
   }
 }

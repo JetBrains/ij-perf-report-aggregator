@@ -230,6 +230,8 @@
         :in-dialog="false"
       />
 
+      <LlmAnalysisRuns />
+
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
@@ -291,6 +293,16 @@
           <BeakerIcon class="w-4 h-4 mr-1.5" />
           Bisect
         </Button>
+        <Button
+          v-if="llmAnalysesConfigurator.canStart(data)"
+          outlined
+          class="flex-1 justify-center"
+          :loading="isLlmAnalysisStarting"
+          @click="runLlmAnalysis"
+        >
+          <SparklesIcon class="w-4 h-4 mr-1.5" />
+          Run LLM Analysis
+        </Button>
       </div>
     </div>
   </div>
@@ -300,6 +312,7 @@
     v-model:create-issue="showYoutrackDialog"
     v-model:accident-to-edit="accidentToEdit"
     :accidents-configurator="accidentsConfigurator"
+    :llm-analyses-configurator="llmAnalysesConfigurator"
     :data="data"
   />
   <YoutrackDialog
@@ -308,6 +321,7 @@
     :accident="accidentToEdit!!"
     :data="data!!"
     :accident-configurator="accidentsConfigurator"
+    :llm-analyses-configurator="llmAnalysesConfigurator"
     :timerange-configurator="timerangeConfigurator"
   />
   <StacktraceModal
@@ -325,10 +339,12 @@
   </Suspense>
 </template>
 <script setup lang="ts">
-import { computed, provide, Ref, ref } from "vue"
+import { computed, provide, Ref, ref, watch } from "vue"
 import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
+import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
+import { startLlmAnalysisWithToast } from "./LlmAnalysisUtils"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
+import { accidentsConfiguratorKey, llmAnalysesConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
 import { checkTeamcityArtifactsExist, getTeamcityBuildCounter, getTeamcityBuildType } from "../../../util/artifacts"
 import { replaceToLink } from "../../../util/linkReplacer"
@@ -346,6 +362,8 @@ import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigura
 import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
+import { useToast } from "primevue/usetoast"
+import LlmAnalysisRuns from "./LlmAnalysisRuns.vue"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
@@ -384,6 +402,30 @@ const serverConfigurator = injectOrNull(serverConfiguratorKey)
 const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
+
+const toast = useToast()
+const llmAnalysesConfigurator = new LlmAnalysesConfigurator(serverConfigurator)
+provide(llmAnalysesConfiguratorKey, llmAnalysesConfigurator)
+watch(
+  () => vm.data.value,
+  (d) => {
+    llmAnalysesConfigurator.data.value = d
+  },
+  { immediate: true }
+)
+
+const isLlmAnalysisStarting = ref(false)
+
+async function runLlmAnalysis() {
+  const d = vm.data.value
+  if (d == null) return
+  isLlmAnalysisStarting.value = true
+  try {
+    await startLlmAnalysisWithToast(llmAnalysesConfigurator, d, toast)
+  } finally {
+    isLlmAnalysisStarting.value = false
+  }
+}
 
 const youtrackClient = new YoutrackClient(serverConfigurator)
 provide(youtrackClientKey, youtrackClient)

@@ -16,18 +16,18 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	Project             string                          `json:"project"`
-	Metric              string                          `json:"metric"`
-	CurrentBuildId      string                          `json:"currentBuildId"`
-	PrevBuildId         string                          `json:"prevBuildId"`
-	CurrentValue        *string                         `json:"currentValue,omitempty"`
-	PreviousValue       *string                         `json:"previousValue,omitempty"`
-	UserName            *string                         `json:"userName,omitempty"`
-	FirstCommitRevision *string                         `json:"firstCommitRevision,omitempty"`
-	LastCommitRevision  *string                         `json:"lastCommitRevision,omitempty"`
-	TestMethodName      *string                         `json:"testMethodName,omitempty"`
-	YtIssueId           *string                         `json:"ytIssueId,omitempty"`
-	SpaceAttachments    *SpaceUploadAttachmentsResponse `json:"spaceAttachments,omitempty"`
+	Project             string                         `json:"project"`
+	Metric              string                         `json:"metric"`
+	CurrentBuildId      string                         `json:"currentBuildId"`
+	PrevBuildId         string                         `json:"prevBuildId"`
+	SpaceAttachments    SpaceUploadAttachmentsResponse `json:"spaceAttachments"`
+	CurrentValue        *string                        `json:"currentValue,omitempty"`
+	PreviousValue       *string                        `json:"previousValue,omitempty"`
+	UserName            *string                        `json:"userName,omitempty"`
+	FirstCommitRevision *string                        `json:"firstCommitRevision,omitempty"`
+	LastCommitRevision  *string                        `json:"lastCommitRevision,omitempty"`
+	TestMethodName      *string                        `json:"testMethodName,omitempty"`
+	YtIssueId           *string                        `json:"ytIssueId,omitempty"`
 }
 
 type LlmAnalysisRun struct {

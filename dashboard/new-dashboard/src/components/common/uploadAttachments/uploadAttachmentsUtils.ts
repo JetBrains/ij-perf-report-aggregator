@@ -16,12 +16,12 @@ export interface YoutrackUploadAttachmentsRequest extends UploadAttachmentsReque
 
 export interface YoutrackUploadAttachmentsResponse {
   uploads: string[]
-  exceptions: string[] | undefined
+  exceptions: string[]
 }
 
 export interface SpaceUploadAttachmentsResponse {
   uploads: Record<number, string[]>
-  exceptions: Record<number, string[]> | undefined
+  exceptions: Record<number, string[]>
 }
 
 export function uploadAttachmentsToYoutrack(serverConfigurator: ServerConfigurator | null, request: YoutrackUploadAttachmentsRequest): Promise<YoutrackUploadAttachmentsResponse> {

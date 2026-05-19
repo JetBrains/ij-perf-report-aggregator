@@ -353,7 +353,7 @@ async function createTicket() {
   progressState.value = ProgressState.UPLOADING_ATTACHMENTS
   uploadAttachmentsToYoutrack(serverConfigurator, { ...attachmentsInfo, issueId: issueResponse.issue.id, chartPng })
     .then((response) => {
-      if (response.exceptions?.length) {
+      if (response.exceptions.length > 0) {
         reportAttachmentFailure(`Failed to upload attachments. Errors: ${response.exceptions.join("\n")}`)
       } else {
         progressState.value = ProgressState.FINISHED

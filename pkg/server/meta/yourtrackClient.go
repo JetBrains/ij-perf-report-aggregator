@@ -252,7 +252,10 @@ type YoutrackUploadAttachmentsResponse struct {
 
 func CreatePostYoutrackUploadAttachments() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var response YoutrackUploadAttachmentsResponse
+		response := YoutrackUploadAttachmentsResponse{
+			Uploads:    []string{},
+			Exceptions: []string{},
+		}
 		var params YoutrackUploadAttachmentsRequest
 		decoder := json.NewDecoder(request.Body)
 		defer request.Body.Close()

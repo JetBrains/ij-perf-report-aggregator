@@ -70,6 +70,7 @@ export class LlmAnalysesConfigurator {
       metric,
       currentBuildId: String(data.buildId),
       prevBuildId: String(data.buildIdPrevious),
+      spaceAttachments,
       currentValue: data.formattedCurrentValue ?? undefined,
       previousValue: data.formattedPreviousValue ?? undefined,
       userName: useUserStore().user?.name ?? undefined,
@@ -77,7 +78,6 @@ export class LlmAnalysesConfigurator {
       lastCommitRevision: lastCommit ?? undefined,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
-      spaceAttachments,
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

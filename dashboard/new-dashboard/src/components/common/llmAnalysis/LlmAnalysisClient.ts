@@ -6,6 +6,7 @@ export interface LlmAnalysisRequest {
   metric: string
   currentBuildId: string
   prevBuildId: string
+  spaceAttachments: SpaceUploadAttachmentsResponse
   currentValue?: string
   previousValue?: string
   userName?: string
@@ -13,7 +14,6 @@ export interface LlmAnalysisRequest {
   lastCommitRevision?: string
   testMethodName?: string
   ytIssueId?: string
-  spaceAttachments?: SpaceUploadAttachmentsResponse
 }
 
 export enum LlmAnalysisState {

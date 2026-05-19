@@ -85,7 +85,10 @@ type SpaceUploadAttachmentsResponse struct {
 
 func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		var response SpaceUploadAttachmentsResponse
+		response := SpaceUploadAttachmentsResponse{
+			Uploads:    map[int][]string{},
+			Exceptions: map[int][]string{},
+		}
 		var params SpaceUploadAttachmentsRequest
 		decoder := json.NewDecoder(request.Body)
 		defer request.Body.Close()
@@ -112,18 +115,12 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 				slog.Error(message, "error", err)
 				mu.Lock()
 				defer mu.Unlock()
-				if response.Exceptions == nil {
-					response.Exceptions = make(map[int][]string)
-				}
 				response.Exceptions[buildId] = append(response.Exceptions[buildId],
 					fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 			},
 			OnSuccess: func(buildId int, fileName string) {
 				mu.Lock()
 				defer mu.Unlock()
-				if response.Uploads == nil {
-					response.Uploads = make(map[int][]string)
-				}
 				response.Uploads[buildId] = append(response.Uploads[buildId], fileName)
 			},
 			SkipPostfix:  true,

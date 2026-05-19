@@ -18,7 +18,7 @@ CREATE TABLE analyses
   yt_issue_id           VARCHAR(20),
   state                 VARCHAR(50)  NOT NULL DEFAULT 'in_progress',
   llm_guilty_commits    VARCHAR(40)[],
-  llm_comment           TEXT,
+  llm_comment           VARCHAR(8000),
   total_cost_usd        NUMERIC(10, 4)
 );
 

@@ -249,10 +249,10 @@ func GenerateUISettings() []detector.PerformanceSettings {
 								Machine: machine,
 								Metric:  metric,
 								Branch:  "master",
-								SlackSettings: detector.SlackSettings{
-									Channel:     "ij-ui-performance-alerts",
-									ProductLink: "intellij",
-								},
+								// SlackSettings: detector.SlackSettings{
+								// 	Channel:     "ij-ui-performance-alerts",
+								// 	ProductLink: "intellij",
+								// },
 								AnalysisSettings: detector.AnalysisSettings{
 									MinimumSegmentLength: 8,
 								},

@@ -69,6 +69,8 @@ const metricsDeclaration = [
   "jps.save.global.entities.ms",
   "jps.storage.jps.conf.reader.load.component.ms",
   "jps.module.dependency.index.workspace.model.listener.on.changed.ms",
+  "jps.modifiable.module.model.bridge.new.module.ms",
+  "jps.modifiable.module.model.bridge.load.module.ms",
 
   "workspaceModel.check.recursive.update.ms",
   "workspaceModel.collect.changes.ms",

@@ -11,6 +11,7 @@ CREATE TABLE analyses
   current_value         VARCHAR(50),
   previous_value        VARCHAR(50),
   user_name             VARCHAR(100),
+  user_email            VARCHAR(255),
   first_commit_revision VARCHAR(40),
   last_commit_revision  VARCHAR(40),
   test_method_name      VARCHAR(255),

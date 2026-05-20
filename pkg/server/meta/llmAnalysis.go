@@ -87,7 +87,9 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		id, createdAt, err := insertLlmAnalysisRow(request.Context(), metaDb, llmAnalysisRequest)
+		userEmail := request.Header.Get("X-Auth-Request-Email")
+
+		id, createdAt, err := insertLlmAnalysisRow(request.Context(), metaDb, llmAnalysisRequest, userEmail)
 		if err != nil {
 			http.Error(writer, "Failed to insert LLM analysis row: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -103,8 +105,8 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			"llm.analysis.id": strconv.Itoa(id),
 			"analysis.data":   string(analysisData),
 		}
-		if email := request.Header.Get("X-Auth-Request-Email"); email != "" {
-			buildParams["user.email"] = email
+		if userEmail != "" {
+			buildParams["user.email"] = userEmail
 		}
 
 		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
@@ -271,14 +273,18 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, id int, pat
 	return nil
 }
 
-func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMAnalysisRequest) (int, time.Time, error) {
+func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMAnalysisRequest, userEmail string) (int, time.Time, error) {
 	var id int
 	var createdAt time.Time
+	var userEmailArg *string
+	if userEmail != "" {
+		userEmailArg = &userEmail
+	}
 	idRow := metaDb.QueryRow(ctx,
-		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id) "+
-			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id, created_at",
+		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, created_at",
 		params.Project, params.Metric, params.CurrentBuildId,
-		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName,
+		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName, userEmailArg,
 		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId)
 	if err := idRow.Scan(&id, &createdAt); err != nil {
 		slog.Error("cannot execute insert analyses query", "error", err,

@@ -31,16 +31,6 @@
     "pnpm": ">=10"
   },
   "packageManager": "pnpm@11.0.8",
-  "pnpm": {
-    "ignoredOptionalDependencies": [
-      "jsdom",
-      "msw"
-    ],
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild"
-    ]
-  },
   "ignorePatterns": [
     "**/node_modules/**/*.*"
   ]

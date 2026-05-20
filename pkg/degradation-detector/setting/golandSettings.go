@@ -68,7 +68,7 @@ func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detect
 		Table: "goland",
 		BaseSettings: detector.BaseSettings{
 			Branch:  "master",
-			Machine: "intellij-linux-hw-hetzner%",
+			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)

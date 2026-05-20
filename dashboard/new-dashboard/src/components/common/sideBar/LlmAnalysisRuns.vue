@@ -13,11 +13,14 @@
             :key="run.id"
             class="flex items-center justify-between gap-1.5"
           >
-            <span
+            <button
               v-tooltip.top="run.createdAt"
-              class="text-xs"
-              >{{ formatCreatedAt(run.createdAt) }}</span
+              type="button"
+              class="text-xs underline decoration-dotted hover:no-underline bg-transparent border-0 p-0 cursor-pointer text-left"
+              @click="openAnalysis(run.id)"
             >
+              {{ formatCreatedAt(run.createdAt) }}
+            </button>
             <span class="flex gap-1.5 items-center">
               <a
                 v-if="run.runBuildId"
@@ -37,17 +40,30 @@
       </AccordionContent>
     </AccordionPanel>
   </Accordion>
+  <AnalysisDetailsDialog
+    v-model:visible="dialogVisible"
+    :analysis-id="selectedAnalysisId"
+  />
 </template>
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
+import AnalysisDetailsDialog from "../../llmAnalysis/AnalysisDetailsDialog.vue"
 import { LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
 import { buildUrl } from "./InfoSidebar"
 
 const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
 
 const runs = computed(() => llmAnalysesConfigurator.value.value)
+
+const dialogVisible = ref(false)
+const selectedAnalysisId = ref<number | null>(null)
+
+function openAnalysis(id: number): void {
+  selectedAnalysisId.value = id
+  dialogVisible.value = true
+}
 
 function stateIconClass(state: LlmAnalysisState): string {
   switch (state) {

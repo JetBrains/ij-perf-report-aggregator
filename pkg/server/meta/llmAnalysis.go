@@ -3,6 +3,7 @@ package meta
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -36,6 +37,28 @@ type LlmAnalysisRun struct {
 	CreatedAt  string `json:"createdAt"`
 	RunBuildId string `json:"runBuildId"`
 	State      string `json:"state"`
+}
+
+type LlmAnalysisDetails struct {
+	Id                  int      `json:"id"`
+	CreatedAt           string   `json:"createdAt"`
+	Project             string   `json:"project"`
+	Metric              string   `json:"metric"`
+	CurrentBuildId      string   `json:"currentBuildId"`
+	PrevBuildId         string   `json:"prevBuildId"`
+	CurrentValue        *string  `json:"currentValue,omitempty"`
+	PreviousValue       *string  `json:"previousValue,omitempty"`
+	UserName            *string  `json:"userName,omitempty"`
+	UserEmail           *string  `json:"userEmail,omitempty"`
+	FirstCommitRevision *string  `json:"firstCommitRevision,omitempty"`
+	LastCommitRevision  *string  `json:"lastCommitRevision,omitempty"`
+	TestMethodName      *string  `json:"testMethodName,omitempty"`
+	RunBuildId          *string  `json:"runBuildId,omitempty"`
+	YtIssueId           *string  `json:"ytIssueId,omitempty"`
+	State               string   `json:"state"`
+	LlmGuiltyCommits    []string `json:"llmGuiltyCommits,omitempty"`
+	LlmComment          *string  `json:"llmComment,omitempty"`
+	TotalCostUsd        *float64 `json:"totalCostUsd,omitempty"`
 }
 
 type LlmAnalysisState string
@@ -197,6 +220,63 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(runs); err != nil {
 			slog.Error("unable to write analyses response", "error", err)
+		}
+	}
+}
+
+func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(request, "id"))
+		if err != nil || id <= 0 {
+			http.Error(writer, "invalid id", http.StatusBadRequest)
+			return
+		}
+
+		const sql = "SELECT id, created_at, project, metric, current_build_id, prev_build_id, " +
+			"current_value, previous_value, user_name, user_email, " +
+			"first_commit_revision, last_commit_revision, test_method_name, run_build_id, yt_issue_id, " +
+			"state, llm_guilty_commits, llm_comment, total_cost_usd " +
+			"FROM analyses WHERE id = $1"
+
+		var (
+			details   LlmAnalysisDetails
+			createdAt time.Time
+		)
+		err = metaDb.QueryRow(request.Context(), sql, id).Scan(
+			&details.Id,
+			&createdAt,
+			&details.Project,
+			&details.Metric,
+			&details.CurrentBuildId,
+			&details.PrevBuildId,
+			&details.CurrentValue,
+			&details.PreviousValue,
+			&details.UserName,
+			&details.UserEmail,
+			&details.FirstCommitRevision,
+			&details.LastCommitRevision,
+			&details.TestMethodName,
+			&details.RunBuildId,
+			&details.YtIssueId,
+			&details.State,
+			&details.LlmGuiltyCommits,
+			&details.LlmComment,
+			&details.TotalCostUsd,
+		)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				http.Error(writer, "analysis not found", http.StatusNotFound)
+				return
+			}
+			slog.Error("unable to execute select analysis by id query", "error", err, "id", id)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		details.CreatedAt = createdAt.Format(time.RFC3339)
+
+		writer.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(writer).Encode(details); err != nil {
+			slog.Error("unable to write analysis details response", "error", err, "id", id)
 		}
 	}
 }

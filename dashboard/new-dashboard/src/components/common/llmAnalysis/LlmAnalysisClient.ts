@@ -29,6 +29,28 @@ export interface LlmAnalysisRun {
   state: LlmAnalysisState
 }
 
+export interface LlmAnalysisDetails {
+  id: number
+  createdAt: string
+  project: string
+  metric: string
+  currentBuildId: string
+  prevBuildId: string
+  currentValue?: string
+  previousValue?: string
+  userName?: string
+  userEmail?: string
+  firstCommitRevision?: string
+  lastCommitRevision?: string
+  testMethodName?: string
+  runBuildId?: string
+  ytIssueId?: string
+  state: LlmAnalysisState
+  llmGuiltyCommits?: string[]
+  llmComment?: string
+  totalCostUsd?: number
+}
+
 export class LlmAnalysisClient {
   private readonly serverConfigurator: ServerConfigurator | null
 
@@ -62,5 +84,18 @@ export class LlmAnalysisClient {
       throw new Error(`Failed to fetch LLM analysis runs: ${response.statusText} ${errorMessage}`)
     }
     return (await response.json()) as LlmAnalysisRun[]
+  }
+
+  async getLlmAnalysisById(id: number | string): Promise<LlmAnalysisDetails> {
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${encodeURIComponent(String(id))}`
+    const response = await fetch(url)
+    if (response.status === 404) {
+      throw new Error("Analysis not found")
+    }
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Failed to fetch LLM analysis: ${response.statusText} ${errorMessage}`)
+    }
+    return (await response.json()) as LlmAnalysisDetails
   }
 }

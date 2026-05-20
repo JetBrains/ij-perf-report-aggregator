@@ -17,7 +17,7 @@ const MACHINES = {
   AWS_LINUX: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
 }
 
-const enum ROUTE_PREFIX {
+enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",

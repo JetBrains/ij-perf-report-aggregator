@@ -168,7 +168,7 @@ interface Props {
   selectionLimit?: number
 }
 
-const enum SubMenu {
+enum SubMenu {
   TRIGGERED_BY,
   VERSION_TYPE,
 }

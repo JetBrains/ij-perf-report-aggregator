@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { UrlParams, useUrlSearchParams } from "@vueuse/core"
 import { computed } from "vue"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 
 export const pointParamName = "point"
 
@@ -18,3 +19,19 @@ export const useSelectedPointStore = defineStore("selectedPointStore", () => {
 
   return { selectedPoint }
 })
+
+// Render-time bridge: MeasureConfigurator's itemStyle.color callback already
+// detects the URL-selected point per data item and has the real ECharts params
+// in scope. It pushes those here so the sidebar auto-open consumer can reuse
+// them instead of rescanning the dataset and synthesizing fake params.
+const matchedSelectedPointParams: CallbackDataParams[] = []
+
+export function captureMatchedSelectedPoint(params: CallbackDataParams): void {
+  matchedSelectedPointParams.push(params)
+}
+
+export function consumeMatchedSelectedPoints(): CallbackDataParams[] {
+  const result = [...matchedSelectedPointParams]
+  matchedSelectedPointParams.length = 0
+  return result
+}

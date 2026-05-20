@@ -171,6 +171,11 @@ function createChart() {
       hasData.value = hasDataValue
       previousHasData.value = hasDataValue
     })
+    chartVm.enableSidebarAutoOpen({
+      sidebarVm,
+      valueUnit: valueUnitFromMeasure.value,
+      accidentsConfigurator,
+    })
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnitFromMeasure.value, accidentsConfigurator))
   }

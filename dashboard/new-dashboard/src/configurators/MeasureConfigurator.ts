@@ -36,7 +36,7 @@ import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
 import { getBasicInfo, getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
 import { useDarkModeStore } from "../shared/useDarkModeStore"
-import { useSelectedPointStore } from "../shared/selectedPointStore"
+import { captureMatchedSelectedPoint, useSelectedPointStore } from "../shared/selectedPointStore"
 
 export const SMOOTHED_SERIES_SUFFIX = "smoothed"
 
@@ -393,6 +393,7 @@ function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | nul
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       if (useSelectedPointStore().selectedPoint != undefined && getBasicInfo(seriesIndex, "ms").buildId.toString() == useSelectedPointStore().selectedPoint) {
+        captureMatchedSelectedPoint(seriesIndex)
         return getSelectedPointColor()
       }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])

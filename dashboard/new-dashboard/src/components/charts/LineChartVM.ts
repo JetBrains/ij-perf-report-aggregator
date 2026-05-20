@@ -13,6 +13,7 @@ import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds, typeIsCounter } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
+import { consumeMatchedSelectedPoints } from "../../shared/selectedPointStore"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
@@ -25,6 +26,16 @@ class ClickedValue {
   ) {}
 }
 
+interface AutoOpenConfig {
+  sidebarVm: InfoSidebar
+  valueUnit: ValueUnit
+  accidentsConfigurator: AccidentsConfigurator | null
+}
+
+interface SeriesOption {
+  datasetIndex?: number
+}
+
 export class LineChartVM {
   private readonly settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
@@ -33,6 +44,8 @@ export class LineChartVM {
   // Track if data has been loaded (for accident marker refresh)
   private lastData: DataQueryResult | null = null
   private hoverFade?: HoverFadeController
+  private autoOpenConfig: AutoOpenConfig | null = null
+  private hasAutoOpened = false
 
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
@@ -70,22 +83,45 @@ export class LineChartVM {
   private extractSeriesContext(chartManager: ChartManager, params: ECElementEvent): { seriesValues: number[] | undefined; pointIndex: number | undefined } {
     try {
       const option = chartManager.chart.getOption() as { series?: unknown[]; dataset?: unknown[] }
-      const seriesIndex = params.seriesIndex ?? 0
-      const seriesOption = option.series?.[seriesIndex] as { datasetIndex?: number } | undefined
-      const datasetIndex = seriesOption?.datasetIndex ?? seriesIndex
-      const datasetEntry = option.dataset?.[datasetIndex] as { source?: unknown[] } | undefined
-      const source = datasetEntry?.source
-      if (!Array.isArray(source)) return { seriesValues: undefined, pointIndex: params.dataIndex }
+      const seriesList = (option.series ?? []) as SeriesOption[]
+      const datasets = (option.dataset ?? []) as { source?: unknown[] }[]
       // When scaling is on, MeasureConfigurator replaces source[1] with scale-to-median values
       // and appends the original unscaled values at the end. Use those so the heuristic stays
       // on the same scale as InfoData.rawValue / previousValue (both unscaled).
-      const valuesColumn = this.settings.scaling ? source.at(-1) : source[1]
-      if (!Array.isArray(valuesColumn)) return { seriesValues: undefined, pointIndex: params.dataIndex }
-      const values = (valuesColumn as unknown[]).map((v) => (typeof v === "number" && Number.isFinite(v) ? v : Number.NaN))
-      return { seriesValues: values, pointIndex: params.dataIndex }
+      return { seriesValues: this.getValuesColumn(seriesList, datasets, params.seriesIndex ?? 0), pointIndex: params.dataIndex }
     } catch {
       return { seriesValues: undefined, pointIndex: params.dataIndex }
     }
+  }
+
+  private getValuesColumn(seriesList: SeriesOption[], datasets: { source?: unknown[] }[], seriesIndex: number): number[] | undefined {
+    const datasetIndex = seriesList[seriesIndex]?.datasetIndex ?? seriesIndex
+    const source = datasets[datasetIndex]?.source
+    if (!Array.isArray(source)) return undefined
+    const valuesColumn = this.settings.scaling ? source.at(-1) : source[1]
+    if (!Array.isArray(valuesColumn)) return undefined
+    return (valuesColumn as unknown[]).map((v) => (typeof v === "number" && Number.isFinite(v) ? v : Number.NaN))
+  }
+
+  public enableSidebarAutoOpen(config: AutoOpenConfig): void {
+    this.autoOpenConfig = config
+    this.hasAutoOpened = false
+  }
+
+  private tryAutoOpenSidebar(): void {
+    const matches = consumeMatchedSelectedPoints()
+    const config = this.autoOpenConfig
+    if (this.hasAutoOpened || config == null || config.sidebarVm.visible.value || matches.length === 0) return
+
+    const chart = this.eChart.chart
+    const option = chart.getOption() as { series?: unknown[]; dataset?: unknown[] }
+    const params: CallbackDataParams | CallbackDataParams[] = matches.length === 1 ? matches[0] : matches
+    const infoData = getInfoDataFrom(params, config.valueUnit, config.accidentsConfigurator, chart.getDataURL({ type: "png" }), {
+      seriesValues: this.getValuesColumn((option.series ?? []) as SeriesOption[], (option.dataset ?? []) as { source?: unknown[] }[], matches[0].seriesIndex ?? 0),
+      pointIndex: matches[0].dataIndex,
+    })
+    config.sidebarVm.show(infoData)
+    this.hasAutoOpened = true
   }
 
   private isMacOS() {
@@ -350,6 +386,7 @@ export class LineChartVM {
   }
 
   private renderChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
+    consumeMatchedSelectedPoints()
     const chart = this.eChart.chart
     const hasData = data.flat(3).length > 0
     this.hasDataCallback?.(hasData)
@@ -398,6 +435,7 @@ export class LineChartVM {
         .then((options) => {
           this.eChart.updateChart(options)
           this.hoverFade?.reapply()
+          this.tryAutoOpenSidebar()
         })
         .catch((error: unknown) => {
           console.error(error)
@@ -406,6 +444,7 @@ export class LineChartVM {
   }
 
   dispose(): void {
+    this.autoOpenConfig = null
     this.hoverFade?.dispose()
     this.eChart.dispose()
   }

@@ -48,6 +48,15 @@ export interface LlmAnalysisDetails extends LlmAnalysisRun {
   totalCostUsd?: number
 }
 
+export interface AnalysisFeedback {
+  id: number
+  analysisId: number
+  rate: number
+  feedback?: string
+  userEmail?: string
+  createdAt: string
+}
+
 export class LlmAnalysisClient {
   private readonly serverConfigurator: ServerConfigurator | null
 
@@ -94,5 +103,34 @@ export class LlmAnalysisClient {
       throw new Error(`Failed to fetch LLM analysis: ${response.statusText} ${errorMessage}`)
     }
     return (await response.json()) as LlmAnalysisDetails
+  }
+
+  async submitAnalysisFeedback(analysisId: number | string, rate: number, feedback?: string): Promise<void> {
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${encodeURIComponent(String(analysisId))}/feedback`
+    const body: { rate: number; feedback?: string } = { rate }
+    if (feedback != null && feedback.trim() !== "") {
+      body.feedback = feedback
+    }
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Failed to submit feedback: ${response.statusText} ${errorMessage}`)
+    }
+  }
+
+  async getAnalysisFeedback(analysisId: number | string): Promise<AnalysisFeedback[]> {
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${encodeURIComponent(String(analysisId))}/feedback`
+    const response = await fetch(url)
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Failed to fetch feedback: ${response.statusText} ${errorMessage}`)
+    }
+    return (await response.json()) as AnalysisFeedback[]
   }
 }

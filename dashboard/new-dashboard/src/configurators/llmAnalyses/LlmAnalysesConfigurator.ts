@@ -1,12 +1,15 @@
 import { useIntervalFn } from "@vueuse/core"
 import { Ref, ref, watch, watchEffect } from "vue"
+import { Router } from "vue-router"
 import { ServerConfigurator } from "../../components/common/dataQuery"
 import { LlmAnalysisClient, LlmAnalysisRequest, LlmAnalysisRun, LlmAnalysisState } from "../../components/common/llmAnalysis/LlmAnalysisClient"
-import { buildUrl, InfoData } from "../../components/common/sideBar/InfoSidebar"
+import { buildUrl, getNavigateToTestUrl, InfoData } from "../../components/common/sideBar/InfoSidebar"
+import { getPersistentLink } from "../../components/settings/CopyLink"
 import { UploadAttachmentsRequest, uploadAttachmentsToSpace } from "../../components/common/uploadAttachments/uploadAttachmentsUtils"
 import { dbTypeStore } from "../../shared/dbTypes"
 import { useUserStore } from "../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../util/changes"
+import { TimeRangeConfigurator } from "../TimeRangeConfigurator"
 
 export interface RunLlmAnalysisResult {
   run: LlmAnalysisRun
@@ -19,7 +22,11 @@ export class LlmAnalysesConfigurator {
 
   private readonly client: LlmAnalysisClient
 
-  constructor(private readonly serverConfigurator: ServerConfigurator | null) {
+  constructor(
+    private readonly serverConfigurator: ServerConfigurator | null,
+    private readonly router: Router,
+    private readonly timerangeConfigurator: TimeRangeConfigurator
+  ) {
     this.client = new LlmAnalysisClient(serverConfigurator)
 
     const { pause, resume } = useIntervalFn(
@@ -93,6 +100,7 @@ export class LlmAnalysesConfigurator {
     }
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
+    const dashboardLink = `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, this.router), this.timerangeConfigurator)}`
     const request: LlmAnalysisRequest = {
       project: data.projectName,
       metric,
@@ -106,6 +114,7 @@ export class LlmAnalysesConfigurator {
       lastCommitRevision: lastCommit ?? undefined,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
+      dashboardLink,
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

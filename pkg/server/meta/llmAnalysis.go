@@ -30,6 +30,7 @@ type LLMAnalysisRequest struct {
 	LastCommitRevision  *string                        `json:"lastCommitRevision,omitempty"`
 	TestMethodName      *string                        `json:"testMethodName,omitempty"`
 	YtIssueId           *string                        `json:"ytIssueId,omitempty"`
+	DashboardLink       *string                        `json:"dashboardLink,omitempty"`
 }
 
 type LlmAnalysisRun struct {

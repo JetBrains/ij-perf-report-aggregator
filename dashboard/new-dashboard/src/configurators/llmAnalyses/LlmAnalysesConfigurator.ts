@@ -1,6 +1,7 @@
-import { Ref, ref, watchEffect } from "vue"
+import { useIntervalFn } from "@vueuse/core"
+import { Ref, ref, watch, watchEffect } from "vue"
 import { ServerConfigurator } from "../../components/common/dataQuery"
-import { LlmAnalysisClient, LlmAnalysisRequest, LlmAnalysisRun } from "../../components/common/llmAnalysis/LlmAnalysisClient"
+import { LlmAnalysisClient, LlmAnalysisRequest, LlmAnalysisRun, LlmAnalysisState } from "../../components/common/llmAnalysis/LlmAnalysisClient"
 import { buildUrl, InfoData } from "../../components/common/sideBar/InfoSidebar"
 import { UploadAttachmentsRequest, uploadAttachmentsToSpace } from "../../components/common/uploadAttachments/uploadAttachmentsUtils"
 import { dbTypeStore } from "../../shared/dbTypes"
@@ -20,14 +21,41 @@ export class LlmAnalysesConfigurator {
 
   constructor(private readonly serverConfigurator: ServerConfigurator | null) {
     this.client = new LlmAnalysisClient(serverConfigurator)
+
+    const { pause, resume } = useIntervalFn(
+      () => {
+        const d = this.data.value
+        if (this.canStart(d)) {
+          void this.loadRuns(d as InfoData)
+        }
+      },
+      30_000,
+      { immediate: false }
+    )
+
     watchEffect(() => {
       const d = this.data.value
       if (this.canStart(d)) {
         void this.loadRuns(d as InfoData)
       } else {
         this.value.value = []
+        pause()
       }
     })
+
+    watch(
+      this.value,
+      (runs) => {
+        const sidebarOpen = this.data.value != null
+        const hasInProgress = runs.some((r) => r.state === LlmAnalysisState.InProgress)
+        if (sidebarOpen && hasInProgress) {
+          resume()
+        } else {
+          pause()
+        }
+      },
+      { immediate: true }
+    )
   }
 
   canStart(data: InfoData | null): boolean {

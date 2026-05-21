@@ -52,6 +52,11 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //completion
   ["completion", "Total time of each completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
   ["completion#mean_value", "Mean value of all completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
+  //code typing
+  [
+    "codeTyping#mean_value",
+    "Mean time of a code typing iteration. A code typing test types a piece of code with medium complexity from beginning to end, invoking completion and waiting for code analysis at predetermined points.",
+  ],
   //find usages
   ["findUsage_popup", "Time to show the find usages popup"],
   ["findUsages", "Time to show all usages in the popup"],

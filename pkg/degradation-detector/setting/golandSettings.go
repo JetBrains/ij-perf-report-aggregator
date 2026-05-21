@@ -64,7 +64,7 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 
 func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfint",
+		Db:    "perfintDev",
 		Table: "goland",
 		BaseSettings: detector.BaseSettings{
 			Branch:  "master",

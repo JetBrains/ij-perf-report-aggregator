@@ -2,10 +2,24 @@
   <Dialog
     v-model:visible="visible"
     modal
-    :header="`LLM analysis${analysisId != null ? ` #${analysisId}` : ''}`"
     :style="{ width: '85vw', height: '85vh' }"
     :content-style="{ overflow: 'auto' }"
   >
+    <template #header>
+      <div class="flex items-center gap-2 text-base font-semibold">
+        <i
+          v-if="details"
+          :class="stateIconClass(details.state)"
+        />
+        <span>{{ details ? `Launched ${formatCreatedAt(details.createdAt)}` : "LLM analysis" }}</span>
+        <span
+          v-if="details?.userEmail"
+          class="font-normal text-gray-500"
+        >
+          by {{ userLocalPart(details.userEmail) }}
+        </span>
+      </div>
+    </template>
     <div
       v-if="loading"
       class="flex items-center gap-2 text-sm"
@@ -23,15 +37,6 @@
       v-else-if="details"
       class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm"
     >
-      <dt class="font-medium text-gray-500">State</dt>
-      <dd class="flex items-center gap-2">
-        <i :class="stateIconClass(details.state)" />
-        <span>{{ stateLabel(details.state) }}</span>
-      </dd>
-
-      <dt class="font-medium text-gray-500">Created</dt>
-      <dd>{{ formatCreatedAt(details.createdAt) }}</dd>
-
       <dt class="font-medium text-gray-500">Project</dt>
       <dd>{{ details.project }}</dd>
 
@@ -39,87 +44,61 @@
       <dd>{{ details.metric }}</dd>
 
       <dt class="font-medium text-gray-500">Current build</dt>
-      <dd>{{ details.currentBuildId }}</dd>
+      <dd>
+        <a
+          :href="buildUrl(Number(details.currentBuildId))"
+          target="_blank"
+          class="underline decoration-dotted hover:no-underline"
+        >
+          {{ details.currentBuildId }}
+        </a>
+      </dd>
 
       <dt class="font-medium text-gray-500">Previous build</dt>
-      <dd>{{ details.prevBuildId }}</dd>
+      <dd>
+        <a
+          :href="buildUrl(Number(details.prevBuildId))"
+          target="_blank"
+          class="underline decoration-dotted hover:no-underline"
+        >
+          {{ details.prevBuildId }}
+        </a>
+      </dd>
 
-      <template v-if="details.currentValue != null">
-        <dt class="font-medium text-gray-500">Current value</dt>
-        <dd>{{ details.currentValue }}</dd>
+      <template v-if="details.currentValue != null || details.previousValue != null">
+        <dt class="font-medium text-gray-500">Metric change</dt>
+        <dd>{{ details.previousValue ?? "—" }} → {{ details.currentValue ?? "—" }}</dd>
       </template>
 
-      <template v-if="details.previousValue != null">
-        <dt class="font-medium text-gray-500">Previous value</dt>
-        <dd>{{ details.previousValue }}</dd>
+      <template v-if="details.firstCommitRevision && details.lastCommitRevision">
+        <dt class="font-medium text-gray-500">Commits range</dt>
+        <dd class="font-mono">{{ details.firstCommitRevision }}^..{{ details.lastCommitRevision }}</dd>
       </template>
-
-      <template v-if="details.userName">
-        <dt class="font-medium text-gray-500">User</dt>
-        <dd>{{ details.userName }}</dd>
-      </template>
-
-      <template v-if="details.userEmail">
-        <dt class="font-medium text-gray-500">User email</dt>
-        <dd>{{ details.userEmail }}</dd>
-      </template>
-
-      <template v-if="details.firstCommitRevision">
-        <dt class="font-medium text-gray-500">First commit</dt>
-        <dd class="font-mono">{{ details.firstCommitRevision }}</dd>
-      </template>
-
-      <template v-if="details.lastCommitRevision">
-        <dt class="font-medium text-gray-500">Last commit</dt>
-        <dd class="font-mono">{{ details.lastCommitRevision }}</dd>
-      </template>
-
-      <template v-if="details.testMethodName">
-        <dt class="font-medium text-gray-500">Test method</dt>
-        <dd class="font-mono">{{ details.testMethodName }}</dd>
+      <template v-else-if="details.firstCommitRevision || details.lastCommitRevision">
+        <dt class="font-medium text-gray-500">Commit</dt>
+        <dd class="font-mono">{{ details.firstCommitRevision ?? details.lastCommitRevision }}</dd>
       </template>
 
       <template v-if="details.runBuildId">
-        <dt class="font-medium text-gray-500">Analyzer build</dt>
+        <dt class="font-medium text-gray-500">Analysis artifacts</dt>
         <dd>
           <a
-            :href="buildUrl(Number(details.runBuildId))"
+            :href="`${buildUrl(Number(details.runBuildId))}&buildTab=artifacts`"
             target="_blank"
             class="underline decoration-dotted hover:no-underline"
           >
-            TC build {{ details.runBuildId }}
+            {{ details.runBuildId }}
           </a>
         </dd>
       </template>
 
-      <template v-if="details.ytIssueId">
-        <dt class="font-medium text-gray-500">YouTrack issue</dt>
-        <dd>{{ details.ytIssueId }}</dd>
-      </template>
-
-      <template v-if="details.totalCostUsd != null">
-        <dt class="font-medium text-gray-500">Total cost</dt>
-        <dd>${{ details.totalCostUsd.toFixed(4) }}</dd>
-      </template>
-
-      <template v-if="details.llmGuiltyCommits && details.llmGuiltyCommits.length > 0">
-        <dt class="font-medium text-gray-500">Guilty commits</dt>
-        <dd>
-          <ul class="font-mono">
-            <li
-              v-for="commit in details.llmGuiltyCommits"
-              :key="commit"
-            >
-              {{ commit }}
-            </li>
-          </ul>
-        </dd>
-      </template>
-
       <template v-if="details.llmComment">
-        <dt class="col-span-2 mt-4 font-medium text-gray-500">LLM comment</dt>
+        <dt class="col-span-2 mt-4 font-bold text-gray-900">Result</dt>
         <dd class="col-span-2">
-          <pre class="whitespace-pre-wrap rounded bg-gray-50 p-3 text-sm">{{ details.llmComment }}</pre>
+          <div
+            class="markdown-body rounded bg-gray-50 p-3 text-sm"
+            v-html="renderedComment"
+          />
         </dd>
       </template>
     </dl>
@@ -127,11 +106,14 @@
 </template>
 
 <script setup lang="ts">
+import MarkdownIt from "markdown-it"
 import Dialog from "primevue/dialog"
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { buildUrl } from "../common/sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "../common/llmAnalysis/LlmAnalysisClient"
+
+const md = new MarkdownIt({ html: false, linkify: true, breaks: false })
 
 const visible = defineModel<boolean>("visible", { required: true })
 const { analysisId } = defineProps<{ analysisId: number | string | null }>()
@@ -142,6 +124,11 @@ const client = new LlmAnalysisClient(serverConfigurator)
 const details = ref<LlmAnalysisDetails | null>(null)
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
+
+const renderedComment = computed(() => {
+  const text = details.value?.llmComment
+  return text == null || text === "" ? "" : md.render(text)
+})
 
 watch(
   [visible, () => analysisId],
@@ -185,20 +172,109 @@ function stateIconClass(state: LlmAnalysisState): string {
   }
 }
 
-function stateLabel(state: LlmAnalysisState): string {
-  switch (state) {
-    case LlmAnalysisState.InProgress:
-      return "In progress"
-    case LlmAnalysisState.Success:
-      return "Success"
-    case LlmAnalysisState.Failed:
-      return "Failed"
-    default:
-      return state
-  }
-}
-
 function formatCreatedAt(iso: string): string {
   return new Date(iso).toLocaleString()
 }
+
+function userLocalPart(email: string): string {
+  const at = email.indexOf("@")
+  return at === -1 ? email : email.slice(0, at)
+}
 </script>
+
+<style scoped>
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4) {
+  font-weight: 600;
+  margin: 0.75rem 0 0.25rem;
+}
+.markdown-body :deep(h1) {
+  font-size: 1.125rem;
+}
+.markdown-body :deep(h2) {
+  font-size: 1rem;
+}
+.markdown-body :deep(h3),
+.markdown-body :deep(h4) {
+  font-size: 0.9375rem;
+}
+
+.markdown-body :deep(p) {
+  margin: 0.5rem 0;
+}
+.markdown-body :deep(p:first-child) {
+  margin-top: 0;
+}
+.markdown-body :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+.markdown-body :deep(ul) {
+  list-style: disc;
+}
+.markdown-body :deep(ol) {
+  list-style: decimal;
+}
+.markdown-body :deep(li) {
+  margin: 0.125rem 0;
+}
+
+.markdown-body :deep(a) {
+  color: #2563eb;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.markdown-body :deep(a:hover) {
+  text-decoration: none;
+}
+
+.markdown-body :deep(code) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: #e5e7eb;
+  padding: 0.05rem 0.25rem;
+  border-radius: 0.25rem;
+}
+.markdown-body :deep(pre) {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+.markdown-body :deep(pre code) {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: 0.85em;
+}
+
+.markdown-body :deep(blockquote) {
+  border-left: 3px solid #d1d5db;
+  margin: 0.5rem 0;
+  padding-left: 0.75rem;
+  color: #4b5563;
+}
+
+.markdown-body :deep(table) {
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+}
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid #d1d5db;
+  padding: 0.25rem 0.5rem;
+}
+.markdown-body :deep(th) {
+  background: #e5e7eb;
+  font-weight: 600;
+}
+</style>

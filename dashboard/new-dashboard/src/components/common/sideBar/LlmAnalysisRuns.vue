@@ -13,28 +13,22 @@
             :key="run.id"
             class="flex items-center justify-between gap-1.5"
           >
-            <button
-              v-tooltip.top="run.createdAt"
-              type="button"
-              class="text-xs underline decoration-dotted hover:no-underline bg-transparent border-0 p-0 cursor-pointer text-left"
-              @click="openAnalysis(run.id)"
-            >
-              {{ formatCreatedAt(run.createdAt) }}
-            </button>
-            <span class="flex gap-1.5 items-center">
-              <a
-                v-if="run.runBuildId"
-                :href="buildUrl(Number(run.runBuildId))"
-                target="_blank"
-                class="underline decoration-dotted hover:no-underline"
-              >
-                TC build
-              </a>
+            <span class="flex items-center gap-1.5">
               <i
                 v-tooltip.left="stateTooltip(run.state)"
                 :class="stateIconClass(run.state)"
               />
+              <span v-tooltip.top="run.createdAt">
+                {{ formatCreatedAt(run.createdAt) }}
+              </span>
             </span>
+            <button
+              type="button"
+              class="underline decoration-dotted hover:no-underline bg-transparent border-0 p-0 cursor-pointer"
+              @click="openAnalysis(run.id)"
+            >
+              Details
+            </button>
           </li>
         </ul>
       </AccordionContent>
@@ -52,7 +46,6 @@ import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
 import { useSelectedPointStore } from "../../../shared/selectedPointStore"
 import AnalysisDetailsDialog from "../../llmAnalysis/AnalysisDetailsDialog.vue"
 import { LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
-import { buildUrl } from "./InfoSidebar"
 
 const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
 const selectedPointStore = useSelectedPointStore()

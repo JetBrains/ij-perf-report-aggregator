@@ -46,14 +46,16 @@
   />
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
+import { useSelectedPointStore } from "../../../shared/selectedPointStore"
 import AnalysisDetailsDialog from "../../llmAnalysis/AnalysisDetailsDialog.vue"
 import { LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
 import { buildUrl } from "./InfoSidebar"
 
 const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
+const selectedPointStore = useSelectedPointStore()
 
 const runs = computed(() => llmAnalysesConfigurator.value.value)
 
@@ -64,6 +66,21 @@ function openAnalysis(id: number): void {
   selectedAnalysisId.value = id
   dialogVisible.value = true
 }
+
+let hasAttemptedAutoOpen = false
+watch(runs, (loaded) => {
+  if (hasAttemptedAutoOpen) return
+  hasAttemptedAutoOpen = true
+  if (dialogVisible.value) return
+  const rawId = selectedPointStore.selectedAnalysisId
+  const target = Array.isArray(rawId) ? rawId[0] : rawId
+  if (target == null || target === "") return
+  const numericTarget = Number(target)
+  if (!Number.isFinite(numericTarget)) return
+  const match = loaded.find((r) => r.id === numericTarget)
+  if (match == null) return
+  openAnalysis(match.id)
+})
 
 function stateIconClass(state: LlmAnalysisState): string {
   switch (state) {

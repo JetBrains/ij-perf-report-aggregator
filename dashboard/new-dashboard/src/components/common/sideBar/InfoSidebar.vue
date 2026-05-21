@@ -340,6 +340,7 @@
 </template>
 <script setup lang="ts">
 import { computed, provide, Ref, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"
@@ -404,7 +405,8 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 const data = computed(() => vm.data.value)
 
 const toast = useToast()
-const llmAnalysesConfigurator = new LlmAnalysesConfigurator(serverConfigurator)
+const router = useRouter()
+const llmAnalysesConfigurator = new LlmAnalysesConfigurator(serverConfigurator, router, timerangeConfigurator)
 provide(llmAnalysesConfiguratorKey, llmAnalysesConfigurator)
 watch(
   () => vm.data.value,

@@ -62,17 +62,22 @@ function openAnalysis(id: number): void {
 
 let hasAttemptedAutoOpen = false
 watch(runs, (loaded) => {
-  if (hasAttemptedAutoOpen) return
-  hasAttemptedAutoOpen = true
-  if (dialogVisible.value) return
+  if (hasAttemptedAutoOpen || dialogVisible.value) return
   const rawId = selectedPointStore.selectedAnalysisId
   const target = Array.isArray(rawId) ? rawId[0] : rawId
-  if (target == null || target === "") return
+  if (target == null || target === "") {
+    hasAttemptedAutoOpen = true
+    return
+  }
   const numericTarget = Number(target)
-  if (!Number.isFinite(numericTarget)) return
+  if (!Number.isFinite(numericTarget)) {
+    hasAttemptedAutoOpen = true
+    return
+  }
+  if (loaded.length === 0) return
+  hasAttemptedAutoOpen = true
   const match = loaded.find((r) => r.id === numericTarget)
-  if (match == null) return
-  openAnalysis(match.id)
+  if (match != null) openAnalysis(match.id)
 })
 
 function stateIconClass(state: LlmAnalysisState): string {

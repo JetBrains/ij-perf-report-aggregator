@@ -93,10 +93,10 @@
       </template>
 
       <template v-if="details.llmComment">
-        <dt class="col-span-2 mt-4 font-bold text-gray-900">Result</dt>
+        <dt class="col-span-2 mt-4 border-t border-gray-200 pt-3 text-base font-semibold text-gray-900">Result</dt>
         <dd class="col-span-2">
           <div
-            class="markdown-body rounded bg-gray-50 p-3 text-sm"
+            class="markdown-body rounded bg-gray-50 p-3 text-base"
             v-html="renderedComment"
           />
         </dd>

@@ -116,6 +116,8 @@ import { serverConfiguratorKey } from "../../../shared/keys"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 
+const SAFE_HREF = /^(https?:|\/|\.\.?\/)/i
+
 const md = new Marked({
   gfm: true,
   breaks: false,
@@ -123,6 +125,8 @@ const md = new Marked({
   walkTokens(token) {
     if (token.type === "html") {
       token.text = escapeHtml(token.text)
+    } else if ((token.type === "link" || token.type === "image") && !SAFE_HREF.test(token.href)) {
+      token.href = ""
     }
   },
 })

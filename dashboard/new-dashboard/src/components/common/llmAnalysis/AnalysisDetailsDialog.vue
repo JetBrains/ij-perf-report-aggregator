@@ -144,21 +144,11 @@ const renderedComment = computed(() => {
 watch(
   [visible, () => analysisId],
   async ([isVisible, id]) => {
-    if (!isVisible) {
-      details.value = null
-      errorMessage.value = null
-      loading.value = false
-      return
-    }
-    if (id == null) {
-      details.value = null
-      errorMessage.value = null
-      loading.value = false
-      return
-    }
-    loading.value = true
-    errorMessage.value = null
     details.value = null
+    errorMessage.value = null
+    loading.value = false
+    if (!isVisible || id == null) return
+    loading.value = true
     try {
       details.value = await client.getLlmAnalysisById(id)
     } catch (e) {

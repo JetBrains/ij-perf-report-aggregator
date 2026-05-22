@@ -29,9 +29,7 @@ export interface LlmAnalysisRun {
   state: LlmAnalysisState
 }
 
-export interface LlmAnalysisDetails {
-  id: number
-  createdAt: string
+export interface LlmAnalysisDetails extends LlmAnalysisRun {
   project: string
   metric: string
   currentBuildId: string
@@ -43,9 +41,7 @@ export interface LlmAnalysisDetails {
   firstCommitRevision?: string
   lastCommitRevision?: string
   testMethodName?: string
-  runBuildId?: string
   ytIssueId?: string
-  state: LlmAnalysisState
   llmGuiltyCommits?: string[]
   llmComment?: string
   totalCostUsd?: number

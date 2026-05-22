@@ -40,8 +40,8 @@ type LlmAnalysisRun struct {
 }
 
 type LlmAnalysisDetails struct {
-	Id                  int      `json:"id"`
-	CreatedAt           string   `json:"createdAt"`
+	LlmAnalysisRun
+
 	Project             string   `json:"project"`
 	Metric              string   `json:"metric"`
 	CurrentBuildId      string   `json:"currentBuildId"`
@@ -53,9 +53,7 @@ type LlmAnalysisDetails struct {
 	FirstCommitRevision *string  `json:"firstCommitRevision,omitempty"`
 	LastCommitRevision  *string  `json:"lastCommitRevision,omitempty"`
 	TestMethodName      *string  `json:"testMethodName,omitempty"`
-	RunBuildId          *string  `json:"runBuildId,omitempty"`
 	YtIssueId           *string  `json:"ytIssueId,omitempty"`
-	State               string   `json:"state"`
 	LlmGuiltyCommits    []string `json:"llmGuiltyCommits,omitempty"`
 	LlmComment          *string  `json:"llmComment,omitempty"`
 	TotalCostUsd        *float64 `json:"totalCostUsd,omitempty"`

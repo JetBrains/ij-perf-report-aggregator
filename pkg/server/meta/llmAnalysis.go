@@ -237,8 +237,9 @@ func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
 			"FROM analyses WHERE id = $1"
 
 		var (
-			details   LlmAnalysisDetails
-			createdAt time.Time
+			details    LlmAnalysisDetails
+			createdAt  time.Time
+			runBuildId *string
 		)
 		err = metaDb.QueryRow(request.Context(), sql, id).Scan(
 			&details.Id,
@@ -254,7 +255,7 @@ func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
 			&details.FirstCommitRevision,
 			&details.LastCommitRevision,
 			&details.TestMethodName,
-			&details.RunBuildId,
+			&runBuildId,
 			&details.YtIssueId,
 			&details.State,
 			&details.LlmGuiltyCommits,
@@ -271,6 +272,9 @@ func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		details.CreatedAt = createdAt.Format(time.RFC3339)
+		if runBuildId != nil {
+			details.RunBuildId = *runBuildId
+		}
 
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(details); err != nil {

@@ -44,8 +44,8 @@ import { computed, ref, watch } from "vue"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
 import { useSelectedPointStore } from "../../../shared/selectedPointStore"
-import AnalysisDetailsDialog from "../../llmAnalysis/AnalysisDetailsDialog.vue"
-import { LlmAnalysisState } from "../llmAnalysis/LlmAnalysisClient"
+import AnalysisDetailsDialog from "./AnalysisDetailsDialog.vue"
+import { LlmAnalysisState } from "./LlmAnalysisClient"
 
 const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
 const selectedPointStore = useSelectedPointStore()

@@ -342,7 +342,7 @@
 import { computed, provide, Ref, ref, watch } from "vue"
 import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
-import { startLlmAnalysisWithToast } from "./LlmAnalysisUtils"
+import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, llmAnalysesConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
@@ -363,7 +363,7 @@ import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
 import { useToast } from "primevue/usetoast"
-import LlmAnalysisRuns from "./LlmAnalysisRuns.vue"
+import LlmAnalysisRuns from "../llmAnalysis/LlmAnalysisRuns.vue"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator

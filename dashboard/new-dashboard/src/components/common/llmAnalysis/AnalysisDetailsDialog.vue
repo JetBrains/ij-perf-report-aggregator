@@ -109,9 +109,9 @@
 import { marked } from "marked"
 import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
-import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { buildUrl } from "../common/sideBar/InfoSidebar"
-import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "../common/llmAnalysis/LlmAnalysisClient"
+import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
+import { buildUrl } from "../sideBar/InfoSidebar"
+import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 

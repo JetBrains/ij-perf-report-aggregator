@@ -28,23 +28,34 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["diagnostics (dummy files)"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.huge", "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.tiny"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.huge", "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.tiny"]
   },
   {
     labels: ["diagnostics (real projects)"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.diagnostics", "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.diagnostics"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.diagnostics",
+      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.diagnostics",
+      "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.diagnostics"]
   },
   {
     labels: ["definition"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.definition", "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.definition"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.definition",
+      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.definition",
+      "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.definition"]
   },
   {
     labels: ["completion"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.completion", "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.completion"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.completion",
+      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.completion",
+    "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.definition"]
   },
+  {
+    labels: ["references"],
+    measures: ["attempt.mean.ms"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references"]
+  }
 ]
 
 const charts = combineCharts(chartsDeclaration)

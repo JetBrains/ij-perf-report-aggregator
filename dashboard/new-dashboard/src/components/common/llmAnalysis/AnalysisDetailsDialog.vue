@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { marked } from "marked"
+import { Marked } from "marked"
 import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
 import { buildUrl } from "../sideBar/InfoSidebar"
@@ -116,9 +116,10 @@ import { serverConfiguratorKey } from "../../../shared/keys"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 
-marked.use({
+const md = new Marked({
   gfm: true,
   breaks: false,
+  async: false,
   walkTokens(token) {
     if (token.type === "html") {
       token.text = escapeHtml(token.text)
@@ -138,7 +139,7 @@ const errorMessage = ref<string | null>(null)
 
 const renderedComment = computed(() => {
   const text = details.value?.llmComment
-  return text == null || text === "" ? "" : (marked.parse(text) as string)
+  return text == null || text === "" ? "" : (md.parse(text) as string)
 })
 
 watch(

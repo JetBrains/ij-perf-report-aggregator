@@ -109,9 +109,10 @@
 import { marked } from "marked"
 import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
-import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { buildUrl } from "../sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
+import { injectOrNull } from "../../../shared/injectionKeys"
+import { serverConfiguratorKey } from "../../../shared/keys"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 
@@ -128,7 +129,7 @@ marked.use({
 const visible = defineModel<boolean>("visible", { required: true })
 const { analysisId } = defineProps<{ analysisId: number | string | null }>()
 
-const serverConfigurator = new ServerWithCompressConfigurator("", "")
+const serverConfigurator = injectOrNull(serverConfiguratorKey)
 const client = new LlmAnalysisClient(serverConfigurator)
 
 const details = ref<LlmAnalysisDetails | null>(null)

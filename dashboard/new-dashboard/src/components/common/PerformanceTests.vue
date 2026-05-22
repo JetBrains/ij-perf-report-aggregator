@@ -88,69 +88,85 @@
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>
     </StickyToolbar>
+    <SelectButton
+      v-if="canCompare"
+      v-model="renderMode"
+      :options="renderModeOptions"
+      option-label="label"
+      option-value="value"
+      :allow-empty="false"
+      class="self-start"
+    />
     <main class="flex">
       <div
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <span v-if="testMetricSwitcher == TestMetricSwitcher.Tests && configuratorsUpdated">
-          <template
-            v-for="measure in measureConfigurator.selected.value"
-            :key="measure"
-          >
-            <LineChart
-              :title="measure"
-              :measures="[measure]"
-              :configurators="[...configurators, scenarioConfigurator]"
-              :skip-zero-values="false"
-              :value-unit="unit"
-              :chart-type="unit == 'ns' ? 'scatter' : 'line'"
-              :legend-formatter="(name: string) => name"
-              :can-be-closed="true"
-              @chart-closed="onTestChartClosed"
-            />
-          </template>
-          <span
-            v-if="!scenarioConfigurator.selected.value?.length"
-            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
-          >
-            Select a test and a metric to see charts
-          </span>
-          <span
-            v-else-if="!measureConfigurator.selected.value?.length"
-            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
-          >
-            Select a metric to see charts
-          </span>
-        </span>
-        <span v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics">
-          <template v-if="measureConfigurator.selected.value != null && measureConfigurator.selected.value.length > 0">
+        <CompareTable v-if="renderMode === 'compare'" />
+        <!-- v-show keeps GroupProjectsChart mounted in Metrics mode so it can maintain its registry entries -->
+        <div
+          v-show="renderMode !== 'compare'"
+          class="flex flex-col gap-6"
+        >
+          <span v-if="testMetricSwitcher == TestMetricSwitcher.Tests && configuratorsUpdated">
             <template
-              v-for="scenario in scenarios"
-              :key="scenario"
+              v-for="measure in measureConfigurator.selected.value"
+              :key="measure"
             >
-              <GroupProjectsChart
-                :measure="measureConfigurator.selected.value"
-                :projects="[scenario]"
-                :label="scenario"
+              <LineChart
+                :title="measure"
+                :measures="[measure]"
+                :configurators="[...configurators, scenarioConfigurator]"
+                :skip-zero-values="false"
+                :value-unit="unit"
+                :chart-type="unit == 'ns' ? 'scatter' : 'line'"
+                :legend-formatter="(name: string) => name"
                 :can-be-closed="true"
-                @chart-closed="onMeasureChartClosed"
+                @chart-closed="onTestChartClosed"
               />
             </template>
-          </template>
-          <span
-            v-else-if="!measureConfigurator.selected.value?.length"
-            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
-          >
-            Select a metric to see charts
+            <span
+              v-if="!scenarioConfigurator.selected.value?.length"
+              class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+            >
+              Select a test and a metric to see charts
+            </span>
+            <span
+              v-else-if="!measureConfigurator.selected.value?.length"
+              class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+            >
+              Select a metric to see charts
+            </span>
           </span>
-          <span
-            v-else
-            class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
-          >
-            Select a test and a metric to see charts
+          <span v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics">
+            <template v-if="measureConfigurator.selected.value != null && measureConfigurator.selected.value.length > 0">
+              <template
+                v-for="scenario in scenarios"
+                :key="scenario"
+              >
+                <GroupProjectsChart
+                  :measure="measureConfigurator.selected.value"
+                  :projects="[scenario]"
+                  :label="scenario"
+                  :can-be-closed="true"
+                  @chart-closed="onMeasureChartClosed"
+                />
+              </template>
+            </template>
+            <span
+              v-else-if="!measureConfigurator.selected.value?.length"
+              class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+            >
+              Select a metric to see charts
+            </span>
+            <span
+              v-else
+              class="flex items-center justify-center text-gray-400 dark:text-gray-500 py-8"
+            >
+              Select a test and a metric to see charts
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>
@@ -158,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
+import { computed, onUnmounted, provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -168,7 +184,16 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import {
+  accidentsConfiguratorKey,
+  branchConfiguratorKey,
+  compareSectionsRegistryKey,
+  containerKey,
+  dashboardConfiguratorsKey,
+  renderModeKey,
+  serverConfiguratorKey,
+  sidebarVmKey,
+} from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
@@ -182,6 +207,8 @@ import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
 import { DataQueryConfigurator } from "./dataQuery"
+import CompareTable from "../charts/CompareTable.vue"
+import { CompareSectionsRegistry, RenderMode } from "../charts/compareMode"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
@@ -313,6 +340,65 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
 }
 provide(dashboardConfiguratorsKey, configurators)
+const compareRegistry = new CompareSectionsRegistry()
+const renderMode = ref<RenderMode>("charts")
+provide(branchConfiguratorKey, branchConfigurator)
+provide(compareSectionsRegistryKey, compareRegistry)
+provide(renderModeKey, renderMode)
+
+const canCompare = computed(() => {
+  if (branchConfigurator == null) return false
+  const sel = branchConfigurator.selected.value
+  const count = sel == null ? 0 : Array.isArray(sel) ? sel.length : 1
+  return count >= 2
+})
+
+watch(canCompare, (allowed) => {
+  if (!allowed && renderMode.value === "compare") {
+    renderMode.value = "charts"
+  }
+})
+
+const renderModeOptions = [
+  { label: "Charts", value: "charts" },
+  { label: "Compare with base", value: "compare" },
+]
+
+let registeredTestSectionIds = new Set<string>()
+let compareWatchStop: WatchStopHandle | null = null
+
+function syncTestsRegistry(): void {
+  const tests = toArray(scenarioConfigurator.selected.value)
+  const metrics = measureConfigurator.selected.value ?? []
+
+  if (tests.length === 0 || metrics.length === 0) {
+    clearTestsSections()
+    return
+  }
+
+  const newIds = new Set(tests.map((t) => `test::${t}`))
+  for (const id of registeredTestSectionIds) {
+    if (!newIds.has(id)) compareRegistry.unregister(id)
+  }
+  registeredTestSectionIds = newIds
+
+  for (const test of tests) {
+    compareRegistry.register({
+      id: `test::${test}`,
+      label: test,
+      measure: metrics,
+      projects: [test],
+      aliases: null,
+      machines: null,
+      valueUnit: unit,
+    })
+  }
+}
+
+function clearTestsSections(): void {
+  for (const id of registeredTestSectionIds) compareRegistry.unregister(id)
+  registeredTestSectionIds = new Set<string>()
+}
 
 function onTestChartClosed(metric: string[]) {
   measureConfigurator.setSelected(measureConfigurator.selected.value?.filter((item) => !metric.includes(item)) as string[])
@@ -338,6 +424,9 @@ watch(
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, ...filters], true, "line")
         machineConfigurator?.updateFilters([...filters, scenarioConfigurator])
+        // configurators are replaced (not mutated) above, so rebind the watcher to their new .selected refs
+        if (compareWatchStop != null) compareWatchStop()
+        compareWatchStop = watch([scenarioConfigurator.selected, measureConfigurator.selected], () => syncTestsRegistry(), { immediate: true })
         break
       }
       case TestMetricSwitcher.Metrics: {
@@ -348,6 +437,12 @@ watch(
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {
           scenarios = toArray(value)
         })
+        // Clear manually-managed Tests-mode sections; GroupProjectsChart will register its own
+        if (compareWatchStop != null) {
+          compareWatchStop()
+          compareWatchStop = null
+        }
+        clearTestsSections()
         break
       }
     }
@@ -364,4 +459,10 @@ function toArray(value: string | string[] | null): string[] {
 }
 
 let scenarios = toArray(scenarioConfigurator.selected.value)
+
+onUnmounted(() => {
+  compareWatchStop?.()
+  watchStopHandle?.()
+  clearTestsSections()
+})
 </script>

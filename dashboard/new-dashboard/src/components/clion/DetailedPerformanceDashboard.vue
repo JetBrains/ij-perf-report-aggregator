@@ -228,14 +228,14 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (enumerable)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="luau/findUsages/enumerable (LuauOpcode)"
         />
       </div>
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (enumerator)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="luau/findUsages/enumerator (LOP_NOP)"
         />
       </div>
@@ -244,14 +244,14 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (class template)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="luau/findUsages/class template (DenseHashTable)"
         />
       </div>
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (macro)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="luau/findUsages/macro (LUAU_ASSERT)"
         />
       </div>
@@ -260,21 +260,21 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (cmake, class)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="cmake/findUsages/class (cmCTestResourceAllocator)"
         />
       </div>
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (cmake, macro)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="cmake/findUsages/macro (SAFEDIV)"
         />
       </div>
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (cmake, member)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="cmake/findUsages/member (SlotsNeeded)"
         />
       </div>
@@ -283,7 +283,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion] Find Usages (all tests)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           :projects="[
             'clion/luau/findUsages/enumerable (LuauOpcode)',
             'clion/luau/findUsages/enumerator (LOP_NOP)',
@@ -298,7 +298,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[Radler] Find Usages (all tests)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           :projects="[
             'radler/luau/findUsages/enumerable (LuauOpcode)',
             'radler/luau/findUsages/enumerator (LOP_NOP)',

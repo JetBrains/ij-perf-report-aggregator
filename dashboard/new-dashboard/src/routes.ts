@@ -192,6 +192,7 @@ enum ROUTES {
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  ClionFindUsageDashboard = `${ROUTE_PREFIX.Clion}/findUsageDashboard`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionProjectModelDashboard = `${ROUTE_PREFIX.Clion}/projectModelDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
@@ -968,6 +969,10 @@ const CLION: Product = {
         {
           url: ROUTES.ClionDetailedPerfDashboard,
           label: "Detailed Performance",
+        },
+        {
+          url: ROUTES.ClionFindUsageDashboard,
+          label: "Find Usages",
         },
         {
           url: ROUTES.ClionMemoryDashboard,
@@ -2205,6 +2210,14 @@ const clionRoutes = [
       initialMachine: MACHINES.AWS_LINUX,
     },
     meta: { pageTitle: "CLion Detailed Performance dashboard" },
+  },
+  {
+    path: ROUTES.ClionFindUsageDashboard,
+    component: () => import("./components/clion/FindUsageDashboard.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Find Usages dashboard" },
   },
   {
     path: ROUTES.ClionMemoryDashboard,

@@ -4,6 +4,7 @@ import { computed } from "vue"
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 
 export const pointParamName = "point"
+export const analysisParamName = "analysis"
 
 export const useSelectedPointStore = defineStore("selectedPointStore", () => {
   const storedSelectedPoint: UrlParams = useUrlSearchParams("history")
@@ -17,7 +18,16 @@ export const useSelectedPointStore = defineStore("selectedPointStore", () => {
     },
   })
 
-  return { selectedPoint }
+  const selectedAnalysisId = computed({
+    get: (): string | string[] | undefined => storedSelectedPoint[analysisParamName],
+    set(value: string | string[] | undefined) {
+      if (value != undefined) {
+        storedSelectedPoint[analysisParamName] = value
+      }
+    },
+  })
+
+  return { selectedPoint, selectedAnalysisId }
 })
 
 // Render-time bridge: MeasureConfigurator's itemStyle.color callback already

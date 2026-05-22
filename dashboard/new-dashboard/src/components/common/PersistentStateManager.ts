@@ -1,7 +1,7 @@
 import { debounceTime, Subject } from "rxjs"
 import { Ref, watch } from "vue"
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
-import { pointParamName } from "../../shared/selectedPointStore"
+import { analysisParamName, pointParamName } from "../../shared/selectedPointStore"
 
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type State = Record<string, number | string | string[] | unknown>
@@ -86,7 +86,7 @@ export class PersistentStateManager {
         isChanged = true
       }
     }
-    const filteredQuery = Object.fromEntries(Object.entries(query).filter(([key]) => [...this.knownKeys, pointParamName].includes(key)))
+    const filteredQuery = Object.fromEntries(Object.entries(query).filter(([key]) => [...this.knownKeys, pointParamName, analysisParamName].includes(key)))
 
     if (isChanged) {
       // noinspection JSIgnoredPromiseFromCall

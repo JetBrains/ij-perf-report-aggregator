@@ -1,6 +1,6 @@
 import type { ToastServiceMethods } from "primevue/toastservice"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
-import { InfoData } from "./InfoSidebar"
+import { InfoData } from "../sideBar/InfoSidebar"
 
 export async function startLlmAnalysisWithToast(configurator: LlmAnalysesConfigurator, data: InfoData, toast: ToastServiceMethods): Promise<boolean> {
   try {

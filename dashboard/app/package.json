@@ -5,7 +5,7 @@
     "@fontsource/inter": "5.2.8",
     "@fontsource/jetbrains-mono": "5.2.8",
     "@primeuix/themes": "^2.0.3",
-    "echarts": "6.0.0",
+    "echarts": "6.1.0",
     "new-dashboard": "workspace:*",
     "pinia": "^3.0.4",
     "primevue": "4.5.5",

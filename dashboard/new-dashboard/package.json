@@ -5,7 +5,7 @@
     "@heroicons/vue": "2.2.0",
     "@primevue/core": "^4.5.5",
     "@vueuse/core": "^14.3.0",
-    "echarts": "6.0.0",
+    "echarts": "6.1.0",
     "fast-equals": "6.0.0",
     "humanize-duration": "3.33.2",
     "marked": "^15.0.0",

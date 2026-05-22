@@ -106,14 +106,24 @@
 </template>
 
 <script setup lang="ts">
-import MarkdownIt from "markdown-it"
+import { marked } from "marked"
 import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { buildUrl } from "../common/sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "../common/llmAnalysis/LlmAnalysisClient"
 
-const md = new MarkdownIt({ html: false, linkify: true, breaks: false })
+const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
+
+marked.use({
+  gfm: true,
+  breaks: false,
+  walkTokens(token) {
+    if (token.type === "html") {
+      token.text = escapeHtml(token.text)
+    }
+  },
+})
 
 const visible = defineModel<boolean>("visible", { required: true })
 const { analysisId } = defineProps<{ analysisId: number | string | null }>()
@@ -127,7 +137,7 @@ const errorMessage = ref<string | null>(null)
 
 const renderedComment = computed(() => {
   const text = details.value?.llmComment
-  return text == null || text === "" ? "" : md.render(text)
+  return text == null || text === "" ? "" : (marked.parse(text) as string)
 })
 
 watch(

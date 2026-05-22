@@ -2,7 +2,7 @@
   <Dialog
     v-model:visible="visible"
     modal
-    :style="{ width: '85vw', height: '85vh' }"
+    :style="{ width: 'min(85vw, 1100px)', height: '85vh' }"
     :content-style="{ overflow: 'auto' }"
   >
     <template #header>

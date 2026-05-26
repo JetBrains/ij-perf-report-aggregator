@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"sync"
 
@@ -17,6 +18,16 @@ import (
 )
 
 var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
+
+// Space file paths must contain only digits, letters, dashes, underscores, dots,
+// brackets, parentheses, and spaces, separated by forward slashes. Anything else
+// (e.g. `$` in `lambda$0`) is replaced with `_`. `/` is excluded so a stray slash
+// in a project name can't escape the enclosing path segment.
+var spaceProjectNameInvalidChars = regexp.MustCompile(`[^A-Za-z0-9._\-()\[\] ]`)
+
+func sanitizeSpaceProjectName(name string) string {
+	return spaceProjectNameInvalidChars.ReplaceAllString(name, "_")
+}
 
 type SpacePackagesClient struct {
 	spaceUrl   string
@@ -106,9 +117,10 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 			response.Uploads = alreadyUploaded
 		}
 
+		sanitizedProjectName := sanitizeSpaceProjectName(params.ProjectName)
 		config := UploadConfig{
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
-				folder := fmt.Sprintf("analyses/%d/%s", artifact.BuildId, params.ProjectName)
+				folder := fmt.Sprintf("analyses/%d/%s", artifact.BuildId, sanitizedProjectName)
 				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, artifact.FileName, artifact.Body)
 			},
 			OnError: func(buildId int, message string, err error) {

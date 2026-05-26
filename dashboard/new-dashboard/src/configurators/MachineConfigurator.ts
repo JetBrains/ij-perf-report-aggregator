@@ -233,6 +233,8 @@ function getValueToGroup() {
   // Mac Mini M1 Chip with 8‑Core CPU und 8‑Core GPU, SSD 256Gb, RAM 16Gb
   const macMiniM1 = "macMini M1 2020"
   const macMiniM1_16 = "macMini M1, 16 Gb"
+  // Mac Mini M2 Pro with 12-Core CPU, RAM 32 GB
+  const macMiniM2 = "macMini M2 Pro, 32 GB"
 
   // Core i7-3770 16Gb, Intel SSD 535
   const win = "Windows Space i7-3770, 16Gb"
@@ -274,6 +276,15 @@ function getValueToGroup() {
     "intellij-macos-hw-unit-2207": macMiniM1,
 
     "intellij-macos-unit-2200-large-10298": macLarge,
+
+    "intellij-macos-docker-hw-de-unit-1500": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1501": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1502": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1503": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1574": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1575": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1576": macMiniM2,
+    "intellij-macos-docker-hw-de-unit-1577": macMiniM2,
 
     "intellij-windows-hw-unit-498": win,
     "intellij-windows-hw-unit-499": win,
@@ -455,6 +466,8 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Linux EC2 c5ad.xlarge (4 vCPU EPYC, 8 GB)"
   } else if (machine.startsWith("intellij-linux-2204-aws-c5d")) {
     groupName = "Linux EC2 c5d.xlarge (4 vCPU Xeon, 8 GB)"
+  } else if (machine.startsWith("intellij-macos-docker-hw-de-unit")) {
+    groupName = "Mac Mini M2 Pro 12 CPU, 32 GB"
   }
 
   return groupName

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -131,9 +132,16 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			buildParams["user.email"] = userEmail
 		}
 		if llmAnalysisRequest.DashboardLink != nil && *llmAnalysisRequest.DashboardLink != "" {
-			buildParams["dashboard.link"] = *llmAnalysisRequest.DashboardLink +
-				"&point=" + llmAnalysisRequest.CurrentBuildId +
-				"&analysis=" + strconv.Itoa(id)
+			if u, err := url.Parse(*llmAnalysisRequest.DashboardLink); err == nil {
+				q := u.Query()
+				q.Set("point", llmAnalysisRequest.CurrentBuildId)
+				q.Set("analysis", strconv.Itoa(id))
+				u.RawQuery = q.Encode()
+				buildParams["dashboard.link"] = u.String()
+			} else {
+				slog.Warn("invalid dashboardLink, skipping dashboard.link build param",
+					"error", err, "dashboardLink", *llmAnalysisRequest.DashboardLink)
+			}
 		}
 
 		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)

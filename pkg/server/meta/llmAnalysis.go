@@ -130,6 +130,11 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		if userEmail != "" {
 			buildParams["user.email"] = userEmail
 		}
+		if llmAnalysisRequest.DashboardLink != nil && *llmAnalysisRequest.DashboardLink != "" {
+			buildParams["dashboard.link"] = *llmAnalysisRequest.DashboardLink +
+				"&point=" + llmAnalysisRequest.CurrentBuildId +
+				"&analysis=" + strconv.Itoa(id)
+		}
 
 		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
 		if err != nil || buildResp == nil || buildResp.Id == 0 {

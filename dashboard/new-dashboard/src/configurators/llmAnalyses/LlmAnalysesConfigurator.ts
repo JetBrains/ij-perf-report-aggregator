@@ -1,5 +1,5 @@
 import { useIntervalFn } from "@vueuse/core"
-import { Ref, ref, watch, watchEffect } from "vue"
+import { Ref, ref, watch } from "vue"
 import { Router } from "vue-router"
 import { ServerConfigurator } from "../../components/common/dataQuery"
 import { LlmAnalysisClient, LlmAnalysisRequest, LlmAnalysisRun, LlmAnalysisState } from "../../components/common/llmAnalysis/LlmAnalysisClient"
@@ -32,7 +32,7 @@ export class LlmAnalysesConfigurator {
     const { pause, resume } = useIntervalFn(
       () => {
         const d = this.data.value
-        if (this.canStart(d)) {
+        if (this.canLoad(d)) {
           void this.loadRuns(d as InfoData)
         }
       },
@@ -40,9 +40,8 @@ export class LlmAnalysesConfigurator {
       { immediate: false }
     )
 
-    watchEffect(() => {
-      const d = this.data.value
-      if (this.canStart(d)) {
+    watch(this.data, (d) => {
+      if (this.canLoad(d)) {
         void this.loadRuns(d as InfoData)
       } else {
         this.value.value = []
@@ -65,13 +64,17 @@ export class LlmAnalysesConfigurator {
     )
   }
 
+  canLoad(data: InfoData | null): boolean {
+    return this.serverConfigurator != null && data != null && data.series[0]?.metricName != null
+  }
+
   canStart(data: InfoData | null): boolean {
-    return this.serverConfigurator != null && data != null && data.buildIdPrevious != null && data.series[0]?.metricName != null
+    return this.canLoad(data) && data?.buildIdPrevious != null
   }
 
   async loadRuns(data: InfoData): Promise<void> {
     const metric = data.series[0]?.metricName
-    if (metric == null || data.buildIdPrevious == null) {
+    if (metric == null) {
       this.value.value = []
       return
     }

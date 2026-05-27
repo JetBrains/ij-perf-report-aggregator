@@ -60,7 +60,7 @@
           </section>
         </AccordionContent>
       </AccordionPanel>
-      <AccordionPanel value="0">
+      <AccordionPanel value="2">
         <AccordionHeader>Private Memory</AccordionHeader>
         <AccordionContent>
           <section>
@@ -118,7 +118,7 @@
           </section>
         </AccordionContent>
       </AccordionPanel>
-      <AccordionPanel value="0">
+      <AccordionPanel value="3">
         <AccordionHeader>Memory Working Set</AccordionHeader>
         <AccordionContent>
           <section>

@@ -20,10 +20,10 @@ import (
 var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
 
 // Space file paths must contain only digits, letters, dashes, underscores, dots,
-// brackets, parentheses, and spaces, separated by forward slashes. Anything else
-// (e.g. `$` in `lambda$0`) is replaced with `_`. `/` is excluded so a stray slash
-// in a project name can't escape the enclosing path segment.
-var spaceProjectNameInvalidChars = regexp.MustCompile(`[^A-Za-z0-9._\-()\[\] ]`)
+// brackets, parentheses, spaces, and forward slashes. Anything else (e.g. `$` in
+// `lambda$0`) is replaced with `_`. `/` is allowed so hierarchical project names
+// like `Foo/Bar` are preserved as nested folders in the Space package path.
+var spaceProjectNameInvalidChars = regexp.MustCompile(`[^A-Za-z0-9._\-()\[\] /]`)
 
 func sanitizeSpaceProjectName(name string) string {
 	return spaceProjectNameInvalidChars.ReplaceAllString(name, "_")

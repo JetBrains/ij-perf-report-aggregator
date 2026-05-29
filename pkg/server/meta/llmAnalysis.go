@@ -144,7 +144,7 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			}
 		}
 
-		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_staging_PerformanceDegradationAnalyzer", buildParams)
+		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)
 		if err != nil || buildResp == nil || buildResp.Id == 0 {
 			markLlmAnalysisFailed(request.Context(), metaDb, id)
 			if err != nil {

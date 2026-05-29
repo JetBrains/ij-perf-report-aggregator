@@ -52,7 +52,10 @@ export class YoutrackClient {
     bazel: [{ name: "Bazel", id: "22-541" }],
     jbr: [{ name: "JetBrains Runtime", id: "22-202" }],
     qodana: [{ name: "Qodana", id: "22-332" }],
-    fleet: [{ name: "Fleet", id: "22-520" }],
+    fleet: [
+      { name: "Fleet", id: "22-520" },
+      { name: "Air", id: "22-1702" },
+    ],
     perfUnitTests: [
       { name: "IDEA", id: "22-22" },
       { name: "Kotlin Plugin", id: "22-414" },

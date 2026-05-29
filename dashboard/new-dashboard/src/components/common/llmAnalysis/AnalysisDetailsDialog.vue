@@ -313,11 +313,11 @@ const otherFeedbacks = computed<AnalysisFeedback[]>(() => {
 })
 
 const ratingOptions = [
-  { value: 1, label: "1 — Poor" },
-  { value: 2, label: "2 — Fair" },
-  { value: 3, label: "3 — Good" },
-  { value: 4, label: "4 — Very good" },
-  { value: 5, label: "5 — Excellent" },
+  { value: 1, label: "1 — Misleading: pointed at the wrong cause" },
+  { value: 2, label: "2 — Not useful: no actionable signal" },
+  { value: 3, label: "3 — Right direction: helped in investigation, but culprit not found" },
+  { value: 4, label: "4 — Close: culprit in list but ranked low or reasoning weak" },
+  { value: 5, label: "5 — Spot on: culprit identified with sound reasoning" },
 ]
 
 const isTerminalState = computed(() => details.value != null && details.value.state !== LlmAnalysisState.InProgress)

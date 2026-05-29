@@ -23,6 +23,7 @@ type AnalysisFeedback struct {
 	Feedback   *string `json:"feedback,omitempty"`
 	UserEmail  *string `json:"userEmail,omitempty"`
 	CreatedAt  string  `json:"createdAt"`
+	UpdatedAt  string  `json:"updatedAt"`
 }
 
 type AnalysisFeedbackRequest struct {
@@ -58,15 +59,18 @@ func CreatePostAnalysisFeedback(metaDb *pgxpool.Pool) http.HandlerFunc {
 			}
 		}
 
-		userEmail := request.Header.Get("X-Auth-Request-Email")
-		var userEmailArg *string
-		if userEmail != "" {
-			userEmailArg = &userEmail
+		userEmail := strings.TrimSpace(request.Header.Get("X-Auth-Request-Email"))
+		if userEmail == "" {
+			http.Error(writer, "authentication required", http.StatusUnauthorized)
+			return
 		}
 
-		_, err = metaDb.Exec(request.Context(),
-			"INSERT INTO analysis_feedback (analysis_id, rate, feedback, user_email) VALUES ($1, $2, $3, $4)",
-			id, req.Rate, feedbackArg, userEmailArg)
+		const upsertSQL = "INSERT INTO analysis_feedback (analysis_id, rate, feedback, user_email) " +
+			"VALUES ($1, $2, $3, $4) " +
+			"ON CONFLICT (analysis_id, user_email) DO UPDATE " +
+			"SET rate = EXCLUDED.rate, feedback = EXCLUDED.feedback, updated_at = NOW()"
+		_, err = metaDb.Exec(request.Context(), upsertSQL,
+			id, req.Rate, feedbackArg, userEmail)
 		if err != nil {
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
@@ -89,8 +93,8 @@ func CreateGetAnalysisFeedback(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		const sql = "SELECT id, analysis_id, rate, feedback, user_email, created_at " +
-			"FROM analysis_feedback WHERE analysis_id = $1 ORDER BY created_at DESC"
+		const sql = "SELECT id, analysis_id, rate, feedback, user_email, created_at, updated_at " +
+			"FROM analysis_feedback WHERE analysis_id = $1 ORDER BY updated_at DESC"
 		rows, err := metaDb.Query(request.Context(), sql, id)
 		if err != nil {
 			slog.Error("unable to execute select analysis_feedback query", "error", err, "analysisId", id)
@@ -100,12 +104,13 @@ func CreateGetAnalysisFeedback(metaDb *pgxpool.Pool) http.HandlerFunc {
 		feedbacks, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (AnalysisFeedback, error) {
 			var fb AnalysisFeedback
 			var rate int16
-			var createdAt time.Time
-			if err := row.Scan(&fb.Id, &fb.AnalysisId, &rate, &fb.Feedback, &fb.UserEmail, &createdAt); err != nil {
+			var createdAt, updatedAt time.Time
+			if err := row.Scan(&fb.Id, &fb.AnalysisId, &rate, &fb.Feedback, &fb.UserEmail, &createdAt, &updatedAt); err != nil {
 				return AnalysisFeedback{}, err
 			}
 			fb.Rate = int(rate)
 			fb.CreatedAt = createdAt.Format(time.RFC3339)
+			fb.UpdatedAt = updatedAt.Format(time.RFC3339)
 			return fb, nil
 		})
 		if err != nil {

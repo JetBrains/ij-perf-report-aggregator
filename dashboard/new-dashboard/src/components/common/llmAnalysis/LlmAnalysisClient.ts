@@ -55,6 +55,7 @@ export interface AnalysisFeedback {
   feedback?: string
   userEmail?: string
   createdAt: string
+  updatedAt: string
 }
 
 export class LlmAnalysisClient {

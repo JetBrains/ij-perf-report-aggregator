@@ -127,75 +127,117 @@
             >
               {{ feedbacksError }}
             </div>
-            <ul
-              v-else-if="feedbacks.length > 0"
-              class="flex flex-col gap-1 border-b border-gray-200 pb-2 text-xs"
-            >
-              <li
-                v-for="fb in feedbacks"
-                :key="fb.id"
-                class="flex items-center gap-2"
+            <template v-else>
+              <div
+                v-if="myFeedback && !isEditing"
+                class="flex flex-col gap-1"
               >
-                <span class="font-medium whitespace-nowrap">★ {{ fb.rate }}/5</span>
-                <span
-                  v-if="fb.userEmail"
-                  class="text-gray-500 whitespace-nowrap"
+                <div class="font-medium text-gray-500">Your feedback</div>
+                <div class="flex items-center gap-2 text-xs">
+                  <span class="font-medium whitespace-nowrap">★ {{ myFeedback.rate }}/5</span>
+                  <span class="text-gray-400 whitespace-nowrap">{{ formatCreatedAt(myFeedback.updatedAt) }}</span>
+                  <span
+                    v-if="myFeedback.feedback"
+                    v-tooltip.top="myFeedback.feedback"
+                    class="truncate text-gray-700"
+                  >
+                    {{ myFeedback.feedback }}
+                  </span>
+                  <Button
+                    label="Edit"
+                    severity="secondary"
+                    text
+                    size="small"
+                    @click="startEdit"
+                  />
+                </div>
+              </div>
+
+              <div
+                v-if="otherFeedbacks.length > 0"
+                class="flex flex-col gap-1"
+              >
+                <div class="font-medium text-gray-500">From other users</div>
+                <ul class="flex flex-col gap-1 text-xs">
+                  <li
+                    v-for="fb in otherFeedbacks"
+                    :key="fb.id"
+                    class="flex items-center gap-2"
+                  >
+                    <span class="font-medium whitespace-nowrap">★ {{ fb.rate }}/5</span>
+                    <span
+                      v-if="fb.userEmail"
+                      class="text-gray-500 whitespace-nowrap"
+                    >
+                      {{ userLocalPart(fb.userEmail) }}
+                    </span>
+                    <span class="text-gray-400 whitespace-nowrap">{{ formatCreatedAt(fb.updatedAt) }}</span>
+                    <span
+                      v-if="fb.feedback"
+                      v-tooltip.top="fb.feedback"
+                      class="truncate text-gray-700"
+                    >
+                      {{ fb.feedback }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </template>
+
+            <template v-if="!feedbacksLoading && !feedbacksError && (!myFeedback || isEditing)">
+              <div class="flex flex-col gap-1">
+                <label
+                  for="analysis-feedback-rating"
+                  class="font-medium text-gray-500"
                 >
-                  {{ userLocalPart(fb.userEmail) }}
-                </span>
-                <span class="text-gray-400 whitespace-nowrap">{{ formatCreatedAt(fb.createdAt) }}</span>
-                <span
-                  v-if="fb.feedback"
-                  v-tooltip.top="fb.feedback"
-                  class="truncate text-gray-700"
+                  Rating
+                </label>
+                <Select
+                  id="analysis-feedback-rating"
+                  v-model="rating"
+                  :options="ratingOptions"
+                  option-label="label"
+                  option-value="value"
+                  placeholder="Select a rating"
+                  class="w-80"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label
+                  for="analysis-feedback-comments"
+                  class="font-medium text-gray-500"
                 >
-                  {{ fb.feedback }}
-                </span>
-              </li>
-            </ul>
-            <div class="flex flex-col gap-1">
-              <label
-                for="analysis-feedback-rating"
-                class="font-medium text-gray-500"
-              >
-                Rating
-              </label>
-              <Select
-                id="analysis-feedback-rating"
-                v-model="rating"
-                :options="ratingOptions"
-                option-label="label"
-                option-value="value"
-                placeholder="Select a rating"
-                class="w-80"
-              />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label
-                for="analysis-feedback-comments"
-                class="font-medium text-gray-500"
-              >
-                Feedback
-              </label>
-              <Textarea
-                id="analysis-feedback-comments"
-                v-model="feedbackText"
-                rows="5"
-                class="w-full"
-                placeholder="What could work better, ideally the actually guilty commit(s)"
-              />
-            </div>
-            <div
-              v-tooltip.top="submitDisabledReason"
-              class="inline-block w-fit"
-            >
-              <Button
-                label="Send"
-                :disabled="submitDisabledReason != null || submitting"
-                :loading="submitting"
-                @click="submitFeedback"
-              />
-            </div>
+                  Feedback
+                </label>
+                <Textarea
+                  id="analysis-feedback-comments"
+                  v-model="feedbackText"
+                  rows="5"
+                  class="w-full"
+                  placeholder="What could work better, ideally the actually guilty commit(s)"
+                />
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  v-tooltip.top="submitDisabledReason"
+                  class="inline-block w-fit"
+                >
+                  <Button
+                    :label="isEditing ? 'Save' : 'Send'"
+                    :disabled="submitDisabledReason != null || submitting"
+                    :loading="submitting"
+                    @click="submitFeedback"
+                  />
+                </div>
+                <Button
+                  v-if="isEditing"
+                  label="Cancel"
+                  severity="secondary"
+                  :disabled="submitting"
+                  @click="cancelEdit"
+                />
+              </div>
+            </template>
           </div>
         </TabPanel>
       </TabPanels>
@@ -205,12 +247,14 @@
 
 <script setup lang="ts">
 import { Marked } from "marked"
+import { storeToRefs } from "pinia"
 import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
 import { buildUrl } from "../sideBar/InfoSidebar"
 import { AnalysisFeedback, LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
 import { injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
+import { useUserStore } from "../../../shared/useUserStore"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 
@@ -253,6 +297,20 @@ const feedbacksLoaded = ref(false)
 const feedbacksLoading = ref(false)
 const feedbacksError = ref<string | null>(null)
 const submitting = ref(false)
+const isEditing = ref(false)
+
+const { user } = storeToRefs(useUserStore())
+const currentUserEmail = computed(() => user.value?.email ?? null)
+
+const myFeedback = computed<AnalysisFeedback | undefined>(() => {
+  const email = currentUserEmail.value
+  return email == null ? undefined : feedbacks.value.find((fb) => fb.userEmail === email)
+})
+
+const otherFeedbacks = computed<AnalysisFeedback[]>(() => {
+  const mine = myFeedback.value
+  return mine == null ? feedbacks.value : feedbacks.value.filter((fb) => fb !== mine)
+})
 
 const ratingOptions = [
   { value: 1, label: "1 — Poor" },
@@ -277,6 +335,21 @@ function resetFeedback() {
   feedbacks.value = []
   feedbacksLoaded.value = false
   feedbacksError.value = null
+  isEditing.value = false
+}
+
+function startEdit() {
+  const mine = myFeedback.value
+  if (mine == null) return
+  rating.value = mine.rate
+  feedbackText.value = mine.feedback ?? ""
+  isEditing.value = true
+}
+
+function cancelEdit() {
+  isEditing.value = false
+  rating.value = null
+  feedbackText.value = ""
 }
 
 async function loadFeedbacks() {
@@ -298,7 +371,11 @@ async function submitFeedback() {
   submitting.value = true
   try {
     await client.submitAnalysisFeedback(analysisId, rating.value, feedbackText.value)
-    resetFeedback()
+    rating.value = null
+    feedbackText.value = ""
+    isEditing.value = false
+    feedbacksLoaded.value = false
+    await loadFeedbacks()
   } catch (e) {
     feedbacksError.value = e instanceof Error ? e.message : String(e)
   } finally {

@@ -20,6 +20,7 @@ CREATE TABLE analyses
   state                 VARCHAR(50)  NOT NULL DEFAULT 'in_progress',
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
+  dashboard_link        VARCHAR(4096),
   total_cost_usd        NUMERIC(10, 4)
 );
 

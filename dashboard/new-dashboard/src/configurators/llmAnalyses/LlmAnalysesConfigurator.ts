@@ -103,7 +103,7 @@ export class LlmAnalysesConfigurator {
     }
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
-    const dashboardLink = `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, this.router), this.timerangeConfigurator)}`
+    const dashboardLink = getPersistentLink(getNavigateToTestUrl(data, this.router), this.timerangeConfigurator)
     const request: LlmAnalysisRequest = {
       project: data.projectName,
       metric,

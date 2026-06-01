@@ -132,15 +132,8 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			buildParams["user.email"] = userEmail
 		}
 		if llmAnalysisRequest.DashboardLink != nil && *llmAnalysisRequest.DashboardLink != "" {
-			if u, err := url.Parse(*llmAnalysisRequest.DashboardLink); err == nil {
-				q := u.Query()
-				q.Set("point", llmAnalysisRequest.CurrentBuildId)
-				q.Set("analysis", strconv.Itoa(id))
-				u.RawQuery = q.Encode()
-				buildParams["dashboard.link"] = u.String()
-			} else {
-				slog.Warn("invalid dashboardLink, skipping dashboard.link build param",
-					"error", err, "dashboardLink", *llmAnalysisRequest.DashboardLink)
+			if link, ok := buildDashboardLink(*llmAnalysisRequest.DashboardLink, llmAnalysisRequest.CurrentBuildId, id); ok {
+				buildParams["dashboard.link"] = link
 			}
 		}
 
@@ -325,6 +318,33 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
+// buildDashboardLink parses the FE-supplied link, strips scheme/host (defense in depth in case the
+// FE still sends a full URL), appends point/analysis query params, and returns the absolute URL
+// (dashboardBaseURL + "/path?query"). Returns ok=false if the input cannot be parsed or has no path.
+const dashboardBaseURL = "https://ij-perf.labs.jb.gg"
+
+func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) (string, bool) {
+	u, err := url.Parse(rawLink)
+	if err != nil {
+		slog.Warn("invalid dashboardLink, skipping dashboard.link build param",
+			"error", err, "dashboardLink", rawLink)
+		return "", false
+	}
+	u.Scheme = ""
+	u.Host = ""
+	u.User = nil
+	if u.Path == "" || !strings.HasPrefix(u.Path, "/") {
+		slog.Warn("dashboardLink has no absolute path, skipping dashboard.link build param",
+			"dashboardLink", rawLink)
+		return "", false
+	}
+	q := u.Query()
+	q.Set("point", currentBuildId)
+	q.Set("analysis", strconv.Itoa(analysisId))
+	u.RawQuery = q.Encode()
+	return dashboardBaseURL + u.RequestURI(), true
+}
+
 func markLlmAnalysisFailed(ctx context.Context, metaDb *pgxpool.Pool, id int) {
 	state := LlmAnalysisStateFailed
 	if err := updateLlmAnalysisRun(ctx, metaDb, id, LlmAnalysisRunPatch{State: &state}); err != nil {
@@ -377,11 +397,11 @@ func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMA
 		userEmailArg = &userEmail
 	}
 	idRow := metaDb.QueryRow(ctx,
-		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id) "+
-			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, created_at",
+		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id, dashboard_link) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, created_at",
 		params.Project, params.Metric, params.CurrentBuildId,
 		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName, userEmailArg,
-		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId)
+		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId, params.DashboardLink)
 	if err := idRow.Scan(&id, &createdAt); err != nil {
 		slog.Error("cannot execute insert analyses query", "error", err,
 			"project", params.Project, "metric", params.Metric)

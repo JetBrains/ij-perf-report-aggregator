@@ -106,7 +106,7 @@
               <dt class="col-span-2 mt-4 border-t border-gray-200 pt-3 text-base font-semibold text-gray-900">Result</dt>
               <dd class="col-span-2">
                 <div
-                  class="markdown-body rounded bg-gray-50 p-3 text-base"
+                  class="markdown-body rounded bg-gray-50 p-3 text-base dark:bg-gray-800 dark:text-gray-100"
                   v-html="renderedComment"
                 />
               </dd>
@@ -524,5 +524,27 @@ function userLocalPart(email: string): string {
 .markdown-body :deep(th) {
   background: #e5e7eb;
   font-weight: 600;
+}
+
+.dark-mode .markdown-body :deep(code) {
+  background: #374151;
+  color: #f3f4f6;
+}
+.dark-mode .markdown-body :deep(pre) {
+  background: #0f172a;
+}
+.dark-mode .markdown-body :deep(a) {
+  color: #60a5fa;
+}
+.dark-mode .markdown-body :deep(blockquote) {
+  border-left-color: #4b5563;
+  color: #d1d5db;
+}
+.dark-mode .markdown-body :deep(th),
+.dark-mode .markdown-body :deep(td) {
+  border-color: #4b5563;
+}
+.dark-mode .markdown-body :deep(th) {
+  background: #374151;
 }
 </style>

@@ -112,6 +112,8 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		userEmail := request.Header.Get("X-Auth-Request-Email")
 
+		fallBackToTCCommitsRangeIfMissing(request.Context(), &llmAnalysisRequest)
+
 		id, createdAt, err := insertLlmAnalysisRow(request.Context(), metaDb, llmAnalysisRequest, userEmail)
 		if err != nil {
 			http.Error(writer, "Failed to insert LLM analysis row: "+err.Error(), http.StatusInternalServerError)
@@ -343,6 +345,31 @@ func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) (
 	q.Set("analysis", strconv.Itoa(analysisId))
 	u.RawQuery = q.Encode()
 	return dashboardBaseURL + u.RequestURI(), true
+}
+
+// fallBackToTCCommitsRangeIfMissing populates FirstCommitRevision / LastCommitRevision from TC's build changes
+// when the FE omitted them. Best-effort: any TC error is logged and the request proceeds unchanged.
+func fallBackToTCCommitsRangeIfMissing(ctx context.Context, req *LLMAnalysisRequest) {
+	firstMissing := req.FirstCommitRevision == nil || *req.FirstCommitRevision == ""
+	lastMissing := req.LastCommitRevision == nil || *req.LastCommitRevision == ""
+	if !firstMissing && !lastMissing {
+		return
+	}
+	commits, err := teamCityClient.getChanges(ctx, req.CurrentBuildId)
+	if err != nil {
+		slog.Warn("cannot get commits from build for revision fallback",
+			"buildId", req.CurrentBuildId, "error", err)
+		return
+	}
+	if commits == nil {
+		return
+	}
+	if firstMissing && commits.FirstCommit != "" {
+		req.FirstCommitRevision = &commits.FirstCommit
+	}
+	if lastMissing && commits.LastCommit != "" {
+		req.LastCommitRevision = &commits.LastCommit
+	}
 }
 
 func markLlmAnalysisFailed(ctx context.Context, metaDb *pgxpool.Pool, id int) {

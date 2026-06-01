@@ -62,6 +62,20 @@
         :projects="rustRefactoringTestCases.optimizeImportsBigFile"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Call Optimize Imports in Directory with small files"
+        measure="optimizeImportsOnDirectory"
+        :projects="rustRefactoringTestCases.optimizeImportsSmallDirectory"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Call Optimize Imports in Directory with big files"
+        measure="optimizeImportsOnDirectory"
+        :projects="rustRefactoringTestCases.optimizeImportsBigDirectory"
+      />
+    </section>
   </DashboardPage>
 </template>
 

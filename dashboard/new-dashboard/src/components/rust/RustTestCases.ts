@@ -194,6 +194,8 @@ export const rustRefactoringTestCases = {
   moveBigFile: ["move big file/moveModule/moveBigFile"],
   optimizeImportsSmallFile: ["refactoring/optimizeImportsSmall/optimizeImports/optimizeImportsSmall"],
   optimizeImportsBigFile: ["refactoring/optimizeImportsBig/optimizeImports/optimizeImportsBig"],
+  optimizeImportsSmallDirectory: ["OptImpSmallDir/optimizeImportsOnDirectory/OptImpSmallDir"],
+  optimizeImportsBigDirectory: ["OptImpBigDir/optimizeImportsOnDirectory/OptImpBigDir"],
 }
 export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
   {

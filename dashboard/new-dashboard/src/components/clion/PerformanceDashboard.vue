@@ -134,7 +134,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Find Usages (macro)"
-          measure="%syncAction FindUsages"
+          :measure="['%syncAction FindUsages', 'findUsagesInToolWindow']"
           project="luau/findUsages/macro (LUAU_ASSERT)"
         />
       </div>

@@ -56,6 +56,7 @@ type LlmAnalysisDetails struct {
 	LastCommitRevision  *string  `json:"lastCommitRevision,omitempty"`
 	TestMethodName      *string  `json:"testMethodName,omitempty"`
 	YtIssueId           *string  `json:"ytIssueId,omitempty"`
+	DashboardLink       *string  `json:"dashboardLink,omitempty"`
 	LlmGuiltyCommits    []string `json:"llmGuiltyCommits,omitempty"`
 	LlmComment          *string  `json:"llmComment,omitempty"`
 	TotalCostUsd        *float64 `json:"totalCostUsd,omitempty"`
@@ -134,7 +135,7 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			buildParams["user.email"] = userEmail
 		}
 		if llmAnalysisRequest.DashboardLink != nil && *llmAnalysisRequest.DashboardLink != "" {
-			if link, ok := buildDashboardLink(*llmAnalysisRequest.DashboardLink, llmAnalysisRequest.CurrentBuildId, id); ok {
+			if link := buildDashboardLink(*llmAnalysisRequest.DashboardLink, llmAnalysisRequest.CurrentBuildId, id); link != "" {
 				buildParams["dashboard.link"] = link
 			}
 		}
@@ -239,38 +240,7 @@ func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		const sql = "SELECT id, created_at, project, metric, current_build_id, prev_build_id, " +
-			"current_value, previous_value, user_name, user_email, " +
-			"first_commit_revision, last_commit_revision, test_method_name, run_build_id, yt_issue_id, " +
-			"state, llm_guilty_commits, llm_comment, total_cost_usd " +
-			"FROM analyses WHERE id = $1"
-
-		var (
-			details    LlmAnalysisDetails
-			createdAt  time.Time
-			runBuildId *string
-		)
-		err = metaDb.QueryRow(request.Context(), sql, id).Scan(
-			&details.Id,
-			&createdAt,
-			&details.Project,
-			&details.Metric,
-			&details.CurrentBuildId,
-			&details.PrevBuildId,
-			&details.CurrentValue,
-			&details.PreviousValue,
-			&details.UserName,
-			&details.UserEmail,
-			&details.FirstCommitRevision,
-			&details.LastCommitRevision,
-			&details.TestMethodName,
-			&runBuildId,
-			&details.YtIssueId,
-			&details.State,
-			&details.LlmGuiltyCommits,
-			&details.LlmComment,
-			&details.TotalCostUsd,
-		)
+		details, err := getAnalysisById(request.Context(), metaDb, id)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				http.Error(writer, "analysis not found", http.StatusNotFound)
@@ -280,16 +250,55 @@ func CreateGetLlmAnalysisById(metaDb *pgxpool.Pool) http.HandlerFunc {
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		details.CreatedAt = createdAt.Format(time.RFC3339)
-		if runBuildId != nil {
-			details.RunBuildId = *runBuildId
-		}
 
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(details); err != nil {
 			slog.Error("unable to write analysis details response", "error", err, "id", id)
 		}
 	}
+}
+
+func getAnalysisById(ctx context.Context, metaDb *pgxpool.Pool, id int) (*LlmAnalysisDetails, error) {
+	const sql = "SELECT id, created_at, project, metric, current_build_id, prev_build_id, " +
+		"current_value, previous_value, user_name, user_email, " +
+		"first_commit_revision, last_commit_revision, test_method_name, run_build_id, yt_issue_id, " +
+		"dashboard_link, state, llm_guilty_commits, llm_comment, total_cost_usd " +
+		"FROM analyses WHERE id = $1"
+
+	var (
+		details    LlmAnalysisDetails
+		createdAt  time.Time
+		runBuildId *string
+	)
+	if err := metaDb.QueryRow(ctx, sql, id).Scan(
+		&details.Id,
+		&createdAt,
+		&details.Project,
+		&details.Metric,
+		&details.CurrentBuildId,
+		&details.PrevBuildId,
+		&details.CurrentValue,
+		&details.PreviousValue,
+		&details.UserName,
+		&details.UserEmail,
+		&details.FirstCommitRevision,
+		&details.LastCommitRevision,
+		&details.TestMethodName,
+		&runBuildId,
+		&details.YtIssueId,
+		&details.DashboardLink,
+		&details.State,
+		&details.LlmGuiltyCommits,
+		&details.LlmComment,
+		&details.TotalCostUsd,
+	); err != nil {
+		return nil, err
+	}
+	details.CreatedAt = createdAt.Format(time.RFC3339)
+	if runBuildId != nil {
+		details.RunBuildId = *runBuildId
+	}
+	return &details, nil
 }
 
 func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -322,15 +331,15 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 // buildDashboardLink parses the FE-supplied link, strips scheme/host (defense in depth in case the
 // FE still sends a full URL), appends point/analysis query params, and returns the absolute URL
-// (dashboardBaseURL + "/path?query"). Returns ok=false if the input cannot be parsed or has no path.
+// (dashboardBaseURL + "/path?query"). Returns "" if the input cannot be parsed or has no path.
 const dashboardBaseURL = "https://ij-perf.labs.jb.gg"
 
-func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) (string, bool) {
+func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) string {
 	u, err := url.Parse(rawLink)
 	if err != nil {
 		slog.Warn("invalid dashboardLink, skipping dashboard.link build param",
 			"error", err, "dashboardLink", rawLink)
-		return "", false
+		return ""
 	}
 	u.Scheme = ""
 	u.Host = ""
@@ -338,13 +347,13 @@ func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) (
 	if u.Path == "" || !strings.HasPrefix(u.Path, "/") {
 		slog.Warn("dashboardLink has no absolute path, skipping dashboard.link build param",
 			"dashboardLink", rawLink)
-		return "", false
+		return ""
 	}
 	q := u.Query()
 	q.Set("point", currentBuildId)
 	q.Set("analysis", strconv.Itoa(analysisId))
 	u.RawQuery = q.Encode()
-	return dashboardBaseURL + u.RequestURI(), true
+	return dashboardBaseURL + u.RequestURI()
 }
 
 // fallBackToTCCommitsRangeIfMissing populates FirstCommitRevision / LastCommitRevision from TC's build changes

@@ -37,6 +37,7 @@
   <AnalysisDetailsDialog
     v-model:visible="dialogVisible"
     :analysis-id="selectedAnalysisId"
+    :data="data"
   />
 </template>
 <script setup lang="ts">
@@ -44,8 +45,11 @@ import { computed, ref, watch } from "vue"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { llmAnalysesConfiguratorKey } from "../../../shared/keys"
 import { useSelectedPointStore } from "../../../shared/selectedPointStore"
+import type { InfoData } from "../sideBar/InfoSidebar"
 import AnalysisDetailsDialog from "./AnalysisDetailsDialog.vue"
 import { LlmAnalysisState } from "./LlmAnalysisClient"
+
+defineProps<{ data?: InfoData | null }>()
 
 const llmAnalysesConfigurator = injectOrError(llmAnalysesConfiguratorKey)
 const selectedPointStore = useSelectedPointStore()

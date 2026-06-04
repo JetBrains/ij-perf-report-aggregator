@@ -103,9 +103,82 @@
             </template>
 
             <template v-if="details.llmComment">
-              <dt class="col-span-2 mt-4 border-t border-gray-200 pt-3 text-base font-semibold text-gray-900">Result</dt>
+              <dt class="col-span-2 mt-4 border-t border-gray-200 pt-3 text-base font-semibold text-gray-900">
+                <div class="flex items-center justify-between gap-3">
+                  <span>{{ showCreateForm ? "Create YouTrack issue" : "Result" }}</span>
+                  <Button
+                    v-if="!showCreateForm && createdIssue == null && isTerminalState"
+                    label="Create YouTrack issue"
+                    icon="pi pi-plus"
+                    size="small"
+                    @click="showCreateForm = true"
+                  />
+                  <a
+                    v-else-if="!showCreateForm && createdIssue"
+                    :href="`https://youtrack.jetbrains.com/issue/${createdIssue.idReadable}`"
+                    target="_blank"
+                    class="flex items-center gap-1 text-sm font-normal underline decoration-dotted hover:no-underline"
+                  >
+                    <i class="pi pi-verified text-green-600" />
+                    Created {{ createdIssue.idReadable }} ↗
+                  </a>
+                </div>
+              </dt>
               <dd class="col-span-2">
                 <div
+                  v-if="showCreateForm"
+                  class="flex flex-col gap-3 rounded bg-gray-50 p-3 dark:bg-gray-800"
+                >
+                  <div class="flex flex-col gap-1">
+                    <label
+                      for="yt-project"
+                      class="font-medium text-gray-500"
+                    >
+                      Project
+                    </label>
+                    <Select
+                      id="yt-project"
+                      v-model="selectedProject"
+                      :options="ytProjects"
+                      option-label="name"
+                      placeholder="Project"
+                      :disabled="isSubmittingYt"
+                      class="w-80"
+                    />
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label
+                      for="yt-title"
+                      class="font-medium text-gray-500"
+                    >
+                      Title
+                    </label>
+                    <InputText
+                      id="yt-title"
+                      v-model="effectiveTitle"
+                      :disabled="isSubmittingYt"
+                      placeholder="Issue title"
+                      class="w-full"
+                    />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Button
+                      label="Create"
+                      icon="pi pi-check"
+                      :disabled="isSubmittingYt || selectedProject == null"
+                      :loading="isSubmittingYt"
+                      @click="submitCreateIssue"
+                    />
+                    <Button
+                      label="Cancel"
+                      severity="secondary"
+                      :disabled="isSubmittingYt"
+                      @click="cancelCreateForm"
+                    />
+                  </div>
+                </div>
+                <div
+                  v-else
                   class="markdown-body rounded bg-gray-50 p-3 text-base dark:bg-gray-800 dark:text-gray-100"
                   v-html="renderedComment"
                 />
@@ -249,11 +322,14 @@
 import { Marked } from "marked"
 import { storeToRefs } from "pinia"
 import Dialog from "primevue/dialog"
+import { useToast } from "primevue/usetoast"
 import { computed, ref, watch } from "vue"
-import { buildUrl } from "../sideBar/InfoSidebar"
+import { buildUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
+import { generateDefaultReason, inferKindFromData } from "../sideBar/AccidentUtils"
+import type { Project } from "../youtrack/YoutrackClient"
 import { AnalysisFeedback, LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
-import { injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey } from "../../../shared/keys"
+import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
+import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { useUserStore } from "../../../shared/useUserStore"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
@@ -274,7 +350,7 @@ const md = new Marked({
 })
 
 const visible = defineModel<boolean>("visible", { required: true })
-const { analysisId } = defineProps<{ analysisId: number | string | null }>()
+const { analysisId, data } = defineProps<{ analysisId: number | string | null; data?: InfoData | null }>()
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 const client = new LlmAnalysisClient(serverConfigurator)
@@ -383,6 +459,74 @@ async function submitFeedback() {
   }
 }
 
+const youtrackClient = injectOrError(youtrackClientKey)
+const toast = useToast()
+
+const ytProjects = ref<Project[]>(youtrackClient.getProjects())
+const selectedProject = ref<Project | null>(ytProjects.value[0] ?? null)
+const titleOverride = ref<string | null>(null)
+const isSubmittingYt = ref(false)
+const createdIssue = ref<{ id: string; idReadable: string } | null>(null)
+const showCreateForm = ref(false)
+
+const defaultTitle = computed<string>(() => {
+  if (data == null) return ""
+  return `${inferKindFromData(data)} ${generateDefaultReason(data)} ${data.mode ? `on ${data.mode} mode` : ""}`
+})
+
+const effectiveTitle = computed<string>({
+  get: () => titleOverride.value ?? defaultTitle.value,
+  set: (v) => {
+    titleOverride.value = v
+  },
+})
+
+async function submitCreateIssue() {
+  if (analysisId == null || selectedProject.value == null) return
+  const title = effectiveTitle.value.trim()
+  if (title.length < 5) {
+    toast.add({ severity: "error", summary: "Validation Error", detail: "Title must be at least 5 characters long", life: 5000 })
+    return
+  }
+  isSubmittingYt.value = true
+  try {
+    let changesLink = ""
+    let delta = ""
+    if (data != null) {
+      const spaceUrls = await getSpaceUrl(data, serverConfigurator)
+      changesLink = spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl
+      delta = data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? ""
+    }
+    const resp = await youtrackClient.createIssueByAnalysis(Number(analysisId), {
+      projectId: selectedProject.value.id,
+      ticketLabel: title,
+      delta,
+      changesLink,
+    })
+    createdIssue.value = { id: resp.issue.id, idReadable: resp.issue.idReadable }
+    if (details.value != null) details.value.ytIssueId = resp.issue.idReadable
+    showCreateForm.value = false
+    toast.add({ severity: "success", summary: "Issue created", detail: resp.issue.idReadable, life: 4000 })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    toast.add({ severity: "error", summary: "Issue creation failed", detail: msg, life: 8000 })
+  } finally {
+    isSubmittingYt.value = false
+  }
+}
+
+function cancelCreateForm() {
+  showCreateForm.value = false
+  titleOverride.value = null
+}
+
+function resetYoutrack() {
+  titleOverride.value = null
+  createdIssue.value = null
+  isSubmittingYt.value = false
+  showCreateForm.value = false
+}
+
 watch(activeTab, (t) => {
   if (t === 1) void loadFeedbacks()
 })
@@ -394,6 +538,7 @@ watch(
     errorMessage.value = null
     loading.value = false
     resetFeedback()
+    resetYoutrack()
     if (!isVisible || id == null) return
     loading.value = true
     try {

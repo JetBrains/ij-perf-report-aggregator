@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -31,24 +32,31 @@ type YoutrackCreateIssueRequest struct {
 	PreviousValue  string        `json:"previousValue"`
 	TestMethodName *string       `json:"testMethodName"`
 	TestType       string        `json:"testType"`
-	CurrentBuildId *int          `json:"currentBuildId"`
 }
 
 type GenerateDescriptionData struct {
-	Kind           string
-	AffectedTest   string
-	AffectedMetric string
-	Delta          string
-	CurrentValue   string
-	PreviousValue  string
-	StackTrace     string
-	BuildLink      string
-	Changes        string
-	DashboardLink  string
-	TestHistoryUrl *string
-	TestMethod     *string
-	TestType       string
-	Commits        *CommitRevisions
+	Kind                string
+	AffectedTest        string
+	AffectedMetric      string
+	Delta               string
+	CurrentValue        string
+	PreviousValue       string
+	StackTrace          string
+	BuildLink           string
+	Changes             string
+	DashboardLink       string
+	TestHistoryUrl      *string
+	TestMethod          *string
+	TestType            string
+	AnalysisAttachments *AnalysisAttachments
+	AnalysisResult      *string
+}
+
+type AnalysisAttachments struct {
+	Current     []string
+	CurrentURL  string
+	Previous    []string
+	PreviousURL string
 }
 
 type CreateIssueResponse struct {
@@ -126,14 +134,6 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			logError("cannot get test history link", err, &response.Exceptions)
 		}
 
-		var commits *CommitRevisions
-		if params.CurrentBuildId != nil {
-			commits, err = teamCityClient.getChanges(request.Context(), strconv.Itoa(*params.CurrentBuildId))
-			if err != nil {
-				logError("cannot get commits from build", err, &response.Exceptions)
-			}
-		}
-
 		descriptionData := GenerateDescriptionData{
 			Kind:           lowerKind,
 			AffectedTest:   affectedTest,
@@ -148,73 +148,13 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			TestHistoryUrl: &testHistoryUrl,
 			TestMethod:     params.TestMethodName,
 			TestType:       params.TestType,
-			Commits:        commits,
 		}
 
-		accessToken := request.Header.Get("X-Auth-Request-Access-Token")
-		var userId *auth.YTUser
-		if accessToken == "" {
-			slog.Warn("cannot fetch user info: X-Auth-Request-Access-Token header is missing")
-		} else {
-			user, err := auth.FetchUserInfo(request.Context(), accessToken)
-			switch {
-			case err != nil:
-				slog.Warn("cannot fetch user info", "error", err)
-			case user.Email == "":
-				slog.Warn("cannot fetch user info: email is empty in Google response")
-			default:
-				userId, err = ytAuth.GetUser(request.Context(), user.Email)
-				if err != nil {
-					slog.Warn("error getting user id", "email", user.Email, "error", err)
-				}
-			}
-		}
-		issueInfo := CreateIssueInfo{
+		issue, err := createYoutrackIssueCommon(request.Context(), request, CommonIssueParams{
+			ProjectId:   params.ProjectId,
 			Summary:     params.TicketLabel,
 			Description: generateDescription(descriptionData),
-			Project:     YoutrackProject{ID: params.ProjectId},
-			Reporter:    userId,
-			Visibility: Visibility{
-				PermittedGroups: []auth.YTUser{{ID: "10-3"}},
-				PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}},
-				Type:            "LimitedVisibility",
-			},
-			CustomFields: []CustomField{
-				{
-					Name: "Type",
-					Type: "SingleEnumIssueCustomField",
-					Value: struct {
-						Name string `json:"name"`
-					}{
-						Name: "Performance Problem",
-					},
-				},
-			},
-		}
-
-		setSubsystems(params, &issueInfo)
-
-		projectsToSetVersionsFor := []string{
-			IJPL,
-			IDEA,
-			// RUBY,
-			KTIJ,
-			WEB,
-			WI,
-			CLION,
-		}
-
-		if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
-			latestAffectedVersion := getVersionFieldValue(params.ProjectId, "Affected versions", nil, request, response)
-			baseVersion := strings.SplitN(latestAffectedVersion, " ", 2)[0]
-			setVersionField("Affected versions", baseVersion, params, request, response, &issueInfo)
-			setVersionField("Planned for", baseVersion, params, request, response, &issueInfo)
-		}
-
-		setPriority(params, &issueInfo)
-		setTags(params, &issueInfo)
-
-		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
+		}, &response.Exceptions)
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
@@ -235,6 +175,80 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			logError("unable to update accident reason", err, &response.Exceptions)
 		}
 	}
+}
+
+type CommonIssueParams struct {
+	ProjectId   string
+	Summary     string
+	Description string
+}
+
+func createYoutrackIssueCommon(ctx context.Context, request *http.Request, params CommonIssueParams, exceptions *[]string) (*YoutrackIssue, error) {
+	accessToken := request.Header.Get("X-Auth-Request-Access-Token")
+	var userId *auth.YTUser
+	if accessToken == "" {
+		slog.Warn("cannot fetch user info: X-Auth-Request-Access-Token header is missing")
+	} else {
+		user, err := auth.FetchUserInfo(ctx, accessToken)
+		switch {
+		case err != nil:
+			slog.Warn("cannot fetch user info", "error", err)
+		case user.Email == "":
+			slog.Warn("cannot fetch user info: email is empty in Google response")
+		default:
+			userId, err = ytAuth.GetUser(ctx, user.Email)
+			if err != nil {
+				slog.Warn("error getting user id", "email", user.Email, "error", err)
+			}
+		}
+	}
+
+	issueInfo := CreateIssueInfo{
+		Summary:     params.Summary,
+		Description: params.Description,
+		Project:     YoutrackProject{ID: params.ProjectId},
+		Reporter:    userId,
+		Visibility: Visibility{
+			PermittedGroups: []auth.YTUser{{ID: "10-3"}},
+			PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}},
+			Type:            "LimitedVisibility",
+		},
+		CustomFields: []CustomField{
+			{
+				Name: "Type",
+				Type: "SingleEnumIssueCustomField",
+				Value: struct {
+					Name string `json:"name"`
+				}{
+					Name: "Performance Problem",
+				},
+			},
+		},
+	}
+
+	setSubsystems(params.ProjectId, &issueInfo)
+
+	projectsToSetVersionsFor := []string{
+		IJPL,
+		IDEA,
+		// RUBY,
+		KTIJ,
+		WEB,
+		WI,
+		CLION,
+	}
+
+	if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
+		latestAffectedVersion := getVersionFieldValue(ctx, params.ProjectId, "Affected versions", nil, exceptions)
+		baseVersion := strings.SplitN(latestAffectedVersion, " ", 2)[0]
+		setVersionField(ctx, params.ProjectId, "Affected versions", baseVersion, &issueInfo, exceptions)
+		setVersionField(ctx, params.ProjectId, "Planned for", baseVersion, &issueInfo, exceptions)
+	}
+
+	setPriority(params.ProjectId, &issueInfo)
+	setTags(params.ProjectId, &issueInfo)
+
+	return youtrackClient.CreateIssue(ctx, issueInfo)
 }
 
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
@@ -279,36 +293,61 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 		}
 	}
 
-	// Commits
-	if generateDescriptorData.Commits != nil {
-		commitsSection := fmt.Sprintf("**Commits:**\nFirst: %s\nLast: %s",
-			generateDescriptorData.Commits.FirstCommit,
-			generateDescriptorData.Commits.LastCommit)
-		parts = append(parts, commitsSection)
-	}
-
-	// Idea logs and snapshots
-	if generateDescriptorData.TestType == "intellij" || generateDescriptorData.TestType == "intellij_dev" {
-		logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
-		snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
-		metrics := "**Metrics:**\nCurrent: [metrics.performance-current.json](metrics.performance-current.json)"
-		if generateDescriptorData.Kind != "exception" {
-			logs += "\nBefore: [logs-before.zip](logs-before.zip)"
-			snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
-			metrics += "\nBefore: [metrics.performance-before.json](metrics.performance-before.json)"
+	// if there uploaded attachments put them into the description, otherwise try to guess the artifacts attached to the issue
+	if generateDescriptorData.AnalysisAttachments != nil {
+		quoteAll := func(names []string) string {
+			quoted := make([]string, len(names))
+			for i, n := range names {
+				quoted[i] = "`" + n + "`"
+			}
+			return strings.Join(quoted, ", ")
 		}
-		parts = append(parts, logs, snapshots, metrics)
-	}
 
-	if generateDescriptorData.TestType == "perfUnitTests" {
-		snapshots := "**Snapshots:**\nCurrent: [log-current.zip](log-current.zip)"
-		snapshots += "\nBefore: [log-before.zip](log-before.zip)"
-		parts = append(parts, snapshots)
-	}
+		var attachmentLines []string
+		if len(generateDescriptorData.AnalysisAttachments.Current) > 0 {
+			label := "Current build"
+			if generateDescriptorData.AnalysisAttachments.CurrentURL != "" {
+				label = fmt.Sprintf("[Current build](%s)", generateDescriptorData.AnalysisAttachments.CurrentURL)
+			}
+			attachmentLines = append(attachmentLines, label+": "+quoteAll(generateDescriptorData.AnalysisAttachments.Current))
+		}
+		if len(generateDescriptorData.AnalysisAttachments.Previous) > 0 {
+			label := "Previous build"
+			if generateDescriptorData.AnalysisAttachments.PreviousURL != "" {
+				label = fmt.Sprintf("[Previous build](%s)", generateDescriptorData.AnalysisAttachments.PreviousURL)
+			}
+			attachmentLines = append(attachmentLines, label+": "+quoteAll(generateDescriptorData.AnalysisAttachments.Previous))
+		}
+		if len(attachmentLines) > 0 {
+			parts = append(parts, "**Artifacts:**\n"+strings.Join(attachmentLines, "\n"))
+		}
 
-	// Dashboard
-	if generateDescriptorData.DashboardLink != "" {
-		parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink), "![](dashboard.png)")
+		if generateDescriptorData.DashboardLink != "" {
+			parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink))
+		}
+	} else {
+		// Idea logs and snapshots
+		if generateDescriptorData.TestType == "intellij" || generateDescriptorData.TestType == "intellij_dev" {
+			logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
+			snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
+			metrics := "**Metrics:**\nCurrent: [metrics.performance-current.json](metrics.performance-current.json)"
+			if generateDescriptorData.Kind != "exception" {
+				logs += "\nBefore: [logs-before.zip](logs-before.zip)"
+				snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
+				metrics += "\nBefore: [metrics.performance-before.json](metrics.performance-before.json)"
+			}
+			parts = append(parts, logs, snapshots, metrics)
+		}
+
+		if generateDescriptorData.TestType == "perfUnitTests" {
+			snapshots := "**Snapshots:**\nCurrent: [log-current.zip](log-current.zip)"
+			snapshots += "\nBefore: [log-before.zip](log-before.zip)"
+			parts = append(parts, snapshots)
+		}
+
+		if generateDescriptorData.DashboardLink != "" {
+			parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink), "![](dashboard.png)")
+		}
 	}
 
 	// Stacktrace or test history
@@ -320,6 +359,10 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 		if generateDescriptorData.TestHistoryUrl != nil && *generateDescriptorData.TestHistoryUrl != "" {
 			parts = append(parts, fmt.Sprintf("**Test history:**\n[test history link](%s)", *generateDescriptorData.TestHistoryUrl))
 		}
+	}
+
+	if generateDescriptorData.AnalysisResult != nil && *generateDescriptorData.AnalysisResult != "" {
+		parts = append(parts, "---\n<details>\n<summary>LLM analysis:</summary>\n\n"+*generateDescriptorData.AnalysisResult+"\n\n</details>")
 	}
 
 	description := strings.Join(parts, "\n\n")
@@ -352,8 +395,8 @@ func marshalAndWriteIssueResponse(writer http.ResponseWriter, response any) erro
 	return nil
 }
 
-func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
-	if params.ProjectId == KTIJ { // KTIJ requires subsystem to be set
+func setSubsystems(projectId string, issueInfo *CreateIssueInfo) {
+	if projectId == KTIJ { // KTIJ requires subsystem to be set
 		subsystemsCustomField := CustomField{
 			Name: "Subsystems",
 			Type: "MultiOwnedIssueCustomField",
@@ -365,13 +408,13 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 	}
 }
 
-func setVersionField(versionFieldName string, desiredMajorVersion string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	versionFieldId := getFieldIdByName(params.ProjectId, versionFieldName, request, response)
+func setVersionField(ctx context.Context, projectId, versionFieldName, desiredMajorVersion string, issueInfo *CreateIssueInfo, exceptions *[]string) {
+	versionFieldId := getFieldIdByName(ctx, projectId, versionFieldName, exceptions)
 	if versionFieldId == "" {
 		return
 	}
 
-	versionFieldValue := getVersionFieldValue(params.ProjectId, versionFieldName, &desiredMajorVersion, request, response)
+	versionFieldValue := getVersionFieldValue(ctx, projectId, versionFieldName, &desiredMajorVersion, exceptions)
 
 	versionCustomField := CustomField{
 		Type: "MultiVersionIssueCustomField",
@@ -383,10 +426,10 @@ func setVersionField(versionFieldName string, desiredMajorVersion string, params
 	issueInfo.CustomFields = append(issueInfo.CustomFields, versionCustomField)
 }
 
-func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
+func setPriority(projectId string, issueInfo *CreateIssueInfo) {
 	var priorityFieldName string
 
-	switch params.ProjectId {
+	switch projectId {
 	case KT: // KT has its own priority field with unique values
 		return
 	case CLION: // The field is called Severity in CLion
@@ -406,10 +449,10 @@ func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) 
 	issueInfo.CustomFields = append(issueInfo.CustomFields, priorityField)
 }
 
-func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
+func setTags(projectId string, issueInfo *CreateIssueInfo) {
 	var tags []Tag
 
-	switch params.ProjectId {
+	switch projectId {
 	case KT, KTIJ:
 		tags = append(tags, Tag{
 			Name: "kotlin-regression",
@@ -447,12 +490,12 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 	issueInfo.Tags = tags
 }
 
-func getFieldIdByName(projectId string, fieldName string, request *http.Request, response CreateIssueResponse) string {
+func getFieldIdByName(ctx context.Context, projectId, fieldName string, exceptions *[]string) string {
 	fetchProjectFieldsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields?fields=id,field(name)&$top=-1", projectId)
 
-	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchProjectFieldsUrl, "GET", nil, nil)
+	responseData, err := youtrackClient.fetchFromYouTrack(ctx, fetchProjectFieldsUrl, "GET", nil, nil)
 	if err != nil {
-		logError("cannot fetch fields for "+projectId, err, &response.Exceptions)
+		logError("cannot fetch fields for "+projectId, err, exceptions)
 	}
 
 	type projectField struct {
@@ -464,7 +507,7 @@ func getFieldIdByName(projectId string, fieldName string, request *http.Request,
 
 	var fields []projectField
 	if err := json.Unmarshal(responseData, &fields); err != nil {
-		logError("cannot unmarshal fields for "+projectId, err, &response.Exceptions)
+		logError("cannot unmarshal fields for "+projectId, err, exceptions)
 	}
 
 	for _, f := range fields {
@@ -473,22 +516,22 @@ func getFieldIdByName(projectId string, fieldName string, request *http.Request,
 		}
 	}
 
-	logError("cannot find field "+fieldName+" for "+projectId, nil, &response.Exceptions)
+	logError("cannot find field "+fieldName+" for "+projectId, nil, exceptions)
 	return ""
 }
 
-func getVersionFieldValue(projectId string, versionFieldName string, desiredMajorVersion *string, request *http.Request, response CreateIssueResponse) string {
-	versionFieldId := getFieldIdByName(projectId, versionFieldName, request, response)
+func getVersionFieldValue(ctx context.Context, projectId, versionFieldName string, desiredMajorVersion *string, exceptions *[]string) string {
+	versionFieldId := getFieldIdByName(ctx, projectId, versionFieldName, exceptions)
 	fetchAffectedVersionsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields/%s/bundle?fields=id,name,values(name)", projectId, versionFieldId)
 
-	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchAffectedVersionsUrl, "GET", nil, nil)
+	responseData, err := youtrackClient.fetchFromYouTrack(ctx, fetchAffectedVersionsUrl, "GET", nil, nil)
 	if err != nil {
-		logError("cannot fetch versions for "+projectId, err, &response.Exceptions)
+		logError("cannot fetch versions for "+projectId, err, exceptions)
 	}
 
 	var versionResp VersionResponse
 	if err := json.Unmarshal(responseData, &versionResp); err != nil {
-		logError("cannot unmarshal versions for "+projectId, err, &response.Exceptions)
+		logError("cannot unmarshal versions for "+projectId, err, exceptions)
 	}
 
 	var pattern *regexp.Regexp
@@ -507,7 +550,8 @@ func getVersionFieldValue(projectId string, versionFieldName string, desiredMajo
 	}
 
 	if len(versions) == 0 {
-		logError("cannot find major versions for "+projectId, err, &response.Exceptions)
+		logError("cannot find major versions for "+projectId, err, exceptions)
+		return ""
 	}
 
 	sort.Slice(versions, func(i, j int) bool {

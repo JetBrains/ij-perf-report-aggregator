@@ -43,6 +43,7 @@ export interface LlmAnalysisDetails extends LlmAnalysisRun {
   lastCommitRevision?: string
   testMethodName?: string
   ytIssueId?: string
+  dashboardLink?: string
   llmGuiltyCommits?: string[]
   llmComment?: string
   totalCostUsd?: number

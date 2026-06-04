@@ -17,7 +17,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
+const (
+	spaceBaseURL         = "https://jetbrains.team"
+	spacePackagesBaseURL = "https://packages.jetbrains.team"
+	spaceAnalysisProject = "platform-test-automation"
+	spaceAnalysisPackage = "performance-regression-llm-analysis"
+)
+
+var spacePackagesClient = NewSpacePackagesClient(spacePackagesBaseURL, os.Getenv("SPACE_TOKEN"))
 
 // Space file paths must contain only digits, letters, dashes, underscores, dots,
 // brackets, parentheses, spaces, and forward slashes. Anything else (e.g. `$` in
@@ -27,6 +34,11 @@ var spaceProjectNameInvalidChars = regexp.MustCompile(`[^A-Za-z0-9._\-()\[\] /]`
 
 func sanitizeSpaceProjectName(name string) string {
 	return spaceProjectNameInvalidChars.ReplaceAllString(name, "_")
+}
+
+func buildSpaceAnalysisFolderURL(buildId int, projectName string) string {
+	return fmt.Sprintf("%s/p/%s/packages/files/%s/analyses/%d/%s",
+		spaceBaseURL, spaceAnalysisProject, spaceAnalysisPackage, buildId, sanitizeSpaceProjectName(projectName))
 }
 
 type SpacePackagesClient struct {
@@ -121,7 +133,7 @@ func CreatePostSpaceUploadAttachments(metaDb *pgxpool.Pool) http.HandlerFunc {
 		config := UploadConfig{
 			UploadArtifact: func(ctx context.Context, artifact UploadArtifact) error {
 				folder := fmt.Sprintf("analyses/%d/%s", artifact.BuildId, sanitizedProjectName)
-				return spacePackagesClient.UploadFile(ctx, "platform-test-automation", "performance-regression-llm-analysis", folder, artifact.FileName, artifact.Body)
+				return spacePackagesClient.UploadFile(ctx, spaceAnalysisProject, spaceAnalysisPackage, folder, artifact.FileName, artifact.Body)
 			},
 			OnError: func(buildId int, message string, err error) {
 				slog.Error(message, "error", err)

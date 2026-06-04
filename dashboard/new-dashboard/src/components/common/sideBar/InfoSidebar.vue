@@ -230,7 +230,7 @@
         :in-dialog="false"
       />
 
-      <LlmAnalysisRuns />
+      <LlmAnalysisRuns :data="data" />
 
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a

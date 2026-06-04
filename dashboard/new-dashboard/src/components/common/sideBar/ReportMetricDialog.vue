@@ -153,7 +153,7 @@ import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configur
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"
 import { InfoData } from "./InfoSidebar"
-import { generateDefaultReason } from "./AccidentUtils"
+import { generateDefaultReason, inferKindFromData } from "./AccidentUtils"
 import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import { useStorage } from "@vueuse/core"
@@ -173,15 +173,6 @@ const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
-
-function inferKindFromData(d: InfoData | null): AccidentKind {
-  const value = d?.series[0]?.rawValue
-  const prev = d?.previousValue
-  if (value == null || prev == null || !Number.isFinite(value) || !Number.isFinite(prev)) {
-    return AccidentKind.Regression
-  }
-  return value < prev ? AccidentKind.Improvement : AccidentKind.Regression
-}
 
 const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
 const isKindAutoDetected = computed(() => accidentToEdit.value == null && inferKindFromData(data) === AccidentKind.Improvement && accidentType.value === AccidentKind.Improvement)

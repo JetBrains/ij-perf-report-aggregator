@@ -87,6 +87,22 @@
         >Create YouTrack issue</label
       >
     </div>
+    <div
+      v-if="isLlmAnalysisApplicable"
+      class="flex items-center mb-4"
+    >
+      <ToggleSwitch
+        v-model="llmAnalysisToggleState"
+        :disabled="!isLlmAnalysisToggleEnabled"
+        input-id="runLlmAnalysis"
+      />
+      <label
+        for="runLlmAnalysis"
+        class="ml-2"
+      >
+        With LLM Analysis
+      </label>
+    </div>
     <RelatedAccidents
       :data="data"
       :accidents-configurator="accidentsConfigurator"
@@ -170,9 +186,11 @@ const toast = useToast()
 const showDialog = defineModel<boolean>("showDialog")
 const createIssue = defineModel<boolean>("createIssue")
 const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
+const shouldRunLlmAnalysisModel = defineModel<boolean>("shouldRunLlmAnalysis")
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
+const llmAnalysisPreference = useStorage("runLlmAnalysis", true)
 
 const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
 const isKindAutoDetected = computed(() => accidentToEdit.value == null && inferKindFromData(data) === AccidentKind.Improvement && accidentType.value === AccidentKind.Improvement)
@@ -184,9 +202,15 @@ watch(
   }
 )
 
-const shouldRunLlmAnalysis = computed(
-  () => llmAnalysesConfigurator.canStart(data) && reportMetricOnly.value && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
-)
+const isLlmAnalysisApplicable = computed(() => accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
+const isLlmAnalysisToggleEnabled = computed(() => llmAnalysesConfigurator.canStart(data) && reportMetricOnly.value)
+const llmAnalysisToggleState = computed({
+  get: () => isLlmAnalysisToggleEnabled.value && llmAnalysisPreference.value,
+  set: (v) => {
+    llmAnalysisPreference.value = v
+  },
+})
+const shouldRunLlmAnalysis = computed(() => isLlmAnalysisApplicable.value && llmAnalysisToggleState.value)
 
 function generateReason(): string {
   if (data == null) return ""
@@ -229,11 +253,11 @@ async function reportRegression() {
         throw new Error("Failed to create accident - no ID returned")
       }
 
-      const shouldRunLlm = shouldRunLlmAnalysis.value
       if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
+        shouldRunLlmAnalysisModel.value = shouldRunLlmAnalysis.value
         createIssue.value = true
-      } else if (shouldRunLlm) {
+      } else if (shouldRunLlmAnalysis.value) {
         void startLlmAnalysisWithToast(llmAnalysesConfigurator, value, toast)
       }
     } catch (error: unknown) {

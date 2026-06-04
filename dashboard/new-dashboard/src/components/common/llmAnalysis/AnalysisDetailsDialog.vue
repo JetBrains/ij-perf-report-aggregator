@@ -125,58 +125,13 @@
                 </div>
               </dt>
               <dd class="col-span-2">
-                <div
-                  v-if="showCreateForm"
-                  class="flex flex-col gap-3 rounded bg-gray-50 p-3 dark:bg-gray-800"
-                >
-                  <div class="flex flex-col gap-1">
-                    <label
-                      for="yt-project"
-                      class="font-medium text-gray-500"
-                    >
-                      Project
-                    </label>
-                    <Select
-                      id="yt-project"
-                      v-model="selectedProject"
-                      :options="ytProjects"
-                      option-label="name"
-                      placeholder="Project"
-                      :disabled="isSubmittingYt"
-                      class="w-80"
-                    />
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <label
-                      for="yt-title"
-                      class="font-medium text-gray-500"
-                    >
-                      Title
-                    </label>
-                    <InputText
-                      id="yt-title"
-                      v-model="effectiveTitle"
-                      :disabled="isSubmittingYt"
-                      placeholder="Issue title"
-                      class="w-full"
-                    />
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <Button
-                      label="Create"
-                      icon="pi pi-check"
-                      :disabled="isSubmittingYt || selectedProject == null"
-                      :loading="isSubmittingYt"
-                      @click="submitCreateIssue"
-                    />
-                    <Button
-                      label="Cancel"
-                      severity="secondary"
-                      :disabled="isSubmittingYt"
-                      @click="cancelCreateForm"
-                    />
-                  </div>
-                </div>
+                <CreateYoutrackIssueForm
+                  v-if="showCreateForm && analysisId != null"
+                  :analysis-id="analysisId"
+                  :data="data"
+                  @cancel="showCreateForm = false"
+                  @created="onIssueCreated"
+                />
                 <div
                   v-else
                   class="markdown-body rounded bg-gray-50 p-3 text-base dark:bg-gray-800 dark:text-gray-100"
@@ -187,131 +142,12 @@
           </dl>
         </TabPanel>
         <TabPanel :value="1">
-          <div class="flex flex-col gap-3 text-sm">
-            <div
-              v-if="feedbacksLoading"
-              class="text-xs text-gray-500"
-            >
-              Loading feedback…
-            </div>
-            <div
-              v-else-if="feedbacksError"
-              class="text-xs text-red-600"
-            >
-              {{ feedbacksError }}
-            </div>
-            <template v-else>
-              <div
-                v-if="myFeedback && !isEditing"
-                class="flex flex-col gap-1"
-              >
-                <div class="font-medium text-gray-500">Your feedback</div>
-                <div class="flex items-center gap-2 text-xs">
-                  <span class="font-medium whitespace-nowrap">★ {{ myFeedback.rate }}/5</span>
-                  <span class="text-gray-400 whitespace-nowrap">{{ formatCreatedAt(myFeedback.updatedAt) }}</span>
-                  <span
-                    v-if="myFeedback.feedback"
-                    v-tooltip.top="myFeedback.feedback"
-                    class="truncate text-gray-700"
-                  >
-                    {{ myFeedback.feedback }}
-                  </span>
-                  <Button
-                    label="Edit"
-                    severity="secondary"
-                    text
-                    size="small"
-                    @click="startEdit"
-                  />
-                </div>
-              </div>
-
-              <div
-                v-if="otherFeedbacks.length > 0"
-                class="flex flex-col gap-1"
-              >
-                <div class="font-medium text-gray-500">From other users</div>
-                <ul class="flex flex-col gap-1 text-xs">
-                  <li
-                    v-for="fb in otherFeedbacks"
-                    :key="fb.id"
-                    class="flex items-center gap-2"
-                  >
-                    <span class="font-medium whitespace-nowrap">★ {{ fb.rate }}/5</span>
-                    <span
-                      v-if="fb.userEmail"
-                      class="text-gray-500 whitespace-nowrap"
-                    >
-                      {{ userLocalPart(fb.userEmail) }}
-                    </span>
-                    <span class="text-gray-400 whitespace-nowrap">{{ formatCreatedAt(fb.updatedAt) }}</span>
-                    <span
-                      v-if="fb.feedback"
-                      v-tooltip.top="fb.feedback"
-                      class="truncate text-gray-700"
-                    >
-                      {{ fb.feedback }}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </template>
-
-            <template v-if="!feedbacksLoading && !feedbacksError && (!myFeedback || isEditing)">
-              <div class="flex flex-col gap-1">
-                <label
-                  for="analysis-feedback-rating"
-                  class="font-medium text-gray-500"
-                >
-                  Rating
-                </label>
-                <Select
-                  id="analysis-feedback-rating"
-                  v-model="rating"
-                  :options="ratingOptions"
-                  option-label="label"
-                  option-value="value"
-                  placeholder="Select a rating"
-                  class="w-80"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <label
-                  for="analysis-feedback-comments"
-                  class="font-medium text-gray-500"
-                >
-                  Feedback
-                </label>
-                <Textarea
-                  id="analysis-feedback-comments"
-                  v-model="feedbackText"
-                  rows="5"
-                  class="w-full"
-                  placeholder="What could work better, ideally the actually guilty commit(s)"
-                />
-              </div>
-              <div class="flex items-center gap-2">
-                <div
-                  v-tooltip.top="submitDisabledReason"
-                  class="inline-block w-fit"
-                >
-                  <Button
-                    :label="isEditing ? 'Save' : 'Send'"
-                    :disabled="submitDisabledReason != null || submitting"
-                    :loading="submitting"
-                    @click="submitFeedback"
-                  />
-                </div>
-                <Button
-                  v-if="isEditing"
-                  label="Cancel"
-                  severity="secondary"
-                  :disabled="submitting"
-                  @click="cancelEdit"
-                />
-              </div>
-            </template>
-          </div>
+          <AnalysisFeedbackTab
+            v-if="visible"
+            :analysis-id="analysisId"
+            :is-terminal-state="isTerminalState"
+            :active="activeTab === 1"
+          />
         </TabPanel>
       </TabPanels>
     </Tabs>
@@ -320,17 +156,14 @@
 
 <script setup lang="ts">
 import { Marked } from "marked"
-import { storeToRefs } from "pinia"
 import Dialog from "primevue/dialog"
-import { useToast } from "primevue/usetoast"
 import { computed, ref, watch } from "vue"
-import { buildUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
-import { generateDefaultReason, inferKindFromData } from "../sideBar/AccidentUtils"
-import type { Project } from "../youtrack/YoutrackClient"
-import { AnalysisFeedback, LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
-import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
-import { useUserStore } from "../../../shared/useUserStore"
+import { buildUrl, InfoData } from "../sideBar/InfoSidebar"
+import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
+import AnalysisFeedbackTab from "./AnalysisFeedbackTab.vue"
+import CreateYoutrackIssueForm from "./CreateYoutrackIssueForm.vue"
+import { injectOrNull } from "../../../shared/injectionKeys"
+import { serverConfiguratorKey } from "../../../shared/keys"
 
 const escapeHtml = (s: string): string => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;")
 
@@ -350,7 +183,7 @@ const md = new Marked({
 })
 
 const visible = defineModel<boolean>("visible", { required: true })
-const { analysisId, data } = defineProps<{ analysisId: number | string | null; data?: InfoData | null }>()
+const { analysisId } = defineProps<{ analysisId: number | string | null; data?: InfoData | null }>()
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 const client = new LlmAnalysisClient(serverConfigurator)
@@ -365,171 +198,17 @@ const renderedComment = computed(() => {
 })
 
 const activeTab = ref<0 | 1>(0)
-const rating = ref<number | null>(null)
-const feedbackText = ref("")
 
-const feedbacks = ref<AnalysisFeedback[]>([])
-const feedbacksLoaded = ref(false)
-const feedbacksLoading = ref(false)
-const feedbacksError = ref<string | null>(null)
-const submitting = ref(false)
-const isEditing = ref(false)
-
-const { user } = storeToRefs(useUserStore())
-const currentUserEmail = computed(() => user.value?.email ?? null)
-
-const myFeedback = computed<AnalysisFeedback | undefined>(() => {
-  const email = currentUserEmail.value
-  return email == null ? undefined : feedbacks.value.find((fb) => fb.userEmail === email)
-})
-
-const otherFeedbacks = computed<AnalysisFeedback[]>(() => {
-  const mine = myFeedback.value
-  return mine == null ? feedbacks.value : feedbacks.value.filter((fb) => fb !== mine)
-})
-
-const ratingOptions = [
-  { value: 1, label: "1 — Misleading: pointed at the wrong cause" },
-  { value: 2, label: "2 — Not useful: no actionable signal" },
-  { value: 3, label: "3 — Right direction: helped in investigation, but culprit not found" },
-  { value: 4, label: "4 — Close: culprit in list but ranked low or reasoning weak" },
-  { value: 5, label: "5 — Spot on: culprit identified with sound reasoning" },
-]
-
-const isTerminalState = computed(() => details.value != null && details.value.state !== LlmAnalysisState.InProgress)
-
-const submitDisabledReason = computed<string | null>(() => {
-  if (!isTerminalState.value) return "Please wait till analysis is finished"
-  if (rating.value == null) return "Select a rating"
-  return null
-})
-
-function resetFeedback() {
-  activeTab.value = 0
-  rating.value = null
-  feedbackText.value = ""
-  feedbacks.value = []
-  feedbacksLoaded.value = false
-  feedbacksError.value = null
-  isEditing.value = false
-}
-
-function startEdit() {
-  const mine = myFeedback.value
-  if (mine == null) return
-  rating.value = mine.rate
-  feedbackText.value = mine.feedback ?? ""
-  isEditing.value = true
-}
-
-function cancelEdit() {
-  isEditing.value = false
-  rating.value = null
-  feedbackText.value = ""
-}
-
-async function loadFeedbacks() {
-  if (analysisId == null || feedbacksLoaded.value || feedbacksLoading.value) return
-  feedbacksLoading.value = true
-  feedbacksError.value = null
-  try {
-    feedbacks.value = await client.getAnalysisFeedback(analysisId)
-    feedbacksLoaded.value = true
-  } catch (e) {
-    feedbacksError.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    feedbacksLoading.value = false
-  }
-}
-
-async function submitFeedback() {
-  if (rating.value == null || analysisId == null || submitting.value) return
-  submitting.value = true
-  try {
-    await client.submitAnalysisFeedback(analysisId, rating.value, feedbackText.value)
-    rating.value = null
-    feedbackText.value = ""
-    isEditing.value = false
-    feedbacksLoaded.value = false
-    await loadFeedbacks()
-  } catch (e) {
-    feedbacksError.value = e instanceof Error ? e.message : String(e)
-  } finally {
-    submitting.value = false
-  }
-}
-
-const youtrackClient = injectOrError(youtrackClientKey)
-const toast = useToast()
-
-const ytProjects = ref<Project[]>(youtrackClient.getProjects())
-const selectedProject = ref<Project | null>(ytProjects.value[0] ?? null)
-const titleOverride = ref<string | null>(null)
-const isSubmittingYt = ref(false)
 const createdIssue = ref<{ id: string; idReadable: string } | null>(null)
 const showCreateForm = ref(false)
 
-const defaultTitle = computed<string>(() => {
-  if (data == null) return ""
-  return `${inferKindFromData(data)} ${generateDefaultReason(data)} ${data.mode ? `on ${data.mode} mode` : ""}`
-})
+const isTerminalState = computed(() => details.value != null && details.value.state !== LlmAnalysisState.InProgress)
 
-const effectiveTitle = computed<string>({
-  get: () => titleOverride.value ?? defaultTitle.value,
-  set: (v) => {
-    titleOverride.value = v
-  },
-})
-
-async function submitCreateIssue() {
-  if (analysisId == null || selectedProject.value == null) return
-  const title = effectiveTitle.value.trim()
-  if (title.length < 5) {
-    toast.add({ severity: "error", summary: "Validation Error", detail: "Title must be at least 5 characters long", life: 5000 })
-    return
-  }
-  isSubmittingYt.value = true
-  try {
-    let changesLink = ""
-    let delta = ""
-    if (data != null) {
-      const spaceUrls = await getSpaceUrl(data, serverConfigurator)
-      changesLink = spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl
-      delta = data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? ""
-    }
-    const resp = await youtrackClient.createIssueByAnalysis(Number(analysisId), {
-      projectId: selectedProject.value.id,
-      ticketLabel: title,
-      delta,
-      changesLink,
-    })
-    createdIssue.value = { id: resp.issue.id, idReadable: resp.issue.idReadable }
-    if (details.value != null) details.value.ytIssueId = resp.issue.idReadable
-    showCreateForm.value = false
-    toast.add({ severity: "success", summary: "Issue created", detail: resp.issue.idReadable, life: 4000 })
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    toast.add({ severity: "error", summary: "Issue creation failed", detail: msg, life: 8000 })
-  } finally {
-    isSubmittingYt.value = false
-  }
-}
-
-function cancelCreateForm() {
-  showCreateForm.value = false
-  titleOverride.value = null
-}
-
-function resetYoutrack() {
-  titleOverride.value = null
-  createdIssue.value = null
-  isSubmittingYt.value = false
+function onIssueCreated(issue: { id: string; idReadable: string }) {
+  createdIssue.value = issue
+  if (details.value != null) details.value.ytIssueId = issue.idReadable
   showCreateForm.value = false
 }
-
-watch(activeTab, (t) => {
-  if (t === 1) void loadFeedbacks()
-})
 
 watch(
   [visible, () => analysisId],
@@ -537,8 +216,9 @@ watch(
     details.value = null
     errorMessage.value = null
     loading.value = false
-    resetFeedback()
-    resetYoutrack()
+    activeTab.value = 0
+    createdIssue.value = null
+    showCreateForm.value = false
     if (!isVisible || id == null) return
     loading.value = true
     try {

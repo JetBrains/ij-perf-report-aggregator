@@ -127,6 +127,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Get("/", meta.CreateGetLlmAnalysisRuns(dbpool))
 			r.Get("/{id}", meta.CreateGetLlmAnalysisById(dbpool))
 			r.Patch("/{id}", meta.CreatePatchLlmAnalysisRun(dbpool))
+			r.Post("/{id}/createIssue", meta.CreatePostCreateIssueByAnalysis(dbpool))
 			r.Post("/{id}/feedback", meta.CreatePostAnalysisFeedback(dbpool))
 			r.Get("/{id}/feedback", meta.CreateGetAnalysisFeedback(dbpool))
 		})

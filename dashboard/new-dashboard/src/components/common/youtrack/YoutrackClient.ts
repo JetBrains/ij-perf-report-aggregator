@@ -11,14 +11,21 @@ export class YoutrackClient {
     this.serverConfigurator = serverConfigurator
   }
 
-  async createIssue(issueInfo: CreateIssueRequest): Promise<IssueResponse> {
-    const url = `${this.serverConfigurator?.serverUrl}/api/meta/youtrack/createIssue`
+  createIssue(issueInfo: CreateIssueRequest): Promise<IssueResponse> {
+    return this.postCreateIssue(`${this.serverConfigurator?.serverUrl}/api/meta/youtrack/createIssue`, issueInfo)
+  }
+
+  createIssueByAnalysis(analysisId: number, issueInfo: CreateIssueByAnalysisRequest): Promise<IssueResponse> {
+    return this.postCreateIssue(`${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${analysisId}/createIssue`, issueInfo)
+  }
+
+  private async postCreateIssue(url: string, body: object): Promise<IssueResponse> {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(issueInfo),
+      body: JSON.stringify(body),
     })
 
     const issueResponse = (await response.json()) as IssueResponse
@@ -98,6 +105,13 @@ export interface CreateIssueRequest {
   previousValue: string
   testMethodName: string | undefined
   testType: string
+}
+
+export interface CreateIssueByAnalysisRequest {
+  projectId: string
+  ticketLabel: string
+  delta: string
+  changesLink: string
 }
 
 export interface Project {

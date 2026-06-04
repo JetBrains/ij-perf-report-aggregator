@@ -207,6 +207,8 @@ enum ROUTES {
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   IJentBenchmarksDashboard = `${ROUTE_PREFIX.IJent}/benchmarksDashboard`,
   IJentPerfTestsDashboard = `${ROUTE_PREFIX.IJent}/performanceDashboard`,
+  IJentProjectLoadingDashboard = `${ROUTE_PREFIX.IJent}/projectLoadingDashboard`,
+  IJentRuntimeDashboard = `${ROUTE_PREFIX.IJent}/runtimeDashboard`,
   IJentRawPerfData = `${ROUTE_PREFIX.IJent}/rawPerfData`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${DEV_TEST_ROUTE}`,
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
@@ -1064,6 +1066,14 @@ const IJENT: Product = {
         {
           url: ROUTES.IJentPerfTestsDashboard,
           label: "Performance Dashboard",
+        },
+        {
+          url: ROUTES.IJentProjectLoadingDashboard,
+          label: "Project Loading (Community)",
+        },
+        {
+          url: ROUTES.IJentRuntimeDashboard,
+          label: "Runtime (Community)",
         },
         {
           url: ROUTES.IJentRawPerfData,
@@ -2356,6 +2366,16 @@ const ijentRoutes = [
     path: ROUTES.IJentPerfTestsDashboard,
     component: () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"),
     meta: { pageTitle: "IJent Performance Tests Dashboard" },
+  },
+  {
+    path: ROUTES.IJentProjectLoadingDashboard,
+    component: () => import("./components/ijent/IJentProjectLoadingDashboard.vue"),
+    meta: { pageTitle: "IJent Project Loading (Community)" },
+  },
+  {
+    path: ROUTES.IJentRuntimeDashboard,
+    component: () => import("./components/ijent/IJentRuntimeDashboard.vue"),
+    meta: { pageTitle: "IJent Runtime (Community)" },
   },
   {
     path: ROUTES.IJentRawPerfData,

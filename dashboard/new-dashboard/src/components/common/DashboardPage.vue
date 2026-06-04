@@ -94,6 +94,7 @@ interface PerformanceDashboardProps {
   releaseConfigurator?: ReleaseType
   branch?: string | null
   initialMode?: string[]
+  withMode?: boolean
 }
 
 const {
@@ -107,6 +108,7 @@ const {
   releaseConfigurator = nightly,
   branch = "master",
   initialMode = defaultModeName,
+  withMode = true,
 } = defineProps<PerformanceDashboardProps>()
 
 const container = useTemplateRef<HTMLElement>("container")
@@ -176,7 +178,8 @@ if (releaseNightlyConfigurator != null) {
   dashboardConfigurators.push(releaseNightlyConfigurator)
 }
 
-const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
+const testModeConfigurator =
+  withMode && dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
 if (testModeConfigurator != null) {
   dashboardConfigurators.push(testModeConfigurator)
 }

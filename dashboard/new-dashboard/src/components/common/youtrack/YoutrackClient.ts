@@ -112,6 +112,7 @@ export interface CreateIssueByAnalysisRequest {
   ticketLabel: string
   delta: string
   changesLink: string
+  chartPng?: string
 }
 
 export interface Project {

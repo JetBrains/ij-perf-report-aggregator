@@ -58,6 +58,7 @@ import { generateDefaultReason, inferKindFromData } from "../sideBar/AccidentUti
 import type { Project } from "../youtrack/YoutrackClient"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
+import { fetchChartPngAsBase64 } from "../uploadAttachments/uploadAttachmentsUtils"
 
 const { analysisId, data } = defineProps<{
   analysisId: number | string
@@ -101,16 +102,26 @@ async function submit() {
   try {
     let changesLink = ""
     let delta = ""
+    let chartPng: string | undefined
     if (data != null) {
       const spaceUrls = await getSpaceUrl(data, serverConfigurator)
       changesLink = spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl
       delta = data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? ""
+      if (data.chartDataUrl) {
+        try {
+          chartPng = await fetchChartPngAsBase64(data.chartDataUrl)
+        } catch (e) {
+          console.error("Failed to prepare chart for upload", e)
+          toast.add({ severity: "warn", summary: "Chart not attached", detail: "Failed to prepare chart for upload; the issue will be created without it.", life: 5000 })
+        }
+      }
     }
     const resp = await youtrackClient.createIssueByAnalysis(Number(analysisId), {
       projectId: selectedProject.value.id,
       ticketLabel: title,
       delta,
       changesLink,
+      chartPng,
     })
     toast.add({ severity: "success", summary: "Issue created", detail: resp.issue.idReadable, life: 4000 })
     emit("created", { id: resp.issue.id, idReadable: resp.issue.idReadable })

@@ -47,3 +47,22 @@ async function postUpload<TResponse>(serverConfigurator: ServerConfigurator | nu
 
   return (await response.json()) as TResponse
 }
+
+export async function fetchChartPngAsBase64(chartDataUrl: string): Promise<string> {
+  const response = await fetch(chartDataUrl)
+  const blob = await response.blob()
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.addEventListener("loadend", () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result.split(",")[1])
+      } else {
+        reject(new Error("FileReader result is not a string"))
+      }
+    })
+    reader.addEventListener("error", () => {
+      reject(new Error("Error reading blob as data URL"))
+    })
+    reader.readAsDataURL(blob)
+  })
+}

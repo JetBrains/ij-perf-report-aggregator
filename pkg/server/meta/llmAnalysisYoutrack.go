@@ -1,10 +1,12 @@
 package meta
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -18,6 +20,7 @@ type CreateIssueByAnalysisRequest struct {
 	TicketLabel string `json:"ticketLabel"`
 	ChangesLink string `json:"changesLink"`
 	Delta       string `json:"delta"`
+	ChartPng    []byte `json:"chartPng,omitempty"`
 }
 
 func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -75,6 +78,14 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		response.Issue = *issue
+
+		if len(params.ChartPng) > 0 {
+			if err := youtrackClient.UploadAttachment(request.Context(), issue.ID, bytes.NewReader(params.ChartPng), "dashboard.png", int64(len(params.ChartPng))); err != nil {
+				slog.Error("failed to upload chart PNG", "error", err)
+				logError("failed to upload chart PNG", err, &response.Exceptions)
+			}
+		}
+
 		if err := marshalAndWriteIssueResponse(writer, &response); err != nil {
 			writer.WriteHeader(http.StatusInternalServerError)
 			return

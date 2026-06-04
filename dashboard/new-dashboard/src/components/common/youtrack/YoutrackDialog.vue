@@ -163,7 +163,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { uploadAttachmentsToYoutrack, UploadAttachmentsRequest } from "../uploadAttachments/uploadAttachmentsUtils"
+import { uploadAttachmentsToYoutrack, UploadAttachmentsRequest, fetchChartPngAsBase64 } from "../uploadAttachments/uploadAttachmentsUtils"
 
 enum ProgressState {
   NOT_STARTED,
@@ -324,27 +324,7 @@ async function createTicket() {
   if (accident.kind != AccidentKind.Exception) {
     attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
     try {
-      chartPng = await fetch(data.chartDataUrl)
-        .then((res) => res.blob())
-        .then((blob) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader()
-
-            reader.addEventListener("loadend", () => {
-              if (typeof reader.result === "string") {
-                resolve(reader.result.split(",")[1])
-              } else {
-                reject(new Error("FileReader result is not a string"))
-              }
-            })
-
-            reader.addEventListener("error", () => {
-              reject(new Error("Error reading blob as data URL"))
-            })
-
-            reader.readAsDataURL(blob)
-          })
-        })
+      chartPng = await fetchChartPngAsBase64(data.chartDataUrl)
     } catch (error: unknown) {
       reportAttachmentFailure("Failed to prepare chart for upload", error)
       return

@@ -321,10 +321,6 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 		if len(attachmentLines) > 0 {
 			parts = append(parts, "**Artifacts:**\n"+strings.Join(attachmentLines, "\n"))
 		}
-
-		if generateDescriptorData.DashboardLink != "" {
-			parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink))
-		}
 	} else {
 		// Idea logs and snapshots
 		if generateDescriptorData.TestType == "intellij" || generateDescriptorData.TestType == "intellij_dev" {
@@ -338,16 +334,16 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 			}
 			parts = append(parts, logs, snapshots, metrics)
 		}
-
 		if generateDescriptorData.TestType == "perfUnitTests" {
 			snapshots := "**Snapshots:**\nCurrent: [log-current.zip](log-current.zip)"
 			snapshots += "\nBefore: [log-before.zip](log-before.zip)"
 			parts = append(parts, snapshots)
 		}
+	}
 
-		if generateDescriptorData.DashboardLink != "" {
-			parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink), "![](dashboard.png)")
-		}
+	// link to the chart and screenshot
+	if generateDescriptorData.DashboardLink != "" {
+		parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink), "![](dashboard.png)")
 	}
 
 	// Stacktrace or test history
@@ -362,7 +358,7 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	}
 
 	if generateDescriptorData.AnalysisResult != nil && *generateDescriptorData.AnalysisResult != "" {
-		parts = append(parts, "---\n<details>\n<summary>LLM analysis:</summary>\n\n"+*generateDescriptorData.AnalysisResult+"\n\n</details>")
+		parts = append(parts, "---\n<details>\n<summary><b>LLM analysis:</b></summary>\n\n"+*generateDescriptorData.AnalysisResult+"\n\n</details>")
 	}
 
 	description := strings.Join(parts, "\n\n")

@@ -8,70 +8,70 @@
   >
     <section>
       <GroupProjectsChart
-        label="Rename Function with low usage"
+        label="Rename src/foo.rs/fn add (low usage)"
         measure="performInlineRename"
         :projects="rustRefactoringTestCases.renameLowUseFn"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Rename Function with high usage"
+        label="Rename src/small/utils.rs/fn format_event (high usage)"
         measure="performInlineRename"
         :projects="rustRefactoringTestCases.renameHighUseFn"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Rename Struct with low usage"
+        label="Rename src/small/model.rs/struct Time (low usage)"
         measure="performInlineRename"
         :projects="rustRefactoringTestCases.renameLowUseStruct"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Rename Struct with high usage"
+        label="Rename src/big/big_file.rs/struct BigRegistry (high usage)"
         measure="performInlineRename"
         :projects="rustRefactoringTestCases.renameHighUseStruct"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Promote Small File to Directory"
+        label="Promote src/small/utils.rs to Directory"
         measure="execute_editor_rust.rspromotemoduletodirectoryaction"
         :projects="rustRefactoringTestCases.moveSmallFile"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Promote Big File to Directory"
+        label="Promote src/big/big_file.rs to Directory"
         measure="execute_editor_rust.rspromotemoduletodirectoryaction"
         :projects="rustRefactoringTestCases.moveBigFile"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Call Optimize Imports in Small File"
+        label="Optimize Imports: src/small/model.rs"
         measure="execute_editor_optimizeimports"
         :projects="rustRefactoringTestCases.optimizeImportsSmallFile"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Call Optimize Imports in Big File"
+        label="Optimize Imports: src/big/big_file.rs"
         measure="execute_editor_optimizeimports"
         :projects="rustRefactoringTestCases.optimizeImportsBigFile"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Call Optimize Imports in Directory with small files"
+        label="Optimize Imports in Directory: src/small"
         measure="optimizeImportsOnDirectory"
         :projects="rustRefactoringTestCases.optimizeImportsSmallDirectory"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Call Optimize Imports in Directory with big files"
+        label="Optimize Imports in Directory: src/big"
         measure="optimizeImportsOnDirectory"
         :projects="rustRefactoringTestCases.optimizeImportsBigDirectory"
       />

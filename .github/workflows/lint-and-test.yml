@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
-          go-version: 1.26.0
+          go-version: 1.26.4
       - name: Create dummy file in resources
         run: mkdir cmd/frontend/resources && touch cmd/frontend/resources/make-typecheck-happy.txt
       - name: golangci-lint
@@ -36,7 +36,7 @@ jobs:
           node-version: 22
       - uses: pnpm/action-setup@v4
         with:
-          version: 11.1.3
+          version: 11.5.2
           run_install: |
             - recursive: true
       - name: Test build

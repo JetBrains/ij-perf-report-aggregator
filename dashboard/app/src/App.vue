@@ -1,7 +1,15 @@
 <template>
   <router-view v-slot="{ Component, route }">
     <ScrollTop />
-    <template v-if="route.path.startsWith('/degradation') || route.path.startsWith('/metrics') || route.path.startsWith('/bisect') || route.path.startsWith('/owners')">
+    <template
+      v-if="
+        route.path.startsWith('/degradation') ||
+        route.path.startsWith('/metrics') ||
+        route.path.startsWith('/bisect') ||
+        route.path.startsWith('/owners') ||
+        route.path.startsWith('/analyses')
+      "
+    >
       <keep-alive
         :key="route.path"
         max="4"

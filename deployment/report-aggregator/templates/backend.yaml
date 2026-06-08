@@ -43,7 +43,10 @@ spec:
                   name: ij-perf-data-tc
                   key: token
             - name: YOUTRACK_TOKEN
-              value: {{ .Values.youtrack.token | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: ij-perf-youtrack-token
+                  key: token
             - name: SPACE_TOKEN
               valueFrom:
                 secretKeyRef:

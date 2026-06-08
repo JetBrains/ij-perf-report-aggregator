@@ -62,6 +62,29 @@ type LlmAnalysisDetails struct {
 	TotalCostUsd        *float64 `json:"totalCostUsd,omitempty"`
 }
 
+type LlmAnalysisListItem struct {
+	LlmAnalysisRun
+
+	Project          string   `json:"project"`
+	Metric           string   `json:"metric"`
+	CurrentBuildId   string   `json:"currentBuildId"`
+	PrevBuildId      string   `json:"prevBuildId"`
+	CurrentValue     *string  `json:"currentValue,omitempty"`
+	PreviousValue    *string  `json:"previousValue,omitempty"`
+	UserName         *string  `json:"userName,omitempty"`
+	UserEmail        *string  `json:"userEmail,omitempty"`
+	YtIssueId        *string  `json:"ytIssueId,omitempty"`
+	LlmGuiltyCommits []string `json:"llmGuiltyCommits,omitempty"`
+	TotalCostUsd     *float64 `json:"totalCostUsd,omitempty"`
+	FeedbackCount    int      `json:"feedbackCount"`
+	AvgRating        *float64 `json:"avgRating,omitempty"`
+}
+
+const (
+	llmAnalysisListDefaultLimit = 100
+	llmAnalysisListMaxLimit     = 1000
+)
+
 type LlmAnalysisState string
 
 const (
@@ -228,6 +251,90 @@ func CreateGetLlmAnalysisRuns(metaDb *pgxpool.Pool) http.HandlerFunc {
 		writer.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(writer).Encode(runs); err != nil {
 			slog.Error("unable to write analyses response", "error", err)
+		}
+	}
+}
+
+func CreateGetLlmAnalysisList(metaDb *pgxpool.Pool) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		query := request.URL.Query()
+		limit := llmAnalysisListDefaultLimit
+		if v := query.Get("limit"); v != "" {
+			if parsed, err := strconv.Atoi(v); err == nil && parsed > 0 {
+				limit = parsed
+			}
+		}
+		if limit > llmAnalysisListMaxLimit {
+			limit = llmAnalysisListMaxLimit
+		}
+		offset := 0
+		if v := query.Get("offset"); v != "" {
+			if parsed, err := strconv.Atoi(v); err == nil && parsed >= 0 {
+				offset = parsed
+			}
+		}
+
+		const sql = "SELECT a.id, a.created_at, a.run_build_id, a.state, a.project, a.metric, " +
+			"a.current_build_id, a.prev_build_id, a.current_value, a.previous_value, " +
+			"a.user_name, a.user_email, a.yt_issue_id, a.llm_guilty_commits, a.total_cost_usd, " +
+			"COALESCE(f.cnt, 0) AS feedback_count, f.avg_rating " +
+			"FROM analyses a " +
+			"LEFT JOIN (" +
+			"SELECT analysis_id, COUNT(*) AS cnt, AVG(rate)::float8 AS avg_rating " +
+			"FROM analysis_feedback GROUP BY analysis_id" +
+			") f ON f.analysis_id = a.id " +
+			"ORDER BY a.id DESC LIMIT $1 OFFSET $2"
+
+		rows, err := metaDb.Query(request.Context(), sql, limit, offset)
+		if err != nil {
+			slog.Error("unable to execute select analyses list query", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		items, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (LlmAnalysisListItem, error) {
+			var item LlmAnalysisListItem
+			var createdAt time.Time
+			var runBuildId *string
+			if err := row.Scan(
+				&item.Id,
+				&createdAt,
+				&runBuildId,
+				&item.State,
+				&item.Project,
+				&item.Metric,
+				&item.CurrentBuildId,
+				&item.PrevBuildId,
+				&item.CurrentValue,
+				&item.PreviousValue,
+				&item.UserName,
+				&item.UserEmail,
+				&item.YtIssueId,
+				&item.LlmGuiltyCommits,
+				&item.TotalCostUsd,
+				&item.FeedbackCount,
+				&item.AvgRating,
+			); err != nil {
+				return LlmAnalysisListItem{}, err
+			}
+			item.CreatedAt = createdAt.Format(time.RFC3339)
+			if runBuildId != nil {
+				item.RunBuildId = *runBuildId
+			}
+			return item, nil
+		})
+		if err != nil {
+			slog.Error("unable to collect analyses list rows", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if items == nil {
+			items = []LlmAnalysisListItem{}
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(writer).Encode(items); err != nil {
+			slog.Error("unable to write analyses list response", "error", err)
 		}
 	}
 }

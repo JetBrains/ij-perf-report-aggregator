@@ -32,7 +32,10 @@ spec:
                   memory: 4Gi
               env:
                 - name: SLACK_TOKEN
-                  value: {{ .Values.slack.token | quote }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ij-perf-slack-token
+                      key: token
                 - name: BACKEND_URL
                   value: "http://backend:80"
           imagePullSecrets:

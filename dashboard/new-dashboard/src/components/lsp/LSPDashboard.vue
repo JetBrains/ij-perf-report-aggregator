@@ -63,10 +63,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["references"],
     measures: ["attempt.mean.ms"],
-    projects: [
-      "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references",
-      "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.references",
-    ],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references", "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.references"],
   },
 ]
 

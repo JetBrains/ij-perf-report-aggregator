@@ -37,6 +37,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.diagnostics",
       "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.diagnostics",
       "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.diagnostics",
+      "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.diagnostics",
     ],
   },
   {
@@ -46,6 +47,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.definition",
       "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.definition",
       "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.definition",
+      "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.definition",
     ],
   },
   {
@@ -55,12 +57,16 @@ const chartsDeclaration: ChartDefinition[] = [
       "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.completion",
       "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.completion",
       "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.definition",
+      "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.completion",
     ],
   },
   {
     labels: ["references"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references"],
+    projects: [
+      "com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references",
+      "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.references",
+    ],
   },
 ]
 

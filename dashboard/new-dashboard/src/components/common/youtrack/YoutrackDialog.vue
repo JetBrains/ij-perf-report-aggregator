@@ -319,6 +319,7 @@ async function createTicket() {
     },
     projectName: data.projectName,
     testType: dbTypeStore().dbType,
+    methodName: data.description.value?.methodName?.replaceAll("#", "."),
   }
   let chartPng: string | undefined
   if (accident.kind != AccidentKind.Exception) {

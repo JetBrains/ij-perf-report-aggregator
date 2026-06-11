@@ -13,6 +13,7 @@ type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
 	ProjectName            string                 `json:"projectName"`
 	TestType               string                 `json:"testType"`
+	MethodName             *string                `json:"methodName,omitempty"`
 }
 
 type teamCityArtifact struct {
@@ -36,14 +37,14 @@ type UploadConfig struct {
 }
 
 type artifactCollector interface {
-	getArtifactsPath(params UploadAttachmentsRequest) string
+	getArtifactsPaths(params UploadAttachmentsRequest) []string
 	checkArtifact(artifactName string) bool
 }
 
 type fleetStartupCollector struct{}
 
-func (f fleetStartupCollector) getArtifactsPath(UploadAttachmentsRequest) string {
-	return ""
+func (f fleetStartupCollector) getArtifactsPaths(UploadAttachmentsRequest) []string {
+	return []string{""}
 }
 
 func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
@@ -52,18 +53,32 @@ func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
 
 type fleetPerfTestCollector struct{}
 
-func (f fleetPerfTestCollector) getArtifactsPath(UploadAttachmentsRequest) string {
-	return ""
+func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
+	if params.MethodName == nil {
+		return nil
+	}
+	artifactPath := *params.MethodName
+	testMethodName := artifactPath
+	if idx := strings.LastIndex(artifactPath, "."); idx != -1 {
+		testMethodName = artifactPath[idx+1:]
+		artifactPath = artifactPath[:idx] + "/" + testMethodName
+	}
+	return []string{"logs.zip!/" + artifactPath, "logs.zip!/" + artifactPath + "/fsdaemon", "metrics/" + testMethodName}
 }
 
 func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
-	return artifactName == "logs.zip"
+	switch artifactName {
+	case "fsdaemon.log", "fleet.log", "spans.json", "fleet.test.json":
+		return true
+	default:
+		return false
+	}
 }
 
 type perfUnitTestCollector struct{}
 
-func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
-	return params.ProjectName
+func (f perfUnitTestCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
+	return []string{params.ProjectName}
 }
 
 func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
@@ -77,8 +92,8 @@ func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
 
 type perfintCollector struct{}
 
-func (f perfintCollector) getArtifactsPath(params UploadAttachmentsRequest) string {
-	return strings.ReplaceAll(params.ProjectName, "_", "-")
+func (f perfintCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
+	return []string{strings.ReplaceAll(params.ProjectName, "_", "-")}
 }
 
 func (f perfintCollector) checkArtifact(artifactName string) bool {
@@ -172,58 +187,58 @@ func processBuildsArtifacts(
 	config UploadConfig,
 	uploadWg *sync.WaitGroup,
 ) {
-	testArtifactPath := collector.getArtifactsPath(params)
-
-	children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
-	if err != nil {
-		config.OnError(buildId, "Failed to get teamcity artifact children", err)
-		return
-	}
-
-	var filteredChildren []string
-	for _, str := range children {
-		if collector.checkArtifact(str) {
-			filteredChildren = append(filteredChildren, str)
+	for _, testArtifactPath := range collector.getArtifactsPaths(params) {
+		children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
+		if err != nil {
+			config.OnError(buildId, "Failed to get teamcity artifact children", err)
+			continue
 		}
-	}
 
-	var attachmentPostfix string
-	if !config.SkipPostfix {
-		if index == 0 {
-			attachmentPostfix = "current"
-		} else {
-			attachmentPostfix = "before"
+		var filteredChildren []string
+		for _, str := range children {
+			if collector.checkArtifact(str) {
+				filteredChildren = append(filteredChildren, str)
+			}
 		}
-	}
 
-	for _, str := range filteredChildren {
-		fileName := str
+		var attachmentPostfix string
 		if !config.SkipPostfix {
-			fileName = getAttachmentName(str, attachmentPostfix)
-		}
-		artifact := teamCityArtifact{
-			BuildId:      buildId,
-			ArtifactPath: testArtifactPath + "/" + str,
-		}
-		uploadWg.Go(func() {
-			resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
-			if err != nil {
-				config.OnError(artifact.BuildId, "Failed to download artifact from TeamCity", err)
-				return
-			}
-			defer resp.Body.Close()
-
-			err = config.UploadArtifact(ctx, UploadArtifact{
-				BuildId:       artifact.BuildId,
-				FileName:      fileName,
-				Body:          resp.Body,
-				ContentLength: resp.ContentLength,
-			})
-			if err != nil {
-				config.OnError(artifact.BuildId, "Failed to upload attachment", err)
+			if index == 0 {
+				attachmentPostfix = "current"
 			} else {
-				config.OnSuccess(artifact.BuildId, fileName)
+				attachmentPostfix = "before"
 			}
-		})
+		}
+
+		for _, str := range filteredChildren {
+			fileName := str
+			if !config.SkipPostfix {
+				fileName = getAttachmentName(str, attachmentPostfix)
+			}
+			artifact := teamCityArtifact{
+				BuildId:      buildId,
+				ArtifactPath: testArtifactPath + "/" + str,
+			}
+			uploadWg.Go(func() {
+				resp, err := teamCityClient.getDownloadArtifactResponse(ctx, artifact.BuildId, artifact.ArtifactPath)
+				if err != nil {
+					config.OnError(artifact.BuildId, "Failed to download artifact from TeamCity", err)
+					return
+				}
+				defer resp.Body.Close()
+
+				err = config.UploadArtifact(ctx, UploadArtifact{
+					BuildId:       artifact.BuildId,
+					FileName:      fileName,
+					Body:          resp.Body,
+					ContentLength: resp.ContentLength,
+				})
+				if err != nil {
+					config.OnError(artifact.BuildId, "Failed to upload attachment", err)
+				} else {
+					config.OnSuccess(artifact.BuildId, fileName)
+				}
+			})
+		}
 	}
 }

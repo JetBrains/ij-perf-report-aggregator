@@ -232,7 +232,7 @@ function getInfoWithAccidentsAndDescription(params: CallbackDataParams, valueUni
   })
 
   const description = computedAsync(async () => {
-    return await getDescriptionFromMetaDb(basicInfo.projectName, "master")
+    return await getDescriptionFromMetaDb(basicInfo.projectName, basicInfo.branch ?? "master")
   }) as Ref<Description | null>
 
   const owner = computedAsync(async () => {

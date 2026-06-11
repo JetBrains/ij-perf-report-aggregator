@@ -74,6 +74,7 @@ type LlmAnalysisListItem struct {
 	UserName         *string  `json:"userName,omitempty"`
 	UserEmail        *string  `json:"userEmail,omitempty"`
 	YtIssueId        *string  `json:"ytIssueId,omitempty"`
+	DashboardLink    *string  `json:"dashboardLink,omitempty"`
 	LlmGuiltyCommits []string `json:"llmGuiltyCommits,omitempty"`
 	TotalCostUsd     *float64 `json:"totalCostUsd,omitempty"`
 	FeedbackCount    int      `json:"feedbackCount"`
@@ -276,7 +277,7 @@ func CreateGetLlmAnalysisList(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		const sql = "SELECT a.id, a.created_at, a.run_build_id, a.state, a.project, a.metric, " +
 			"a.current_build_id, a.prev_build_id, a.current_value, a.previous_value, " +
-			"a.user_name, a.user_email, a.yt_issue_id, a.llm_guilty_commits, a.total_cost_usd, " +
+			"a.user_name, a.user_email, a.yt_issue_id, a.dashboard_link, a.llm_guilty_commits, a.total_cost_usd, " +
 			"COALESCE(f.cnt, 0) AS feedback_count, f.avg_rating " +
 			"FROM analyses a " +
 			"LEFT JOIN (" +
@@ -309,6 +310,7 @@ func CreateGetLlmAnalysisList(metaDb *pgxpool.Pool) http.HandlerFunc {
 				&item.UserName,
 				&item.UserEmail,
 				&item.YtIssueId,
+				&item.DashboardLink,
 				&item.LlmGuiltyCommits,
 				&item.TotalCostUsd,
 				&item.FeedbackCount,

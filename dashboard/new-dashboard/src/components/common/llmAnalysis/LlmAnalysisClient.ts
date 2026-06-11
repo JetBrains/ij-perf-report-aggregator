@@ -59,6 +59,7 @@ export interface LlmAnalysisListItem extends LlmAnalysisRun {
   userName?: string
   userEmail?: string
   ytIssueId?: string
+  dashboardLink?: string
   llmGuiltyCommits?: string[]
   totalCostUsd?: number
   feedbackCount: number

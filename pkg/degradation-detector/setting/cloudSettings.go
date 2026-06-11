@@ -8,15 +8,15 @@ import (
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
-func GenerateUltimateSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+func GenerateCloudSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	return slices.Concat(
-		generateUltimateDevAnalysisSettings(backendUrl, client),
+		generateCloudSettings(backendUrl, client),
 	)
 }
 
-func generateUltimateDevAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+func generateCloudSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	tests := []string{
-		"keycloak_release_20/%", "train-ticket/%", "toolbox_enterprise/%",
+		"json_schema_modes_comparison/%", "json_azure/%", "swagger_indexing/%",
 	}
 
 	baseSettings := detector.PerformanceSettings{
@@ -34,7 +34,7 @@ func generateUltimateDevAnalysisSettings(backendUrl string, client *http.Client)
 	for _, mode := range modes {
 		for _, machine := range machines {
 			for _, test := range testsExpanded {
-				metrics := getUltimateMetricsFromTestsNames(test)
+				metrics := getCloudMetricsFromTestsNames(test)
 				for _, metric := range metrics {
 					settings = append(settings, detector.PerformanceSettings{
 						Db:      baseSettings.Db,
@@ -46,7 +46,7 @@ func generateUltimateDevAnalysisSettings(backendUrl string, client *http.Client)
 							Machine: machine,
 							Metric:  metric,
 							SlackSettings: detector.SlackSettings{
-								Channel:     "ij-u-team-performance-issues-check",
+								Channel:     "ij-clouds-team-performance-issues-check",
 								ProductLink: "intellij",
 							},
 							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
@@ -59,12 +59,9 @@ func generateUltimateDevAnalysisSettings(backendUrl string, client *http.Client)
 	return settings
 }
 
-func getUltimateMetricsFromTestsNames(test string) []string {
+func getCloudMetricsFromTestsNames(test string) []string {
 	if strings.Contains(test, "/localInspection") {
 		return []string{"localInspections", "firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"}
-	}
-	if strings.Contains(test, "/ultimateCase") {
-		return []string{"localInspections", "firstCodeAnalysis", "completion", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"}
 	}
 	if strings.Contains(test, "/typing") {
 		return []string{"typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay", "firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"}

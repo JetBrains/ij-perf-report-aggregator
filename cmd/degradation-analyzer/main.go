@@ -112,5 +112,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateUISettings(),
 		setting.GenerateEditorSettings(),
 		setting.GenerateWebStormSettings(backendUrl, client),
+		setting.GenerateCloudSettings(backendUrl, client),
 	)
 }

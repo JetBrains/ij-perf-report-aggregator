@@ -7,7 +7,10 @@ import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 export class ServerWithCompressConfigurator implements ServerConfigurator {
   static getDefaultServerUrl(): string {
     const hostname = window.location.hostname
-    if (hostname === "ij-perf-api.labs.jb.gg" || hostname === "localhost") {
+    if (hostname === "localhost") {
+      return ""
+    }
+    if (hostname === "ij-perf-api.labs.jb.gg") {
       return "https://ij-perf-api.labs.jb.gg"
     }
     return "https://ij-perf.labs.jb.gg"

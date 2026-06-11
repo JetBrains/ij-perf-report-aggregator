@@ -281,6 +281,31 @@
       </Column>
 
       <Column
+        header="Chart"
+        :style="{ width: '5rem' }"
+      >
+        <template #body="{ data }">
+          <a
+            v-if="safeDashboardLink(data.dashboardLink)"
+            :href="safeDashboardLink(data.dashboardLink)!"
+            target="_blank"
+            rel="noopener noreferrer"
+            v-tooltip.top="'Open chart'"
+            class="flex items-center gap-1 text-primary hover:text-primary-dark"
+            @click.stop
+          >
+            <i class="pi pi-chart-line" />
+          </a>
+          <span
+            v-else
+            class="text-gray-400"
+          >
+            —
+          </span>
+        </template>
+      </Column>
+
+      <Column
         header="Feedback"
         :style="{ width: '8rem' }"
       >
@@ -458,6 +483,20 @@ function formatDate(iso: string): string {
 
 function formatCost(cost: number): string {
   return `$${cost.toFixed(2)}`
+}
+
+function safeDashboardLink(url: string | undefined): string | null {
+  if (url == null || url === "") return null
+  // Block protocol-relative URLs (//host) that could navigate cross-origin.
+  if (url.startsWith("//")) return null
+  try {
+    // Resolve against the current origin so relative paths (the stored shape, e.g. "/intellij/tests?…")
+    // are accepted, while javascript:/data: URIs resolve to a non-http(s) protocol and are rejected.
+    const resolved = new URL(url, window.location.origin)
+    return resolved.protocol === "http:" || resolved.protocol === "https:" ? url : null
+  } catch {
+    return null
+  }
 }
 </script>
 

@@ -55,7 +55,8 @@ type fleetPerfTestCollector struct{}
 
 func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
 	if params.MethodName == nil {
-		return nil
+		// fallback to situations when MethodName is not provided
+		return []string{""}
 	}
 	artifactPath := *params.MethodName
 	testMethodName := artifactPath
@@ -68,7 +69,8 @@ func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsReques
 
 func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 	switch artifactName {
-	case "fsdaemon.log", "fleet.log", "spans.json", "fleet.test.json":
+	// logs.zip is fallback for situation when MethodName is not provided and we just download logs.zip from the root
+	case "logs.zip", "fsdaemon.log", "fleet.log", "spans.json", "fleet.test.json":
 		return true
 	default:
 		return false

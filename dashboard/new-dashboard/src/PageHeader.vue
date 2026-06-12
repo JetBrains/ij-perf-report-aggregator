@@ -46,6 +46,15 @@
       />
     </div>
     <div class="flex items-center">
+      <router-link
+        v-tooltip.bottom="'LLM analyses'"
+        to="/analyses?show=myOnly"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mr-2 flex items-center"
+      >
+        <SparklesIcon class="w-7 h-7 text-primary dark:text-primary-dark" />
+      </router-link>
       <MoonIcon
         v-if="useDarkModeStore().darkMode"
         class="w-7 h-7 text-primary dark:text-primary-dark"

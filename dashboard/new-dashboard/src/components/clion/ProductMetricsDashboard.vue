@@ -32,19 +32,23 @@ const mainChartsDeclaration: ChartDefinition[] = [
     aliases: ["LLVM", "OpenCV", "cURL", "Zephyr Bap Broadcast Sink"],
   },
   {
+    labels: ["Project Model: workspaceModel update", "Project Model: workspaceModel replace"],
+    measures: ["workspaceModel.updates.ms", "workspaceModel.replace.project.model.ms"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing", "radler/zephyr_bap_broadcast_sink/indexing"],
+    aliases: ["LLVM", "OpenCV", "cURL", "50k_10k", "Zephyr Bap Broadcast Sink"]
+  },
+  {
     labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],
     measures: ["firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
     projects: ["radler/fmtlib/typing/simple (4 lines)"],
     aliases: ["{fmt}"],
   },
-
   {
     labels: ["Typing latency"],
     measures: ["typing#latency#mean_value"],
     projects: ["radler/fmtlib/typing/simple (4 lines)"],
     aliases: ["{fmt}"],
   },
-
   {
     labels: ["Completion"],
     measures: ["fus_time_to_show_90p"],

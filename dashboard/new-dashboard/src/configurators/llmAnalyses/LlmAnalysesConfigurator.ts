@@ -100,7 +100,7 @@ export class LlmAnalysesConfigurator {
       },
       projectName: data.projectName,
       testType: dbTypeStore().dbType,
-      methodName: data.description.value?.methodName?.replaceAll("#", "."),
+      methodName: data.description.value?.methodName ?? undefined,
     }
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)
@@ -116,7 +116,7 @@ export class LlmAnalysesConfigurator {
       userName: useUserStore().user?.name ?? undefined,
       firstCommitRevision: firstCommit ?? undefined,
       lastCommitRevision: lastCommit ?? undefined,
-      testMethodName: data.description.value?.methodName ?? undefined,
+      testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
       dashboardLink,
     }

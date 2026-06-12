@@ -63,7 +63,7 @@ func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsReques
 	if _, after, ok := strings.Cut(methodName, "#"); ok {
 		testMethodName = after
 	}
-	return []string{"logs.zip!/" + artifactPath, "logs.zip!/" + artifactPath + "/fsdaemon", "metrics/" + testMethodName}
+	return []string{"logs/" + artifactPath, "metrics/" + testMethodName}
 }
 
 func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {

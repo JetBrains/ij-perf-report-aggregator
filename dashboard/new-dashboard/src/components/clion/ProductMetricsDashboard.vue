@@ -35,7 +35,7 @@ const mainChartsDeclaration: ChartDefinition[] = [
     labels: ["Project Model: workspaceModel update", "Project Model: workspaceModel replace"],
     measures: ["workspaceModel.updates.ms", "workspaceModel.replace.project.model.ms"],
     projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing", "radler/zephyr_bap_broadcast_sink/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL", "50k_10k", "Zephyr Bap Broadcast Sink"]
+    aliases: ["LLVM", "OpenCV", "cURL", "50k_10k", "Zephyr Bap Broadcast Sink"],
   },
   {
     labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],

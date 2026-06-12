@@ -367,13 +367,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide, ref } from "vue"
+import { computed, onMounted, provide, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../shared/keys"
+import { useUserStore } from "../../shared/useUserStore"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 import { YoutrackClient } from "../common/youtrack/YoutrackClient"
 import { LlmAnalysisClient, LlmAnalysisListItem, LlmAnalysisState } from "../common/llmAnalysis/LlmAnalysisClient"
 import AnalysisDetailsDialog from "../common/llmAnalysis/AnalysisDetailsDialog.vue"
-import { AnalysesFilterState, distinctUsers, emptyAnalysesFilterState, filterAnalyses, userLabel } from "./analysesFilter"
+import { AnalysesFilterState, currentUserLabel, distinctUsers, emptyAnalysesFilterState, filterAnalyses, userLabel } from "./analysesFilter"
+
+useDarkModeStore()
 
 const serverConfigurator = new ServerWithCompressConfigurator("perfint", "report")
 provide(serverConfiguratorKey, serverConfigurator)
@@ -438,8 +443,30 @@ async function loadMore(): Promise<void> {
 
 onMounted(load)
 
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+let myOnlyApplied = false
+watch(
+  () => userStore.user,
+  (user) => {
+    if (myOnlyApplied || route.query["show"] !== "myOnly") return
+    const label = currentUserLabel(user)
+    if (label === "") return
+    filter.value.users = [label]
+    myOnlyApplied = true
+  },
+  { immediate: true }
+)
+
 function clearFilters(): void {
   filter.value = emptyAnalysesFilterState()
+  // Also drop the ?show=myOnly param so the cleared state survives a reload and the watcher won't re-apply it.
+  myOnlyApplied = true
+  if (route.query["show"] != null) {
+    const { show: _show, ...rest } = route.query
+    void router.replace({ query: rest })
+  }
 }
 
 function onRowClick(event: { data: LlmAnalysisListItem }): void {

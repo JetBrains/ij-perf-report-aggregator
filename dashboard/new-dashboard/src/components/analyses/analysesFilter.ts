@@ -41,6 +41,11 @@ export function userLabel(item: LlmAnalysisListItem): string {
   return at === -1 ? email : email.slice(0, at)
 }
 
+export function currentUserLabel(user: { name?: string; email?: string } | null | undefined): string {
+  if (user == null) return ""
+  return userLabel({ userName: user.name, userEmail: user.email } as LlmAnalysisListItem)
+}
+
 function matchesSearch(item: LlmAnalysisListItem, search: string): boolean {
   const needle = search.trim().toLowerCase()
   if (needle === "") return true

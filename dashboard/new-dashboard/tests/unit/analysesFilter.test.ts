@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { LlmAnalysisListItem, LlmAnalysisState } from "../../src/components/common/llmAnalysis/LlmAnalysisClient"
-import { AnalysesFilterState, distinctUsers, emptyAnalysesFilterState, filterAnalyses, userLabel } from "../../src/components/analyses/analysesFilter"
+import { AnalysesFilterState, currentUserLabel, distinctUsers, emptyAnalysesFilterState, filterAnalyses, userLabel } from "../../src/components/analyses/analysesFilter"
 
 function item(overrides: Partial<LlmAnalysisListItem>): LlmAnalysisListItem {
   return {
@@ -35,6 +35,23 @@ describe("userLabel helper", () => {
   })
   it("empty when nothing", () => {
     expect(userLabel(item({ userName: undefined, userEmail: undefined }))).toBe("")
+  })
+})
+
+describe("currentUserLabel helper", () => {
+  it("prefers name", () => {
+    expect(currentUserLabel({ name: "Jane Doe", email: "jane@x.com" })).toBe("Jane Doe")
+  })
+  it("falls back to email local part", () => {
+    expect(currentUserLabel({ name: "", email: "jane@jetbrains.com" })).toBe("jane")
+  })
+  it("empty when no user", () => {
+    expect(currentUserLabel(null)).toBe("")
+    expect(currentUserLabel({})).toBe("")
+  })
+  it("matches the label used by the user filter for the same identity", () => {
+    const label = currentUserLabel({ name: "Jane Doe", email: "jane@x.com" })
+    expect(matches(item({ userName: "Jane Doe" }), filter({ users: [label] }))).toBe(1)
   })
 })
 

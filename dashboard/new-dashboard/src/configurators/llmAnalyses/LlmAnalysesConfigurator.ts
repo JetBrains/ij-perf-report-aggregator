@@ -100,6 +100,7 @@ export class LlmAnalysesConfigurator {
       },
       projectName: data.projectName,
       testType: dbTypeStore().dbType,
+      methodName: data.description.value?.methodName ?? undefined,
     }
     const spaceAttachments = await uploadAttachmentsToSpace(serverConfigurator, attachmentsInfo)
     const { firstCommit, lastCommit } = await getFirstAndLastCommit(serverConfigurator.db, data.installerId ?? data.buildId)

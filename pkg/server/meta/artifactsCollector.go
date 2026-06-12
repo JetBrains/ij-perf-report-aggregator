@@ -2,7 +2,6 @@ package meta
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"slices"
 	"strings"
@@ -127,28 +126,22 @@ func getArtifactCollector(testType string) artifactCollector {
 }
 
 func getAttachmentName(filename, suffix string) string {
-	// Handle metrics.performance.json specially
-	if strings.HasPrefix(filename, "metrics.performance") && strings.HasSuffix(filename, ".json") {
-		return fmt.Sprintf("metrics.performance-%s.json", suffix)
+	name, ext := filename, ""
+	if dot := strings.LastIndex(filename, "."); dot > 0 {
+		name, ext = filename[:dot], filename[dot+1:]
 	}
 
-	parts := strings.Split(filename, ".")
-	if len(parts) != 2 {
-		return filename
-	}
-
-	nameWithoutExt := parts[0]
-	ext := parts[1]
-
-	nameParts := strings.Split(nameWithoutExt, "-")
-
+	nameParts := strings.Split(name, "-")
 	prefix := nameParts[0]
 	if slices.Contains(nameParts[1:], "frontend") {
 		prefix += "-frontend"
 	}
 
-	updatedName := prefix + "-" + suffix
-	return fmt.Sprintf("%s.%s", updatedName, ext)
+	result := prefix + "-" + suffix
+	if ext != "" {
+		result += "." + ext
+	}
+	return result
 }
 
 // ProcessAndUploadTeamcityArtifacts handles the common logic for fetching artifacts
@@ -189,6 +182,14 @@ func processBuildsArtifacts(
 	config UploadConfig,
 	uploadWg *sync.WaitGroup,
 ) {
+	var attachmentPostfix string
+	if !config.SkipPostfix {
+		if index == 0 {
+			attachmentPostfix = "current"
+		} else {
+			attachmentPostfix = "before"
+		}
+	}
 	for _, testArtifactPath := range collector.getArtifactsPaths(params) {
 		children, err := teamCityClient.getArtifactChildren(ctx, buildId, testArtifactPath)
 		if err != nil {
@@ -200,15 +201,6 @@ func processBuildsArtifacts(
 		for _, str := range children {
 			if collector.checkArtifact(str) {
 				filteredChildren = append(filteredChildren, str)
-			}
-		}
-
-		var attachmentPostfix string
-		if !config.SkipPostfix {
-			if index == 0 {
-				attachmentPostfix = "current"
-			} else {
-				attachmentPostfix = "before"
 			}
 		}
 

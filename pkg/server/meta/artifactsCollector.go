@@ -58,11 +58,11 @@ func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsReques
 		// fallback to situations when MethodName is not provided
 		return []string{""}
 	}
-	artifactPath := *params.MethodName
-	testMethodName := artifactPath
-	if idx := strings.LastIndex(artifactPath, "."); idx != -1 {
-		testMethodName = artifactPath[idx+1:]
-		artifactPath = artifactPath[:idx] + "/" + testMethodName
+	methodName := *params.MethodName
+	artifactPath := strings.ReplaceAll(methodName, "#", "/")
+	testMethodName := methodName
+	if _, after, ok := strings.Cut(methodName, "#"); ok {
+		testMethodName = after
 	}
 	return []string{"logs.zip!/" + artifactPath, "logs.zip!/" + artifactPath + "/fsdaemon", "metrics/" + testMethodName}
 }

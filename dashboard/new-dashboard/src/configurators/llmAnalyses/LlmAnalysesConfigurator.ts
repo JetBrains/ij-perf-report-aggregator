@@ -116,7 +116,7 @@ export class LlmAnalysesConfigurator {
       userName: useUserStore().user?.name ?? undefined,
       firstCommitRevision: firstCommit ?? undefined,
       lastCommitRevision: lastCommit ?? undefined,
-      testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
+      testMethodName: data.description.value?.methodName ?? undefined,
       ytIssueId: ytIssueId ?? undefined,
       dashboardLink,
     }

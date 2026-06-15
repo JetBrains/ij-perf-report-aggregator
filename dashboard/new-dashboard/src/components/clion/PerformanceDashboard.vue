@@ -83,14 +83,6 @@
 
     <section>
       <CLionVsRadlerGroupProjectsChart
-        label="Workspace Model Update (LLVM)"
-        measure="cidr.workspace.metrics#duration_total_ms"
-        project="llvm/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerGroupProjectsChart
         label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
         project="fmtlib/globalInspection"

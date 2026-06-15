@@ -18,10 +18,10 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 			Machine: "intellij-linux-hw-de-unit-%",
 		},
 	}
-	// slackSettings := detector.SlackSettings{
-	// 	Channel:     "goland-qa-duty",
-	// 	ProductLink: "goland",
-	// }
+	slackSettings := detector.SlackSettings{
+		Channel:     "goland-qa-duty",
+		ProductLink: "goland",
+	}
 	projects, err := detector.FetchAllProjects(backendUrl, client, mainSettings)
 	if err != nil {
 		slog.Error("error while getting projects", "error", err)
@@ -53,7 +53,7 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 						AnalysisSettings: detector.AnalysisSettings{
 							MinimumSegmentLength: 12,
 						},
-						// SlackSettings: slackSettings,
+						SlackSettings: slackSettings,
 					},
 				})
 			}
@@ -88,10 +88,10 @@ func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detect
 					Branch:  baseSettings.Branch,
 					Machine: baseSettings.Machine,
 					Metric:  metric,
-					// SlackSettings: detector.SlackSettings{
-					// 	Channel:     "goland-qa-duty",
-					// 	ProductLink: "goland",
-					// },
+					SlackSettings: detector.SlackSettings{
+						Channel:     "goland-qa-duty",
+						ProductLink: "goland",
+					},
 				},
 			})
 		}

@@ -125,10 +125,12 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 		}
 	case id == "perf_fleet":
 		return DatabaseConfiguration{
-			DbName:          "fleet",
-			TableName:       "measure_new",
-			ReportReader:    analyzePerfFleetReport,
-			extraFieldCount: 3,
+			DbName:                      "fleet",
+			TableName:                   "measure_new",
+			ReportReader:                analyzePerfFleetReport,
+			HasNoInstallerButHasChanges: true,
+			HasMetaDB:                   true,
+			extraFieldCount:             3,
 			insertStatementWriter: func(sb *strings.Builder) {
 				sb.WriteString(", measures.name, measures.value, measures.type")
 			},

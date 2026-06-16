@@ -192,23 +192,5 @@ const groups = [
       "vue3-admin-vite/indexing",
     ],
   },
-  {
-    label: "Scanning",
-    measure: "scanningTimeWithoutPauses",
-    projects: [
-      "aws_cdk/indexing",
-      "angular/indexing",
-      "eslint-plugin-jest/indexing",
-      "dxos/indexing",
-      "allure-js/indexing",
-      "axios/indexing",
-      "toh-pt6/indexing",
-      "react-todo-js/indexing",
-      "ring-ui/indexing",
-      "vkui/indexing",
-      "vue-template/indexing",
-      "vue3-admin-vite/indexing",
-    ],
-  },
 ]
 </script>

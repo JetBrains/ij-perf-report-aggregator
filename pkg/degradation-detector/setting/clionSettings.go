@@ -17,7 +17,7 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
-	branches := []string{"252", "253", "261", "master"}
+	branches := []string{"253", "261", "262", "master"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	if err != nil {
@@ -63,7 +63,7 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/indexing") {
-		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "cidr.workspace.metrics#duration_in_write_action_ms", "ui.lagging#average", "rd.memory.allocatedManagedMemoryMb/afterIndexing"}
+		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "workspaceModel.updates.ms", "ui.lagging#average", "rd.memory.allocatedManagedMemoryMb/afterIndexing"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"fus_time_to_show_90p"}

@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -68,7 +69,7 @@ type coAttribute struct {
 // response, so no pagination is needed.
 func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]string, error) {
 	if c.token == "" {
-		return nil, fmt.Errorf("no code-owners token configured (set CODEOWNERS_TOKEN or SPACE_TOKEN)")
+		return nil, errors.New("no code-owners token configured (set CODEOWNERS_TOKEN or SPACE_TOKEN)")
 	}
 
 	params := url.Values{}

@@ -16,7 +16,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
     return "https://ij-perf.labs.jb.gg"
   }
 
-  static readonly DEFAULT_SERVER_URL = ServerWithCompressConfigurator.getDefaultServerUrl()
+  static readonly DEFAULT_SERVER_URL = "http://localhost:9044"
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL

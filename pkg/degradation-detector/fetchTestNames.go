@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -65,6 +66,65 @@ func fetchTestsByPattern(backendUrl string, client *http.Client, settings Perfor
 
 func FetchAllTests(backendUrl string, client *http.Client, settings PerformanceSettings) ([]string, error) {
 	return fetchTestsByPattern(backendUrl, client, settings, "")
+}
+
+// FetchProjectOwners returns the full project->owner mapping for the given db/table
+// from the meta database, in a single request. Projects without a resolved code
+// owner are simply absent from the map.
+func FetchProjectOwners(backendUrl string, client *http.Client, db, table string) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	params := url.Values{}
+	params.Set("db", db)
+	params.Set("table", table)
+	requestURL := backendUrl + "/api/meta/projectOwners?" + params.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send GET request: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get project owners: %v", resp.Status)
+	}
+
+	owners := make(map[string]string)
+	if err := json.NewDecoder(resp.Body).Decode(&owners); err != nil {
+		return nil, fmt.Errorf("failed to decode project owners: %w", err)
+	}
+	return owners, nil
+}
+
+// FetchCodeOwnerChannels returns a map from code-owner group name (and each alias) to its
+// Slack channel, resolved by the backend via the CodeOwners service. Owners without a
+// configured channel are absent from the map.
+func FetchCodeOwnerChannels(backendUrl string, client *http.Client) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, backendUrl+"/api/meta/codeOwnerChannels", http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send GET request: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get code-owner channels: %v", resp.Status)
+	}
+
+	channels := make(map[string]string)
+	if err := json.NewDecoder(resp.Body).Decode(&channels); err != nil {
+		return nil, fmt.Errorf("failed to decode code-owner channels: %w", err)
+	}
+	return channels, nil
 }
 
 // FetchMetricNamesByPattern returns distinct measures.name values matching the given SQL LIKE

@@ -44,12 +44,8 @@ func Serve(dbUrl string, natsUrl string) error {
 		dbUrl = DefaultDbUrl
 	}
 
-	dbConfig, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
-	if err != nil {
-		return fmt.Errorf("invalid DATABASE_URL: %w", err)
-	}
-	dbConfig.MaxConns = 10
-	dbpool, err := pgxpool.NewWithConfig(context.Background(), dbConfig)
+	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	dbpool.Config().MaxConns = 10
 	if err != nil {
 		return err
 	}
@@ -109,8 +105,6 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Get("/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
 		r.Get("/projectsByOwner", meta.CreateGetProjectsByOwnerHandler(dbpool))
 		r.Get("/ownerByProject", meta.CreateGetOwnerByProjectHandler(dbpool))
-		r.Get("/projectOwners", meta.CreateGetProjectOwnersHandler(dbpool))
-		r.Get("/codeOwnerChannels", meta.CreateGetCodeOwnerChannelsHandler())
 		r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
 		r.Post("/missingData", meta.CreatePostMissingDataRequestHandler(dbpool))
 		r.Route("/youtrack", func(r chi.Router) {

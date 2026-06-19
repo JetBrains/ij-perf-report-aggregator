@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
 	"net/http"
 	"net/url"
 	"os"
@@ -65,6 +66,11 @@ type coAttribute struct {
 // channel. Aliases (previous names) map to the same channel as the canonical name, so a
 // lookup by either resolves identically. Groups without a slack-channel attribute are omitted.
 //
+// When a name is both an active group's canonical name and another group's stale alias
+// (a previous name reused after a rename), the canonical name wins regardless of the order
+// the service returns groups, so routing is deterministic. Genuine conflicts (two groups
+// sharing a canonical name or an alias with different channels) are logged.
+//
 // limit=-1 (REQUEST_ALL_LIMIT) tells the CodeOwners service to return every group in a single
 // response, so no pagination is needed.
 func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]string, error) {
@@ -98,17 +104,33 @@ func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]s
 		return nil, fmt.Errorf("failed to decode code-owners response: %w", err)
 	}
 
-	channels := make(map[string]string)
+	// Collect canonical names and aliases separately, then merge with canonical names on top,
+	// so an active group's name always wins over a stale alias another group may still carry
+	// (a previous name reused after a rename) — independent of the service's response order.
+	aliasChannels := make(map[string]string)
+	canonicalChannels := make(map[string]string)
 	for _, item := range resp.Items {
 		channel := slackChannelOf(item.Attributes)
 		if channel == "" {
 			continue
 		}
-		channels[item.Name] = channel
+		if existing, ok := canonicalChannels[item.Name]; ok && existing != channel {
+			slog.Warn("duplicate code-owner group name resolves to different channels; keeping last",
+				"name", item.Name, "previous", existing, "channel", channel)
+		}
+		canonicalChannels[item.Name] = channel
 		for _, alias := range item.Aliases {
-			channels[alias.Name] = channel
+			if existing, ok := aliasChannels[alias.Name]; ok && existing != channel {
+				slog.Warn("code-owner alias claimed by multiple groups with different channels; keeping last",
+					"alias", alias.Name, "previous", existing, "channel", channel)
+			}
+			aliasChannels[alias.Name] = channel
 		}
 	}
+
+	channels := make(map[string]string, len(aliasChannels)+len(canonicalChannels))
+	maps.Copy(channels, aliasChannels)
+	maps.Copy(channels, canonicalChannels)
 	return channels, nil
 }
 

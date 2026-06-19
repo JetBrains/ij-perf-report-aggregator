@@ -80,24 +80,7 @@ func FetchProjectOwners(backendUrl string, client *http.Client, db, table string
 	params.Set("table", table)
 	requestURL := backendUrl + "/api/meta/projectOwners?" + params.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send GET request: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get project owners: %v", resp.Status)
-	}
-
-	owners := make(map[string]string)
-	if err := json.NewDecoder(resp.Body).Decode(&owners); err != nil {
-		return nil, fmt.Errorf("failed to decode project owners: %w", err)
-	}
-	return owners, nil
+	return getJSONMap(ctx, client, requestURL, "project owners")
 }
 
 // FetchCodeOwnerChannels returns a map from code-owner group name (and each alias) to its
@@ -107,24 +90,29 @@ func FetchCodeOwnerChannels(backendUrl string, client *http.Client) (map[string]
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, backendUrl+"/api/meta/codeOwnerChannels", http.NoBody)
+	return getJSONMap(ctx, client, backendUrl+"/api/meta/codeOwnerChannels", "code-owner channels")
+}
+
+// getJSONMap issues a GET request to requestURL and decodes the JSON response body into a
+// string->string map. description identifies the call in error messages (e.g. "project owners").
+func getJSONMap(ctx context.Context, client *http.Client, requestURL, description string) (map[string]string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("failed to create request for %s: %w", description, err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send GET request: %w", err)
+		return nil, fmt.Errorf("failed to send GET request for %s: %w", description, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get code-owner channels: %v", resp.Status)
+		return nil, fmt.Errorf("failed to get %s: %v", description, resp.Status)
 	}
-
-	channels := make(map[string]string)
-	if err := json.NewDecoder(resp.Body).Decode(&channels); err != nil {
-		return nil, fmt.Errorf("failed to decode code-owner channels: %w", err)
+	result := make(map[string]string)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode %s: %w", description, err)
 	}
-	return channels, nil
+	return result, nil
 }
 
 // FetchMetricNamesByPattern returns distinct measures.name values matching the given SQL LIKE

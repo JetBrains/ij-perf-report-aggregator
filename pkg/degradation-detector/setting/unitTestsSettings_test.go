@@ -21,26 +21,17 @@ func TestTestMatchesPackages(t *testing.T) {
 	assert.False(t, testMatchesPackages("com.example.Other", packages))
 }
 
-// setTeamConfigs temporarily replaces the package-global teamConfigs with the given set and
-// restores it when the test ends. Tests that use it route against synthetic configs instead of
-// the production routing table, so they exercise resolveRoute's logic rather than the (frequently
-// edited) mapping data — and must not run in parallel, since they mutate shared state.
-func setTeamConfigs(t *testing.T, configs []teamConfig) {
-	t.Helper()
-	orig := teamConfigs
-	t.Cleanup(func() { teamConfigs = orig })
-	teamConfigs = configs
-}
-
 func TestResolveRoute(t *testing.T) {
+	t.Parallel()
 	// Synthetic routing table: one plain team, one with custom (degradation-only) analysis, and
 	// one with additional metrics — enough to exercise every branch without depending on the real
-	// team/channel/package mappings.
-	setTeamConfigs(t, []teamConfig{
+	// team/channel/package mappings. Passing it explicitly to resolveRoute keeps the test isolated
+	// from the production mapping data (and free of shared global state, so it can run in parallel).
+	configs := []teamConfig{
 		{Team: "alpha", SlackChannel: "alpha-channel", Packages: []string{"com.test.alpha"}},
 		{Team: "beta", SlackChannel: "beta-channel", Packages: []string{"com.test.beta"}, AnalysisSettings: degradationOnlyAnalysisSettings()},
 		{Team: "gamma", SlackChannel: "gamma-channel", Packages: []string{"com.test.gamma"}, AdditionalTestMetrics: map[string][]string{"com.test.gamma.PacketsTest": {"%.expected.%"}}},
-	})
+	}
 
 	const (
 		plainTest    = "com.test.alpha.SomeTest"
@@ -121,7 +112,8 @@ func TestResolveRoute(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			route := resolveRoute(tc.test, tc.projectOwners, tc.ownerChannels)
+			t.Parallel()
+			route := resolveRoute(tc.test, tc.projectOwners, tc.ownerChannels, configs)
 			assert.Equal(t, tc.wantChannel, route.channel)
 			assert.Equal(t, tc.wantAnalysis, route.analysisSettings)
 			if tc.wantHasMetrics {

@@ -169,7 +169,7 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 	}
 
 	for _, test := range tests {
-		route := resolveRoute(test, projectOwners, ownerChannels)
+		route := resolveRoute(test, projectOwners, ownerChannels, teamConfigs)
 		metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, mainSettings, test, route.additionalTestMetrics)...)
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
@@ -205,8 +205,8 @@ type resolvedRoute struct {
 // Analysis settings and additional metrics always come from the matching package teamConfig
 // (so e.g. RubyMine/PhpStorm degradation-only analysis and debugger packet metrics are kept
 // regardless of which channel wins); they are independent of the channel decision.
-func resolveRoute(test string, projectOwners, ownerChannels map[string]string) resolvedRoute {
-	teamCfg := matchTeamConfig(test)
+func resolveRoute(test string, projectOwners, ownerChannels map[string]string, configs []teamConfig) resolvedRoute {
+	teamCfg := matchTeamConfig(test, configs)
 
 	route := resolvedRoute{
 		channel:          catchAllUnitTestsChannel,
@@ -229,10 +229,10 @@ func resolveRoute(test string, projectOwners, ownerChannels map[string]string) r
 }
 
 // matchTeamConfig returns the first teamConfig whose packages match the test, or nil.
-func matchTeamConfig(test string) *teamConfig {
-	for i := range teamConfigs {
-		if testMatchesPackages(test, teamConfigs[i].Packages) {
-			return &teamConfigs[i]
+func matchTeamConfig(test string, configs []teamConfig) *teamConfig {
+	for i := range configs {
+		if testMatchesPackages(test, configs[i].Packages) {
+			return &configs[i]
 		}
 	}
 	return nil

@@ -14,7 +14,7 @@
     "pragmastat": "12.1.0",
     "primevue": "4.5.5",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.35",
+    "vue": "3.5.38",
     "vue-router": "5.1.0"
   },
   "devDependencies": {

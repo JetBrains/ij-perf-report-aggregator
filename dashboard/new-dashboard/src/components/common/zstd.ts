@@ -46,6 +46,7 @@ export function getZstdObservable() {
 }
 
 function isError(code: number): boolean {
+  // oxlint-disable-next-line unicorn/throw-new-error
   return ZSTD_isError(code)
 }
 

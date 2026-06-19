@@ -246,9 +246,7 @@ function buildExecutor(entry: SubscriptionEntry): DataQueryExecutor {
   // executor produces base + compared series in one round trip.
   const configurators: DataQueryConfigurator[] = [...dashboardConfigurators]
   if (entry.machine != null) configurators.push(entry.machine)
-  configurators.push(entry.scenario)
-  configurators.push(serverConfigurator)
-  configurators.push(entry.measure)
+  configurators.push(entry.scenario, serverConfigurator, entry.measure)
   return new DataQueryExecutor(configurators)
 }
 

@@ -95,6 +95,7 @@
     "unicorn/prefer-global-this": "off",
     "unicorn/require-post-message-target-origin": "off",
     "unicorn/switch-case-braces": "off",
+    "vue/require-default-prop": "off",
     "vitest/no-hooks": "off",
     "vitest/require-hook": "off",
     "vitest/prefer-called-once": "off",

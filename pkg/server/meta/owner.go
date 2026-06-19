@@ -75,20 +75,24 @@ func CreateGetProjectOwnersHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 		defer rows.Close()
 
-		owners := make(map[string]string)
-		for rows.Next() {
-			var project, owner string
-			if err := rows.Scan(&project, &owner); err != nil {
-				slog.Error("unable to scan row", "error", err)
-				writer.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			owners[project] = owner
+		type projectOwner struct {
+			project string
+			owner   string
 		}
-		if err := rows.Err(); err != nil {
-			slog.Error("error while iterating rows", "error", err)
+		collected, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (projectOwner, error) {
+			var po projectOwner
+			err := row.Scan(&po.project, &po.owner)
+			return po, err
+		})
+		if err != nil {
+			slog.Error("unable to collect rows", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
+		}
+
+		owners := make(map[string]string, len(collected))
+		for _, po := range collected {
+			owners[po.project] = po.owner
 		}
 
 		jsonBytes, err := json.Marshal(owners)

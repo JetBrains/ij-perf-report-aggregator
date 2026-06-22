@@ -1,18 +1,18 @@
 FROM buildpack-deps:curl
 
-ENV NODE_VERSION 25.6.1
+ENV NODE_VERSION 26.3.1
 ENV GOLANG_VERSION 1.26.4
 
 RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*
 
 RUN cd /usr/local/bin && \
   curl -L https://github.com/google/ko/releases/download/v0.18.1/ko_0.18.1_Linux_x86_64.tar.gz | tar xvz ko && \
-  curl -L https://get.helm.sh/helm-v4.2.0-linux-amd64.tar.gz | tar xvz --strip-components=1 linux-amd64/helm
+  curl -L https://get.helm.sh/helm-v4.2.2-linux-amd64.tar.gz | tar xvz --strip-components=1 linux-amd64/helm
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
   mkdir -p /usr/local/lib/pnpm && \
-  curl -fsSL https://github.com/pnpm/pnpm/releases/download/v11.5.2/pnpm-linux-x64.tar.gz | tar xz -C /usr/local/lib/pnpm && \
+  curl -fsSL https://github.com/pnpm/pnpm/releases/download/v11.8.0/pnpm-linux-x64.tar.gz | tar xz -C /usr/local/lib/pnpm && \
   chmod +x /usr/local/lib/pnpm/pnpm && ln -s /usr/local/lib/pnpm/pnpm /usr/local/bin/pnpm
 
 ENV GOPATH /go

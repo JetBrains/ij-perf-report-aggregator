@@ -20,141 +20,129 @@
         </span>
       </div>
     </template>
-    <Tabs
-      v-model:value="activeTab"
-      class="flex flex-col flex-1 min-h-0"
-    >
-      <TabList class="flex-shrink-0">
-        <Tab :value="0">Analysis</Tab>
-        <Tab :value="1">Feedback</Tab>
-      </TabList>
-      <TabPanels class="flex-1 min-h-0 overflow-auto">
-        <TabPanel :value="0">
-          <div
-            v-if="loading"
-            class="flex items-center gap-2 text-sm"
+    <div class="flex flex-col flex-1 min-h-0">
+      <div
+        v-if="loading"
+        class="flex items-center gap-2 text-sm"
+      >
+        <i class="pi pi-spin pi-spinner" />
+        <span>Loading…</span>
+      </div>
+      <div
+        v-else-if="errorMessage"
+        class="text-sm text-red-600"
+      >
+        {{ errorMessage }}
+      </div>
+      <dl
+        v-else-if="details"
+        class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm"
+      >
+        <dt class="font-medium text-gray-500">Project</dt>
+        <dd>{{ details.project }}</dd>
+
+        <dt class="font-medium text-gray-500">Metric</dt>
+        <dd>{{ details.metric }}</dd>
+
+        <dt class="font-medium text-gray-500">Current build</dt>
+        <dd>
+          <a
+            :href="buildUrl(Number(details.currentBuildId))"
+            target="_blank"
+            class="underline decoration-dotted hover:no-underline"
           >
-            <i class="pi pi-spin pi-spinner" />
-            <span>Loading…</span>
-          </div>
-          <div
-            v-else-if="errorMessage"
-            class="text-sm text-red-600"
+            {{ details.currentBuildId }}
+          </a>
+        </dd>
+
+        <dt class="font-medium text-gray-500">Previous build</dt>
+        <dd>
+          <a
+            :href="buildUrl(Number(details.prevBuildId))"
+            target="_blank"
+            class="underline decoration-dotted hover:no-underline"
           >
-            {{ errorMessage }}
-          </div>
-          <dl
-            v-else-if="details"
-            class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm"
-          >
-            <dt class="font-medium text-gray-500">Project</dt>
-            <dd>{{ details.project }}</dd>
+            {{ details.prevBuildId }}
+          </a>
+        </dd>
 
-            <dt class="font-medium text-gray-500">Metric</dt>
-            <dd>{{ details.metric }}</dd>
+        <template v-if="details.currentValue != null || details.previousValue != null">
+          <dt class="font-medium text-gray-500">Metric change</dt>
+          <dd>{{ details.previousValue ?? "—" }} → {{ details.currentValue ?? "—" }}</dd>
+        </template>
 
-            <dt class="font-medium text-gray-500">Current build</dt>
-            <dd>
-              <a
-                :href="buildUrl(Number(details.currentBuildId))"
-                target="_blank"
-                class="underline decoration-dotted hover:no-underline"
-              >
-                {{ details.currentBuildId }}
-              </a>
-            </dd>
+        <template v-if="details.firstCommitRevision && details.lastCommitRevision">
+          <dt class="font-medium text-gray-500">Commits range</dt>
+          <dd class="font-mono">{{ details.firstCommitRevision }}^..{{ details.lastCommitRevision }}</dd>
+        </template>
+        <template v-else-if="details.firstCommitRevision || details.lastCommitRevision">
+          <dt class="font-medium text-gray-500">Commit</dt>
+          <dd class="font-mono">{{ details.firstCommitRevision || details.lastCommitRevision }}</dd>
+        </template>
+        <template v-else-if="details.firstCommitRevision === '' && details.lastCommitRevision === ''">
+          <dt class="font-medium text-gray-500">Commits range</dt>
+          <dd class="text-gray-500 italic">empty</dd>
+        </template>
 
-            <dt class="font-medium text-gray-500">Previous build</dt>
-            <dd>
-              <a
-                :href="buildUrl(Number(details.prevBuildId))"
-                target="_blank"
-                class="underline decoration-dotted hover:no-underline"
-              >
-                {{ details.prevBuildId }}
-              </a>
-            </dd>
+        <template v-if="details.runBuildId">
+          <dt class="font-medium text-gray-500">Analysis artifacts</dt>
+          <dd>
+            <a
+              :href="`${buildUrl(Number(details.runBuildId))}&buildTab=artifacts`"
+              target="_blank"
+              class="underline decoration-dotted hover:no-underline"
+            >
+              {{ details.runBuildId }}
+            </a>
+          </dd>
+        </template>
 
-            <template v-if="details.currentValue != null || details.previousValue != null">
-              <dt class="font-medium text-gray-500">Metric change</dt>
-              <dd>{{ details.previousValue ?? "—" }} → {{ details.currentValue ?? "—" }}</dd>
-            </template>
-
-            <template v-if="details.firstCommitRevision && details.lastCommitRevision">
-              <dt class="font-medium text-gray-500">Commits range</dt>
-              <dd class="font-mono">{{ details.firstCommitRevision }}^..{{ details.lastCommitRevision }}</dd>
-            </template>
-            <template v-else-if="details.firstCommitRevision || details.lastCommitRevision">
-              <dt class="font-medium text-gray-500">Commit</dt>
-              <dd class="font-mono">{{ details.firstCommitRevision || details.lastCommitRevision }}</dd>
-            </template>
-            <template v-else-if="details.firstCommitRevision === '' && details.lastCommitRevision === ''">
-              <dt class="font-medium text-gray-500">Commits range</dt>
-              <dd class="text-gray-500 italic">empty</dd>
-            </template>
-
-            <template v-if="details.runBuildId">
-              <dt class="font-medium text-gray-500">Analysis artifacts</dt>
-              <dd>
-                <a
-                  :href="`${buildUrl(Number(details.runBuildId))}&buildTab=artifacts`"
-                  target="_blank"
-                  class="underline decoration-dotted hover:no-underline"
-                >
-                  {{ details.runBuildId }}
-                </a>
-              </dd>
-            </template>
-
-            <template v-if="details.llmComment">
-              <dt class="col-span-2 mt-4 border-t border-gray-200 pt-3 text-base font-semibold text-gray-900">
-                <div class="flex items-center justify-between gap-3">
-                  <span>{{ showCreateForm ? "Create YouTrack issue" : "Result" }}</span>
-                  <Button
-                    v-if="!showCreateForm && createdIssue == null && isTerminalState"
-                    label="Create YouTrack issue"
-                    icon="pi pi-plus"
-                    size="small"
-                    @click="showCreateForm = true"
-                  />
-                  <a
-                    v-else-if="!showCreateForm && createdIssue"
-                    :href="`https://youtrack.jetbrains.com/issue/${createdIssue.idReadable}`"
-                    target="_blank"
-                    class="flex items-center gap-1 text-sm font-normal underline decoration-dotted hover:no-underline"
-                  >
-                    <i class="pi pi-verified text-green-600" />
-                    Created {{ createdIssue.idReadable }} ↗
-                  </a>
-                </div>
-              </dt>
-              <dd class="col-span-2">
-                <CreateYoutrackIssueForm
-                  v-if="showCreateForm && analysisId != null"
+        <template v-if="details.llmComment">
+          <dt class="col-span-2 sticky top-0 z-10 mt-4 border-t border-gray-200 bg-white pt-3 text-base font-semibold text-gray-900 dark:bg-gray-900">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-3">
+                <span>{{ showCreateForm ? "Create YouTrack issue" : "Result" }}</span>
+                <AnalysisFeedbackInline
+                  v-if="!showCreateForm && analysisId != null"
                   :analysis-id="analysisId"
-                  :data="data"
-                  @cancel="showCreateForm = false"
-                  @created="onIssueCreated"
+                  :is-terminal-state="isTerminalState"
                 />
-                <div
-                  v-else
-                  class="markdown-body rounded bg-gray-50 p-3 text-base dark:bg-gray-800 dark:text-gray-100"
-                  v-html="renderedComment"
-                />
-              </dd>
-            </template>
-          </dl>
-        </TabPanel>
-        <TabPanel :value="1">
-          <AnalysisFeedbackTab
-            v-if="visible"
-            :analysis-id="analysisId"
-            :is-terminal-state="isTerminalState"
-            :active="activeTab === 1"
-          />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+              </div>
+              <Button
+                v-if="!showCreateForm && createdIssue == null && isTerminalState"
+                label="Create YouTrack issue"
+                icon="pi pi-plus"
+                size="small"
+                @click="showCreateForm = true"
+              />
+              <a
+                v-else-if="!showCreateForm && createdIssue"
+                :href="`https://youtrack.jetbrains.com/issue/${createdIssue.idReadable}`"
+                target="_blank"
+                class="flex items-center gap-1 text-sm font-normal underline decoration-dotted hover:no-underline"
+              >
+                <i class="pi pi-verified text-green-600" />
+                Created {{ createdIssue.idReadable }} ↗
+              </a>
+            </div>
+          </dt>
+          <dd class="col-span-2">
+            <CreateYoutrackIssueForm
+              v-if="showCreateForm && analysisId != null"
+              :analysis-id="analysisId"
+              :data="data"
+              @cancel="showCreateForm = false"
+              @created="onIssueCreated"
+            />
+            <div
+              v-else
+              class="markdown-body rounded bg-gray-50 p-3 text-base dark:bg-gray-800 dark:text-gray-100"
+              v-html="renderedComment"
+            />
+          </dd>
+        </template>
+      </dl>
+    </div>
   </Dialog>
 </template>
 
@@ -164,7 +152,7 @@ import Dialog from "primevue/dialog"
 import { computed, ref, watch } from "vue"
 import { buildUrl, InfoData } from "../sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
-import AnalysisFeedbackTab from "./AnalysisFeedbackTab.vue"
+import AnalysisFeedbackInline from "./AnalysisFeedbackInline.vue"
 import CreateYoutrackIssueForm from "./CreateYoutrackIssueForm.vue"
 import { injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
@@ -201,8 +189,6 @@ const renderedComment = computed(() => {
   return text == null || text === "" ? "" : (md.parse(text) as string)
 })
 
-const activeTab = ref<0 | 1>(0)
-
 const createdIssue = ref<{ id: string; idReadable: string } | null>(null)
 const showCreateForm = ref(false)
 
@@ -220,7 +206,6 @@ watch(
     details.value = null
     errorMessage.value = null
     loading.value = false
-    activeTab.value = 0
     createdIssue.value = null
     showCreateForm.value = false
     if (!isVisible || id == null) return

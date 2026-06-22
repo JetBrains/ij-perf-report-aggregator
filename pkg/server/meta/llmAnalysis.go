@@ -468,8 +468,8 @@ func buildDashboardLink(rawLink string, currentBuildId string, analysisId int) s
 // fallBackToTCCommitsRangeIfMissing populates FirstCommitRevision / LastCommitRevision from TC's build changes
 // when the FE omitted them. Best-effort: any TC error is logged and the request proceeds unchanged.
 func fallBackToTCCommitsRangeIfMissing(ctx context.Context, req *LLMAnalysisRequest) {
-	firstMissing := req.FirstCommitRevision == nil || *req.FirstCommitRevision == ""
-	lastMissing := req.LastCommitRevision == nil || *req.LastCommitRevision == ""
+	firstMissing := req.FirstCommitRevision == nil
+	lastMissing := req.LastCommitRevision == nil
 	if !firstMissing && !lastMissing {
 		return
 	}

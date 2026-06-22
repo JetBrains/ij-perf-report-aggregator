@@ -86,7 +86,11 @@
             </template>
             <template v-else-if="details.firstCommitRevision || details.lastCommitRevision">
               <dt class="font-medium text-gray-500">Commit</dt>
-              <dd class="font-mono">{{ details.firstCommitRevision ?? details.lastCommitRevision }}</dd>
+              <dd class="font-mono">{{ details.firstCommitRevision || details.lastCommitRevision }}</dd>
+            </template>
+            <template v-else-if="details.firstCommitRevision === '' && details.lastCommitRevision === ''">
+              <dt class="font-medium text-gray-500">Commits range</dt>
+              <dd class="text-gray-500 italic">empty</dd>
             </template>
 
             <template v-if="details.runBuildId">

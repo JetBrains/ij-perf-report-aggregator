@@ -101,7 +101,7 @@
           <dt class="col-span-2 sticky top-0 z-10 mt-4 border-t border-gray-200 bg-white pt-3 text-base font-semibold text-gray-900 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex flex-wrap items-center gap-3">
-                <span>{{ showCreateForm ? "Create YouTrack issue" : "Result" }}</span>
+                <span v-if="showCreateForm">Create YouTrack issue</span>
                 <AnalysisFeedbackInline
                   v-if="!showCreateForm && analysisId != null"
                   :analysis-id="analysisId"

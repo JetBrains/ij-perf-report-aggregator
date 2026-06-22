@@ -133,6 +133,8 @@ var teamConfigs = []teamConfig{
 	},
 }
 
+const catchAllUnitTestsChannel = "ij-perf-unit-tests-alerts"
+
 func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 
@@ -152,67 +154,23 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 		return settings
 	}
 
-	// Iterate over team configurations
-	for _, config := range teamConfigs {
-		teamSettings := generateProductTestsSettings(
-			tests,
-			mainSettings,
-			config,
-			backendUrl,
-			client,
-		)
-		settings = append(settings, teamSettings...)
+	// Code owner is the primary attribution key: a test's owner (from project_owner metadata)
+	// is resolved to a Slack channel via the CodeOwners service. Either fetch failing degrades
+	// to package-based routing rather than dropping notifications entirely.
+	projectOwners, err := detector.FetchProjectOwners(backendUrl, client, mainSettings.Db, mainSettings.Table)
+	if err != nil {
+		slog.Error("error while fetching project owners; falling back to package-based routing", "error", err)
+		projectOwners = map[string]string{}
+	}
+	ownerChannels, err := detector.FetchCodeOwnerChannels(backendUrl, client)
+	if err != nil {
+		slog.Error("error while fetching code-owner channels; falling back to package-based routing", "error", err)
+		ownerChannels = map[string]string{}
 	}
 
-	// Collect all packages to exclude from default settings
-	allPackages := collectAllPackages(teamConfigs)
-	// Generate default settings (excluding specified packages)
-	defaultSlackSettings := detector.SlackSettings{
-		Channel:     "ij-perf-unit-tests-alerts",
-		ProductLink: "perfUnit",
-	}
-	defaultTests := filterTests(tests, allPackages, false)
-	for _, test := range defaultTests {
-		settings = append(settings, detector.PerformanceSettings{
-			Project: test,
-			Db:      mainSettings.Db,
-			Table:   mainSettings.Table,
-			BaseSettings: detector.BaseSettings{
-				Branch:           mainSettings.Branch,
-				Machine:          mainSettings.Machine,
-				Metric:           mainSettings.Metric,
-				SlackSettings:    defaultSlackSettings,
-				AnalysisSettings: defaultUnitTestAnalysisSettings,
-			},
-		})
-	}
-
-	return settings
-}
-
-func generateProductTestsSettings(
-	allTests []string,
-	mainSettings detector.PerformanceSettings,
-	config teamConfig,
-	backendUrl string,
-	client *http.Client,
-) []detector.PerformanceSettings {
-	// Filter tests for the team
-	teamTests := filterTests(allTests, config.Packages, true)
-
-	// Set default AnalysisSettings if nil
-	if config.AnalysisSettings == nil {
-		config.AnalysisSettings = &defaultUnitTestAnalysisSettings
-	}
-
-	slackSettings := detector.SlackSettings{
-		Channel:     config.SlackChannel,
-		ProductLink: "perfUnit",
-	}
-
-	settings := make([]detector.PerformanceSettings, 0, len(teamTests))
-	for _, test := range teamTests {
-		metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, mainSettings, test, config.AdditionalTestMetrics)...)
+	for _, test := range tests {
+		route := resolveRoute(test, projectOwners, ownerChannels, teamConfigs)
+		metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, mainSettings, test, route.additionalTestMetrics)...)
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
 				Project: test,
@@ -222,14 +180,69 @@ func generateProductTestsSettings(
 					Branch:           mainSettings.Branch,
 					Machine:          mainSettings.Machine,
 					Metric:           metric,
-					SlackSettings:    slackSettings,
-					AnalysisSettings: *config.AnalysisSettings,
+					SlackSettings:    detector.SlackSettings{Channel: route.channel, ProductLink: "perfUnit"},
+					AnalysisSettings: route.analysisSettings,
 				},
 			})
 		}
 	}
 
 	return settings
+}
+
+// resolvedRoute is the notification destination chosen for a single test.
+type resolvedRoute struct {
+	channel               string
+	analysisSettings      detector.AnalysisSettings
+	additionalTestMetrics map[string][]string
+}
+
+// resolveRoute determines where a test's notifications go and how it is analyzed.
+//
+// Channel precedence: the test's code owner resolved via the CodeOwners service (primary) ->
+// the first package-prefix match in teamConfigs (fallback) -> the catch-all channel.
+//
+// Analysis settings and additional metrics always come from the matching package teamConfig
+// (so e.g. RubyMine/PhpStorm degradation-only analysis and debugger packet metrics are kept
+// regardless of which channel wins); they are independent of the channel decision.
+func resolveRoute(test string, projectOwners, ownerChannels map[string]string, configs []teamConfig) resolvedRoute {
+	teamCfg := matchTeamConfig(test, configs)
+
+	route := resolvedRoute{
+		channel:          catchAllUnitTestsChannel,
+		analysisSettings: defaultUnitTestAnalysisSettings,
+	}
+	if teamCfg != nil {
+		route.channel = teamCfg.SlackChannel
+		route.analysisSettings = analysisSettingsOrDefault(teamCfg.AnalysisSettings)
+		route.additionalTestMetrics = teamCfg.AdditionalTestMetrics
+	}
+
+	// Owner-based channel takes precedence over the package fallback.
+	if owner := projectOwners[test]; owner != "" {
+		if channel := ownerChannels[owner]; channel != "" {
+			route.channel = channel
+		}
+	}
+
+	return route
+}
+
+// matchTeamConfig returns the first teamConfig whose packages match the test, or nil.
+func matchTeamConfig(test string, configs []teamConfig) *teamConfig {
+	for i := range configs {
+		if testMatchesPackages(test, configs[i].Packages) {
+			return &configs[i]
+		}
+	}
+	return nil
+}
+
+func analysisSettingsOrDefault(s *detector.AnalysisSettings) detector.AnalysisSettings {
+	if s == nil {
+		return defaultUnitTestAnalysisSettings
+	}
+	return *s
 }
 
 func expandAdditionalMetrics(backendUrl string, client *http.Client, mainSettings detector.PerformanceSettings, test string, additionalMetrics map[string][]string) []string {
@@ -252,36 +265,13 @@ func expandAdditionalMetrics(backendUrl string, client *http.Client, mainSetting
 	return expanded
 }
 
-// filterTests returns a new slice of tests based on inclusion or exclusion of packages.
-// If include is true, we keep tests that match the packages
-// If include is false, we remove tests that match the packages
-func filterTests(tests []string, packages []string, include bool) []string {
-	var filtered []string
-	for _, test := range tests {
-		matches := false
-		for _, pkg := range packages {
-			if strings.HasPrefix(test, pkg+".") {
-				matches = true
-				break
-			}
-		}
-		if (include && matches) || (!include && !matches) {
-			filtered = append(filtered, test)
+// testMatchesPackages reports whether the test belongs to one of the given packages,
+// matched by test-class-name prefix.
+func testMatchesPackages(test string, packages []string) bool {
+	for _, pkg := range packages {
+		if strings.HasPrefix(test, pkg+".") {
+			return true
 		}
 	}
-	return filtered
-}
-
-func collectAllPackages(teamConfigs []teamConfig) []string {
-	// pre-allocation calculation
-	totalLen := 0
-	for _, config := range teamConfigs {
-		totalLen += len(config.Packages)
-	}
-
-	allPackages := make([]string, 0, totalLen)
-	for _, config := range teamConfigs {
-		allPackages = append(allPackages, config.Packages...)
-	}
-	return allPackages
+	return false
 }

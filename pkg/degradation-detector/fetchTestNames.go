@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -65,6 +66,53 @@ func fetchTestsByPattern(backendUrl string, client *http.Client, settings Perfor
 
 func FetchAllTests(backendUrl string, client *http.Client, settings PerformanceSettings) ([]string, error) {
 	return fetchTestsByPattern(backendUrl, client, settings, "")
+}
+
+// FetchProjectOwners returns the full project->owner mapping for the given db/table
+// from the meta database, in a single request. Projects without a resolved code
+// owner are simply absent from the map.
+func FetchProjectOwners(backendUrl string, client *http.Client, db, table string) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	params := url.Values{}
+	params.Set("db", db)
+	params.Set("table", table)
+	requestURL := backendUrl + "/api/meta/projectOwners?" + params.Encode()
+
+	return getJSONMap(ctx, client, requestURL, "project owners")
+}
+
+// FetchCodeOwnerChannels returns a map from code-owner group name (and each alias) to its
+// Slack channel, resolved by the backend via the CodeOwners service. Owners without a
+// configured channel are absent from the map.
+func FetchCodeOwnerChannels(backendUrl string, client *http.Client) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	return getJSONMap(ctx, client, backendUrl+"/api/meta/codeOwnerChannels", "code-owner channels")
+}
+
+// getJSONMap issues a GET request to requestURL and decodes the JSON response body into a
+// string->string map. description identifies the call in error messages (e.g. "project owners").
+func getJSONMap(ctx context.Context, client *http.Client, requestURL, description string) (map[string]string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for %s: %w", description, err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send GET request for %s: %w", description, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get %s: %v", description, resp.Status)
+	}
+	result := make(map[string]string)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("failed to decode %s: %w", description, err)
+	}
+	return result, nil
 }
 
 // FetchMetricNamesByPattern returns distinct measures.name values matching the given SQL LIKE

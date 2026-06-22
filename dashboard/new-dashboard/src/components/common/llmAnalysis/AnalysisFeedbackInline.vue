@@ -75,7 +75,7 @@
       </div>
 
       <div
-        class="max-w-md text-xs leading-snug transition-colors"
+        class="min-h-[2.25rem] w-[26rem] text-xs leading-snug transition-colors"
         :class="activeLabel ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'"
       >
         {{ activeLabel ?? "Hover a star to see what each rating means" }}

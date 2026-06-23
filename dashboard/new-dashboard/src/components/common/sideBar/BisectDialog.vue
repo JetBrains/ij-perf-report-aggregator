@@ -67,6 +67,32 @@
         />
         <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
       </FloatLabel>
+      <div
+        v-if="changesGap?.hasGap"
+        class="rounded border border-amber-400 bg-amber-50 p-3 text-sm"
+      >
+        <div class="flex items-center font-medium text-amber-700 mb-2">
+          <ExclamationTriangleIcon class="h-5 w-5 mr-2 shrink-0" />
+          Incomplete change range
+        </div>
+        <p class="text-amber-800 mb-3">
+          This build does not include all changes since the previous data point on the graph.
+          {{ changesGap.gapCommitCount }} commit{{ changesGap.gapCommitCount === 1 ? "" : "s" }} landed in builds that produced no data point (e.g. failed or timed-out runs) and
+          {{ changesGap.gapCommitCount === 1 ? "is" : "are" }} not part of this bisect range.
+        </p>
+        <div class="flex items-center">
+          <Checkbox
+            id="acknowledgeGap"
+            v-model="acknowledgedGap"
+            binary
+          />
+          <label
+            for="acknowledgeGap"
+            class="ml-2 text-amber-800"
+            >I understand the regression may have been introduced by a change outside this range</label
+          >
+        </div>
+      </div>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
@@ -174,7 +200,7 @@ import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
 import { computed, onMounted, Ref, ref } from "vue"
-import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
+import { ChevronDownIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../../util/changes"
@@ -219,6 +245,24 @@ lastCommit.value = last
 
 const router = useRouter()
 const bisectClient = new BisectClient(serverConfigurator)
+
+// Warn when the current build does not include all changes since the previous
+// successful dot: intervening builds that failed/timed out produced no data point,
+// so the commits they consumed are absent from this bisect range.
+//
+// Only meaningful for source-based configurations: when the config runs on an
+// installer (installerId is set), the perf build carries no VCS changes of its own
+// (they live on the installer build), so a build-level gap check would be moot.
+const checkingGap = ref(true)
+const changesGap = computedAsync(
+  () =>
+    data.buildIdPrevious == null || data.installerId != undefined || !firstCommit.value
+      ? Promise.resolve(null)
+      : bisectClient.fetchChangesGap(data.buildId.toString(), data.buildIdPrevious.toString(), firstCommit.value as string),
+  null,
+  checkingGap
+)
+const acknowledgedGap = ref(false)
 const dashboardLink = computed(() => window.location.origin + getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator))
 
 onMounted(() => {
@@ -239,6 +283,12 @@ const reasonOfDisabling = computed(() => {
   }
   if (!isTargetValueValid()) {
     return "Target value must be a valid integer"
+  }
+  if (checkingGap.value) {
+    return "Checking whether the build includes all changes since the previous run…"
+  }
+  if (changesGap.value?.hasGap && !acknowledgedGap.value) {
+    return "Please acknowledge that this build doesn't include all changes since the previous successful run"
   }
   return ""
 })

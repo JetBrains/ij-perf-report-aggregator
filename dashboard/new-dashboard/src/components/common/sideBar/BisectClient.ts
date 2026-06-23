@@ -35,6 +35,12 @@ interface BuildInfo {
   startDate: string
 }
 
+export interface ChangesGap {
+  known: boolean
+  hasGap: boolean
+  gapCommitCount: number
+}
+
 export class BisectClient {
   private readonly serverConfigurator: ServerConfigurator | null
 
@@ -86,6 +92,23 @@ export class BisectClient {
     } catch (error) {
       console.log("Error fetching TeamCity changes:", error)
       return { firstCommit: "", lastCommit: "" }
+    }
+  }
+
+  async fetchChangesGap(buildId: string, previousBuildId: string, currentFirstCommit: string): Promise<ChangesGap | null> {
+    try {
+      const response = await fetch(
+        `${this.serverConfigurator?.serverUrl}/api/meta/teamcity/changesGap?buildId=${encodeURIComponent(buildId)}&previousBuildId=${encodeURIComponent(previousBuildId)}&currentFirstCommit=${encodeURIComponent(currentFirstCommit)}`
+      )
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.log(`Failed to fetch changes gap: ${response.status} - ${errorText}`)
+        return null
+      }
+      return (await response.json()) as ChangesGap
+    } catch (error) {
+      console.log("Error fetching changes gap:", error)
+      return null
     }
   }
 

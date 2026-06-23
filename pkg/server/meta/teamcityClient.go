@@ -280,6 +280,166 @@ func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*
 	return revisions, nil
 }
 
+// changeRef is a single VCS change as returned by the /changes endpoint with
+// fields=...change(id,version). id is TeamCity's internal change id (used as the
+// boundary for the sinceChange locator); version is the VCS revision (commit SHA).
+type changeRef struct {
+	Id      int64  `json:"id"`
+	Version string `json:"version"`
+}
+
+type changesResponse struct {
+	Count  int         `json:"count"`
+	Change []changeRef `json:"change"`
+}
+
+// ChangesGap describes whether the current dot's bisect range covers all commits
+// since the previous successful data point (dot) on the graph.
+//
+// When earlier builds failed/timed out and produced no metric, the commits they
+// consumed exist in no dot at all. Such commits fall below the current build's
+// range (which starts at currentFirstCommit), so a regression introduced by one
+// of them would be unbisectable. This struct surfaces that.
+type ChangesGap struct {
+	// Known is false when the gap could not be determined (e.g. the previous dot's
+	// revision can't be located in the configuration). Callers should not warn then.
+	Known bool `json:"known"`
+	// HasGap is true when there are commits between the previous dot and the start
+	// of the current dot's bisect range that the range does not include.
+	HasGap bool `json:"hasGap"`
+	// GapCommitCount is the number of such uncovered commits.
+	GapCommitCount int `json:"gapCommitCount"`
+}
+
+// getBuildRevision returns the VCS revision (commit SHA) the build was actually
+// built on. Unlike the build's attributed changeset (getBuildChanges), this is
+// always present even for builds TeamCity attributed 0 changes to — which happens
+// routinely when builds of a configuration run out of commit order.
+func (client *TeamCityClient) getBuildRevision(ctx context.Context, buildID string) (string, error) {
+	endpoint := "/app/rest/builds/id:" + url.QueryEscape(buildID) + "?fields=revisions(revision(version))"
+	res, err := client.makeRequest(ctx, endpoint, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	var build struct {
+		Revisions struct {
+			Revision []struct {
+				Version string `json:"version"`
+			} `json:"revision"`
+		} `json:"revisions"`
+	}
+	if err := json.NewDecoder(res.Body).Decode(&build); err != nil {
+		return "", fmt.Errorf("failed to decode build revision response: %w", err)
+	}
+	if len(build.Revisions.Revision) == 0 {
+		return "", nil
+	}
+	return build.Revisions.Revision[0].Version, nil
+}
+
+// getChangeID resolves a VCS revision to TeamCity's internal change id within a
+// build configuration, so it can be used as a sinceChange boundary.
+func (client *TeamCityClient) getChangeID(ctx context.Context, buildTypeID, version string) (int64, error) {
+	endpoint := fmt.Sprintf("/app/rest/changes?locator=buildType:(id:%s),version:%s&fields=change(id)",
+		url.QueryEscape(buildTypeID), url.QueryEscape(version))
+	res, err := client.makeRequest(ctx, endpoint, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return 0, err
+	}
+	defer res.Body.Close()
+
+	var changes changesResponse
+	if err := json.NewDecoder(res.Body).Decode(&changes); err != nil {
+		return 0, fmt.Errorf("failed to decode change-id response: %w", err)
+	}
+	if len(changes.Change) == 0 {
+		return 0, nil
+	}
+	return changes.Change[0].Id, nil
+}
+
+func (client *TeamCityClient) getChangesSince(ctx context.Context, buildTypeID string, sinceChangeID int64) (*changesResponse, error) {
+	endpoint := fmt.Sprintf("/app/rest/changes?locator=buildType:(id:%s),sinceChange:(id:%d),count:10000&fields=count,change(id,version)",
+		url.QueryEscape(buildTypeID), sinceChangeID)
+	res, err := client.makeRequest(ctx, endpoint, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var changes changesResponse
+	if err := json.NewDecoder(res.Body).Decode(&changes); err != nil {
+		return nil, fmt.Errorf("failed to decode changes-since response: %w", err)
+	}
+	return &changes, nil
+}
+
+// getChangesGap determines whether buildID includes all commits since the
+// previous dot (previousBuildID). It compares the current build's own changeset
+// against the full set of changes the build configuration accumulated since the
+// previous dot; the difference is the commits consumed by builds in between that
+// produced no data point.
+// getChangesGap reports whether the current dot's bisect range covers all commits
+// since the previous dot. currentFirstCommit is the oldest commit of the current
+// range (the bisect's lower edge, sourced from the same ClickHouse installer
+// changes the dialog builds the range from), so the check stays consistent with
+// the range that is actually bisected — TeamCity's per-build changeset is not used,
+// since out-of-order builds make it unreliable (often 0 changes).
+func (client *TeamCityClient) getChangesGap(ctx context.Context, buildID, previousBuildID, currentFirstCommit string) (*ChangesGap, error) {
+	if currentFirstCommit == "" {
+		return &ChangesGap{Known: false}, nil
+	}
+
+	// Anchor the previous dot on the commit it was built on, not on its attributed
+	// changeset: builds run out of commit order, so the previous dot's build is
+	// frequently attributed 0 changes even though it has a revision.
+	prevRev, err := client.getBuildRevision(ctx, previousBuildID)
+	if err != nil {
+		return nil, err
+	}
+	if prevRev == "" {
+		return &ChangesGap{Known: false}, nil
+	}
+
+	buildTypeID, err := client.getBuildType(ctx, buildID)
+	if err != nil {
+		return nil, err
+	}
+	prevRevID, err := client.getChangeID(ctx, buildTypeID, prevRev)
+	if err != nil {
+		return nil, err
+	}
+	if prevRevID == 0 {
+		return &ChangesGap{Known: false}, nil
+	}
+
+	// Every commit strictly after the previous dot's revision, newest-first.
+	since, err := client.getChangesSince(ctx, buildTypeID, prevRevID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Locate the current range's lower edge among the commits after the previous
+	// dot. If it isn't there, the range reaches back to or before the previous dot
+	// — no gap. Otherwise the commits older than it (but still after the previous
+	// dot) are the uncovered gap.
+	idx := -1
+	for i, c := range since.Change {
+		if c.Version == currentFirstCommit {
+			idx = i
+			break
+		}
+	}
+	gap := &ChangesGap{Known: true}
+	if idx != -1 {
+		gap.GapCommitCount = len(since.Change) - 1 - idx
+		gap.HasGap = gap.GapCommitCount > 0
+	}
+	return gap, nil
+}
+
 func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, params map[string]string) (*BuildResponse, error) {
 	endpoint := "/app/rest/buildQueue"
 

@@ -83,6 +83,31 @@ func HandleGetTeamCityChanges() http.HandlerFunc {
 	}
 }
 
+func HandleGetTeamCityChangesGap() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		previousBuildID := r.URL.Query().Get("previousBuildId")
+		currentFirstCommit := r.URL.Query().Get("currentFirstCommit")
+		if buildID == "" || previousBuildID == "" || currentFirstCommit == "" {
+			http.Error(w, "buildId, previousBuildId and currentFirstCommit parameters are required", http.StatusBadRequest)
+			return
+		}
+
+		gap, err := teamCityClient.getChangesGap(r.Context(), buildID, previousBuildID, currentFirstCommit)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(gap)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func HandleGetTeamCityBuildType() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		buildID := r.URL.Query().Get("buildId")

@@ -278,6 +278,12 @@ function isTargetValueValid() {
 }
 
 const reasonOfDisabling = computed(() => {
+  // Bisect checks out individual source commits, but installer-based configurations
+  // run on periodically-built installers rather than per-commit, so their data points
+  // can't be mapped to a bisectable source range.
+  if (data.installerId != undefined) {
+    return "Bisect is not supported for configurations running on installers"
+  }
   if (firstCommit.value === "" || lastCommit.value === "") {
     return "Build has no changes"
   }

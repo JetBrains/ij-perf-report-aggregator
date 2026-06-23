@@ -67,20 +67,18 @@
         />
         <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
       </FloatLabel>
-      <div
+      <Message
         v-if="changesGap?.hasGap"
-        class="rounded border border-amber-400 bg-amber-50 p-3 text-sm"
+        severity="warn"
+        :closable="false"
       >
-        <div class="flex items-center font-medium text-amber-700 mb-2">
-          <ExclamationTriangleIcon class="h-5 w-5 mr-2 shrink-0" />
-          Incomplete change range
-        </div>
-        <p class="text-amber-800 mb-3">
+        <div class="font-medium">Incomplete change range</div>
+        <div class="text-sm">
           This build does not include all changes since the previous data point on the graph.
           {{ changesGap.gapCommitCount }} commit{{ changesGap.gapCommitCount === 1 ? "" : "s" }} landed in builds that produced no data point (e.g. failed or timed-out runs) and
           {{ changesGap.gapCommitCount === 1 ? "is" : "are" }} not part of this bisect range.
-        </p>
-        <div class="flex items-center">
+        </div>
+        <div class="flex items-center mt-2">
           <Checkbox
             id="acknowledgeGap"
             v-model="acknowledgedGap"
@@ -88,11 +86,11 @@
           />
           <label
             for="acknowledgeGap"
-            class="ml-2 text-amber-800"
+            class="ml-2"
             >I understand the regression may have been introduced by a change outside this range</label
           >
         </div>
-      </div>
+      </Message>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
@@ -200,7 +198,7 @@ import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
 import { computed, onMounted, Ref, ref } from "vue"
-import { ChevronDownIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid/index"
+import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../../util/changes"

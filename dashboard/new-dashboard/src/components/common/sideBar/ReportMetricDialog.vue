@@ -103,12 +103,6 @@
         With LLM Analysis
       </label>
     </div>
-    <RelatedAccidents
-      :data="data"
-      :accidents-configurator="accidentsConfigurator"
-      :in-dialog="true"
-      @copy-accident="copy"
-    />
     <Message
       v-if="misclickWarning"
       severity="warn"
@@ -118,6 +112,12 @@
       <div class="font-medium">{{ misclickWarning.title }}</div>
       <div class="text-sm">{{ misclickWarning.detail }}</div>
     </Message>
+    <RelatedAccidents
+      :data="data"
+      :accidents-configurator="accidentsConfigurator"
+      :in-dialog="true"
+      @copy-accident="copy"
+    />
     <!-- Footer buttons -->
     <template #footer>
       <div v-if="accidentToEdit == null">

@@ -176,7 +176,7 @@ export function parseDuration(s: string): DurationParseResult {
     if (unitDescriptor == null) {
       console.error(`unknown unit: ${unit}`)
     } else {
-      unitDescriptor.apply(Number.parseInt(n, 10), result)
+      unitDescriptor.apply(Math.trunc(Number(n)), result)
     }
     return ""
   })

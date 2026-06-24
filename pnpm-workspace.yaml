@@ -1,2 +1,4 @@
 packages:
   - "dashboard/**"
+minimumReleaseAgeExclude:
+  - vite@8.1.0

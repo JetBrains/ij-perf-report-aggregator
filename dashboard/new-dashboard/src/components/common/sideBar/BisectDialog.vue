@@ -72,13 +72,13 @@
         severity="warn"
         :closable="false"
       >
-        <div class="font-medium">Incomplete change range</div>
+        <div class="font-medium mb-2">Incomplete change range</div>
         <div class="text-sm">
           This build does not include all changes since the previous data point on the graph.
           {{ changesGap.gapCommitCount }} commit{{ changesGap.gapCommitCount === 1 ? "" : "s" }} landed in builds that produced no data point (e.g. failed or timed-out runs) and
           {{ changesGap.gapCommitCount === 1 ? "is" : "are" }} not part of this bisect range.
         </div>
-        <div class="flex items-center mt-2">
+        <div class="flex items-center mt-3">
           <Checkbox
             id="acknowledgeGap"
             v-model="acknowledgedGap"
@@ -86,7 +86,7 @@
           />
           <label
             for="acknowledgeGap"
-            class="ml-2"
+            class="ml-2 text-sm"
             >I understand the regression may have been introduced by a change outside this range</label
           >
         </div>

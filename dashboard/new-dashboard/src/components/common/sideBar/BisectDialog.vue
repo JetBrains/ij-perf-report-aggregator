@@ -67,12 +67,10 @@
         />
         <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
       </FloatLabel>
-      <Message
+      <WarningNotice
         v-if="changesGap?.hasGap"
-        severity="warn"
-        :closable="false"
+        title="Incomplete change range"
       >
-        <div class="font-medium mb-2">Incomplete change range</div>
         <div class="text-sm">
           This build does not include all changes since the previous data point on the graph.
           {{ changesGap.gapCommitCount }} commit{{ changesGap.gapCommitCount === 1 ? "" : "s" }} landed in builds that produced no data point (e.g. failed or timed-out runs) and
@@ -90,13 +88,11 @@
             >I understand the regression may have been introduced by a change outside this range</label
           >
         </div>
-      </Message>
-      <Message
+      </WarningNotice>
+      <WarningNotice
         v-if="stabilityWarning"
-        severity="warn"
-        :closable="false"
+        :title="stabilityWarning.title"
       >
-        <div class="font-medium mb-2">{{ stabilityWarning.title }}</div>
         <div class="text-sm">{{ stabilityWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
@@ -110,13 +106,11 @@
             >I understand the metric is noisy and want to bisect anyway</label
           >
         </div>
-      </Message>
-      <Message
+      </WarningNotice>
+      <WarningNotice
         v-if="targetValueWarning"
-        severity="warn"
-        :closable="false"
+        :title="targetValueWarning.title"
       >
-        <div class="font-medium mb-2">{{ targetValueWarning.title }}</div>
         <div class="text-sm">{{ targetValueWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
@@ -130,7 +124,7 @@
             >I understand and want to use this target value</label
           >
         </div>
-      </Message>
+      </WarningNotice>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
@@ -241,6 +235,7 @@ import { computed, onMounted, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { checkGraphStability, checkTargetValue } from "./BisectChecks"
+import WarningNotice from "../WarningNotice.vue"
 import { useUserStore } from "../../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../../util/changes"
 import { getPersistentLink } from "../../settings/CopyLink"

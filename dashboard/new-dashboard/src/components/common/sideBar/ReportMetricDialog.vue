@@ -103,15 +103,13 @@
         With LLM Analysis
       </label>
     </div>
-    <Message
+    <WarningNotice
       v-if="misclickWarning"
-      severity="warn"
-      :closable="false"
+      :title="misclickWarning.title"
       class="mb-4"
     >
-      <div class="font-medium">{{ misclickWarning.title }}</div>
       <div class="text-sm">{{ misclickWarning.detail }}</div>
-    </Message>
+    </WarningNotice>
     <RelatedAccidents
       :data="data"
       :accidents-configurator="accidentsConfigurator"
@@ -172,6 +170,7 @@ import { InfoData } from "./InfoSidebar"
 import { generateDefaultReason, inferKindFromData } from "./AccidentUtils"
 import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
+import WarningNotice from "../WarningNotice.vue"
 import { useStorage } from "@vueuse/core"
 
 const { data, accidentsConfigurator, llmAnalysesConfigurator } = defineProps<{

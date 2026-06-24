@@ -91,6 +91,46 @@
           >
         </div>
       </Message>
+      <Message
+        v-if="stabilityWarning"
+        severity="warn"
+        :closable="false"
+      >
+        <div class="font-medium mb-2">{{ stabilityWarning.title }}</div>
+        <div class="text-sm">{{ stabilityWarning.detail }}</div>
+        <div class="flex items-center mt-3">
+          <Checkbox
+            id="acknowledgeStability"
+            v-model="acknowledgedStability"
+            binary
+          />
+          <label
+            for="acknowledgeStability"
+            class="ml-2 text-sm"
+            >I understand the metric is noisy and want to bisect anyway</label
+          >
+        </div>
+      </Message>
+      <Message
+        v-if="targetValueWarning"
+        severity="warn"
+        :closable="false"
+      >
+        <div class="font-medium mb-2">{{ targetValueWarning.title }}</div>
+        <div class="text-sm">{{ targetValueWarning.detail }}</div>
+        <div class="flex items-center mt-3">
+          <Checkbox
+            id="acknowledgeTargetValue"
+            v-model="acknowledgedTargetValue"
+            binary
+          />
+          <label
+            for="acknowledgeTargetValue"
+            class="ml-2 text-sm"
+            >I understand and want to use this target value</label
+          >
+        </div>
+      </Message>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
@@ -200,6 +240,7 @@ import { computedAsync } from "@vueuse/core"
 import { computed, onMounted, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
+import { checkGraphStability, checkTargetValue } from "./BisectChecks"
 import { useUserStore } from "../../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../../util/changes"
 import { getPersistentLink } from "../../settings/CopyLink"
@@ -261,6 +302,14 @@ const changesGap = computedAsync(
   checkingGap
 )
 const acknowledgedGap = ref(false)
+
+// Sanity checks on the surrounding graph: whether the before/after levels are
+// cleanly separated, and whether the entered target value sits between them.
+const stabilityWarning = computed(() => checkGraphStability(data, direction.value))
+const targetValueWarning = computed(() => (isTargetValueValid() ? checkTargetValue(data, direction.value, Number(targetValue.value)) : null))
+const acknowledgedStability = ref(false)
+const acknowledgedTargetValue = ref(false)
+
 const dashboardLink = computed(() => window.location.origin + getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator))
 
 onMounted(() => {
@@ -293,6 +342,12 @@ const reasonOfDisabling = computed(() => {
   }
   if (changesGap.value?.hasGap && !acknowledgedGap.value) {
     return "Please acknowledge that this build doesn't include all changes since the previous successful run"
+  }
+  if (stabilityWarning.value && !acknowledgedStability.value) {
+    return "Please acknowledge the graph stability warning"
+  }
+  if (targetValueWarning.value && !acknowledgedTargetValue.value) {
+    return "Please acknowledge the target value warning"
   }
   return ""
 })

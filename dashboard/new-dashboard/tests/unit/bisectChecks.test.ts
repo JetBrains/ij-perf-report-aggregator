@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { checkGraphStability, checkTargetValue } from "../../src/components/common/sideBar/BisectChecks"
+import { checkGraphStability, checkTargetValue, suggestTargetValue } from "../../src/components/common/sideBar/BisectChecks"
 import type { InfoData } from "../../src/components/common/sideBar/InfoSidebar"
 
 // Builds a minimal InfoData with the surrounding series values. `before` are the
@@ -72,5 +72,29 @@ describe("target value check", () => {
 
   it("returns null for a non-finite target value", () => {
     expect(checkTargetValue(makeData([10], [20]), "DEGRADATION", Number.NaN)).toBeNull()
+  })
+})
+
+describe("target value suggestion", () => {
+  it("degradation: midway between the highest before and the lowest after", () => {
+    expect(suggestTargetValue(makeData([10, 12], [20, 24]), "DEGRADATION")).toBe(16) // (12 + 20) / 2
+  })
+
+  it("optimization: midway between the lowest before and the highest after", () => {
+    expect(suggestTargetValue(makeData([30, 26], [10, 14]), "OPTIMIZATION")).toBe(20) // (26 + 14) / 2
+  })
+
+  it("converts ns values to milliseconds", () => {
+    expect(suggestTargetValue(makeData([10e6, 12e6], [20e6], "ns"), "DEGRADATION")).toBe(16) // (12 + 20) / 2
+  })
+
+  it("returns null when the before/after levels overlap (unstable)", () => {
+    expect(suggestTargetValue(makeData([10, 25], [20, 30]), "DEGRADATION")).toBeNull()
+    expect(suggestTargetValue(makeData([30, 15], [20, 10]), "OPTIMIZATION")).toBeNull()
+  })
+
+  it("returns null without surrounding data", () => {
+    const data = { seriesValues: undefined, pointIndex: undefined } as unknown as InfoData
+    expect(suggestTargetValue(data, "DEGRADATION")).toBeNull()
   })
 })

@@ -76,6 +76,25 @@ export function checkGraphStability(data: InfoData | null, direction: string): B
   }
 }
 
+// suggestTargetValue proposes a target value centred in the gap between the
+// before and after levels: midway between the highest value before the dot and
+// the lowest after it for a degradation, and midway between the lowest before and
+// the highest after for an optimization. Returned in display units (milliseconds
+// for durations); null when there isn't enough surrounding data.
+export function suggestTargetValue(data: InfoData | null, direction: string): number | null {
+  if (data == null) return null
+  // Don't suggest a value when the before/after levels overlap: the midpoint
+  // would fall inside the noise rather than in a real gap between the levels.
+  if (checkGraphStability(data, direction) != null) return null
+  const w = windowsAround(data)
+  if (w == null) return null
+
+  const before = w.before.map((v) => toDisplayUnit(v, data.metricType))
+  const after = w.after.map((v) => toDisplayUnit(v, data.metricType))
+  const midpoint = isDegradation(direction) ? (Math.max(...before) + Math.min(...after)) / 2 : (Math.min(...before) + Math.max(...after)) / 2
+  return Math.round(midpoint)
+}
+
 // checkTargetValue warns when the entered target value does not sit between the
 // before and after levels. For a degradation, values before the dot should stay
 // at or below the target and values after it at or above it; inverse for an

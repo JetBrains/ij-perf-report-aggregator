@@ -76,8 +76,22 @@
 
     <section>
       <CLionVsRadlerIndexingChart
-        label="Index project (LLVM)"
+        label="Index CMake project (LLVM)"
         project="llvm/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerIndexingChart
+        label="Index compdb project (LLVM)"
+        project="llvm_compdb/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerIndexingChart
+        label="Index Makefile project (git)"
+        project="git/indexing"
       />
     </section>
 

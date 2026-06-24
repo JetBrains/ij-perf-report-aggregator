@@ -130,6 +130,18 @@
       </div>
     </section>
 
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <section>
+          <GroupProjectsChart
+            :label="`[Radler] Index project (CMake LLVM vs compdb LLVM)`"
+            :measure="['backendIndexingTimeMs']"
+            :projects="['radler/llvm/indexing', 'radler/llvm_compdb/indexing']"
+          />
+        </section>
+      </div>
+    </section>
+
     <Divider title="Inspection" />
 
     <section>

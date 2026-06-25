@@ -3,10 +3,31 @@ package meta
 import (
 	"context"
 	"io"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
 )
+
+var consecutiveHyphensRegex = regexp.MustCompile(`-+`)
+
+// replicates sanitizing logic on publishing artifacts by driver
+// see com.intellij.ide.starter.ci.teamcity.TeamCityClient#publishTeamCityArtifacts
+func replaceSpecialCharactersWithHyphens(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for _, r := range s {
+		switch {
+		case r == '.' || r == '/' || r == '\\':
+			b.WriteRune(r)
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
+			b.WriteRune(r)
+		default:
+			b.WriteRune('-')
+		}
+	}
+	return strings.Trim(consecutiveHyphensRegex.ReplaceAllString(b.String(), "-"), "-")
+}
 
 type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
@@ -94,7 +115,7 @@ func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
 type perfintCollector struct{}
 
 func (f perfintCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
-	return []string{strings.ReplaceAll(params.ProjectName, "_", "-")}
+	return []string{replaceSpecialCharactersWithHyphens(params.ProjectName)}
 }
 
 func (f perfintCollector) checkArtifact(artifactName string) bool {

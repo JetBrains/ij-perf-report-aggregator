@@ -90,6 +90,24 @@
         </div>
       </WarningNotice>
       <WarningNotice
+        v-if="misclickWarning"
+        :title="misclickWarning.title"
+      >
+        <div class="text-sm">{{ misclickWarning.detail }}</div>
+        <div class="flex items-center mt-3">
+          <Checkbox
+            id="acknowledgeMisclick"
+            v-model="acknowledgedMisclick"
+            binary
+          />
+          <label
+            for="acknowledgeMisclick"
+            class="ml-2 text-sm"
+            >I checked the selected point and want to bisect it</label
+          >
+        </div>
+      </WarningNotice>
+      <WarningNotice
         v-if="stabilityWarning"
         :title="stabilityWarning.title"
       >
@@ -235,6 +253,8 @@ import { computed, onMounted, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { checkGraphStability, checkTargetValue, suggestTargetValue } from "./BisectChecks"
+import { detectPossibleMisclick } from "./MisclickHeuristic"
+import { AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import WarningNotice from "../WarningNotice.vue"
 import { useUserStore } from "../../../shared/useUserStore"
 import { getFirstAndLastCommit } from "../../../util/changes"
@@ -301,9 +321,17 @@ const changesGap = computedAsync(
 )
 const acknowledgedGap = ref(false)
 
+// Whether the selected point itself looks like the wrong one to bisect (unchanged,
+// wrong direction, or a much larger change nearby). This takes priority over the
+// graph checks below: those are computed around the selected point, so if the
+// point is likely wrong they would only report misleading symptoms.
+const misclickWarning = computed(() => detectPossibleMisclick(data, direction.value === "DEGRADATION" ? AccidentKind.Regression : AccidentKind.Improvement))
+const acknowledgedMisclick = ref(false)
+
 // Sanity checks on the surrounding graph: whether the before/after levels are
 // cleanly separated, and whether the entered target value sits between them.
-const stabilityWarning = computed(() => checkGraphStability(data, direction.value))
+// Suppressed while a misclick is suspected, to avoid stacking redundant notices.
+const stabilityWarning = computed(() => (misclickWarning.value ? null : checkGraphStability(data, direction.value)))
 const targetValueWarning = computed(() => (isTargetValueValid() ? checkTargetValue(data, direction.value, Number(targetValue.value)) : null))
 const acknowledgedStability = ref(false)
 const acknowledgedTargetValue = ref(false)
@@ -340,6 +368,9 @@ const reasonOfDisabling = computed(() => {
   }
   if (changesGap.value?.hasGap && !acknowledgedGap.value) {
     return "Please acknowledge that this build doesn't include all changes since the previous successful run"
+  }
+  if (misclickWarning.value && !acknowledgedMisclick.value) {
+    return "Please acknowledge the possible wrong-point warning"
   }
   if (stabilityWarning.value && !acknowledgedStability.value) {
     return "Please acknowledge the graph stability warning"

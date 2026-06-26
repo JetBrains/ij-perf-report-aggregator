@@ -74,6 +74,7 @@
       <GroupProjectsChart
         label="General Computed File Gists Count"
         measure="go.dfa.general.computed.file.gists.count"
+        better-direction="stable"
         :projects="[
           'kubernetes/kubernetes/dfa',
           'cockroach/cockroach/dfa',
@@ -90,6 +91,7 @@
       <GroupProjectsChart
         label="General Files Count"
         measure="go.dfa.general.files.count"
+        better-direction="stable"
         :projects="[
           'kubernetes/kubernetes/dfa',
           'cockroach/cockroach/dfa',
@@ -106,6 +108,7 @@
       <GroupProjectsChart
         label="General Functions Count"
         measure="go.dfa.general.functions.count"
+        better-direction="stable"
         :projects="[
           'kubernetes/kubernetes/dfa',
           'cockroach/cockroach/dfa',

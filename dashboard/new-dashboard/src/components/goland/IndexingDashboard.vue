@@ -18,6 +18,7 @@
         <GroupProjectsChart
           label="Indexed Files"
           measure="numberOfIndexedFilesWritingIndexValue"
+          better-direction="stable"
           :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
         />
       </div>
@@ -41,6 +42,7 @@
         <GroupProjectsChart
           label="Processing Speed"
           measure="processingSpeedAvg#Go"
+          better-direction="higher"
           :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
         />
       </div>

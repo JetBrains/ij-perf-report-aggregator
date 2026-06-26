@@ -1,4 +1,5 @@
 import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
+import type { MeasureUnit } from "../components/common/formatter"
 
 /**
  * Map of metric names to their descriptions.
@@ -60,7 +61,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //find usages
   ["findUsage_popup", "Time to show the find usages popup"],
   ["findUsages", "Time to show all usages in the popup"],
-  ["findUsages#number", "Number of found usages"],
+  ["findUsages#number", metricInfo("Number of found usages", undefined, "counter")],
   ["findUsages#mean_value", "Mean time to show all usages in the popup"],
   ["findUsages_firstUsage", "Time to show the first usage in the popup"],
   //analysis
@@ -70,17 +71,32 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["runDaemon/executionTime", "Time it takes to complete a first daemon run. It might be restarted so it's not a full time."],
   ["globalInspections", "Time of all inspections runned in batch mode (Inspect Project)."],
   //indexing
-  ["indexSize", "Index size in (in kb)"],
-  ["numberOfIndexedFiles", "Number of indexed files"],
-  ["processingSpeedAvg#*", "Speed of indexing file type (in kb/s)"],
+  ["indexSize", metricInfo("Index size (in kB)", undefined, "kilobytes")],
+  ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB)", undefined, "kilobytes")],
+  ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB)", undefined, "kilobytes")],
+  ["numberOfIndexedFiles", metricInfo("Number of indexed files", undefined, "counter")],
+  ["processingSpeedAvg#*", metricInfo("Speed of indexing a file type (in kB/s)", undefined, "kilobytesPerSecond")],
+  ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
+  ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["processingTime#*", "CPU time spent on processing file type"],
   ["indexingTimeWithoutPauses", "Indexing time without interruptions"],
   ["scanningTimeWithoutPauses", "Scanning time without interruptions"],
-  ["pageLoad", "Number of regular Pages' loads."],
-  ["pageMiss", "If the needed page has not existed in the main memory (RAM), it is known as PAGE MISS. The metric displays the number of unsuccessful Pages' obtainment."],
+  ["pageLoad", metricInfo("Number of regular Pages' loads.", undefined, "counter")],
+  [
+    "pageMiss",
+    metricInfo(
+      "If the needed page has not existed in the main memory (RAM), it is known as PAGE MISS. The metric displays the number of unsuccessful Pages' obtainment.",
+      undefined,
+      "counter"
+    ),
+  ],
   [
     "pageHit",
-    "CPU attempts to obtain a needed page from main memory and the page exists in main memory (RAM), it is referred to as a PAGE HIT. This metric displays the number of successful Pages' obtainment.",
+    metricInfo(
+      "CPU attempts to obtain a needed page from main memory and the page exists in main memory (RAM), it is referred to as a PAGE HIT. This metric displays the number of successful Pages' obtainment.",
+      undefined,
+      "counter"
+    ),
   ],
   //typing
   ["typing", "Typing executing time (usually equal to number of typed characters times delay between key presses)"],
@@ -106,10 +122,13 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["convertJavaToKotlin", "Time to execute J2K action in the editor"],
 
   //GC
-  ["freedMemoryByGC", metricInfo("Total memory freed by GC, in MB", "https://github.com/chewiebug/GCViewer#readme")],
+  ["freedMemoryByGC", metricInfo("Total memory freed by GC, in MiB", "https://github.com/chewiebug/GCViewer#readme", "mebibytes")],
   ["fullGCPause", metricInfo("Time that full GC was active (IDE is fully paused)", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPause", metricInfo("Time spent in GC (including minor collections without pausing)", "https://github.com/chewiebug/GCViewer#readme")],
-  ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme")],
+  ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme", "counter")],
+  ["totalHeapUsedMax", metricInfo("Max heap used during the test, in MiB", undefined, "mebibytes")],
+  ["bsp.used.at.exit.mb", metricInfo("Heap used at exit, in MiB", undefined, "mebibytes")],
+  ["bsp.used.after.sync.mb", metricInfo("Heap used after sync, in MiB", undefined, "mebibytes")],
   //others
   ["searchEverywhere_*", "Time to fill all search everywhere results"],
   ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
@@ -146,7 +165,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //benchmark
   ["attempt.mean.ms", "Mean duration in milliseconds across all benchmark attempt spans"],
   //gc
-  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "https://github.com/chewiebug/GCViewer#readme")],
+  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "https://github.com/chewiebug/GCViewer#readme", "bytes")],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
   [
@@ -183,10 +202,12 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 export interface MetricInfo {
   description: string
   url?: string
+  /** The measure unit values of this metric are stored in. Authoritative for value formatting. */
+  unit?: MeasureUnit
 }
 
-function metricInfo(description: string, url?: string): MetricInfo {
-  return { description, url }
+function metricInfo(description: string, url?: string, unit?: MeasureUnit): MetricInfo {
+  return { description, url, unit }
 }
 
 function extractMainPrefix(inputString: string): string {
@@ -199,4 +220,10 @@ export function getMetricDescription(metric: string | undefined): MetricInfo | n
   if (metric == undefined) return null
   const metricDescription = metricsDescription.get(metric) ?? metricsDescription.get(extractMainPrefix(metric) + "*") ?? null
   return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription
+}
+
+// The measure unit declared for `metric`, or undefined when the metric carries no declared unit.
+// Consulted first by resolveMeasureUnit, so a declared unit overrides every name-based heuristic.
+export function getMeasureUnit(metric: string | undefined): MeasureUnit | undefined {
+  return getMetricDescription(metric)?.unit ?? undefined
 }

@@ -42,7 +42,9 @@ export const chartDefaultStyle: ChartStyle = {
   valueUnit: "ms",
 }
 
-export type ValueUnit = "ms" | "ns" | "counter"
+// "auto" (the default) infers the unit from each series' stored metric type; "ms"/"ns"/"counter"
+// are explicit overrides that win over the stored type (some counts/durations are mis-typed).
+export type ValueUnit = "ms" | "ns" | "counter" | "auto"
 
 export type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
 

@@ -50,6 +50,7 @@ const variantOptions = [
   { label: "Built-in", value: "" },
   { label: "NEXT", value: "NEXT" },
   { label: "TSGO_COMBINED", value: "TSGO_COMBINED" },
+  { label: "TSGO_PROXY", value: "TSGO_PROXY" },
 ]
 
 const allProjectVariants = variantOptions.map((option) => option.value)

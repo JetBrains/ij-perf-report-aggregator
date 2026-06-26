@@ -1,5 +1,6 @@
 import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
 import type { MeasureUnit } from "../components/common/formatter"
+import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
 
 /**
  * Map of metric names to their descriptions.
@@ -75,7 +76,6 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB)", undefined, "kilobytes")],
   ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB)", undefined, "kilobytes")],
   ["numberOfIndexedFiles", metricInfo("Number of indexed files", undefined, "counter")],
-  ["processingSpeed", metricInfo("Speed of indexing the project files (in kB/s)", undefined, "kilobytesPerSecond")],
   ["processingSpeedAvg#*", metricInfo("Speed of indexing a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
@@ -219,8 +219,16 @@ function extractMainPrefix(inputString: string): string {
 
 export function getMetricDescription(metric: string | undefined): MetricInfo | null {
   if (metric == undefined) return null
-  const metricDescription = metricsDescription.get(metric) ?? metricsDescription.get(extractMainPrefix(metric) + "*") ?? null
-  return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription
+  // A chart series' measureName is a composite of producer parts joined by SERIES_NAME_SEPARATOR
+  // (machine/branch/dimension producers prepend non-metric tokens), so the metric is not always the
+  // whole string nor at its start. Resolve from the first token matching an exact or "#*" wildcard entry.
+  for (const token of metric.split(SERIES_NAME_SEPARATOR)) {
+    const metricDescription = metricsDescription.get(token) ?? metricsDescription.get(extractMainPrefix(token) + "*")
+    if (metricDescription != undefined) {
+      return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription
+    }
+  }
+  return null
 }
 
 // The measure unit declared for `metric`, or undefined when the metric carries no declared unit.

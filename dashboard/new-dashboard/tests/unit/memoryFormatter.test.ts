@@ -63,6 +63,17 @@ describe("measure unit resolution", () => {
   ])("detects the counter-stored memory metric %s as a size (%s)", (measureName, unit) => {
     expect(resolveMeasureUnit(measureName, { storedType: "c" })).toBe(unit)
   })
+
+  // A series' measureName is a composite of producer parts joined by " – " (machine/branch/dimension
+  // tokens precede the metric), so the declared unit must resolve from the metric token, not the whole
+  // string. These are the production shapes that previously fell through to "counter".
+  it.each([
+    ["master – processingSpeedAvg#Go – processingSpeedAvg#Go", "kilobytesPerSecond"],
+    ["master – freedMemoryByGC – freedMemoryByGC", "mebibytes"],
+    ["master – indexSize – indexSize", "kilobytes"],
+  ])("resolves the declared unit from a composite measure name %s (%s)", (measureName, unit) => {
+    expect(resolveMeasureUnit(measureName, { storedType: "c" })).toBe(unit)
+  })
 })
 
 describe("measure value formatting", () => {

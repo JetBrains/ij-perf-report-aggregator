@@ -48,7 +48,7 @@ describe("changeDetector", () => {
       553, 531, 602, 626, 634,
     ]
     const changePoints = getChangePointIndexes(dataset, 30)
-    const classified = classifyChangePoint(changePoints, dataset)
+    const classified = classifyChangePoint(changePoints, dataset).map((change) => change.classification)
 
     expect(classified).toStrictEqual(["No Change", "No Change", "No Change"])
   })

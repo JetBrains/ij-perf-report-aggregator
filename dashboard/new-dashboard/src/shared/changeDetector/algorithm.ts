@@ -15,11 +15,20 @@ export enum ChangePointClassification {
  */
 export type BetterDirection = "lower" | "higher" | "stable"
 
-export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Map<string, ChangePointClassification> {
+/** Direction a metric value moved at a change point; drives the trend-arrow orientation. */
+export type ChangeDirection = "up" | "down"
+
+/** A detected change point: how the value moved, and whether that move is good or bad. */
+export interface DetectedChange {
+  readonly classification: ChangePointClassification
+  readonly direction: ChangeDirection
+}
+
+export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Map<string, DetectedChange> {
   const dataset = seriesData[1] as number[] | undefined
   const changePointIndexes = getChangePointIndexes(dataset, 5)
   const classifications = classifyChangePoint(changePointIndexes, dataset, betterDirection)
-  const resultMap = new Map<string, ChangePointClassification>()
+  const resultMap = new Map<string, DetectedChange>()
 
   for (const [index, value] of changePointIndexes.entries()) {
     const extractedValues = extractValuesFromMatrix(seriesData, value)
@@ -48,7 +57,7 @@ const getSegmentCost = (partialSums: number[][], tau1: number, tau2: number, k: 
 
 export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined, betterDirection: BetterDirection = "lower") => {
   if (dataset == undefined) return []
-  const classifications: ChangePointClassification[] = []
+  const classifications: DetectedChange[] = []
 
   for (let i = 0; i < changePointIndexes.length; i++) {
     // If it's the first change point, take data from the beginning, otherwise from the previous change point.
@@ -102,7 +111,9 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
       classification = isRegression ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
     }
 
-    classifications.push(classification)
+    // Arrow points the way the value actually moved, independent of whether that move is good or bad.
+    const direction: ChangeDirection = shiftValue > 0 ? "up" : "down"
+    classifications.push({ classification, direction })
   }
   return classifications
 }

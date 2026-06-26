@@ -1,7 +1,7 @@
-import { BetterDirection, ChangePointClassification } from "./algorithm"
+import { BetterDirection, DetectedChange } from "./algorithm"
 import MyWorker from "./worker?worker&inline"
 
-export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Promise<Map<string, ChangePointClassification>> {
+export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Promise<Map<string, DetectedChange>> {
   const worker = new MyWorker()
   worker.postMessage({ seriesData, betterDirection })
   return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export function detectChanges(seriesData: (string | number)[][], betterDirection
       reject(event.error as Error)
       worker.terminate()
     })
-    worker.addEventListener("message", (event: MessageEvent<Map<string, ChangePointClassification>>) => {
+    worker.addEventListener("message", (event: MessageEvent<Map<string, DetectedChange>>) => {
       resolve(event.data)
       worker.terminate()
     })

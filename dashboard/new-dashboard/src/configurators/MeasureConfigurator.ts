@@ -20,7 +20,7 @@ import { LineChartOptions, ScatterChartOptions } from "../components/common/echa
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
-import { BetterDirection, ChangePointClassification } from "../shared/changeDetector/algorithm"
+import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
@@ -390,7 +390,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, ChangePointClassification>()) {
+function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, DetectedChange>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       if (useSelectedPointStore().selectedPoint != undefined && getBasicInfo(seriesIndex, "ms").buildId.toString() == useSelectedPointStore().selectedPoint) {
@@ -399,12 +399,12 @@ function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | nul
       }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
-        const detectChange = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))
-        if (detectChange == ChangePointClassification.DEGRADATION) {
+        const classification = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))?.classification
+        if (classification == ChangePointClassification.DEGRADATION) {
           return "#cc0000"
-        } else if (detectChange == ChangePointClassification.OPTIMIZATION) {
+        } else if (classification == ChangePointClassification.OPTIMIZATION) {
           return "#009900"
-        } else if (detectChange == ChangePointClassification.NO_CHANGE) {
+        } else if (classification == ChangePointClassification.NO_CHANGE) {
           // return "#b4b3b3"
         }
         return seriesIndex.color as ZRColor
@@ -428,9 +428,9 @@ function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | nul
   }
 }
 
-function isChangeDetected(detectedChanges: Map<string, ChangePointClassification>, value: string[]) {
-  const changePointClassification = detectedChanges.get(JSON.stringify(value))
-  return changePointClassification != undefined && changePointClassification != ChangePointClassification.NO_CHANGE
+function isChangeDetected(detectedChanges: Map<string, DetectedChange>, value: string[]) {
+  const classification = detectedChanges.get(JSON.stringify(value))?.classification
+  return classification != undefined && classification != ChangePointClassification.NO_CHANGE
 }
 
 class MergeResults {
@@ -551,7 +551,7 @@ async function configureChart(
       useDurationFormatter = false
     }
 
-    let detectedChanges = new Map<string, ChangePointClassification>()
+    let detectedChanges = new Map<string, DetectedChange>()
     if (settings.detectChanges) {
       detectedChanges = await detectChanges(seriesData, betterDirection)
     }
@@ -595,8 +595,8 @@ async function configureChart(
           return settings.smoothing ? symbolSize / 3 : symbolSize
         },
         symbolRotate(value: string[]): number {
-          const detectChange = detectedChanges.get(JSON.stringify(value))
-          return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
+          // The "arrow" symbol points up by default; rotate 180° to point down when the value fell.
+          return detectedChanges.get(JSON.stringify(value))?.direction === "down" ? 180 : 0
         },
         symbol(value: string[]) {
           const accidents = accidentsConfigurator?.getAccidents(value) ?? null

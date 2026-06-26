@@ -160,6 +160,8 @@ export function formatMeasureValue(value: number, unit: MeasureUnit): string {
       return scaleBy(value, 1000, decimalUnits, 1, "/s")
     case "counter":
       return value.toLocaleString()
+    default:
+      throw new Error(`Unsupported measure unit: ${unit as string}`)
   }
 }
 

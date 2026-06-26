@@ -75,6 +75,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB)", undefined, "kilobytes")],
   ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB)", undefined, "kilobytes")],
   ["numberOfIndexedFiles", metricInfo("Number of indexed files", undefined, "counter")],
+  ["processingSpeed", metricInfo("Speed of indexing the project files (in kB/s)", undefined, "kilobytesPerSecond")],
   ["processingSpeedAvg#*", metricInfo("Speed of indexing a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],

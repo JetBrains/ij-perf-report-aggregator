@@ -53,6 +53,16 @@ describe("measure unit resolution", () => {
     expect(resolveMeasureUnit("firstCodeAnalysis", { storedType: "c" })).toBe("counter")
     expect(resolveMeasureUnit("fileCount", { storedType: "d" })).toBe("milliseconds")
   })
+
+  // The perf pipeline stores sizes and plain counts alike as "c", so a memory name must still be
+  // detected as a size even when the stored type is "c" (the condition every production chart passes).
+  it.each([
+    ["rd.memory.workingSetMb", "mebibytes"],
+    ["classLoadingMetrics/totalSizeKb", "kibibytes"],
+    ["Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "mebibytes"],
+  ])("detects the counter-stored memory metric %s as a size (%s)", (measureName, unit) => {
+    expect(resolveMeasureUnit(measureName, { storedType: "c" })).toBe(unit)
+  })
 })
 
 describe("measure value formatting", () => {

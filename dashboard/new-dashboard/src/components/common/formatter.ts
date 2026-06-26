@@ -120,7 +120,9 @@ export type MeasureUnit = "nanoseconds" | "milliseconds" | "counter" | "bytes" |
 const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", "kilobytesPerSecond"])
 
 // Resolves how a value should be rendered. A unit declared in metricsDescription is authoritative;
-// otherwise an explicit value-unit, then the stored type ("c"/"d"), then a name-based fallback decide.
+// otherwise an explicit value-unit wins. A stored "d" type is a real duration, but a stored "c" type
+// only means "not a duration" — the perf pipeline stores sizes and plain counts alike as "c" — so the
+// name-based size detection is consulted before falling back to "c" as a counter.
 // While scaling, a physical unit is a baseline ratio and renders as a counter.
 export function resolveMeasureUnit(measureName: string, opts: { storedType?: string; valueUnit?: ValueUnit; scaling?: boolean } = {}): MeasureUnit {
   const { storedType, valueUnit = "auto", scaling = false } = opts
@@ -132,9 +134,9 @@ export function resolveMeasureUnit(measureName: string, opts: { storedType?: str
   if (valueUnit === "counter") return "counter"
   if (valueUnit === "ns") return "nanoseconds"
   if (valueUnit === "ms") return "milliseconds"
-  if (storedType === "c" || storedType === "counter") return "counter"
   if (storedType === "d" || storedType === "duration") return "milliseconds"
   if (isMemoryMeasure(measureName)) return isKilobyteMeasure(measureName) ? "kibibytes" : "mebibytes"
+  if (storedType === "c" || storedType === "counter") return "counter"
   return isDurationFormatterApplicable(measureName) ? "milliseconds" : "counter"
 }
 

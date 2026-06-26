@@ -44,7 +44,7 @@ const {
   measure,
   projects,
   machines = null,
-  valueUnit = "ms",
+  valueUnit = "auto",
   legendFormatter = (name: string) => name,
   aliases = null,
   canBeClosed = false,

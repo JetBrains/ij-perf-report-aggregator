@@ -8,7 +8,7 @@ import { dbTypeStore } from "../../../shared/dbTypes"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
-import { durationAxisPointerFormatter, getValueFormatterByMeasureName, isDurationFormatterApplicable, nsToMs, timeFormatWithoutSeconds } from "../formatter"
+import { formatMeasureValue, resolveMeasureUnit, timeFormatWithoutSeconds } from "../formatter"
 import { encodeRison } from "../rison"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
@@ -145,9 +145,6 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     metricName = dataSeries[2] as string
-    if (!isDurationFormatterApplicable(metricName)) {
-      type = "counter"
-    }
     machineName = dataSeries[3] as string
     projectName = dataSeries[5] as string
     installerId = dataSeries[6] as number
@@ -155,9 +152,6 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
     metricName = dataSeries[2] as string
-    if (!isDurationFormatterApplicable(metricName)) {
-      type = "counter"
-    }
     machineName = dataSeries[3] as string
     projectName = dataSeries[5] as string
     branch = dataSeries[6] as string
@@ -193,6 +187,11 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
+  }
+
+  // An explicit value-unit on the chart wins over the per-series type detected from the data.
+  if (valueUnit !== "auto") {
+    type = valueUnit
   }
 
   const buildId: number | undefined = getBuildId(params.value as (string | number)[])
@@ -266,7 +265,7 @@ export function getInfoDataFrom(
     for (const param of filteredParams) {
       const currentSeriesData = param.value as OptionDataValue[]
       const value = currentSeriesData[1] as number
-      const showValue = getValueFormatterByMeasureName(param.seriesName as string)(value)
+      const showValue = formatMeasureValue(value, resolveMeasureUnit(param.seriesName as string))
       series.push({ metricName: param.seriesName as string, value: showValue, color: param.color as string, rawValue: value })
     }
 
@@ -291,9 +290,12 @@ export function getInfoDataFrom(
     params = params[0]
   }
   const info = getInfo(params, valueUnit, accidents)
+  const metricName = info.metricName ?? ""
   const dataSeries = params.value as OptionDataValue[]
-  const value: number = useSettingsStore().scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
-  const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, info.type)
+  const scaling = useSettingsStore().scaling
+  const unit = resolveMeasureUnit(metricName, { storedType: dataSeries[3] as string, valueUnit, scaling })
+  const value: number = scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
+  const showValue: string = formatMeasureValue(value, unit)
   const delta = findDeltaInData(dataSeries)
   let deltaPrevious: string | undefined
   let deltaNext: string | undefined
@@ -304,13 +306,13 @@ export function getInfoDataFrom(
   let nextValue: number | undefined
   if (delta != undefined) {
     if (delta.prev != null) {
-      deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", info.type)
+      deltaPrevious = getDifferenceString(value, delta.prev, unit)
       buildIdPrevious = delta.prevBuildId
-      formattedPreviousValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(delta.prev) : delta.prev, info.type)
+      formattedPreviousValue = formatMeasureValue(delta.prev, unit)
       previousValue = delta.prev
     }
     if (delta.next != null) {
-      deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
+      deltaNext = getDifferenceString(value, delta.next, unit)
       buildIdNext = delta.nextBuildId
       nextValue = delta.next
     }

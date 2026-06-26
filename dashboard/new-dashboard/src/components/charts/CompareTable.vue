@@ -137,7 +137,7 @@ import { openTestDrilldown } from "../../util/testDrilldown"
 import { BaseAndCompared, CompareSectionConfig, pickBaseAndCompared } from "./compareMode"
 import { indexSeries, seriesKey } from "./compareQuery"
 import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, DISPARITY_SIGNIFICANT_THRESHOLD } from "./compareStats"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs } from "../common/formatter"
+import { formatMeasureValue, resolveMeasureUnit } from "../common/formatter"
 
 const DIFF_PERCENT_WARN = 5
 const DIFF_PERCENT_SEVERE = 20
@@ -407,10 +407,7 @@ function effectiveValueUnit(row: CompareRow): ValueUnit {
 
 function formatRowValue(row: CompareRow, value: number): string {
   if (!Number.isFinite(value)) return "—"
-  const unit = effectiveValueUnit(row)
-  const valueInMs = unit === "ns" ? nsToMs(value) : value
-  const type = unit === "counter" || !isDurationFormatterApplicable(row.metric) ? "c" : "d"
-  return durationAxisPointerFormatter(valueInMs, type)
+  return formatMeasureValue(value, resolveMeasureUnit(row.metric, { valueUnit: effectiveValueUnit(row) }))
 }
 
 function formatRowRange(row: CompareRow, lo: number, hi: number): string {

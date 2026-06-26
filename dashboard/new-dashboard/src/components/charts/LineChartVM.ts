@@ -10,7 +10,7 @@ import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds, typeIsCounter } from "../common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit, timeFormatWithoutSeconds } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { consumeMatchedSelectedPoints } from "../../shared/selectedPointStore"
@@ -46,12 +46,11 @@ export class LineChartVM {
   private hoverFade?: HoverFadeController
   private autoOpenConfig: AutoOpenConfig | null = null
   private hasAutoOpened = false
-
-  private getFormatter(isMs: boolean) {
+  private getFormatter() {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
       this.lastParams = params
       const paramsArray = Array.isArray(params) ? params : [params]
-      return paramsArray.length == 1 ? this.getElementForSingleSerie(isMs, paramsArray[0]) : this.getElementForMultipleSeries(isMs, paramsArray)
+      return paramsArray.length == 1 ? this.getElementForSingleSerie(paramsArray[0]) : this.getElementForMultipleSeries(paramsArray)
     }
   }
 
@@ -129,7 +128,7 @@ export class LineChartVM {
     return userAgent.includes("mac")
   }
 
-  private getElementForMultipleSeries(isMs: boolean, params: CallbackDataParams[]) {
+  private getElementForMultipleSeries(params: CallbackDataParams[]) {
     const element = document.createElement("div")
     const dateMs = (params[0].value as (OptionDataValue | Delta)[])[0]
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
@@ -143,30 +142,26 @@ export class LineChartVM {
       seriesName.append(measureNameToLabel(param.seriesName as string))
       element.append(seriesName, document.createElement("br"))
       const data = param.value as (OptionDataValue | Delta)[]
-      const type = this.getType(data)
+      const unit = this.resolveUnit(data)
       const durationMs = this.settings.scaling ? data.at(-1) : data[1]
-      element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
+      element.append(formatMeasureValue(durationMs as number, unit), document.createElement("br"))
       this.appendAccidentInfo(data, element)
-      this.appendDelta(data, element, durationMs as number, isMs, type)
+      this.appendDelta(data, element, durationMs as number, unit)
     }
     return element
   }
 
-  private getType(data: (OptionDataValue | Delta)[]) {
-    let type = data[3]
-    if (type != "c" && type != "d") {
-      type = isDurationFormatterApplicable(data[2] as string) ? "d" : "c"
-    }
-    return type
+  private resolveUnit(data: (OptionDataValue | Delta)[]): MeasureUnit {
+    return resolveMeasureUnit(data[2] as string, { storedType: data[3] as string, valueUnit: this.valueUnit, scaling: this.settings.scaling })
   }
 
-  private getElementForSingleSerie(isMs: boolean, params: CallbackDataParams) {
+  private getElementForSingleSerie(params: CallbackDataParams) {
     const element = document.createElement("div")
     const data = params.value as (OptionDataValue | Delta)[]
     const dateMs = data[0]
-    const type = this.getType(data)
+    const unit = this.resolveUnit(data)
     const durationMs = this.settings.scaling ? data.at(-1) : data[1]
-    element.append(durationAxisPointerFormatter(isMs || typeIsCounter(type) ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
+    element.append(formatMeasureValue(durationMs as number, unit), document.createElement("br"))
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
     element.append(measureNameToLabel(params.seriesName as string))
     const buildId = getFullBuildId(params)
@@ -174,9 +169,9 @@ export class LineChartVM {
       element.append(document.createElement("br"), buildId)
     }
     this.appendAccidentInfo(data, element)
-    this.appendDelta(data, element, durationMs as number, isMs, type)
+    this.appendDelta(data, element, durationMs as number, unit)
     if (params.seriesName && this.lastClickedValue.get(params.seriesName)) {
-      this.appendDeltaWithLastClicked(durationMs as number, this.lastClickedValue.get(params.seriesName)?.value as number, element, isMs, type)
+      this.appendDeltaWithLastClicked(durationMs as number, this.lastClickedValue.get(params.seriesName)?.value as number, element, unit)
     }
     return element
   }
@@ -190,20 +185,20 @@ export class LineChartVM {
     }
   }
 
-  private appendDelta(data: (OptionDataValue | Delta)[], element: HTMLDivElement, durationMs: number, isMs: boolean, type: string) {
+  private appendDelta(data: (OptionDataValue | Delta)[], element: HTMLDivElement, durationMs: number, unit: MeasureUnit) {
     const delta = findDeltaInData(data)
     if (delta != undefined) {
       if (delta.prev != null) {
-        appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs, delta.prev, isMs, type))
+        appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs, delta.prev, unit))
       }
       if (delta.next != null) {
-        appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs, delta.next, isMs, type))
+        appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs, delta.next, unit))
       }
     }
   }
 
-  private appendDeltaWithLastClicked(durationMs: number, lastClicked: number, element: HTMLDivElement, isMs: boolean, type: string) {
-    appendLineWithIcon(element, getDiffIcon(), getDifferenceString(lastClicked, durationMs, isMs, type))
+  private appendDeltaWithLastClicked(durationMs: number, lastClicked: number, element: HTMLDivElement, unit: MeasureUnit) {
+    appendLineWithIcon(element, getDiffIcon(), getDifferenceString(lastClicked, durationMs, unit))
   }
 
   private getAccidentMessage(accident: Accident): string {
@@ -217,14 +212,21 @@ export class LineChartVM {
   constructor(
     private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
-    valueUnit: ValueUnit,
+    private readonly valueUnit: ValueUnit,
+    measures: string[],
     accidentsConfigurator: AccidentsConfigurator | null,
     private readonly legendFormatter: (name: string) => string,
     hasDataCallback?: (hasData: boolean) => void
   ) {
     this.accidentsConfigurator = accidentsConfigurator
     this.hasDataCallback = hasDataCallback
-    const isMs = valueUnit == "ms"
+    // The axis-pointer label has no per-series context, so resolve a chart-level unit from the
+    // chart's measures (falling back to the value-unit request alone when no measure is known),
+    // matching the y-axis. A throughput chart then shows kB/s on the pointer, not a raw number.
+    const axisUnit =
+      measures.length > 0
+        ? reduceToAxisUnit(measures.map((measure) => resolveMeasureUnit(measure, { valueUnit, scaling: this.settings.scaling })))
+        : resolveMeasureUnit("", { valueUnit, scaling: this.settings.scaling })
     this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
@@ -300,10 +302,8 @@ export class LineChartVM {
           return [left, top]
         },
         // Formatting
-        formatter: this.getFormatter(isMs),
-        valueFormatter(it) {
-          return numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms"
-        },
+        formatter: this.getFormatter(),
+        valueFormatter: (it) => formatMeasureValue(it as number, axisUnit),
         // Styling
         padding: [6, 8],
         backgroundColor: useDarkModeStore().darkMode ? "#121212" : "white",

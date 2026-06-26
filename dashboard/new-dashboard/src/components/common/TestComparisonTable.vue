@@ -78,7 +78,7 @@ import { serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { TestComparisonTableEntry } from "./TestComparisonTableEntry"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "./dataQuery"
-import { formatPercentage, getValueFormatterByMeasureName } from "./formatter"
+import { formatMeasureValue, formatPercentage, resolveMeasureUnit } from "./formatter"
 import { DBType } from "./sideBar/InfoSidebar"
 import { dbTypeStore } from "../../shared/dbTypes"
 import { getMachineGroupName } from "../../configurators/MachineConfigurator"
@@ -145,7 +145,7 @@ const filters = ref({
   test: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
 
-const formatMeasure = getValueFormatterByMeasureName(measure)
+const formatMeasure = (value: number) => formatMeasureValue(value, resolveMeasureUnit(measure))
 
 function formatMeasureOrFallback(value: number | null) {
   if (value === null) return "N/A"

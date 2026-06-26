@@ -80,7 +80,7 @@ const {
   configurators,
   skipZeroValues = true,
   chartType = "line",
-  valueUnit = "ms",
+  valueUnit = "auto",
   tooltipTrigger = "item",
   legendFormatter = (name: string) => name,
   withMeasureName = false,
@@ -173,7 +173,7 @@ function createChart() {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, accidentsConfigurator, legendFormatter, (hasDataValue: boolean) => {
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, measures, accidentsConfigurator, legendFormatter, (hasDataValue: boolean) => {
       // If transitioning from no data to having data, recreate the chart, otherwise empty chart is shown
       if (!previousHasData.value && hasDataValue) {
         setTimeout(() => {

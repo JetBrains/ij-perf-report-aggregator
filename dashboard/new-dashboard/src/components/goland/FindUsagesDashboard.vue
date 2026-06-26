@@ -6,59 +6,16 @@
     persistent-id="goland_findusages_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
-    <section>
+    <section
+      v-for="chart in charts"
+      :key="chart.key"
+    >
       <GroupProjectsChart
-        label="Total Execution Time"
-        measure="findUsages"
-        :projects="[
-          'vault/backend(interface)',
-          'vault/list(method)',
-          'vault/path(struct)',
-          'vault/string(method)',
-          'vault/unmarshalJSON(method)',
-          'pocketbase/write(method)',
-          'pocketbase/start(method)',
-          'pocketbase/open(method)',
-          'pocketbase/file(struct)',
-          'pocketbase/close(method)',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="First Usage Time"
-        measure="findUsages_firstUsage"
-        :projects="[
-          'vault/backend(interface)',
-          'vault/list(method)',
-          'vault/path(struct)',
-          'vault/string(method)',
-          'vault/unmarshalJSON(method)',
-          'pocketbase/write(method)',
-          'pocketbase/start(method)',
-          'pocketbase/open(method)',
-          'pocketbase/file(struct)',
-          'pocketbase/close(method)',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of Usages"
-        measure="findUsages#number"
-        better-direction="stable"
-        :projects="[
-          'vault/backend(interface)',
-          'vault/list(method)',
-          'vault/path(struct)',
-          'vault/string(method)',
-          'vault/unmarshalJSON(method)',
-          'pocketbase/write(method)',
-          'pocketbase/start(method)',
-          'pocketbase/open(method)',
-          'pocketbase/file(struct)',
-          'pocketbase/close(method)',
-        ]"
+        :label="chart.label"
+        :measure="chart.measure"
+        :projects="findUsagesProjects"
+        :better-direction="chart.betterDirection"
+        :description="chart.description"
       />
     </section>
   </DashboardPage>
@@ -67,4 +24,32 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import type { BetterDirection } from "../../shared/changeDetector/algorithm"
+
+interface ChartDef {
+  key: string
+  label: string
+  measure: string
+  description?: string
+  betterDirection?: BetterDirection
+}
+
+const findUsagesProjects = [
+  "vault/backend(interface)",
+  "vault/list(method)",
+  "vault/path(struct)",
+  "vault/string(method)",
+  "vault/unmarshalJSON(method)",
+  "pocketbase/write(method)",
+  "pocketbase/start(method)",
+  "pocketbase/open(method)",
+  "pocketbase/file(struct)",
+  "pocketbase/close(method)",
+]
+
+const charts: ChartDef[] = [
+  { key: "total", label: "Total Execution Time", measure: "findUsages" },
+  { key: "firstUsage", label: "First Usage Time", measure: "findUsages_firstUsage" },
+  { key: "number", label: "Number of Usages", measure: "findUsages#number", betterDirection: "stable" },
+]
 </script>

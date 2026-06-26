@@ -150,6 +150,10 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		return nil
 	}
 
+	if runResult.Report.Owner == "" {
+		runResult.Report.Owner = ownerFromBuildProperties(extraData)
+	}
+
 	if extraData.ProductCode == "" {
 		extraData.ProductCode = runResult.Report.ProductCode
 	}
@@ -217,6 +221,19 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		runResult: runResult,
 	}
 	return nil
+}
+
+func ownerFromBuildProperties(extraData model.ExtraData) string {
+	if len(extraData.TcBuildProperties) == 0 {
+		return ""
+	}
+	parser := parserPool.Get()
+	defer parserPool.Put(parser)
+	props, err := parser.ParseBytes(extraData.TcBuildProperties)
+	if err != nil {
+		return ""
+	}
+	return string(props.GetStringBytes("ultimate.codeowner"))
 }
 
 func isBisectRun(extraData model.ExtraData, logger *slog.Logger) bool {

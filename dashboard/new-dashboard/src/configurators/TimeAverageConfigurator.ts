@@ -3,7 +3,7 @@ import { DatasetOption } from "echarts/types/dist/shared"
 import { ChartConfigurator } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { LineChartOptions } from "../components/common/echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter } from "../components/common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
 
 export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConfigurator {
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -27,10 +27,10 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
 
   configureChart(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration): Promise<LineChartOptions> {
     const series = new Array<LineSeriesOption | ScatterSeriesOption>()
-    let useDurationFormatter = true
 
     const dataset: DatasetOption[] = []
 
+    const measureUnits: MeasureUnit[] = []
     for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
       const measureName = configuration.measureNames[dataIndex]
       const seriesName = "aggregate"
@@ -46,15 +46,8 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         return ""
       })
 
-      if (seriesData.length > 2) {
-        // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-        const type = seriesData[2].at(-1)
-        if (type === "c") {
-          useDurationFormatter = false
-        } else if (type === "d") {
-          useDurationFormatter = true
-        }
-      }
+      // we take only the last type of the metric since it is not clear how to show different types
+      const storedType = seriesData.length > 2 ? (seriesData[2].at(-1) as string) : undefined
 
       series.push({
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
@@ -76,9 +69,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         ],
       })
 
-      if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
-        useDurationFormatter = false
-      }
+      measureUnits.push(resolveMeasureUnit(measureName, { storedType }))
 
       dataset.push({
         source: seriesData,
@@ -86,7 +77,8 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
       })
     }
 
-    const formatter: (valueInMs: number) => string = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
+    const axisUnit = reduceToAxisUnit(measureUnits)
+    const formatter: (value: number) => string = (value) => formatMeasureValue(value, axisUnit)
     return Promise.resolve({
       dataset,
       yAxis: {

@@ -3,10 +3,10 @@ import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "
 import type { DimensionDefinition } from "../shared/echarts-types"
 import { Ref } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
-import { ChartConfigurator, ChartStyle, ValueUnit } from "../components/common/chart"
+import { ChartConfigurator, ChartStyle } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { BarChartOptions } from "../components/common/echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat } from "../components/common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
 import { dbTypeStore } from "../shared/dbTypes"
 import { TimeRange } from "./TimeRangeConfigurator"
 
@@ -74,7 +74,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 }
 
 function configureWithQueryProducers(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): Promise<BarChartOptions> {
-  let useDurationFormatter = true
+  const measureUnits: MeasureUnit[] = []
 
   const dimensionNameSet = new Set<string>()
   const source: Record<string, string | number>[] = []
@@ -82,9 +82,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
   // outer cycle over measures to group it together (e.g. if several machines are selected)
   for (let measureIndex = 0; measureIndex < configuration.measures.length; measureIndex++) {
     for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
-      if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
-        useDurationFormatter = false
-      }
+      measureUnits.push(resolveMeasureUnit(configuration.measureNames[dataIndex], { valueUnit: chartStyle.valueUnit }))
 
       const measure = configuration.measures[measureIndex]
       const classifier = configuration.seriesNames[dataIndex]
@@ -111,7 +109,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
   }
 
   const series = Array.from<BarSeriesOption>({ length: dimensions.length - 1 })
-  const formatter = getSeriesLabelFormatter(useDurationFormatter, chartStyle.valueUnit)
+  const formatter = getSeriesLabelFormatter(reduceToAxisUnit(measureUnits))
   for (let i = 0; i < series.length; i++) {
     series[i] = {
       type: "bar",
@@ -132,11 +130,10 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
   })
 }
 
-function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: ValueUnit): (p: CallbackDataParams) => string {
-  const converter: (it: number) => number = valueUnit === "ns" ? nsToMs : (it) => it
+function getSeriesLabelFormatter(unit: MeasureUnit): (p: CallbackDataParams) => string {
   return function (data: CallbackDataParams): string {
-    const value = converter((data.value as Record<string, string | number>)[data.seriesName as string] as number)
-    return useDurationFormatter && value > 10_000 ? durationAxisPointerFormatter(value) : numberFormat.format(value)
+    const value = (data.value as Record<string, string | number>)[data.seriesName as string] as number
+    return formatMeasureValue(value, unit)
   }
 }
 

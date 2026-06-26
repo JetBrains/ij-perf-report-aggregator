@@ -17,7 +17,7 @@ import {
   toMutableArray,
 } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
@@ -174,7 +174,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
-    return configureChart(configuration, data, this.chartType, "ms", this.symbolOptions)
+    return configureChart(configuration, data, this.chartType, "auto", this.symbolOptions)
   }
 
   configureFilter(query: DataQuery): boolean {
@@ -256,7 +256,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly measures: Ref<string[]> = shallowRef([]),
     readonly skipZeroValues: Ref<boolean> = shallowRef(true),
     private readonly chartType: ChartType = "line",
-    private readonly valueUnit: ValueUnit = "ms",
+    private readonly valueUnit: ValueUnit = "auto",
     readonly symbolOptions: SymbolOptions = {},
     readonly accidentsConfigurator: AccidentsConfigurator | null = null,
     readonly toolTipTrigger: TooltipTrigger,
@@ -494,14 +494,13 @@ async function configureChart(
   configuration: DataQueryExecutorConfiguration,
   dataList: DataQueryResult,
   chartType: ChartType,
-  valueUnit: ValueUnit = "ms",
+  valueUnit: ValueUnit = "auto",
   symbolOptions: SymbolOptions = {},
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item",
   betterDirection: BetterDirection = "lower"
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
-  let useDurationFormatter = true
 
   const dataset: DatasetOption[] = []
 
@@ -509,6 +508,7 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
+  const measureUnits: MeasureUnit[] = []
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -521,15 +521,8 @@ async function configureChart(
       continue
     }
 
-    if (seriesData.length > 3) {
-      // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-      const type = seriesData[3].at(-1)
-      if (type === "c") {
-        useDurationFormatter = false
-      } else if (type === "d") {
-        useDurationFormatter = true
-      }
-    }
+    // we take only the last type of the metric since it is not clear how to show different types
+    const storedType = seriesData.length > 3 ? (seriesData[3].at(-1) as string) : undefined
 
     if (settings.removeOutliers) {
       seriesData = removeOutliers(seriesData)
@@ -548,7 +541,6 @@ async function configureChart(
     if (settings.scaling) {
       seriesData.push(seriesData[1])
       seriesData[1] = scaleToMedian(seriesData[1] as number[])
-      useDurationFormatter = false
     }
 
     let detectedChanges = new Map<string, DetectedChange>()
@@ -566,7 +558,9 @@ async function configureChart(
       const seriesName = mergeResults.getSeriesName(dataIndex)
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
-      const xAxisName = useDurationFormatter ? "time" : "count"
+      const seriesUnit = resolveMeasureUnit(measureName, { storedType, valueUnit })
+      measureUnits.push(seriesUnit)
+      const xAxisName = seriesUnit === "milliseconds" || seriesUnit === "nanoseconds" ? "time" : "count"
       series.push({
         selectedMode: "single",
         select: {
@@ -637,18 +631,15 @@ async function configureChart(
         })
       }
     }
-    if (useDurationFormatter && !isDurationFormatterApplicable(mergeResults.getMeasureName(dataIndex))) {
-      useDurationFormatter = false
-    }
 
     dataset.push({
       source: seriesData,
       sourceHeader: false,
     })
   }
-  const isNs = valueUnit == "ns"
-  const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
-  const formatter: (valueInMs: number) => string = isNs ? (v) => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter
+  // While scaling, axis values are baseline ratios, so they render as plain numbers.
+  const axisUnit: MeasureUnit = settings.scaling ? "counter" : reduceToAxisUnit(measureUnits)
+  const formatter: (value: number) => string = (value) => formatMeasureValue(value, axisUnit)
   return {
     dataset,
     yAxis: {

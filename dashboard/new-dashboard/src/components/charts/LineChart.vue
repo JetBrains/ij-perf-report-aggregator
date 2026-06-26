@@ -9,9 +9,15 @@
       @mouseleave="labelHovered = false"
     >
       {{ title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
+      <i
+        v-if="description"
+        v-tooltip="{ value: description, pt: { text: { class: 'text-base max-w-md' } } }"
+        class="pi pi-info-circle text-sm cursor-help"
+      />
       <a
         v-show="labelHovered"
         :href="'#' + anchor"
+        class="ml-2"
       >
         <LinkIcon class="w-4 h-4" />
       </a>
@@ -64,6 +70,7 @@ interface LineChartProps {
   legendFormatter?: (name: string) => string
   withMeasureName?: boolean
   canBeClosed?: boolean
+  description?: string
   betterDirection?: BetterDirection
 }
 
@@ -78,6 +85,7 @@ const {
   legendFormatter = (name: string) => name,
   withMeasureName = false,
   canBeClosed = false,
+  description,
   betterDirection = "lower",
 } = defineProps<LineChartProps>()
 

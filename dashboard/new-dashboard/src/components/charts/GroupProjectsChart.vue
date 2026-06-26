@@ -8,6 +8,7 @@
     :skip-zero-values="false"
     :legend-formatter="legendFormatter"
     :can-be-closed="canBeClosed"
+    :description="description"
     :better-direction="betterDirection"
     @chart-closed="onChartClosed"
   />
@@ -34,6 +35,7 @@ interface Props {
   legendFormatter?: (name: string) => string
   aliases?: string[] | null
   canBeClosed?: boolean
+  description?: string
   betterDirection?: BetterDirection
 }
 
@@ -46,6 +48,7 @@ const {
   legendFormatter = (name: string) => name,
   aliases = null,
   canBeClosed = false,
+  description,
   betterDirection = "lower",
 } = defineProps<Props>()
 

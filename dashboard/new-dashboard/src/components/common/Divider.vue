@@ -8,7 +8,7 @@
       <span class="text-lg">{{ title }}</span>
       <i
         v-if="description"
-        v-tooltip="{ value: description, pt: { text: { class: 'text-base w-md' } } }"
+        v-tooltip="{ value: description, pt: { text: { class: 'text-base max-w-md' } } }"
         class="pi pi-info-circle text-sm cursor-help ml-2"
       />
     </div>

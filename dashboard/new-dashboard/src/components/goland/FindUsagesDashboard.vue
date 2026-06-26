@@ -46,7 +46,7 @@
       <GroupProjectsChart
         label="Number of Usages"
         measure="findUsages#number"
-         better-direction="stable"
+        better-direction="stable"
         :projects="[
           'vault/backend(interface)',
           'vault/list(method)',

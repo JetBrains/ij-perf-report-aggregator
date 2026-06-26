@@ -25,7 +25,7 @@
           :projects="chart.projects"
         />
       </section>
-      <Accordion :lazy="true">
+      <ChartAccordion :lazy="true">
         <AccordionPanel value="0">
           <AccordionHeader>Additional metrics</AccordionHeader>
           <AccordionContent>
@@ -85,7 +85,7 @@
             </section>
           </AccordionContent>
         </AccordionPanel>
-      </Accordion>
+      </ChartAccordion>
     </template>
   </StartupDashboardPage>
 </template>
@@ -95,6 +95,7 @@ import { Chart, ChartDefinition, combineCharts } from "../charts/DashboardCharts
 import Divider from "./Divider.vue"
 import StartupDashboardPage from "./StartupDashboardPage.vue"
 import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import type { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { computed } from "vue"
 

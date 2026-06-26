@@ -8,7 +8,7 @@
   >
     <section>
       <Divider title="Lagging during indexing" />
-      <Accordion value="1">
+      <ChartAccordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -33,10 +33,10 @@
             />
           </AccordionContent>
         </AccordionPanel>
-      </Accordion>
+      </ChartAccordion>
 
       <Divider title="Lagging during zephyr project indexing" />
-      <Accordion value="1">
+      <ChartAccordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -61,10 +61,10 @@
             />
           </AccordionContent>
         </AccordionPanel>
-      </Accordion>
+      </ChartAccordion>
 
       <Divider title="Lagging during completion" />
-      <Accordion value="1">
+      <ChartAccordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -89,10 +89,10 @@
             />
           </AccordionContent>
         </AccordionPanel>
-      </Accordion>
+      </ChartAccordion>
 
       <Divider title="Lagging during navigation" />
-      <Accordion value="1">
+      <ChartAccordion value="1">
         <AccordionPanel value="0">
           <AccordionHeader>Do not skip heavy metric collection</AccordionHeader>
           <AccordionContent>
@@ -117,7 +117,7 @@
             />
           </AccordionContent>
         </AccordionPanel>
-      </Accordion>
+      </ChartAccordion>
 
       <Divider title="Lagging during browsing files" />
       <GroupProjectsChart
@@ -142,6 +142,7 @@
 <script setup lang="ts">
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 

@@ -14,7 +14,7 @@
       <!--<Chip><a href="#annotate">Annotate</a></Chip>-->
     </div>
 
-    <Accordion
+    <ChartAccordion
       :multiple="true"
       :active-index="[0, 1, 2, 3, 4]"
     >
@@ -178,12 +178,12 @@
       <!--    />-->
       <!--  </section>-->
       <!--</AccordionTab>-->
-    </Accordion>
+    </ChartAccordion>
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import Accordion from "primevue/accordion"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"

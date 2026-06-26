@@ -7,7 +7,7 @@
     :with-installer="false"
   >
     <Divider title="Indexing" />
-    <Accordion value="1">
+    <ChartAccordion value="1">
       <AccordionPanel value="1">
         <AccordionHeader>Allocated Managed Memory</AccordionHeader>
         <AccordionContent>
@@ -176,7 +176,7 @@
           </section>
         </AccordionContent>
       </AccordionPanel>
-    </Accordion>
+    </ChartAccordion>
     <Divider title="Resolving References" />
 
     <section>
@@ -331,5 +331,6 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerMemoryUsageChart from "./CLionVsRadlerMemoryUsageChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import RadlerBackendMemoryUsageChart from "./RadlerBackendMemoryUsageChart.vue"
 </script>

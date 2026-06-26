@@ -9,7 +9,7 @@
       <Chip><a href="#index">Vcs indexing</a></Chip>
     </div>
 
-    <Accordion
+    <ChartAccordion
       :multiple="true"
       :active-index="[0]"
     >
@@ -54,12 +54,12 @@
           <!--</section>-->
         </AccordionContent>
       </AccordionPanel>
-    </Accordion>
+    </ChartAccordion>
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import Accordion from "primevue/accordion"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"

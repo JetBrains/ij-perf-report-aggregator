@@ -59,21 +59,35 @@ const indexingProjects = ["cockroach/indexing", "delve/indexing", "mattermost/in
 const breakdownProjects = ["kubernetes/indexing", "flux/indexing", "istio/indexing", "cockroach/indexing", "delve/indexing", "mattermost/indexing"]
 
 const chartRows: ChartDef[][] = [
-  [{ key: "indexingTime", label: "Indexing Time", measure: "indexingTimeWithoutPauses", projects: indexingProjects }],
+  [{ key: "indexingTime", label: "Indexing Time", measure: "indexingTimeWithoutPauses", projects: indexingProjects, description: "Time to build indexes, excluding paused intervals." }],
   [
-    { key: "indexedFiles", label: "Indexed Files", measure: "numberOfIndexedFilesWritingIndexValue", projects: indexingProjects, betterDirection: "stable" },
+    {
+      key: "indexedFiles",
+      label: "Indexed Files",
+      measure: "numberOfIndexedFilesWritingIndexValue",
+      projects: indexingProjects,
+      betterDirection: "stable",
+      description: "Files that produced index data this run. Should stay flat for a fixed project; a change hints at an indexing-scope shift.",
+    },
     { key: "indexSize", label: "Index Size", measure: "indexSize", projects: indexingProjects },
   ],
   [
-    { key: "processingTime", label: "Processing Time", measure: "processingTime#Go", projects: breakdownProjects },
-    { key: "processingSpeed", label: "Processing Speed", measure: "processingSpeedAvg#Go", projects: breakdownProjects, betterDirection: "higher" },
+    { key: "processingTime", label: "Processing Time", measure: "processingTime#Go", projects: breakdownProjects, description: "CPU time spent indexing Go files." },
+    {
+      key: "processingSpeed",
+      label: "Processing Speed",
+      measure: "processingSpeedAvg#Go",
+      projects: breakdownProjects,
+      betterDirection: "higher",
+      description: "Average indexing throughput for Go files (kB/s); higher is better.",
+    },
   ],
   [
-    { key: "parsingTime", label: "Parsing Time", measure: "parsingTime#go", projects: breakdownProjects },
-    { key: "lexingTime", label: "Lexing Time", measure: "lexingTime#go", projects: breakdownProjects },
+    { key: "parsingTime", label: "Parsing Time", measure: "parsingTime#go", projects: breakdownProjects, description: "Time the parser spends building PSI for Go files during indexing." },
+    { key: "lexingTime", label: "Lexing Time", measure: "lexingTime#go", projects: breakdownProjects, description: "Time the lexer spends tokenizing Go files during indexing." },
   ],
-  [{ key: "gcPause", label: "GC Pause, ms", measure: "gcPause", projects: indexingProjects }],
-  [{ key: "freedMemoryByGC", label: "GC Memory Collected, Mb", measure: "freedMemoryByGC", projects: indexingProjects }],
-  [{ key: "scanningTime", label: "Scanning Time", measure: "scanningTimeWithoutPauses", projects: indexingProjects }],
+  [{ key: "gcPause", label: "GC Pause, ms", measure: "gcPause", projects: indexingProjects, description: "Total time the run spent paused in garbage collection." }],
+  [{ key: "freedMemoryByGC", label: "GC Memory Collected, Mb", measure: "freedMemoryByGC", projects: indexingProjects, description: "Total memory reclaimed by GC over the run, in MB." }],
+  [{ key: "scanningTime", label: "Scanning Time", measure: "scanningTimeWithoutPauses", projects: indexingProjects, description: "Time to scan files for changes before indexing, excluding pauses." }],
 ]
 </script>

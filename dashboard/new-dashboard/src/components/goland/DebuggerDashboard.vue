@@ -37,9 +37,9 @@ interface ChartDef {
 const debugProjects = ["river/debug", "trufflehog/debug"]
 
 const charts: ChartDef[] = [
-  { key: "launch", label: "Launch Debug", measure: "debugRunConfiguration" },
-  { key: "stepInto", label: "Step Into", measure: "debugStep_into" },
-  { key: "stepOut", label: "Step Out", measure: "debugStep_out" },
-  { key: "stepOver", label: "Step Over", measure: "debugStep_over" },
+  { key: "launch", label: "Launch Debug", measure: "debugRunConfiguration", description: "Time from starting the debug configuration to the first pause at a breakpoint." },
+  { key: "stepInto", label: "Step Into", measure: "debugStep_into", description: "Time from invoking Step Into until the debugger pauses again." },
+  { key: "stepOut", label: "Step Out", measure: "debugStep_out", description: "Time from invoking Step Out until the debugger pauses again." },
+  { key: "stepOver", label: "Step Over", measure: "debugStep_over", description: "Time from invoking Step Over until the debugger pauses again." },
 ]
 </script>

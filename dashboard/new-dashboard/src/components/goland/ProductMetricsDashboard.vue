@@ -14,6 +14,7 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
+        :description="chart.definition.description"
       />
     </section>
   </DashboardPage>
@@ -43,11 +44,13 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
+    descriptions: ["Time for Search Everywhere to return results."],
     projects: ["localAi/go-to-all-with-warmup/version.go/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
+    descriptions: ["Code-analysis time triggered while typing."],
     projects: ["act/typing"],
   },
   {

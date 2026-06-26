@@ -1,6 +1,7 @@
 export interface Definition {
   label: string
   measure: string | string[]
+  description?: string
 }
 
 export interface Chart {
@@ -15,6 +16,8 @@ export interface ChartDefinition {
   projects: string[]
   aliases?: string[]
   machines?: string[]
+  // Optional per-label descriptions, parallel to labels/measures; surfaced as a chart tooltip.
+  descriptions?: string[]
 }
 
 export function combineCharts(charts: ChartDefinition[]): Chart[] {
@@ -26,6 +29,7 @@ export function combineCharts(charts: ChartDefinition[]): Chart[] {
     const labelsAndMeasuresCombined = chart.labels.map((label, index) => ({
       label,
       measure: chart.measures[index],
+      description: chart.descriptions?.[index],
     }))
     for (const labelAndMeasure of labelsAndMeasuresCombined) {
       resultingCharts.push({

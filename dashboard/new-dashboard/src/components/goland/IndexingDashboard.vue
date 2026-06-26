@@ -59,7 +59,15 @@ const indexingProjects = ["cockroach/indexing", "delve/indexing", "mattermost/in
 const breakdownProjects = ["kubernetes/indexing", "flux/indexing", "istio/indexing", "cockroach/indexing", "delve/indexing", "mattermost/indexing"]
 
 const chartRows: ChartDef[][] = [
-  [{ key: "indexingTime", label: "Indexing Time", measure: "indexingTimeWithoutPauses", projects: indexingProjects, description: "Time to build indexes, excluding paused intervals." }],
+  [
+    {
+      key: "indexingTime",
+      label: "Indexing Time",
+      measure: "indexingTimeWithoutPauses",
+      projects: indexingProjects,
+      description: "Time to build indexes, excluding paused intervals.",
+    },
+  ],
   [
     {
       key: "indexedFiles",
@@ -83,11 +91,33 @@ const chartRows: ChartDef[][] = [
     },
   ],
   [
-    { key: "parsingTime", label: "Parsing Time", measure: "parsingTime#go", projects: breakdownProjects, description: "Time the parser spends building PSI for Go files during indexing." },
+    {
+      key: "parsingTime",
+      label: "Parsing Time",
+      measure: "parsingTime#go",
+      projects: breakdownProjects,
+      description: "Time the parser spends building PSI for Go files during indexing.",
+    },
     { key: "lexingTime", label: "Lexing Time", measure: "lexingTime#go", projects: breakdownProjects, description: "Time the lexer spends tokenizing Go files during indexing." },
   ],
   [{ key: "gcPause", label: "GC Pause, ms", measure: "gcPause", projects: indexingProjects, description: "Total time the run spent paused in garbage collection." }],
-  [{ key: "freedMemoryByGC", label: "GC Memory Collected, Mb", measure: "freedMemoryByGC", projects: indexingProjects, description: "Total memory reclaimed by GC over the run, in MB." }],
-  [{ key: "scanningTime", label: "Scanning Time", measure: "scanningTimeWithoutPauses", projects: indexingProjects, description: "Time to scan files for changes before indexing, excluding pauses." }],
+  [
+    {
+      key: "freedMemoryByGC",
+      label: "GC Memory Collected, Mb",
+      measure: "freedMemoryByGC",
+      projects: indexingProjects,
+      description: "Total memory reclaimed by GC over the run, in MB.",
+    },
+  ],
+  [
+    {
+      key: "scanningTime",
+      label: "Scanning Time",
+      measure: "scanningTimeWithoutPauses",
+      projects: indexingProjects,
+      description: "Time to scan files for changes before indexing, excluding pauses.",
+    },
+  ],
 ]
 </script>

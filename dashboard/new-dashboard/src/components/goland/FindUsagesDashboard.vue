@@ -50,6 +50,12 @@ const findUsagesProjects = [
 const charts: ChartDef[] = [
   { key: "total", label: "Total Execution Time", measure: "findUsages", description: "Time to find and show all usages in the popup." },
   { key: "firstUsage", label: "First Usage Time", measure: "findUsages_firstUsage", description: "Time until the first usage appears in the popup." },
-  { key: "number", label: "Number of Usages", measure: "findUsages#number", betterDirection: "stable", description: "Count of usages found. Stable for a fixed query; a drop often signals a resolve regression." },
+  {
+    key: "number",
+    label: "Number of Usages",
+    measure: "findUsages#number",
+    betterDirection: "stable",
+    description: "Count of usages found. Stable for a fixed query; a drop often signals a resolve regression.",
+  },
 ]
 </script>

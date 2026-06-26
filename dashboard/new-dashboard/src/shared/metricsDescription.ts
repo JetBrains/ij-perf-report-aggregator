@@ -106,7 +106,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["convertJavaToKotlin", "Time to execute J2K action in the editor"],
 
   //GC
-  ["freedMemoryByGC", metricInfo("Freed memory by GC (in Mb/s)", "https://github.com/chewiebug/GCViewer#readme")],
+  ["freedMemoryByGC", metricInfo("Total memory freed by GC, in MB", "https://github.com/chewiebug/GCViewer#readme")],
   ["fullGCPause", metricInfo("Time that full GC was active (IDE is fully paused)", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPause", metricInfo("Time spent in GC (including minor collections without pausing)", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme")],

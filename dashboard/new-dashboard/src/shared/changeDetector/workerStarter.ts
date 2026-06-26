@@ -1,9 +1,9 @@
-import { ChangePointClassification } from "./algorithm"
+import { BetterDirection, ChangePointClassification } from "./algorithm"
 import MyWorker from "./worker?worker&inline"
 
-export function detectChanges(seriesData: (string | number)[][]): Promise<Map<string, ChangePointClassification>> {
+export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Promise<Map<string, ChangePointClassification>> {
   const worker = new MyWorker()
-  worker.postMessage(seriesData)
+  worker.postMessage({ seriesData, betterDirection })
   return new Promise((resolve, reject) => {
     worker.addEventListener("error", (event) => {
       reject(event.error as Error)

@@ -6,10 +6,19 @@ export enum ChangePointClassification {
   NO_CHANGE = "No Change",
 }
 
-export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
+/**
+ * Which direction of change is good for a metric.
+ *
+ * `"lower"` (the default) treats a rise as a degradation; `"higher"` inverts that; `"stable"` treats
+ * any change in either direction as a degradation, for metrics that should not move (for example a
+ * completion-result count).
+ */
+export type BetterDirection = "lower" | "higher" | "stable"
+
+export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Map<string, ChangePointClassification> {
   const dataset = seriesData[1] as number[] | undefined
   const changePointIndexes = getChangePointIndexes(dataset, 5)
-  const classifications = classifyChangePoint(changePointIndexes, dataset)
+  const classifications = classifyChangePoint(changePointIndexes, dataset, betterDirection)
   const resultMap = new Map<string, ChangePointClassification>()
 
   for (const [index, value] of changePointIndexes.entries()) {
@@ -37,7 +46,7 @@ const getSegmentCost = (partialSums: number[][], tau1: number, tau2: number, k: 
   return ((2 * -Math.log(2 * n - 1)) / k) * sum
 }
 
-export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined) => {
+export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined, betterDirection: BetterDirection = "lower") => {
   if (dataset == undefined) return []
   const classifications: ChangePointClassification[] = []
 
@@ -88,7 +97,9 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     } else if (effectSize < 2) {
       classification = ChangePointClassification.NO_CHANGE
     } else {
-      classification = shiftValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
+      // "stable" flags any change as a regression; "higher" inverts the default lower-is-better rule.
+      const isRegression = betterDirection === "stable" ? true : betterDirection === "higher" ? shiftValue < 0 : shiftValue > 0
+      classification = isRegression ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
     }
 
     classifications.push(classification)

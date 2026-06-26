@@ -8,6 +8,7 @@
     :skip-zero-values="false"
     :legend-formatter="legendFormatter"
     :can-be-closed="canBeClosed"
+    :better-direction="betterDirection"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -19,6 +20,7 @@ import { injectOrError } from "../../shared/injectionKeys"
 import { compareSectionsRegistryKey, dashboardConfiguratorsKey, renderModeKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
+import { BetterDirection } from "../../shared/changeDetector/algorithm"
 import LineChart from "./LineChart.vue"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { CompareSectionConfig, RenderMode } from "./compareMode"
@@ -32,9 +34,20 @@ interface Props {
   legendFormatter?: (name: string) => string
   aliases?: string[] | null
   canBeClosed?: boolean
+  betterDirection?: BetterDirection
 }
 
-const { label, measure, projects, machines = null, valueUnit = "ms", legendFormatter = (name: string) => name, aliases = null, canBeClosed = false } = defineProps<Props>()
+const {
+  label,
+  measure,
+  projects,
+  machines = null,
+  valueUnit = "ms",
+  legendFormatter = (name: string) => name,
+  aliases = null,
+  canBeClosed = false,
+  betterDirection = "lower",
+} = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)

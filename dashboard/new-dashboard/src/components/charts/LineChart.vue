@@ -47,6 +47,7 @@ import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { useSettingsStore } from "../settings/settingsStore"
+import { BetterDirection } from "../../shared/changeDetector/algorithm"
 import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
@@ -63,6 +64,7 @@ interface LineChartProps {
   legendFormatter?: (name: string) => string
   withMeasureName?: boolean
   canBeClosed?: boolean
+  betterDirection?: BetterDirection
 }
 
 const {
@@ -76,6 +78,7 @@ const {
   legendFormatter = (name: string) => name,
   withMeasureName = false,
   canBeClosed = false,
+  betterDirection = "lower",
 } = defineProps<LineChartProps>()
 
 const anchor = computed(() => {
@@ -142,7 +145,8 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
     showSymbol: false,
   },
   accidentsConfigurator,
-  tooltipTrigger
+  tooltipTrigger,
+  betterDirection
 )
 
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]

@@ -20,7 +20,7 @@ import { LineChartOptions, ScatterChartOptions } from "../components/common/echa
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
-import { ChangePointClassification } from "../shared/changeDetector/algorithm"
+import { BetterDirection, ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
@@ -259,7 +259,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
     readonly accidentsConfigurator: AccidentsConfigurator | null = null,
-    readonly toolTipTrigger: TooltipTrigger
+    readonly toolTipTrigger: TooltipTrigger,
+    private readonly betterDirection: BetterDirection = "lower"
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -277,7 +278,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator, this.toolTipTrigger)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator, this.toolTipTrigger, this.betterDirection)
   }
 }
 
@@ -496,7 +497,8 @@ async function configureChart(
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
   accidentsConfigurator: AccidentsConfigurator | null = null,
-  tooltipTrigger: TooltipTrigger = "item"
+  tooltipTrigger: TooltipTrigger = "item",
+  betterDirection: BetterDirection = "lower"
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -551,7 +553,7 @@ async function configureChart(
 
     let detectedChanges = new Map<string, ChangePointClassification>()
     if (settings.detectChanges) {
-      detectedChanges = await detectChanges(seriesData)
+      detectedChanges = await detectChanges(seriesData, betterDirection)
     }
 
     let isNotEmpty = false

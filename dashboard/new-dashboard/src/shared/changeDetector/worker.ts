@@ -1,5 +1,5 @@
-import { detectChanges } from "./algorithm"
+import { BetterDirection, detectChanges } from "./algorithm"
 
-onmessage = (e: MessageEvent<number[][]>) => {
-  postMessage(detectChanges(e.data))
+onmessage = (e: MessageEvent<{ seriesData: (string | number)[][]; betterDirection: BetterDirection }>) => {
+  postMessage(detectChanges(e.data.seriesData, e.data.betterDirection))
 }

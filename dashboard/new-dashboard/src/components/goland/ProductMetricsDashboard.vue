@@ -1,20 +1,20 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
-    table="goland"
-    :with-installer="false"
-    persistent-id="goland_product_dashboard"
-    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
+    :with-installer="false"
+    db-name="perfintDev"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    persistent-id="goland_product_dashboard"
+    table="goland"
   >
     <section>
       <GroupProjectsChart
         v-for="chart in charts"
         :key="chart.definition.label"
+        :description="chart.definition.description"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
-        :description="chart.definition.description"
       />
     </section>
 
@@ -22,7 +22,7 @@
   </DashboardPage>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"

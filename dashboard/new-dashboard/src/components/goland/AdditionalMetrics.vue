@@ -8,11 +8,11 @@
           <GroupProjectsChart
             v-for="chart in gcCharts"
             :key="chart.key"
+            :description="chart.description"
             :label="chart.label"
             :measure="chart.measure"
             :projects="projects"
             :value-unit="chart.valueUnit"
-            :description="chart.description"
           />
         </section>
         <Divider label="Memory" />
@@ -20,11 +20,11 @@
           <GroupProjectsChart
             v-for="chart in memoryCharts"
             :key="chart.key"
+            :description="chart.description"
             :label="chart.label"
             :measure="chart.measure"
             :projects="projects"
             value-unit="counter"
-            :description="chart.description"
           />
         </section>
       </AccordionContent>
@@ -32,7 +32,7 @@
   </ChartAccordion>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import ChartAccordion from "../charts/ChartAccordion.vue"
 import Divider from "../common/Divider.vue"
@@ -59,7 +59,12 @@ const gcCharts: ChartDef[] = [
 
 const memoryCharts: ChartDef[] = [
   { key: "avgRam", label: "Avg RAM", measure: "MEM.avgRamMegabytes", description: "Average resident RAM of the IDE process." },
-  { key: "resident95p", label: "Resident 95p", measure: "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", description: "95th-percentile resident set size — near-peak real footprint." },
+  {
+    key: "resident95p",
+    label: "Resident 95p",
+    measure: "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+    description: "95th-percentile resident set size — near-peak real footprint.",
+  },
   { key: "maxHeap", label: "Max heap", measure: "JVM.maxHeapMegabytes", description: "Maximum JVM heap touched. Sustained growth signals heap pressure." },
   { key: "heapPeak", label: "Heap used, peak", measure: "totalHeapUsedMax", description: "Peak used JVM heap. With max heap, shows headroom." },
 ]

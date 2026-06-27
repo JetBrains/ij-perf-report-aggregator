@@ -1,10 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
-    table="goland"
-    persistent-id="goland_code_analyzes_dashboard"
-    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :with-installer="false"
+    db-name="perfintDev"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    persistent-id="goland_code_analyzes_dashboard"
+    table="goland"
   >
     <template
       v-for="group in allGroups"
@@ -15,12 +15,12 @@
         <GroupProjectsChart
           v-for="chart in group.charts"
           :key="chart.key"
+          :better-direction="chart.betterDirection"
+          :description="chart.description"
           :label="`${group.prefix}: ${chart.label}`"
           :measure="chart.measure"
           :projects="group.projects"
           :value-unit="chart.valueUnit"
-          :better-direction="chart.betterDirection"
-          :description="chart.description"
         />
       </section>
     </template>
@@ -29,7 +29,7 @@
   </DashboardPage>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"

@@ -124,6 +124,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   //GC
   ["freedMemoryByGC", metricInfo("Total memory freed by GC, in MiB", "https://github.com/chewiebug/GCViewer#readme", "mebibytes")],
+  [
+    "freedMemoryByFullGC",
+    metricInfo("Memory reclaimed by full GC only, in MiB. High values signal promotion pressure.", "https://github.com/chewiebug/GCViewer#readme", "mebibytes"),
+  ],
   ["fullGCPause", metricInfo("Time that full GC was active (IDE is fully paused)", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPause", metricInfo("Time spent in GC (including minor collections without pausing)", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme", "counter")],
@@ -165,6 +169,27 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["EditSimilarity", "Maximum Levenshtein-based similarity between proposed completion suggestions and expected text"],
   //benchmark
   ["attempt.mean.ms", "Mean duration in milliseconds across all benchmark attempt spans"],
+  //GC — G1GC
+  ["g1gcConcurrentMarkCycles", metricInfo("Number of G1 concurrent marking cycles. Rising count indicates heap pressure.", undefined, "counter")],
+  ["g1gcConcurrentMarkTimeMs", metricInfo("Wall time spent in G1 concurrent marking. Competes with UI threads for CPU.")],
+  ["g1gcHeapShrinkageCount", metricInfo("How often G1 returned heap memory to the OS. Zero means heap is pinned at max.", undefined, "counter")],
+  ["g1gcHeapShrinkageMegabytes", metricInfo("Total heap memory returned to OS by G1 shrinkage.", undefined, "mebibytes")],
+
+  // JVM — GC (JVM-reported, independent of GCViewer)
+  ["JVM.GC.collectionTimesMs", metricInfo("Total time spent in GC as reported by the JVM. Independent cross-check against gcPause.")],
+  ["JVM.GC.collections", metricInfo("Total number of GC collections as reported by the JVM. Should align with gcPauseCount.", undefined, "counter")],
+
+  // JVM — Runtime
+  ["JVM.maxThreadCount", metricInfo("Peak number of live threads. Unexpected growth signals thread leaks or misconfiguration.", undefined, "counter")],
+  ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Versus wall-clock time reveals CPU saturation.")],
+  ["JVM.totalTimeToSafepointsMs", metricInfo("Time threads spent blocked waiting for JVM safepoints. Above 50 ms indicates contention.")],
+
+  // Memory
+  ["MEM.avgRamMegabytes", metricInfo("Average resident RAM of the IDE process during the test, in MiB.", undefined, "mebibytes")],
+  ["MEM.avgFileMappingsRamMegabytes", metricInfo("Average RAM consumed by memory-mapped files (JARs, indexes, OS pages), in MiB.", undefined, "mebibytes")],
+  ["MEM.avgRamMinusFileMappingsMegabytes", metricInfo("Average resident RAM excluding file mappings — the true heap + off-heap footprint, in MiB.", undefined, "mebibytes")],
+  ["JVM.committedHeapMegabytes", metricInfo("Heap memory actually committed from the OS. Versus max heap shows headroom.", undefined, "mebibytes")],
+
   //gc
   ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "https://github.com/chewiebug/GCViewer#readme", "bytes")],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
@@ -194,6 +219,9 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["workspaceModel.do.save.caches.ms", "The time taken to save caches of the workspace model"],
   ["workspaceModel.mutableEntityStorage.collect.changes.ms", "The time taken to collect changes in the mutable entity storage"],
   ["workspaceModel.mutableEntityStorage.add.entity.ms", "The time taken to add an entity to the mutable entity storage"],
+
+  // JVM — already plotted in AdditionalMetrics but missing from metricsDescription
+  ["JVM.maxHeapMegabytes", metricInfo("Maximum JVM heap size configured for the IDE, in MiB.", undefined, "mebibytes")],
   ["jps.load.project.to.empty.storage.ms", "The time taken to load a project into empty storage using the JPS"],
   ["jps.project.serializers.load.ms", "The time taken to load project serializers in the JPS"],
   ["jps.project.serializers.save.ms", "The time taken to save project serializers in the JPS"],

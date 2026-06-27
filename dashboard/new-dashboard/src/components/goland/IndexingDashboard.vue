@@ -25,6 +25,52 @@
       </section>
     </template>
 
+    <ChartAccordion :lazy="true">
+      <AccordionPanel value="0">
+        <AccordionHeader>Indexing details</AccordionHeader>
+        <AccordionContent>
+          <Divider label="Indexing pipeline" />
+          <section>
+            <GroupProjectsChart
+              v-for="chart in indexingPipelineCharts"
+              :key="chart.key"
+              :label="chart.label"
+              :measure="chart.measure"
+              :projects="allProjects"
+              :value-unit="chart.valueUnit"
+              :description="chart.description"
+            />
+          </section>
+
+          <Divider label="Write actions" />
+          <section>
+            <GroupProjectsChart
+              v-for="chart in writeActionCharts"
+              :key="chart.key"
+              :label="chart.label"
+              :measure="chart.measure"
+              :projects="allProjects"
+              :value-unit="chart.valueUnit"
+              :description="chart.description"
+            />
+          </section>
+
+          <Divider label="AWT" />
+          <section>
+            <GroupProjectsChart
+              v-for="chart in awtCharts"
+              :key="chart.key"
+              :label="chart.label"
+              :measure="chart.measure"
+              :projects="allProjects"
+              :value-unit="chart.valueUnit"
+              :description="chart.description"
+            />
+          </section>
+        </AccordionContent>
+      </AccordionPanel>
+    </ChartAccordion>
+
     <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
@@ -33,7 +79,11 @@
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
+import AccordionPanel from "primevue/accordionpanel"
+import AccordionHeader from "primevue/accordionheader"
+import AccordionContent from "primevue/accordioncontent"
 import type { ValueUnit } from "../common/chart"
 import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
@@ -102,5 +152,28 @@ const allGroups: GroupDef[] = [
   { value: "processing", title: "Processing", prefix: "Processing", projects: breakdownProjects, charts: processingCharts },
   { value: "parsing", title: "Parsing & Lexing", prefix: "Parsing", projects: breakdownProjects, charts: parsingCharts },
   { value: "scanning", title: "Scanning", prefix: "Scanning", projects: indexingProjects, charts: scanningCharts },
+]
+
+const indexingPipelineCharts: ChartDef[] = [
+  { key: "dumbMode", label: "Dumb mode (ms)", measure: "dumbModeTimeWithPauses", valueUnit: "ms", description: "Total time in dumb mode (indexes not ready), including pauses." },
+  { key: "pausedTime", label: "Paused time (ms)", measure: "pausedTimeInIndexingOrScanning", valueUnit: "ms", description: "Time indexing/scanning was paused (e.g., for GC or UI)." },
+  { key: "indexingRuns", label: "Indexing runs", measure: "numberOfRunsOfIndexing", valueUnit: "counter", description: "Number of indexing passes. Higher = more incremental re-indexing." },
+  { key: "scanningRuns", label: "Scanning runs", measure: "numberOfRunsOfScannning", valueUnit: "counter", description: "Number of file system scanning passes." },
+  { key: "scannedFiles", label: "Scanned files", measure: "numberOfScannedFiles", valueUnit: "counter", description: "Total files scanned. Versus indexed files shows filter efficiency." },
+  { key: "indexedFilesTotal", label: "Indexed files (total)", measure: "numberOfIndexedFiles", valueUnit: "counter", description: "Total files that went through indexing." },
+  { key: "indexedNothing", label: "Indexed (nothing to write)", measure: "numberOfIndexedFilesWithNothingToWrite", valueUnit: "counter", description: "Files indexed but producing no index data. High = wasted indexing work." },
+  { key: "filesWithExtensions", label: "Files with extensions", measure: "numberOfFilesIndexedByExtensions", valueUnit: "counter", description: "Files recognized by extension-based file type detection." },
+  { key: "filesWithoutExtensions", label: "Files without extensions", measure: "numberOfFilesIndexedWithoutExtensions", valueUnit: "counter", description: "Files indexed despite having no recognized extension." },
+]
+
+const writeActionCharts: ChartDef[] = [
+  { key: "waCount", label: "Write action count", measure: "writeAction.count", valueUnit: "counter", description: "Number of write actions executed during indexing." },
+  { key: "waWaitTotal", label: "Write action wait (ms)", measure: "writeAction.wait.ms", valueUnit: "ms", description: "Total time spent waiting for write actions." },
+  { key: "waWaitMax", label: "Write action max wait (ms)", measure: "writeAction.max.wait.ms", valueUnit: "ms", description: "Longest single write action wait. Spikes indicate blocking." },
+  { key: "waWaitMedian", label: "Write action median wait (ms)", measure: "writeAction.median.wait.ms", valueUnit: "ms", description: "Median write action wait time. Typical contention level." },
+]
+
+const awtCharts: ChartDef[] = [
+  { key: "awtDispatch", label: "AWT dispatch total (ms)", measure: "AWTEventQueue.dispatchTimeTotal", valueUnit: "ms", description: "Total AWT event queue dispatch time. High values indicate UI thread contention." },
 ]
 </script>

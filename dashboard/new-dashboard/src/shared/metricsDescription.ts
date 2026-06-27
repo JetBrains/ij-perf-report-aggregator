@@ -79,9 +79,14 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["processingSpeedAvg#*", metricInfo("Speed of indexing a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
   ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
-  ["processingTime#*", "CPU time spent on processing file type"],
-  ["indexingTimeWithoutPauses", "Indexing time without interruptions"],
-  ["scanningTimeWithoutPauses", "Scanning time without interruptions"],
+  ["processingTime#*", metricInfo("CPU time spent on processing files of this type, in ms.", undefined)],
+  ["lexingTime#*", metricInfo("Time the lexer spent tokenizing files of this type, in ms.", undefined)],
+  ["parsingTime#*", metricInfo("Time the parser spent building PSI for files of this type, in ms.", undefined)],
+  ["processingSpeedWorst#*", metricInfo("Worst-case indexing throughput for a file type (kB/s). Low values indicate pathological files.", undefined, "kilobytesPerSecond")],
+  ["processingSpeedOfBaseLanguageWorst#*", metricInfo("Worst-case indexing throughput mapped to the base language (kB/s). Low values indicate pathological files.", undefined, "kilobytesPerSecond")],
+  ["numberOfIndexedFiles#*", metricInfo("Number of files of this type that were indexed.", undefined, "counter")],
+  ["indexingTimeWithoutPauses", metricInfo("Time to build indexes, excluding paused intervals, in ms.", undefined)],
+  ["scanningTimeWithoutPauses", metricInfo("Time to scan files for changes before indexing, excluding pauses, in ms.", undefined)],
   ["pageLoad", metricInfo("Number of regular Pages' loads.", undefined, "counter")],
   [
     "pageMiss",
@@ -139,8 +144,26 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
   //indexing / VFS / VCS indexing
   ["dumbModeWithPauses", "Total time spent in dumb mode (indexes not ready), including pauses like GC and UI freezes"],
+  ["dumbModeTimeWithPauses", metricInfo("Total time spent in dumb mode (indexes not ready), including pauses like GC and UI freezes.", undefined)],
+  ["pausedTimeInIndexingOrScanning", metricInfo("Time the indexing or scanning pipeline was paused, in ms.", undefined)],
+  ["numberOfRunsOfIndexing", metricInfo("Number of indexing passes executed. Higher means more incremental re-indexing.", undefined, "counter")],
+  ["numberOfRunsOfScannning", metricInfo("Number of file system scanning passes executed.", undefined, "counter")],
+  ["numberOfScannedFiles", metricInfo("Total number of files scanned during indexing.", undefined, "counter")],
+  ["numberOfIndexedFilesWritingIndexValue", metricInfo("Files that produced index data this run. Should stay flat for a fixed project.", undefined, "counter")],
+  ["numberOfIndexedFilesWithNothingToWrite", metricInfo("Files indexed but producing no index data. High values = wasted indexing work.", undefined, "counter")],
+  ["numberOfFilesIndexedByExtensions", metricInfo("Files recognized and indexed by extension-based file type detection.", undefined, "counter")],
+  ["numberOfFilesIndexedWithoutExtensions", metricInfo("Files indexed despite having no recognized file extension.", undefined, "counter")],
   ["vfs_initial_refresh", "Duration of the initial VFS refresh that syncs on-disk files with the VFS cache on project opening"],
   ["vcs-log-indexing", "Duration of VCS Log background indexing of commits for fast search and filtering"],
+
+  // Write actions
+  ["writeAction.count", metricInfo("Number of write actions executed during the test.", undefined, "counter")],
+  ["writeAction.wait.ms", metricInfo("Total time spent waiting for write actions to complete, in ms.", undefined)],
+  ["writeAction.max.wait.ms", metricInfo("Longest single write action wait time, in ms. Spikes indicate blocking.", undefined)],
+  ["writeAction.median.wait.ms", metricInfo("Median write action wait time, in ms. Typical contention level.", undefined)],
+
+  // AWT
+  ["AWTEventQueue.dispatchTimeTotal", metricInfo("Total AWT event queue dispatch time, in ms. High values indicate UI thread contention.", undefined)],
   //build
   ["build_compilation_duration", "Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager)"],
   //search everywhere

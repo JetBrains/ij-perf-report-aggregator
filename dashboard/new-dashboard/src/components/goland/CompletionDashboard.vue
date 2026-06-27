@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import type { ValueUnit } from "../common/chart"
 import type { BetterDirection } from "../../shared/changeDetector/algorithm"
@@ -100,6 +101,4 @@ const allGroups = [
   { value: "basic", title: "Basic Completion", prefix: "Basic", projects: basicProjects, charts: completionCharts },
   { value: "smart", title: "Smart Completion", prefix: "Smart", projects: smartProjects, charts: completionCharts },
 ]
-
-
 </script>

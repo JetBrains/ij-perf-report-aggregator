@@ -18,12 +18,15 @@
         :description="chart.description"
       />
     </section>
+
+    <AdditionalMetrics :projects="dfaProjects" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import AdditionalMetrics from "./AdditionalMetrics.vue"
 import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
 interface ChartDef {

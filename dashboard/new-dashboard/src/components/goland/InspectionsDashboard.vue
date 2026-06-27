@@ -18,12 +18,15 @@
         :description="chart.description"
       />
     </section>
+
+    <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import AdditionalMetrics from "./AdditionalMetrics.vue"
 import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
 interface ChartDef {
@@ -34,6 +37,43 @@ interface ChartDef {
   description?: string
   betterDirection?: BetterDirection
 }
+
+const allProjects = [
+  "istio/localInspection/adsc.go",
+  "minotaur/localInspection/server.go",
+  "caddy/localInspection/replacer.go",
+  "cockroach/localInspection/tochar.go",
+  "flux/localInspection/sourcesecret.go",
+  "kubernetes/localInspection/client_test.go",
+  "delve/inspection",
+  "kubernetes/inspection",
+  "caddy/inspection",
+  "cockroach/inspection",
+  "k8sDevice/inspection",
+  "mattermost-server/inspection",
+  "milvus/inspection",
+  "rclone/inspection",
+  "tempo/inspection",
+  "volcano/inspection",
+  "volcano-golinter-local-without-linter/localInspection/scheduler.go",
+  "volcano-golinter-local-with-linter/localInspection/scheduler.go",
+  "volcano-golinter-global-with-linter/inspection",
+  "volcano-golinter-global-without-linter/inspection",
+  "milvus/GoCommentLeadingSpace",
+  "milvus/GoCommentStart",
+  "milvus/GoErrorStringFormat",
+  "milvus/GoExportedElementShouldHaveComment",
+  "milvus/GoExportedOwnDeclaration",
+  "milvus/GoNameStartsWithPackageName",
+  "milvus/GoReceiverNames",
+  "milvus/GoUnsortedImport",
+  "milvus/GoUnitSpecificDurationSuffix",
+  "milvus/GoTypeParameterInLowerCase",
+  "milvus/GoStructInitializationWithoutFieldNames",
+  "milvus/GoSnakeCaseUsage",
+  "milvus/GoRedundantTrueInForCondition",
+  "milvus/GoRedundantElseInIf",
+]
 
 const charts: ChartDef[] = [
   {

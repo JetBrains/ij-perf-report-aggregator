@@ -17,6 +17,8 @@
         :description="chart.definition.description"
       />
     </section>
+
+    <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
 
@@ -24,6 +26,27 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import AdditionalMetrics from "./AdditionalMetrics.vue"
+
+const allProjects = [
+  "cockroach/indexing",
+  "delve/indexing",
+  "mattermost/indexing",
+  "kubernetes/indexing",
+  "flux/indexing",
+  "istio/indexing",
+  "istio/localInspection/adsc.go",
+  "minotaur/localInspection/server.go",
+  "caddy/completion/variable",
+  "caddy/completion/type",
+  "caddy/completion/return",
+  "caddy/completion/interface",
+  "caddy/completion/import",
+  "localAi/go-to-all-with-warmup/version.go/typingLetterByLetter",
+  "act/typing",
+  "delve/inspection",
+  "kubernetes/inspection",
+]
 
 const chartsDeclaration: ChartDefinition[] = [
   {

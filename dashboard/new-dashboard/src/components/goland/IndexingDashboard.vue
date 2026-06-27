@@ -38,12 +38,15 @@
         />
       </section>
     </template>
+
+    <AdditionalMetrics :projects="indexingProjects" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import AdditionalMetrics from "./AdditionalMetrics.vue"
 import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
 interface ChartDef {
@@ -100,16 +103,7 @@ const chartRows: ChartDef[][] = [
     },
     { key: "lexingTime", label: "Lexing Time", measure: "lexingTime#go", projects: breakdownProjects, description: "Time the lexer spends tokenizing Go files during indexing." },
   ],
-  [{ key: "gcPause", label: "GC Pause, ms", measure: "gcPause", projects: indexingProjects, description: "Total time the run spent paused in garbage collection." }],
-  [
-    {
-      key: "freedMemoryByGC",
-      label: "GC Memory Collected, Mb",
-      measure: "freedMemoryByGC",
-      projects: indexingProjects,
-      description: "Total memory reclaimed by GC over the run, in MB.",
-    },
-  ],
+
   [
     {
       key: "scanningTime",

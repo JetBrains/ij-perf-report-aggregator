@@ -404,6 +404,9 @@ function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | nul
           return "#cc0000"
         } else if (classification == ChangePointClassification.OPTIMIZATION) {
           return "#009900"
+        } else if (classification == ChangePointClassification.NEUTRAL) {
+          // A detected change with no good/bad direction: draw the arrow in grey, not red/green.
+          return "#808080"
         } else if (classification == ChangePointClassification.NO_CHANGE) {
           // return "#b4b3b3"
         }

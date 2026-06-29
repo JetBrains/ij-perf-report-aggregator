@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { classifyChangePoint, getChangePointIndexes } from "../../src/shared/changeDetector/algorithm"
+import { ChangePointClassification, classifyChangePoint, getChangePointIndexes } from "../../src/shared/changeDetector/algorithm"
 
 describe("changeDetector", () => {
   it("complex queries are not merged", () => {
@@ -51,5 +51,26 @@ describe("changeDetector", () => {
     const classified = classifyChangePoint(changePoints, dataset).map((change) => change.classification)
 
     expect(classified).toStrictEqual(["No Change", "No Change", "No Change"])
+  })
+
+  describe("betterDirection classification", () => {
+    // A clear step from 100 to 500 at index 40; classify the single known change point directly.
+    const rising = [...Array.from({ length: 40 }, () => 100), ...Array.from({ length: 40 }, () => 500)]
+
+    it("marks a 'none'-direction change as neutral, never good or bad", () => {
+      const [change] = classifyChangePoint([40], rising, "none")
+      expect(change.classification).toBe(ChangePointClassification.NEUTRAL)
+      expect(change.direction).toBe("up")
+    })
+
+    it("still classifies the same change for a directional metric", () => {
+      expect(classifyChangePoint([40], rising, "lower")[0].classification).toBe(ChangePointClassification.DEGRADATION)
+      expect(classifyChangePoint([40], rising, "higher")[0].classification).toBe(ChangePointClassification.OPTIMIZATION)
+    })
+
+    it("a 'none'-direction metric still honours the no-change threshold", () => {
+      const flat = [...Array.from({ length: 40 }, () => 100), ...Array.from({ length: 40 }, () => 102)]
+      expect(classifyChangePoint([40], flat, "none")[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+    })
   })
 })

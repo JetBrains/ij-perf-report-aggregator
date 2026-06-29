@@ -1,76 +1,48 @@
 export const phpStormUnitTestGroups: { label: string; projects: string[] }[] = [
   {
-    label: "Injection",
-    projects: ["com.jetbrains.php.slowTests.PhpInjectionSlowTest.testDeepConcatenation"],
-  },
-  {
-    label: "Resolve",
-    projects: [
-      "com.jetbrains.php.slowTests.PhpResolveSlowTest.testGotoClassCanWorkInDumbMode",
-      "com.jetbrains.php.slowTests.PhpResolveSlowTest.testNoSOEOnIndexingDeepMemberAccess",
-      "com.jetbrains.php.slowTests.PhpResolveSlowTest.testTooBigControlFlow",
-      "com.jetbrains.php.slowTests.PhpResolveSlowTest.testBigControlFlow",
-    ],
-  },
-  {
     label: "Control Flow",
     projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpControlFlowBuilderTest.testLoadPerformance$1",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpControlFlowBuilderTest.testLoadPerformance$2",
-    ],
-  },
-  {
-    label: "Editor",
-    projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpEditorTest.testPerformance",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpEditorTest.testPerformance1",
+      "com.jetbrains.php.PhpControlFlowBuilderTest.testLoadPerformance$1 - LoadPerformance$1",
+      "com.jetbrains.php.PhpControlFlowBuilderTest.testLoadPerformance$2 - LoadPerformance$2",
     ],
   },
   {
     label: "Formatter",
     projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformance",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformance1",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformance2",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformance3",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformance4",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testForceIfBracesPerformance",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpFormatterTest.testPerformanceWi30101",
+      "com.jetbrains.php.PhpFormatterTest.testPerformance - testPerformance",
+      "com.jetbrains.php.PhpFormatterTest.testPerformance1 - testPerformance1",
+      "com.jetbrains.php.PhpFormatterTest.testPerformance2 - testPerformance2",
+      "com.jetbrains.php.PhpFormatterTest.testPerformance3 - testPerformance3",
+      "com.jetbrains.php.PhpFormatterTest.testPerformance4 - testPerformance4",
+      "com.jetbrains.php.PhpFormatterTest.testPerformanceWi30101 - testPerformanceWi30101",
     ],
   },
   {
     label: "Typing",
     projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpTypingPerformanceTest.testTypingInHeredocLiteralWithVariables",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpTypingPerformanceTest.testTypingInHeredocLiteral",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpTypingPerformanceTest.testTypingInStringLiteral",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.PhpTypingPerformanceTest.testTypingInLargeMixedFile",
+      "com.jetbrains.php.PhpTypingPerformanceTest.testTypingInHeredocLiteralWithVariables - PHP typing in heredoc literal",
+      "com.jetbrains.php.PhpTypingPerformanceTest.testTypingInHeredocLiteral - PHP typing in heredoc literal",
+      "com.jetbrains.php.PhpTypingPerformanceTest.testTypingInStringLiteral - PHP typing in heredoc literal",
+      "com.jetbrains.php.PhpTypingPerformanceTest.testTypingInLargeMixedFile - PHP typing in large mixed file",
     ],
   },
   {
     label: "Completion",
-    projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.completion.PhpAccessorsCompletionTest.testPerformanceOnLotsOfFields",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.completion.PhpTokenBasedCompletionTest.testPhpTokenBasedKeywordsCompletionPerformance",
-    ],
+    projects: ["com.jetbrains.php.completion.PhpAccessorsCompletionTest.testPerformanceOnLotsOfFields - Php getters/setters completion"],
   },
   {
     label: "Lang Util",
-    projects: ["com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.lang.PhpLangUtilTest.testIsPhpIdentifierPerformance"],
-  },
-  {
-    label: "Lexer",
-    projects: ["com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.lexer.PhpLexerRegressionTest.testBackslashHeavyDoubleQuotedStringLexingPerformance"],
+    projects: ["com.jetbrains.php.lang.PhpLangUtilTest.testIsPhpIdentifierPerformance - IsPhpIdentifierPerformance"],
   },
   {
     label: "Phar File System",
     projects: [
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTarGz",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharGz",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePhar",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharBz2",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTar",
-      "com.jetbrains.php.slowTests.PhpPerformanceTestSuite: com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTarBz2",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePhar - indexing _phar file",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharGz - indexing _phar_gz file",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharBz2 - indexing _phar_bz2 file",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTar - indexing _phar_tar file",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTarGz - indexing _phar_tar_gz file",
+      "com.jetbrains.php.phar.PharFileSystemPerformanceTest.testPerformancePharTarBz2 - indexing _phar_tar_bz2 file",
     ],
   },
 ]

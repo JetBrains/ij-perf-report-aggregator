@@ -21,74 +21,125 @@ import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
  */
 export const metricsDescription: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
   // FUS events (some of them used for (mega)APDEX calculations)
-  ["fus_file_types_usage_duration_ms", metricInfo('Time from file open until code is loaded. Used for (mega)APDEX "File Openings: Code Loaded".', "milliseconds")],
-  ["fus_file_types_usage_time_to_show_ms", metricInfo('Time from file open until the editor tab is shown. Used for (mega)APDEX "File Openings: Tab Shown".', "milliseconds")],
+  [
+    "fus_file_types_usage_duration_ms",
+    metricInfo('Time from file open until code is loaded. Used for (mega)APDEX "File Openings: Code Loaded". FUS: file.types.usage/open/duration_ms.', "milliseconds"),
+  ],
+  [
+    "fus_file_types_usage_time_to_show_ms",
+    metricInfo('Time from file open until the editor tab is shown. Used for (mega)APDEX "File Openings: Tab Shown". FUS: file.types.usage/open/time_to_show.', "milliseconds"),
+  ],
   [
     "fus_daemon_finished_full_duration_since_started_ms",
     metricInfo(
-      "Full highlighting duration since the file was modified or dumb mode status changed. Equal to the sum of highlighting segments.",
+      "Full highlighting duration since the file was modified or dumb mode status changed. Equal to the sum of highlighting segments. FUS: daemon/finished/full_duration_since_started_ms.",
       "milliseconds",
       "https://youtrack.jetbrains.com/articles/IJPL-A-295/Highlighting-Metric"
     ),
   ],
   [
     "fus_completion_duration_sum",
-    metricInfo("Sum of all code completion durations. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"),
+    metricInfo(
+      "Sum of all code completion durations. Reported by FUS telemetry. FUS: completion/finished/duration.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"
+    ),
   ],
   [
     "fus_completion_duration_90p",
     metricInfo(
-      "90th percentile of code completion duration. Reported by FUS telemetry.",
+      "90th percentile of code completion duration. Reported by FUS telemetry. FUS: completion/finished/duration.",
       "milliseconds",
       "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"
     ),
   ],
   [
     "fus_time_to_show_90p",
-    metricInfo("90th percentile time to first suggestion. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"),
+    metricInfo(
+      "90th percentile time until the completion popup is shown. Reported by FUS telemetry. FUS: completion/finished/time_to_show.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"
+    ),
   ],
   [
     "fus_dumb_indexing_time",
     metricInfo(
-      "Time spent in dumb indexing (initial full indexing on project open). Reported by FUS telemetry.",
+      "Time spent indexing in dumb mode. Reported by FUS telemetry. FUS: indexing.statistics/finished/indexing_activity_type=dumb_indexing.",
       "milliseconds",
       "https://youtrack.jetbrains.com/articles/IJPL-A-296/Indexing-Metric"
     ),
   ],
   [
     "fus_scanning_time",
-    metricInfo("Time spent scanning the file system for changes. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-296/Indexing-Metric"),
+    metricInfo(
+      "Time spent scanning the file system for changes. Reported by FUS telemetry. FUS: indexing.statistics/finished/indexing_activity_type=scanning.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-296/Indexing-Metric"
+    ),
   ],
-  ["fus_git_branches_checkout_operation", metricInfo("Time spent on the Git checkout operation.", "milliseconds")],
-  ["fus_git_branches_vfs_refresh", metricInfo("Time spent refreshing the virtual file system after Git checkout.", "milliseconds")],
-  ["fus_vcs_commit_duration", metricInfo("Time to complete a VCS commit operation.", "milliseconds")],
-  ["fus_find_usages_all", metricInfo("Time to find all usages.", "milliseconds")],
-  ["fus_find_usages_first", metricInfo("Time to find the first usage result.", "milliseconds")],
-  ["fus_startup_totalDuration", metricInfo("Total IDE startup duration.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
+  [
+    "fus_git_branches_checkout_operation",
+    metricInfo("Time spent on the Git checkout operation. FUS: git.branches/checkout.checkout_operation.finished/duration_ms.", "milliseconds"),
+  ],
+  [
+    "fus_git_branches_vfs_refresh",
+    metricInfo("Time spent refreshing the virtual file system after Git checkout. FUS: git.branches/checkout.vfs_refresh.finished/duration_ms.", "milliseconds"),
+  ],
+  ["fus_vcs_commit_duration", metricInfo("Time to complete a VCS commit operation. FUS: vcs/commit.finished/duration_ms.", "milliseconds")],
+  ["fus_find_usages_all", metricInfo("Time to find all usages. FUS: usage.view/finished/duration_ms.", "milliseconds")],
+  ["fus_find_usages_first", metricInfo("Time to find the first usage result. FUS: usage.view/finished/duration_first_results_ms.", "milliseconds")],
+  [
+    "fus_startup_totalDuration",
+    metricInfo("Total IDE startup duration. FUS: startup/totalDuration/duration.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
+  ],
   [
     "fus_reopen_startup_frame_became_interactive",
-    metricInfo("Time from project reopen until the IDE frame became interactive.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
-  ],
-  [
-    "fus_reopen_startup_first_ui_shown",
-    metricInfo("Time from project reopen until the first UI frame was shown.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
-  ],
-  [
-    "fus_reopen_startup_frame_became_visible",
-    metricInfo("Time from project reopen until the IDE frame became visible.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
-  ],
-  [
-    "fus_reopen_startup_code_loaded_and_visible_in_editor",
     metricInfo(
-      "Time from project reopen until code is loaded and visible in the editor. Primary startup metric.",
+      "Time from project reopen until the IDE frame became interactive. FUS: reopen.project.startup.performance/frame.became.interactive/duration_ms.",
       "milliseconds",
       "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"
     ),
   ],
-  ["fus_gradle.sync", metricInfo("Duration of Gradle sync. Difference between sync finished and sync started FUS events.", "milliseconds")],
-  ["fus_PROJECT_RESOLVERS", metricInfo("Time spent resolving Gradle projects. Phase of Gradle sync.", "milliseconds")],
-  ["fus_GRADLE_CALL", metricInfo("Time spent calling Gradle daemon. Phase of Gradle sync.", "milliseconds")],
-  ["fus_DATA_SERVICES", metricInfo("Time spent loading Gradle data services. Phase of Gradle sync.", "milliseconds")],
+  [
+    "fus_reopen_startup_first_ui_shown",
+    metricInfo(
+      "Time from project reopen until the first UI frame was shown. FUS: reopen.project.startup.performance/first.ui.shown/duration_ms.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"
+    ),
+  ],
+  [
+    "fus_reopen_startup_frame_became_visible",
+    metricInfo(
+      "Time from project reopen until the IDE frame became visible. FUS: reopen.project.startup.performance/frame.became.visible/duration_ms.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"
+    ),
+  ],
+  [
+    "fus_reopen_startup_code_loaded_and_visible_in_editor",
+    metricInfo(
+      "Time from project reopen until code is loaded and visible in the editor. Primary startup metric. FUS: reopen.project.startup.performance/code.loaded.and.visible.in.editor/duration_ms.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"
+    ),
+  ],
+  [
+    "fus_gradle.sync",
+    metricInfo(
+      "Duration of Gradle sync. Difference between sync finished and sync started FUS events. FUS: build.gradle.import/gradle.sync.finished minus gradle.sync.started/duration_ms.",
+      "milliseconds"
+    ),
+  ],
+  [
+    "fus_PROJECT_RESOLVERS",
+    metricInfo("Time spent resolving Gradle projects. Phase of Gradle sync. FUS: build.gradle.import/phase.finished[PROJECT_RESOLVERS]/duration_ms.", "milliseconds"),
+  ],
+  ["fus_GRADLE_CALL", metricInfo("Time spent calling Gradle daemon. Phase of Gradle sync. FUS: build.gradle.import/phase.finished[GRADLE_CALL]/duration_ms.", "milliseconds")],
+  [
+    "fus_DATA_SERVICES",
+    metricInfo("Time spent loading Gradle data services. Phase of Gradle sync. FUS: build.gradle.import/phase.finished[DATA_SERVICES]/duration_ms.", "milliseconds"),
+  ],
 
   //completion
   ["completion", metricInfo("Total time to load all completion variants for each invocation.", "milliseconds")],
@@ -115,12 +166,12 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["globalInspections", metricInfo("Time to run all inspections in batch mode (Inspect Code / Inspect Project).", "milliseconds")],
   //indexing
   ["indexSize", metricInfo("Total size of indexes written to disk after indexing.", "kilobytes")],
-  ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB).", "kilobytes")],
-  ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB).", "kilobytes")],
+  ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in bytes).", "bytes")],
+  ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in bytes).", "bytes")],
   ["numberOfIndexedFiles", metricInfo("Total files that went through the indexing pipeline.", "counter", undefined, "stable")],
-  ["processingSpeedAvg#*", metricInfo("Average indexing throughput for a file type (kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
-  ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
-  ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
+  ["processingSpeedAvg#*", metricInfo("Average indexing throughput for a file type (kB/s).", "kilobytesPerSecond", undefined, "higher")],
+  ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s).", "kilobytesPerSecond", undefined, "higher")],
+  ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s).", "kilobytesPerSecond", undefined, "higher")],
   ["processingTime#*", metricInfo("CPU time spent on processing files of this type.", "milliseconds")],
   ["lexingTime#*", metricInfo("Time the lexer spent tokenizing files of this type.", "milliseconds")],
   ["parsingTime#*", metricInfo("Time the parser spent building PSI for files of this type.", "milliseconds")],
@@ -144,10 +195,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["typing#max_awt_delay", metricInfo("Maximum time to process a single empty AWT event in the queue during typing.", "milliseconds")],
   [
     "typing#latency",
-    metricInfo(
-      "Average time in ms of inserting a letter in the Editor (approximation of how long it takes from keyboard press till the appearance of the letter); measured during typing",
-      "milliseconds"
-    ),
+    metricInfo("Average time in ms to insert a letter in the editor, measured during typing — approximates the delay from key press to the letter appearing.", "milliseconds"),
   ],
   //refactorings
   ["performInlineRename#mean_value", metricInfo("Mean time to perform an inline rename. Find usages is not included.", "milliseconds")],
@@ -160,14 +208,18 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["moveDeclarations_back#mean_value", metricInfo("Mean time to restore the project after move declarations.", "milliseconds")],
 
   //editor actions
-  ["execute_editor_optimizeimports", metricInfo("Time to execute optimize imports action in the editor", "milliseconds")],
-  ["execute_editor_paste", metricInfo("Time to execute paste action in the editor", "milliseconds")],
-  ["convertJavaToKotlin", metricInfo("Time to execute J2K action in the editor", "milliseconds")],
+  ["execute_editor_optimizeimports", metricInfo("Time to execute optimize imports action in the editor.", "milliseconds")],
+  ["execute_editor_paste", metricInfo("Time to execute paste action in the editor.", "milliseconds")],
+  ["convertJavaToKotlin", metricInfo("Time to execute J2K action in the editor.", "milliseconds")],
 
   //GC
+  // The GCViewer-sourced memory metrics below (freedMemoryByGC, freedMemoryByFullGC, totalHeapUsedMax)
+  // are mebibytes, despite being stored raw. GCViewer keeps memory in KiB internally and steps down at
+  // 1024 boundaries (B→K→M→G), so a value tagged "M" already equals bytes / 1024² — the same binary unit
+  // MEM.*/JVM.* reach by dividing raw bytes by /1024/1024. GCLogAnalyzer keeps the "M" value as-is.
   [
     "freedMemoryByGC",
-    metricInfo("Total memory freed by garbage collection. Tracks allocation churn; less is better.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme", "lower"),
+    metricInfo("Total memory freed by garbage collection. Tracks allocation churn; lower is better.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme", "lower"),
   ],
   [
     "freedMemoryByFullGC",
@@ -180,7 +232,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["bsp.used.at.exit.mb", metricInfo("Heap used at exit.", "mebibytes")],
   ["bsp.used.after.sync.mb", metricInfo("Heap used after sync.", "mebibytes")],
   //others
-  ["searchEverywhere_*", "Time to fill all search everywhere results"],
+  ["searchEverywhere_*", "Time to fill all search everywhere results."],
   ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
   //indexing / VFS / VCS indexing
   [
@@ -195,7 +247,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["pausedTimeInIndexingOrScanning", metricInfo("Time the indexing or scanning pipeline was paused.", "milliseconds")],
   ["numberOfRunsOfIndexing", metricInfo("Number of indexing passes. Higher means more incremental re-indexing.", "counter", undefined, "lower")],
   ["numberOfRunsOfScannning", metricInfo("Number of file system scanning passes. Extra passes mean wasted work.", "counter", undefined, "lower")],
-  ["numberOfScannedFiles", metricInfo("Total files scanned during indexing. Versus indexed files shows filter efficiency.", "counter", undefined, "stable")],
+  ["numberOfScannedFiles", metricInfo("Total files scanned during indexing. Compared with indexed files, shows filter efficiency.", "counter", undefined, "stable")],
   ["numberOfIndexedFilesWritingIndexValue", metricInfo("Files that produced index data this run. Should stay flat for a fixed project.", "counter", undefined, "stable")],
   ["numberOfIndexedFilesWithNothingToWrite", metricInfo("Files indexed but producing no index data. High values indicate wasted indexing work.", "counter", undefined, "stable")],
   ["numberOfFilesIndexedByExtensions", metricInfo("Files recognized by extension-based file type detection.", "counter", undefined, "stable")],
@@ -212,7 +264,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   // AWT
   ["AWTEventQueue.dispatchTimeTotal", metricInfo("Total AWT event queue dispatch time. High values indicate UI thread contention.", "milliseconds")],
   //build
-  ["build_compilation_duration", metricInfo("Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager)", "milliseconds")],
+  ["build_compilation_duration", metricInfo("Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager).", "milliseconds")],
   //search everywhere
   ["searchEverywhere", metricInfo("End-to-end time of a Search Everywhere operation: popup invocation, query typing, and optional selection.", "milliseconds")],
   ["searchEverywhere_dialog_shown", metricInfo("Time from triggering Search Everywhere until the popup is fully displayed.", "milliseconds")],
@@ -234,16 +286,16 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["debugRunConfiguration", metricInfo("Time from launching a debug configuration to the first pause at a breakpoint.", "milliseconds")],
   ["debugStep_into", metricInfo("Time from invoking Step Into until the debugger pauses again.", "milliseconds")],
   //AI completion quality
-  ["MatchedRatio", "Average length of accepted completion minus prefix, normalized by expected text (AI completion quality)"],
-  ["SyntaxErrorsSessionRatio", "Ratio of completion sessions that left syntax errors in the resulting code"],
-  ["EditSimilarity", "Maximum Levenshtein-based similarity between proposed completion suggestions and expected text"],
+  ["MatchedRatio", "Average length of accepted completion minus prefix, normalized by expected text (AI completion quality)."],
+  ["SyntaxErrorsSessionRatio", "Ratio of completion sessions that left syntax errors in the resulting code."],
+  ["EditSimilarity", "Maximum Levenshtein-based similarity between proposed completion suggestions and expected text."],
   //benchmark
-  ["attempt.mean.ms", "Mean duration in milliseconds across all benchmark attempt spans"],
+  ["attempt.mean.ms", metricInfo("Mean duration in milliseconds across all benchmark attempt spans.", "milliseconds")],
   //GC — G1GC
   [
     "g1gcConcurrentMarkCycles",
     metricInfo(
-      "Number of G1 concurrent marking cycles. Reflects old-gen GC pressure; fewer is better.",
+      "Number of G1 concurrent marking cycles. Reflects old-gen GC pressure; lower is better.",
       "counter",
       "https://docs.oracle.com/en/java/javase/21/gctuning/garbage-first-g1-garbage-collector1.html#GUID-93D75606-CAC0-4D79-983B-2DCC7E22D13A",
       "lower"
@@ -269,18 +321,18 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   // JVM — Runtime
   ["JVM.maxThreadCount", metricInfo("Peak number of live JVM threads. Unexpected growth signals thread leaks.", "counter", undefined, "stable")],
-  ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Versus wall-clock time, reveals CPU saturation.", "milliseconds")],
+  ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Compared with wall-clock time, reveals CPU saturation.", "milliseconds")],
   ["JVM.totalTimeToSafepointsMs", metricInfo("Time threads spent blocked waiting for JVM safepoints. Above 50 ms indicates contention.", "milliseconds")],
 
   // Memory
   ["MEM.avgRamMegabytes", metricInfo("Average resident RAM of the IDE process during the test.", "mebibytes")],
   ["MEM.avgFileMappingsRamMegabytes", metricInfo("Average RAM consumed by memory-mapped files (JARs, indexes, OS pages).", "mebibytes")],
   ["MEM.avgRamMinusFileMappingsMegabytes", metricInfo("Average resident RAM excluding file mappings — the true heap and off-heap footprint.", "mebibytes")],
-  ["JVM.committedHeapMegabytes", metricInfo("Heap memory committed from the OS. Versus max heap, shows available headroom.", "mebibytes")],
+  ["JVM.committedHeapMegabytes", metricInfo("Heap memory committed from the OS. Compared with max heap, shows available headroom.", "mebibytes")],
 
   //gc
-  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "bytes", "https://github.com/chewiebug/GCViewer#readme")],
-  ["test#average_awt_delay", metricInfo("The average time it takes to process a single empty AWT event in the queue during the whole test.", "milliseconds")],
+  ["freedMemory", metricInfo("Total memory freed by GC during the test, parsed from GCViewer output.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme")],
+  ["test#average_awt_delay", metricInfo("Average time to process a single empty AWT event in the queue during the test.", "milliseconds")],
   ["showQuickFixes", metricInfo("Time to show the quick fixes after calling Alt + Enter.", "milliseconds")],
   [
     "attempt.mad.ms",
@@ -293,31 +345,28 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ...GRADLE_METRICS_NEW_DASHBOARD,
 
   // Workspace Model
-  [
-    "workspaceModel.updates.count",
-    "Total number of changes made to the project model, including modifying entities, changing configuration, and updating dependencies, among others.",
-  ],
+  ["workspaceModel.updates.count", "Total number of changes made to the project model, including modifying entities, changing configuration, and updating dependencies."],
   [
     "workspaceModel.updates.ms",
     metricInfo(
-      "Total time spent on processing modifications to the workspace entities including time required in calling update handlers, collecting changes, initializing bridging operations, and generating snapshots",
+      "Total time to process workspace entity modifications: calling update handlers, collecting changes, initializing bridging operations, and generating snapshots.",
       "milliseconds"
     ),
   ],
-  ["workspaceModel.mutableEntityStorage.to.snapshot.ms", metricInfo("The time taken to create a snapshot of the mutable entity storage.", "milliseconds")],
-  ["workspaceModel.mutableEntityStorage.replace.by.source.ms", metricInfo("The time taken to replace entities in the mutable entity storage by source.", "milliseconds")],
-  ["workspaceModel.mutableEntityStorage.add.diff.ms", metricInfo("The time taken to add differences to the mutable entity storage.", "milliseconds")],
-  ["workspaceModel.loading.from.cache.ms", metricInfo("The time taken to load the workspace model from cache.", "milliseconds")],
-  ["workspaceModel.do.save.caches.ms", metricInfo("The time taken to save caches of the workspace model.", "milliseconds")],
-  ["workspaceModel.mutableEntityStorage.collect.changes.ms", metricInfo("The time taken to collect changes in the mutable entity storage.", "milliseconds")],
-  ["workspaceModel.mutableEntityStorage.add.entity.ms", metricInfo("The time taken to add an entity to the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.to.snapshot.ms", metricInfo("Time to create a snapshot of the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.replace.by.source.ms", metricInfo("Time to replace entities in the mutable entity storage by source.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.add.diff.ms", metricInfo("Time to add differences to the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.loading.from.cache.ms", metricInfo("Time to load the workspace model from cache.", "milliseconds")],
+  ["workspaceModel.do.save.caches.ms", metricInfo("Time to save the workspace model caches.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.collect.changes.ms", metricInfo("Time to collect changes in the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.add.entity.ms", metricInfo("Time to add an entity to the mutable entity storage.", "milliseconds")],
 
   // JVM — already plotted in AdditionalMetrics but missing from metricsDescription
   ["JVM.maxHeapMegabytes", metricInfo("Maximum JVM heap size configured for the IDE (-Xmx; constant). Observed peak is totalHeapUsedMax.", "mebibytes", undefined, "none")],
-  ["jps.load.project.to.empty.storage.ms", metricInfo("The time taken to load a project into empty storage using the JPS.", "milliseconds")],
-  ["jps.project.serializers.load.ms", metricInfo("The time taken to load project serializers in the JPS.", "milliseconds")],
-  ["jps.project.serializers.save.ms", metricInfo("The time taken to save project serializers in the JPS.", "milliseconds")],
-  ["jps.facet.change.listener.process.change.events.ms", metricInfo("The time taken to process change events by the facet change listener in the JPS.", "milliseconds")],
+  ["jps.load.project.to.empty.storage.ms", metricInfo("Time to load a project into empty storage via JPS.", "milliseconds")],
+  ["jps.project.serializers.load.ms", metricInfo("Time to load project serializers via JPS.", "milliseconds")],
+  ["jps.project.serializers.save.ms", metricInfo("Time to save project serializers via JPS.", "milliseconds")],
+  ["jps.facet.change.listener.process.change.events.ms", metricInfo("Time for the JPS facet change listener to process change events.", "milliseconds")],
 
   ["completion#median_value", metricInfo("Median completion time — typical warm latency.", "milliseconds")],
   ["completion#number#mean_value", metricInfo("Mean suggestion count. May shift if completion ranking or filtering changes.", "counter", undefined, "none")],
@@ -335,10 +384,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["go.dfa.general.avg.without.summary.load.time.ms", metricInfo("Average DFA analysis time per file excluding summary load — isolates pure analysis cost.", "milliseconds")],
   ["go.dfa.general.computed.file.gists.count", metricInfo("Number of file gists (abstracted function summaries) computed. Varies run-to-run.", "counter", undefined, "none")],
   ["go.dfa.general.files.count", metricInfo("Total files analyzed by DFA. Varies run-to-run.", "counter", undefined, "none")],
-  ["go.dfa.general.functions.count", metricInfo("Total functions analyzed by DFA. Varies run-to-run (~2.5%).", "counter", undefined, "none")],
+  ["go.dfa.general.functions.count", metricInfo("Total functions analyzed by DFA. Varies run-to-run.", "counter", undefined, "none")],
   [
     "go.dfa.general.resolve.issue.count",
-    metricInfo("Deferred-call targets DFA could not resolve. A rise signals a resolve regression; fewer is better.", "counter", undefined, "lower"),
+    metricInfo("Deferred-call targets DFA could not resolve. A rise signals a resolve regression; lower is better.", "counter", undefined, "lower"),
   ],
 
   // Other

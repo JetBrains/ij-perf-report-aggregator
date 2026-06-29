@@ -29,7 +29,7 @@ describe("measure unit resolution", () => {
 
   it.each([
     ["fileCount", "counter"],
-    ["firstCodeAnalysis", "milliseconds"],
+    ["undeclaredAction", "milliseconds"],
   ])("falls back to a name-based unit for the undeclared metric %s (%s)", (measureName, unit) => {
     expect(resolveMeasureUnit(measureName)).toBe(unit)
   })
@@ -39,7 +39,7 @@ describe("measure unit resolution", () => {
   })
 
   it("lets an explicit value-unit override an undeclared metric", () => {
-    expect(resolveMeasureUnit("firstCodeAnalysis", { valueUnit: "counter" })).toBe("counter")
+    expect(resolveMeasureUnit("undeclaredAction", { valueUnit: "counter" })).toBe("counter")
     expect(resolveMeasureUnit("fileCount", { valueUnit: "ms" })).toBe("milliseconds")
     expect(resolveMeasureUnit("anything", { valueUnit: "ns" })).toBe("nanoseconds")
   })
@@ -50,7 +50,7 @@ describe("measure unit resolution", () => {
   })
 
   it("honours the stored type over a name fallback", () => {
-    expect(resolveMeasureUnit("firstCodeAnalysis", { storedType: "c" })).toBe("counter")
+    expect(resolveMeasureUnit("undeclaredAction", { storedType: "c" })).toBe("counter")
     expect(resolveMeasureUnit("fileCount", { storedType: "d" })).toBe("milliseconds")
   })
 

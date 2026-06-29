@@ -10,8 +10,8 @@
     >
       {{ title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <i
-        v-if="description"
-        v-tooltip="{ value: description, pt: { text: { class: 'text-base max-w-md' } } }"
+        v-if="resolvedDescription"
+        v-tooltip="{ value: resolvedDescription, pt: { text: { class: 'text-base max-w-md' } } }"
         class="pi pi-info-circle text-sm cursor-help"
       />
       <a
@@ -54,6 +54,7 @@ import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { useSettingsStore } from "../settings/settingsStore"
 import { BetterDirection } from "../../shared/changeDetector/algorithm"
+import { getMetricDescription } from "../../shared/metricsDescription"
 import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
@@ -86,8 +87,14 @@ const {
   withMeasureName = false,
   canBeClosed = false,
   description,
-  betterDirection = "lower",
+  betterDirection: betterDirectionProp,
 } = defineProps<LineChartProps>()
+
+// One central lookup feeds both the trend-direction rule and the header tooltip; the matching prop
+// stays an override so a chart can still state a context-specific direction or description.
+const metricInfo = computed(() => getMetricDescription(measures[0]))
+const resolvedBetterDirection = computed<BetterDirection>(() => betterDirectionProp ?? metricInfo.value?.betterDirection ?? "lower")
+const resolvedDescription = computed(() => description ?? metricInfo.value?.description)
 
 const anchor = computed(() => {
   return title.replaceAll(/[^\dA-Za-z]/g, "")
@@ -154,7 +161,7 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   },
   accidentsConfigurator,
   tooltipTrigger,
-  betterDirection
+  resolvedBetterDirection.value
 )
 
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]

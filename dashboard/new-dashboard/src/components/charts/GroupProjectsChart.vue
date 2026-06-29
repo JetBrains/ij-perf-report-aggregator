@@ -9,7 +9,7 @@
     :legend-formatter="legendFormatter"
     :can-be-closed="canBeClosed"
     :description="description"
-    :better-direction="betterDirection"
+    :better-direction="betterDirectionProp"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -49,7 +49,7 @@ const {
   aliases = null,
   canBeClosed = false,
   description,
-  betterDirection = "lower",
+  betterDirection: betterDirectionProp,
 } = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

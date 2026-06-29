@@ -3,7 +3,7 @@
     db-name="perfUnitTests"
     table="report"
     persistent-id="phpstorm_unit_tests_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)"
     :charts="charts"
     :with-installer="false"
   >

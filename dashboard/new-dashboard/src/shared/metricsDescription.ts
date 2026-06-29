@@ -1,3 +1,4 @@
+import { BetterDirection } from "./changeDetector/algorithm"
 import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
 import type { MeasureUnit } from "../components/common/formatter"
 import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
@@ -12,183 +13,226 @@ import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
  * where `*` is a wildcard that matches any suffix.
  * For example, `processingTime#*` matches `processingTime#java` and `processingTime#cpp`.
  *
- * If you want to provide URL, use `metricInfo` function:
+ * To declare a unit, documentation URL, or better-direction, use the `metricInfo` function
+ * (`metricInfo(description, unit?, url?, betterDirection?)`):
  * ```
- * ["metricName", metricInfo("MetricDescription", "https://example.com")]
+ * ["metricName", metricInfo("MetricDescription", "milliseconds", "https://example.com")]
  * ```
  */
 export const metricsDescription: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
   // FUS events (some of them used for (mega)APDEX calculations)
-  ["fus_file_types_usage_duration_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="duration_ms", (mega)APDEX: "File Openings: Code Loaded"'],
-  ["fus_file_types_usage_time_to_show_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="time_to_show", (mega)APDEX: "File Openings: Tab Shown"'],
+  ["fus_file_types_usage_duration_ms", metricInfo('Time from file open until code is loaded. Used for (mega)APDEX "File Openings: Code Loaded".', "milliseconds")],
+  ["fus_file_types_usage_time_to_show_ms", metricInfo('Time from file open until the editor tab is shown. Used for (mega)APDEX "File Openings: Tab Shown".', "milliseconds")],
   [
     "fus_daemon_finished_full_duration_since_started_ms",
-    'FUS event with groupID="daemon" eventID="finished" eventField="full_duration_since_started_ms. Full highlighting duration since the file was modified and/or dumb mode status changed. It should be equal to the sum of segments."',
+    metricInfo(
+      "Full highlighting duration since the file was modified or dumb mode status changed. Equal to the sum of highlighting segments.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-295/Highlighting-Metric"
+    ),
   ],
-  ["fus_completion_duration_sum", 'SUM of FUS events with groupID="completion" eventID="finished" eventField="duration"'],
-  ["fus_completion_duration_90p", '90 percentile of FUS events with groupID="completion" eventID="finished" eventField="duration"'],
-  ["fus_time_to_show_90p", '90 percentile of FUS events with groupID="completion" eventID="finished" eventField="time_to_show"'],
-  ["fus_dumb_indexing_time", 'FUS event with groupID="indexing.statistics" eventID="finished" eventField="finished" eventField="indexing_activity_type=dumb_indexing"'],
-  ["fus_scanning_time", 'FUS event with groupID="indexing.statistics" eventID="finished" eventField="finished" eventField="indexing_activity_type=scanning"'],
-  ["fus_git_branches_checkout_operation", 'FUS event with groupID="git.branches" eventID="checkout.checkout_operation.finished" eventField="duration_ms"'],
-  ["fus_git_branches_vfs_refresh", 'FUS event with groupID="git.branches" eventID="checkout.vfs_refresh.finished" eventField="duration_ms"'],
-  ["fus_vcs_commit_duration", 'FUS event with groupID="vcs" eventID="commit.finished" eventField="duration_ms"'],
-  ["fus_find_usages_all", 'FUS event with groupID="usage.view" eventID="finished" eventField="duration_ms"'],
-  ["fus_find_usages_first", 'FUS event with groupID="usage.view" eventID="finished" eventField="duration_first_results_ms. Old startup metric"'],
-  ["fus_startup_totalDuration", 'FUS event with groupID="startup" eventID="totalDuration" eventField="duration"'],
-  ["fus_reopen_startup_frame_became_interactive", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.interactive" eventField="duration_ms"'],
-  ["fus_reopen_startup_first_ui_shown", 'FUS event with groupID="reopen.project.startup.performance" eventID="first.ui.shown" eventField="duration_ms"'],
-  ["fus_reopen_startup_frame_became_visible", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.visible" eventField="duration_ms"'],
+  [
+    "fus_completion_duration_sum",
+    metricInfo("Sum of all code completion durations. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"),
+  ],
+  [
+    "fus_completion_duration_90p",
+    metricInfo(
+      "90th percentile of code completion duration. Reported by FUS telemetry.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"
+    ),
+  ],
+  [
+    "fus_time_to_show_90p",
+    metricInfo("90th percentile time to first suggestion. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-304/Code-Completion-Metric"),
+  ],
+  [
+    "fus_dumb_indexing_time",
+    metricInfo(
+      "Time spent in dumb indexing (initial full indexing on project open). Reported by FUS telemetry.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-296/Indexing-Metric"
+    ),
+  ],
+  [
+    "fus_scanning_time",
+    metricInfo("Time spent scanning the file system for changes. Reported by FUS telemetry.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-296/Indexing-Metric"),
+  ],
+  ["fus_git_branches_checkout_operation", metricInfo("Time spent on the Git checkout operation.", "milliseconds")],
+  ["fus_git_branches_vfs_refresh", metricInfo("Time spent refreshing the virtual file system after Git checkout.", "milliseconds")],
+  ["fus_vcs_commit_duration", metricInfo("Time to complete a VCS commit operation.", "milliseconds")],
+  ["fus_find_usages_all", metricInfo("Time to find all usages.", "milliseconds")],
+  ["fus_find_usages_first", metricInfo("Time to find the first usage result.", "milliseconds")],
+  ["fus_startup_totalDuration", metricInfo("Total IDE startup duration.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
+  [
+    "fus_reopen_startup_frame_became_interactive",
+    metricInfo("Time from project reopen until the IDE frame became interactive.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
+  ],
+  [
+    "fus_reopen_startup_first_ui_shown",
+    metricInfo("Time from project reopen until the first UI frame was shown.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
+  ],
+  [
+    "fus_reopen_startup_frame_became_visible",
+    metricInfo("Time from project reopen until the IDE frame became visible.", "milliseconds", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"),
+  ],
   [
     "fus_reopen_startup_code_loaded_and_visible_in_editor",
-    'FUS event with groupID="reopen.project.startup.performance" eventID="code.loaded.and.visible.in.editor" eventField="duration_ms. New main metric for startup"',
+    metricInfo(
+      "Time from project reopen until code is loaded and visible in the editor. Primary startup metric.",
+      "milliseconds",
+      "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric"
+    ),
   ],
-  [
-    "fus_gradle.sync",
-    'Difference between durations of FUS events with groupID="build.gradle.import" eventID="gradle.sync.finished" eventField="duration_ms" and groupID="build.gradle.import" eventID="gradle.sync.started" eventField="duration_ms"',
-  ],
-  ["fus_PROJECT_RESOLVERS", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="PROJECT_RESOLVERS" eventField="duration_ms"'],
-  ["fus_GRADLE_CALL", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="GRADLE_CALL" eventField="duration_ms"'],
-  ["fus_DATA_SERVICES", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="DATA_SERVICES" eventField="duration_ms"'],
+  ["fus_gradle.sync", metricInfo("Duration of Gradle sync. Difference between sync finished and sync started FUS events.", "milliseconds")],
+  ["fus_PROJECT_RESOLVERS", metricInfo("Time spent resolving Gradle projects. Phase of Gradle sync.", "milliseconds")],
+  ["fus_GRADLE_CALL", metricInfo("Time spent calling Gradle daemon. Phase of Gradle sync.", "milliseconds")],
+  ["fus_DATA_SERVICES", metricInfo("Time spent loading Gradle data services. Phase of Gradle sync.", "milliseconds")],
 
   //completion
-  ["completion", "Total time of each completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
-  ["completion#mean_value", "Mean value of all completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
+  ["completion", metricInfo("Total time to load all completion variants for each invocation.", "milliseconds")],
+  ["completion#mean_value", metricInfo("Mean time to load all completion variants across invocations.", "milliseconds")],
   //code typing
   [
     "codeTyping#mean_value",
-    "Mean time of a code typing iteration. A code typing test types a piece of code with medium complexity from beginning to end, invoking completion and waiting for code analysis at predetermined points.",
+    metricInfo(
+      "Mean time of a code typing iteration. A code typing test types a piece of code with medium complexity from beginning to end, invoking completion and waiting for code analysis at predetermined points.",
+      "milliseconds"
+    ),
   ],
   //find usages
-  ["findUsage_popup", "Time to show the find usages popup"],
-  ["findUsages", "Time to show all usages in the popup"],
-  ["findUsages#number", metricInfo("Number of found usages", undefined, "counter")],
-  ["findUsages#mean_value", "Mean time to show all usages in the popup"],
-  ["findUsages_firstUsage", "Time to show the first usage in the popup"],
+  ["findUsage_popup", metricInfo("Time to show the find usages popup.", "milliseconds")],
+  ["findUsages", metricInfo("Time to find and display all usages in the popup.", "milliseconds")],
+  ["findUsages#number", metricInfo("Number of usages found. Stable for a fixed query; a drop signals a resolve regression.", "counter", undefined, "stable")],
+  ["findUsages#mean_value", metricInfo("Mean time to show all usages in the popup.", "milliseconds")],
+  ["findUsages_firstUsage", metricInfo("Time until the first usage appears in the popup.", "milliseconds")],
   //analysis
-  ["firstCodeAnalysis", "Time it takes to perform code analysis on file opening"],
-  ["localInspections", "Sum time of all analysis. From Daemon#restart till DaemonListener#daemonFinished."],
-  ["localInspections#mean_value", "Code analysis mean time. From Daemon#restart till DaemonListener#daemonFinished."],
-  ["runDaemon/executionTime", "Time it takes to complete a first daemon run. It might be restarted so it's not a full time."],
-  ["globalInspections", "Time of all inspections runned in batch mode (Inspect Project)."],
+  ["firstCodeAnalysis", metricInfo("Time to perform syntax and semantic highlighting when a file opens for the first time (cold daemon pass).", "milliseconds")],
+  ["localInspections", metricInfo("Total time of on-the-fly code analysis. Measured from daemon restart to daemon finish.", "milliseconds")],
+  ["localInspections#mean_value", metricInfo("Mean time of on-the-fly code analysis. Measured from daemon restart to daemon finish.", "milliseconds")],
+  ["runDaemon/executionTime", metricInfo("Time to complete a first daemon run. It might be restarted so it is not a full time.", "milliseconds")],
+  ["globalInspections", metricInfo("Time to run all inspections in batch mode (Inspect Code / Inspect Project).", "milliseconds")],
   //indexing
-  ["indexSize", metricInfo("Index size (in kB)", undefined, "kilobytes")],
-  ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB)", undefined, "kilobytes")],
-  ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB)", undefined, "kilobytes")],
-  ["numberOfIndexedFiles", metricInfo("Number of indexed files", undefined, "counter")],
-  ["processingSpeedAvg#*", metricInfo("Speed of indexing a file type (in kB/s)", undefined, "kilobytesPerSecond")],
-  ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
-  ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s)", undefined, "kilobytesPerSecond")],
-  ["processingTime#*", metricInfo("CPU time spent on processing files of this type, in ms.")],
-  ["lexingTime#*", metricInfo("Time the lexer spent tokenizing files of this type, in ms.")],
-  ["parsingTime#*", metricInfo("Time the parser spent building PSI for files of this type, in ms.")],
-  ["processingSpeedWorst#*", metricInfo("Worst-case indexing throughput for a file type (kB/s). Low values indicate pathological files.", undefined, "kilobytesPerSecond")],
+  ["indexSize", metricInfo("Total size of indexes written to disk after indexing.", "kilobytes")],
+  ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in kB).", "kilobytes")],
+  ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in kB).", "kilobytes")],
+  ["numberOfIndexedFiles", metricInfo("Total files that went through the indexing pipeline.", "counter", undefined, "stable")],
+  ["processingSpeedAvg#*", metricInfo("Average indexing throughput for a file type (kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
+  ["lexingSpeed#*", metricInfo("Lexing speed of a file type (in kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
+  ["parsingSpeed#*", metricInfo("Parsing speed of a file type (in kB/s). Higher is better.", "kilobytesPerSecond", undefined, "higher")],
+  ["processingTime#*", metricInfo("CPU time spent on processing files of this type.", "milliseconds")],
+  ["lexingTime#*", metricInfo("Time the lexer spent tokenizing files of this type.", "milliseconds")],
+  ["parsingTime#*", metricInfo("Time the parser spent building PSI for files of this type.", "milliseconds")],
+  [
+    "processingSpeedWorst#*",
+    metricInfo("Worst-case indexing throughput for a file type (kB/s). Low values indicate pathological files.", "kilobytesPerSecond", undefined, "higher"),
+  ],
   [
     "processingSpeedOfBaseLanguageWorst#*",
-    metricInfo("Worst-case indexing throughput mapped to the base language (kB/s). Low values indicate pathological files.", undefined, "kilobytesPerSecond"),
+    metricInfo("Worst-case indexing throughput mapped to the base language (kB/s). Low values indicate pathological files.", "kilobytesPerSecond", undefined, "higher"),
   ],
-  ["numberOfIndexedFiles#*", metricInfo("Number of files of this type that were indexed.", undefined, "counter")],
-  ["indexingTimeWithoutPauses", metricInfo("Time to build indexes, excluding paused intervals, in ms.")],
-  ["scanningTimeWithoutPauses", metricInfo("Time to scan files for changes before indexing, excluding pauses, in ms.")],
-  ["pageLoad", metricInfo("Number of regular Pages' loads.", undefined, "counter")],
-  [
-    "pageMiss",
-    metricInfo(
-      "If the needed page has not existed in the main memory (RAM), it is known as PAGE MISS. The metric displays the number of unsuccessful Pages' obtainment.",
-      undefined,
-      "counter"
-    ),
-  ],
-  [
-    "pageHit",
-    metricInfo(
-      "CPU attempts to obtain a needed page from main memory and the page exists in main memory (RAM), it is referred to as a PAGE HIT. This metric displays the number of successful Pages' obtainment.",
-      undefined,
-      "counter"
-    ),
-  ],
+  ["numberOfIndexedFiles#*", metricInfo("Number of files of this type that were indexed.", "counter", undefined, "stable")],
+  ["indexingTimeWithoutPauses", metricInfo("Time to build indexes, excluding paused intervals.", "milliseconds")],
+  ["scanningTimeWithoutPauses", metricInfo("Time to scan the file system for changes before indexing, excluding pauses.", "milliseconds")],
+  ["pageLoad", metricInfo("Number of regular Pages' loads.", "counter", undefined, "stable")],
+  ["pageMiss", metricInfo("Number of unsuccessful page loads from main memory.", "counter", undefined, "lower")],
+  ["pageHit", metricInfo("Number of successful page loads from main memory.", "counter", undefined, "higher")],
   //typing
-  ["typing", "Typing executing time (usually equal to number of typed characters times delay between key presses)"],
-  ["typing#average_awt_delay", "How long on average it takes to process a single empty AWT event in the queue during typing."],
-  ["typing#max_awt_delay", "Max value of how long it takes to process a single empty AWT event in the queue during typing."],
+  ["typing", metricInfo("Total time to type the sample code.", "milliseconds")],
+  ["typing#average_awt_delay", metricInfo("Average time to process a single empty AWT event in the queue during typing.", "milliseconds")],
+  ["typing#max_awt_delay", metricInfo("Maximum time to process a single empty AWT event in the queue during typing.", "milliseconds")],
   [
     "typing#latency",
-    "Average time in ms of inserting a letter in the Editor (approximation of how long does it take from keyboard press till the appearance of the letter); measured during typing",
+    metricInfo(
+      "Average time in ms of inserting a letter in the Editor (approximation of how long it takes from keyboard press till the appearance of the letter); measured during typing",
+      "milliseconds"
+    ),
   ],
   //refactorings
-  ["performInlineRename#mean_value", "Rename mean time. Find usages is not included, only actual rename time is counted"],
-  ["startInlineRename#mean_value", "Mean time to prepare rename template in the current file"],
-  ["prepareForRename#mean_value", "Mean time to perform find usages and other preparations such as conflict detection for write phase of rename"],
-  ["fus_refactoring_usages_searched", "Mean time to perform find usages during refactorings"],
-  ["moveFiles#mean_value", "Mean time to perform move files refactoring: with find usages, conflict detection and actual move"],
-  ["moveFiles_back#mean_value", "Mean time to restore project as it was before move files"],
-  ["moveDeclarations#mean_value", "Mean time to perform move files refactoring: with find usages, conflict detection and actual move"],
-  ["moveDeclarations_back#mean_value", "Mean time to restore project as it was before move declarations"],
+  ["performInlineRename#mean_value", metricInfo("Mean time to perform an inline rename. Find usages is not included.", "milliseconds")],
+  ["startInlineRename#mean_value", metricInfo("Mean time to prepare rename template in the current file.", "milliseconds")],
+  ["prepareForRename#mean_value", metricInfo("Mean time to perform find usages and other preparations for rename.", "milliseconds")],
+  ["fus_refactoring_usages_searched", metricInfo("Mean time to search for usages during refactoring operations.", "milliseconds")],
+  ["moveFiles#mean_value", metricInfo("Mean time to perform move files refactoring.", "milliseconds")],
+  ["moveFiles_back#mean_value", metricInfo("Mean time to restore the project after move files.", "milliseconds")],
+  ["moveDeclarations#mean_value", metricInfo("Mean time to perform move declarations refactoring.", "milliseconds")],
+  ["moveDeclarations_back#mean_value", metricInfo("Mean time to restore the project after move declarations.", "milliseconds")],
 
   //editor actions
-  ["execute_editor_optimizeimports", "Time to execute optimize imports action in the editor"],
-  ["execute_editor_paste", "Time to execute paste action in the editor"],
-  ["convertJavaToKotlin", "Time to execute J2K action in the editor"],
+  ["execute_editor_optimizeimports", metricInfo("Time to execute optimize imports action in the editor", "milliseconds")],
+  ["execute_editor_paste", metricInfo("Time to execute paste action in the editor", "milliseconds")],
+  ["convertJavaToKotlin", metricInfo("Time to execute J2K action in the editor", "milliseconds")],
 
   //GC
-  ["freedMemoryByGC", metricInfo("Total memory freed by GC, in MiB", "https://github.com/chewiebug/GCViewer#readme", "mebibytes")],
+  [
+    "freedMemoryByGC",
+    metricInfo("Total memory freed by garbage collection. Tracks allocation churn; less is better.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme", "lower"),
+  ],
   [
     "freedMemoryByFullGC",
-    metricInfo("Memory reclaimed by full GC only, in MiB. High values signal promotion pressure.", "https://github.com/chewiebug/GCViewer#readme", "mebibytes"),
+    metricInfo("Memory reclaimed by full GC only. High values signal object promotion pressure.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme", "lower"),
   ],
-  ["fullGCPause", metricInfo("Time that full GC was active (IDE is fully paused)", "https://github.com/chewiebug/GCViewer#readme")],
-  ["gcPause", metricInfo("Time spent in GC (including minor collections without pausing)", "https://github.com/chewiebug/GCViewer#readme")],
-  ["gcPauseCount", metricInfo("Number of minor GCs pauses", "https://github.com/chewiebug/GCViewer#readme", "counter")],
-  ["totalHeapUsedMax", metricInfo("Max heap used during the test, in MiB", undefined, "mebibytes")],
-  ["bsp.used.at.exit.mb", metricInfo("Heap used at exit, in MiB", undefined, "mebibytes")],
-  ["bsp.used.after.sync.mb", metricInfo("Heap used after sync, in MiB", undefined, "mebibytes")],
+  ["fullGCPause", metricInfo("Time the IDE was fully paused during full GC.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
+  ["gcPause", metricInfo("Total time spent in garbage collection, including minor collections.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
+  ["gcPauseCount", metricInfo("Number of GC pause events.", "counter", "https://github.com/chewiebug/GCViewer#readme", "lower")],
+  ["totalHeapUsedMax", metricInfo("Peak JVM heap usage during the test.", "mebibytes")],
+  ["bsp.used.at.exit.mb", metricInfo("Heap used at exit.", "mebibytes")],
+  ["bsp.used.after.sync.mb", metricInfo("Heap used after sync.", "mebibytes")],
   //others
   ["searchEverywhere_*", "Time to fill all search everywhere results"],
   ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
   //indexing / VFS / VCS indexing
-  ["dumbModeWithPauses", "Total time spent in dumb mode (indexes not ready), including pauses like GC and UI freezes"],
-  ["dumbModeTimeWithPauses", metricInfo("Total time spent in dumb mode (indexes not ready), including pauses like GC and UI freezes.")],
-  ["pausedTimeInIndexingOrScanning", metricInfo("Time the indexing or scanning pipeline was paused, in ms.")],
-  ["numberOfRunsOfIndexing", metricInfo("Number of indexing passes executed. Higher means more incremental re-indexing.", undefined, "counter")],
-  ["numberOfRunsOfScannning", metricInfo("Number of file system scanning passes executed.", undefined, "counter")],
-  ["numberOfScannedFiles", metricInfo("Total number of files scanned during indexing.", undefined, "counter")],
-  ["numberOfIndexedFilesWritingIndexValue", metricInfo("Files that produced index data this run. Should stay flat for a fixed project.", undefined, "counter")],
-  ["numberOfIndexedFilesWithNothingToWrite", metricInfo("Files indexed but producing no index data. High values = wasted indexing work.", undefined, "counter")],
-  ["numberOfFilesIndexedByExtensions", metricInfo("Files recognized and indexed by extension-based file type detection.", undefined, "counter")],
-  ["numberOfFilesIndexedWithoutExtensions", metricInfo("Files indexed despite having no recognized file extension.", undefined, "counter")],
-  ["vfs_initial_refresh", "Duration of the initial VFS refresh that syncs on-disk files with the VFS cache on project opening"],
-  ["vcs-log-indexing", "Duration of VCS Log background indexing of commits for fast search and filtering"],
+  [
+    "dumbModeWithPauses",
+    metricInfo(
+      "Total time spent in dumb mode (indexes not ready), including pauses from GC and UI freezes.",
+      "milliseconds",
+      "https://plugins.jetbrains.com/docs/intellij/smart-mode-and-dumb-mode.html"
+    ),
+  ],
+  ["dumbModeTimeWithPauses", metricInfo("Total time the IDE spent in dumb mode (indexes not ready), including pauses from GC and UI freezes.", "milliseconds")],
+  ["pausedTimeInIndexingOrScanning", metricInfo("Time the indexing or scanning pipeline was paused.", "milliseconds")],
+  ["numberOfRunsOfIndexing", metricInfo("Number of indexing passes. Higher means more incremental re-indexing.", "counter", undefined, "lower")],
+  ["numberOfRunsOfScannning", metricInfo("Number of file system scanning passes. Extra passes mean wasted work.", "counter", undefined, "lower")],
+  ["numberOfScannedFiles", metricInfo("Total files scanned during indexing. Versus indexed files shows filter efficiency.", "counter", undefined, "stable")],
+  ["numberOfIndexedFilesWritingIndexValue", metricInfo("Files that produced index data this run. Should stay flat for a fixed project.", "counter", undefined, "stable")],
+  ["numberOfIndexedFilesWithNothingToWrite", metricInfo("Files indexed but producing no index data. High values indicate wasted indexing work.", "counter", undefined, "stable")],
+  ["numberOfFilesIndexedByExtensions", metricInfo("Files recognized by extension-based file type detection.", "counter", undefined, "stable")],
+  ["numberOfFilesIndexedWithoutExtensions", metricInfo("Files indexed without a recognized file extension.", "counter", undefined, "stable")],
+  ["vfs_initial_refresh", metricInfo("Duration of the initial VFS refresh that syncs on-disk files with the VFS cache on project opening.", "milliseconds")],
+  ["vcs-log-indexing", metricInfo("Duration of VCS Log background indexing of commits for fast search and filtering.", "milliseconds")],
 
   // Write actions
-  ["writeAction.count", metricInfo("Number of write actions executed during the test.", undefined, "counter")],
-  ["writeAction.wait.ms", metricInfo("Total time spent waiting for write actions to complete, in ms.")],
-  ["writeAction.max.wait.ms", metricInfo("Longest single write action wait time, in ms. Spikes indicate blocking.")],
-  ["writeAction.median.wait.ms", metricInfo("Median write action wait time, in ms. Typical contention level.")],
+  ["writeAction.count", metricInfo("Number of write actions executed.", "counter", undefined, "stable")],
+  ["writeAction.wait.ms", metricInfo("Total time spent waiting for write actions.", "milliseconds")],
+  ["writeAction.max.wait.ms", metricInfo("Longest single write action wait. Spikes indicate blocking.", "milliseconds")],
+  ["writeAction.median.wait.ms", metricInfo("Median write action wait time. Represents typical contention.", "milliseconds")],
 
   // AWT
-  ["AWTEventQueue.dispatchTimeTotal", metricInfo("Total AWT event queue dispatch time, in ms. High values indicate UI thread contention.")],
+  ["AWTEventQueue.dispatchTimeTotal", metricInfo("Total AWT event queue dispatch time. High values indicate UI thread contention.", "milliseconds")],
   //build
-  ["build_compilation_duration", "Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager)"],
+  ["build_compilation_duration", metricInfo("Total elapsed time of a project build (module compile/rebuild/recompile via ProjectTaskManager)", "milliseconds")],
   //search everywhere
-  ["searchEverywhere", "End-to-end time of a Search Everywhere operation: popup invocation, typing, and optional selection/closing"],
-  ["searchEverywhere_dialog_shown", "Time from triggering Search Everywhere until the popup is fully displayed"],
+  ["searchEverywhere", metricInfo("End-to-end time of a Search Everywhere operation: popup invocation, query typing, and optional selection.", "milliseconds")],
+  ["searchEverywhere_dialog_shown", metricInfo("Time from triggering Search Everywhere until the popup is fully displayed.", "milliseconds")],
   //vcs
-  ["showFileHistory", "Time from invoking Show File History until the initial data pack is loaded and rendered"],
+  ["showFileHistory", metricInfo("Time from invoking Show File History until the initial data pack is loaded and rendered.", "milliseconds")],
   //menus
-  ["%expandMainMenu", "Time to recursively expand all actions in the main menu bar (GROUP_MAIN_MENU)"],
-  ["%expandProjectMenu", "Time to expand the Project View context menu popup (GROUP_PROJECT_VIEW_POPUP)"],
-  ["%expandEditorMenu", "Time to expand the editor right-click context menu (GROUP_EDITOR_POPUP)"],
+  ["%expandMainMenu", metricInfo("Time to recursively expand all actions in the main menu bar (GROUP_MAIN_MENU).", "milliseconds")],
+  ["%expandProjectMenu", metricInfo("Time to expand the Project View context menu popup (GROUP_PROJECT_VIEW_POPUP).", "milliseconds")],
+  ["%expandEditorMenu", metricInfo("Time to expand the editor right-click context menu (GROUP_EDITOR_POPUP).", "milliseconds")],
   //new file
-  ["createKotlinFile", "Time to create a new Kotlin file via the New File template action"],
-  ["createJavaFile", "Time to create a new Java class/file via the New File action (JavaDirectoryService.createClass)"],
+  ["createKotlinFile", metricInfo("Time to create a new Kotlin file via the New File template action.", "milliseconds")],
+  ["createJavaFile", metricInfo("Time to create a new Java class/file via the New File action (JavaDirectoryService.createClass).", "milliseconds")],
   //highlighting
-  ["highlighting", "Total time of background daemon syntax and semantic highlighting analysis on a file"],
-  ["typingCodeAnalyzing", "Time of daemon code analysis triggered after typing, from typing completion until daemon finishes"],
+  ["highlighting", metricInfo("Total time of background daemon syntax and semantic highlighting analysis on a file.", "milliseconds")],
+  ["typingCodeAnalyzing", metricInfo("Time of daemon code analysis triggered after typing, from typing completion until daemon finishes.", "milliseconds")],
   //rename
-  ["startInlineRename", "Sum time of all inline rename invocations, from trigger through template preparation and editor setup"],
+  ["startInlineRename", metricInfo("Sum time of all inline rename invocations, from trigger through template preparation and editor setup.", "milliseconds")],
   //debug
-  ["debugRunConfiguration", "Time from launching a debug run configuration until the debugger first pauses at a breakpoint"],
-  ["debugStep_into", "Time from invoking Step Into in the debugger until the next sessionPaused callback fires"],
+  ["debugRunConfiguration", metricInfo("Time from launching a debug configuration to the first pause at a breakpoint.", "milliseconds")],
+  ["debugStep_into", metricInfo("Time from invoking Step Into until the debugger pauses again.", "milliseconds")],
   //AI completion quality
   ["MatchedRatio", "Average length of accepted completion minus prefix, normalized by expected text (AI completion quality)"],
   ["SyntaxErrorsSessionRatio", "Ratio of completion sessions that left syntax errors in the resulting code"],
@@ -196,34 +240,53 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //benchmark
   ["attempt.mean.ms", "Mean duration in milliseconds across all benchmark attempt spans"],
   //GC — G1GC
-  ["g1gcConcurrentMarkCycles", metricInfo("Number of G1 concurrent marking cycles. Rising count indicates heap pressure.", undefined, "counter")],
-  ["g1gcConcurrentMarkTimeMs", metricInfo("Wall time spent in G1 concurrent marking. Competes with UI threads for CPU.")],
-  ["g1gcHeapShrinkageCount", metricInfo("How often G1 returned heap memory to the OS. Zero means heap is pinned at max.", undefined, "counter")],
-  ["g1gcHeapShrinkageMegabytes", metricInfo("Total heap memory returned to OS by G1 shrinkage.", undefined, "mebibytes")],
+  [
+    "g1gcConcurrentMarkCycles",
+    metricInfo(
+      "Number of G1 concurrent marking cycles. Reflects old-gen GC pressure; fewer is better.",
+      "counter",
+      "https://docs.oracle.com/en/java/javase/21/gctuning/garbage-first-g1-garbage-collector1.html#GUID-93D75606-CAC0-4D79-983B-2DCC7E22D13A",
+      "lower"
+    ),
+  ],
+  [
+    "g1gcConcurrentMarkTimeMs",
+    metricInfo(
+      "Wall-clock time spent in G1 concurrent marking. Competes with UI threads for CPU.",
+      "milliseconds",
+      "https://docs.oracle.com/en/java/javase/21/gctuning/garbage-first-g1-garbage-collector1.html#GUID-93D75606-CAC0-4D79-983B-2DCC7E22D13A"
+    ),
+  ],
+  [
+    "g1gcHeapShrinkageCount",
+    metricInfo("Number of times G1 returned heap memory to the OS. Zero means heap is pinned at maximum.", "counter", "https://openjdk.org/jeps/346", "lower"),
+  ],
+  ["g1gcHeapShrinkageMegabytes", metricInfo("Total heap memory returned to the OS by G1 shrinkage.", "mebibytes", "https://openjdk.org/jeps/346", "lower")],
 
   // JVM — GC (JVM-reported, independent of GCViewer)
-  ["JVM.GC.collectionTimesMs", metricInfo("Total time spent in GC as reported by the JVM. Independent cross-check against gcPause.")],
-  ["JVM.GC.collections", metricInfo("Total number of GC collections as reported by the JVM. Should align with gcPauseCount.", undefined, "counter")],
+  ["JVM.GC.collectionTimesMs", metricInfo("Total GC time as reported by the JVM. Independent cross-check against GCViewer-based `gcPause`.", "milliseconds")],
+  ["JVM.GC.collections", metricInfo("Total number of GC collections as reported by the JVM.", "counter", undefined, "stable")],
 
   // JVM — Runtime
-  ["JVM.maxThreadCount", metricInfo("Peak number of live threads. Unexpected growth signals thread leaks or misconfiguration.", undefined, "counter")],
-  ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Versus wall-clock time reveals CPU saturation.")],
-  ["JVM.totalTimeToSafepointsMs", metricInfo("Time threads spent blocked waiting for JVM safepoints. Above 50 ms indicates contention.")],
+  ["JVM.maxThreadCount", metricInfo("Peak number of live JVM threads. Unexpected growth signals thread leaks.", "counter", undefined, "stable")],
+  ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Versus wall-clock time, reveals CPU saturation.", "milliseconds")],
+  ["JVM.totalTimeToSafepointsMs", metricInfo("Time threads spent blocked waiting for JVM safepoints. Above 50 ms indicates contention.", "milliseconds")],
 
   // Memory
-  ["MEM.avgRamMegabytes", metricInfo("Average resident RAM of the IDE process during the test, in MiB.", undefined, "mebibytes")],
-  ["MEM.avgFileMappingsRamMegabytes", metricInfo("Average RAM consumed by memory-mapped files (JARs, indexes, OS pages), in MiB.", undefined, "mebibytes")],
-  ["MEM.avgRamMinusFileMappingsMegabytes", metricInfo("Average resident RAM excluding file mappings — the true heap + off-heap footprint, in MiB.", undefined, "mebibytes")],
-  ["JVM.committedHeapMegabytes", metricInfo("Heap memory actually committed from the OS. Versus max heap shows headroom.", undefined, "mebibytes")],
+  ["MEM.avgRamMegabytes", metricInfo("Average resident RAM of the IDE process during the test.", "mebibytes")],
+  ["MEM.avgFileMappingsRamMegabytes", metricInfo("Average RAM consumed by memory-mapped files (JARs, indexes, OS pages).", "mebibytes")],
+  ["MEM.avgRamMinusFileMappingsMegabytes", metricInfo("Average resident RAM excluding file mappings — the true heap and off-heap footprint.", "mebibytes")],
+  ["JVM.committedHeapMegabytes", metricInfo("Heap memory committed from the OS. Versus max heap, shows available headroom.", "mebibytes")],
 
   //gc
-  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "https://github.com/chewiebug/GCViewer#readme", "bytes")],
-  ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
-  ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
+  ["freedMemory", metricInfo("Amount of memory (bytes) freed by GC during the test, parsed from GCViewer output", "bytes", "https://github.com/chewiebug/GCViewer#readme")],
+  ["test#average_awt_delay", metricInfo("The average time it takes to process a single empty AWT event in the queue during the whole test.", "milliseconds")],
+  ["showQuickFixes", metricInfo("Time to show the quick fixes after calling Alt + Enter.", "milliseconds")],
   [
     "attempt.mad.ms",
     metricInfo(
       "MAD (Median Absolute Deviation) of attempt durations in ms. The MAD is a robust statistic, being more resilient to outliers in a data set than the standard deviation.",
+      "milliseconds",
       "https://en.m.wikipedia.org/wiki/Median_absolute_deviation"
     ),
   ],
@@ -236,22 +299,51 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ],
   [
     "workspaceModel.updates.ms",
-    "Total time spent on processing modifications to the workspace entities including time required in calling update handlers, collecting changes, initializing bridging operations, and generating snapshots",
+    metricInfo(
+      "Total time spent on processing modifications to the workspace entities including time required in calling update handlers, collecting changes, initializing bridging operations, and generating snapshots",
+      "milliseconds"
+    ),
   ],
-  ["workspaceModel.mutableEntityStorage.to.snapshot.ms", "The time taken to create a snapshot of the mutable entity storage"],
-  ["workspaceModel.mutableEntityStorage.replace.by.source.ms", "The time taken to replace entities in the mutable entity storage by source"],
-  ["workspaceModel.mutableEntityStorage.add.diff.ms", "The time taken to add differences to the mutable entity storage"],
-  ["workspaceModel.loading.from.cache.ms", "The time taken to load the workspace model from cache"],
-  ["workspaceModel.do.save.caches.ms", "The time taken to save caches of the workspace model"],
-  ["workspaceModel.mutableEntityStorage.collect.changes.ms", "The time taken to collect changes in the mutable entity storage"],
-  ["workspaceModel.mutableEntityStorage.add.entity.ms", "The time taken to add an entity to the mutable entity storage"],
+  ["workspaceModel.mutableEntityStorage.to.snapshot.ms", metricInfo("The time taken to create a snapshot of the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.replace.by.source.ms", metricInfo("The time taken to replace entities in the mutable entity storage by source.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.add.diff.ms", metricInfo("The time taken to add differences to the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.loading.from.cache.ms", metricInfo("The time taken to load the workspace model from cache.", "milliseconds")],
+  ["workspaceModel.do.save.caches.ms", metricInfo("The time taken to save caches of the workspace model.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.collect.changes.ms", metricInfo("The time taken to collect changes in the mutable entity storage.", "milliseconds")],
+  ["workspaceModel.mutableEntityStorage.add.entity.ms", metricInfo("The time taken to add an entity to the mutable entity storage.", "milliseconds")],
 
   // JVM — already plotted in AdditionalMetrics but missing from metricsDescription
-  ["JVM.maxHeapMegabytes", metricInfo("Maximum JVM heap size configured for the IDE, in MiB.", undefined, "mebibytes")],
-  ["jps.load.project.to.empty.storage.ms", "The time taken to load a project into empty storage using the JPS"],
-  ["jps.project.serializers.load.ms", "The time taken to load project serializers in the JPS"],
-  ["jps.project.serializers.save.ms", "The time taken to save project serializers in the JPS"],
-  ["jps.facet.change.listener.process.change.events.ms", "The time taken to process change events by the facet change listener in the JPS"],
+  ["JVM.maxHeapMegabytes", metricInfo("Maximum JVM heap size configured for the IDE (-Xmx; constant). Observed peak is totalHeapUsedMax.", "mebibytes", undefined, "none")],
+  ["jps.load.project.to.empty.storage.ms", metricInfo("The time taken to load a project into empty storage using the JPS.", "milliseconds")],
+  ["jps.project.serializers.load.ms", metricInfo("The time taken to load project serializers in the JPS.", "milliseconds")],
+  ["jps.project.serializers.save.ms", metricInfo("The time taken to save project serializers in the JPS.", "milliseconds")],
+  ["jps.facet.change.listener.process.change.events.ms", metricInfo("The time taken to process change events by the facet change listener in the JPS.", "milliseconds")],
+
+  ["completion#median_value", metricInfo("Median completion time — typical warm latency.", "milliseconds")],
+  ["completion#number#mean_value", metricInfo("Mean suggestion count. May shift if completion ranking or filtering changes.", "counter", undefined, "none")],
+  ["completion#standard_deviation", metricInfo("Spread of completion time across invocations. Rising values mean inconsistent latency.", "milliseconds")],
+  ["completion#firstElementShown#mean_value", metricInfo("Mean time to first suggestion (span instrument); includes the cold run.", "milliseconds")],
+  ["completion_1#firstElementShown", metricInfo("Time to first suggestion on the cold first run (span instrument).", "milliseconds")],
+  ["performCompletion_1", metricInfo("Cold-run cost of computing suggestions: resolve, type inference, stub-index lookups.", "milliseconds")],
+
+  ["debugStep_out", metricInfo("Time from invoking Step Out until the debugger pauses again.", "milliseconds")],
+  ["debugStep_over", metricInfo("Time from invoking Step Over until the debugger pauses again.", "milliseconds")],
+
+  // GoLand — Data Flow Analysis
+  ["go.dfa.general.total.time.ms", metricInfo("Total wall-clock time for data flow analysis across all files.", "milliseconds")],
+  ["go.dfa.general.avg.time.ms", metricInfo("Average DFA analysis time per file, including summary loading.", "milliseconds")],
+  ["go.dfa.general.avg.without.summary.load.time.ms", metricInfo("Average DFA analysis time per file excluding summary load — isolates pure analysis cost.", "milliseconds")],
+  ["go.dfa.general.computed.file.gists.count", metricInfo("Number of file gists (abstracted function summaries) computed. Varies run-to-run.", "counter", undefined, "none")],
+  ["go.dfa.general.files.count", metricInfo("Total files analyzed by DFA. Varies run-to-run.", "counter", undefined, "none")],
+  ["go.dfa.general.functions.count", metricInfo("Total functions analyzed by DFA. Varies run-to-run (~2.5%).", "counter", undefined, "none")],
+  [
+    "go.dfa.general.resolve.issue.count",
+    metricInfo("Deferred-call targets DFA could not resolve. A rise signals a resolve regression; fewer is better.", "counter", undefined, "lower"),
+  ],
+
+  // Other
+  ["Memory | IDE | RESIDENT SIZE (MB) 95th pctl", metricInfo("95th-percentile resident set size — near-peak real memory footprint.", "mebibytes")],
+  ["ul.lagging", metricInfo("UI thread lagging duration. Time the EDT was blocked and unresponsive.", "milliseconds")],
 ])
 
 export interface MetricInfo {
@@ -259,10 +351,11 @@ export interface MetricInfo {
   url?: string
   /** The measure unit values of this metric are stored in. Authoritative for value formatting. */
   unit?: MeasureUnit
+  betterDirection?: BetterDirection
 }
 
-function metricInfo(description: string, url?: string, unit?: MeasureUnit): MetricInfo {
-  return { description, url, unit }
+function metricInfo(description: string, unit?: MeasureUnit, url?: string, betterDirection?: BetterDirection): MetricInfo {
+  return { description, url, unit, betterDirection }
 }
 
 function extractMainPrefix(inputString: string): string {
@@ -279,7 +372,7 @@ export function getMetricDescription(metric: string | undefined): MetricInfo | n
   for (const token of metric.split(SERIES_NAME_SEPARATOR)) {
     const metricDescription = metricsDescription.get(token) ?? metricsDescription.get(extractMainPrefix(token) + "*")
     if (metricDescription != undefined) {
-      return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription
+      return typeof metricDescription == "string" ? { description: metricDescription } : metricDescription
     }
   }
   return null
@@ -289,4 +382,8 @@ export function getMetricDescription(metric: string | undefined): MetricInfo | n
 // Consulted first by resolveMeasureUnit, so a declared unit overrides every name-based heuristic.
 export function getMeasureUnit(metric: string | undefined): MeasureUnit | undefined {
   return getMetricDescription(metric)?.unit ?? undefined
+}
+
+export function getBetterDirection(metric: string | undefined): BetterDirection | undefined {
+  return getMetricDescription(metric)?.betterDirection ?? undefined
 }

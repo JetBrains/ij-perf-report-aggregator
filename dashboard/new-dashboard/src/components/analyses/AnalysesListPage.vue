@@ -241,7 +241,8 @@
               :key="commit"
               v-tooltip.top="`Filter by ${commit}`"
               type="button"
-              class="cursor-pointer rounded border-0 bg-gray-100 px-2 py-0.5 font-mono text-xs font-medium text-gray-700 hover:bg-primary hover:text-white dark:bg-gray-700 dark:text-gray-200"
+              class="commit-chip cursor-pointer rounded border-0 px-2 py-0.5 font-mono text-xs font-medium"
+              :style="commitChipStyle(commit)"
               @click.stop="filterByCommit(commit)"
             >
               {{ commit.slice(0, 8) }}
@@ -378,7 +379,7 @@ import { LlmAnalysisClient, LlmAnalysisListItem, LlmAnalysisState } from "../com
 import AnalysisDetailsDialog from "../common/llmAnalysis/AnalysisDetailsDialog.vue"
 import { AnalysesFilterState, currentUserLabel, distinctUsers, emptyAnalysesFilterState, filterAnalyses, userLabel } from "./analysesFilter"
 
-useDarkModeStore()
+const darkModeStore = useDarkModeStore()
 
 const serverConfigurator = new ServerWithCompressConfigurator("perfint", "report")
 provide(serverConfiguratorKey, serverConfigurator)
@@ -478,6 +479,17 @@ function filterByCommit(commit: string): void {
   filter.value.commit = commit
 }
 
+function commitChipStyle(commit: string): { backgroundColor: string; color: string } {
+  let hue = 0
+  for (const char of commit) {
+    // Rolling hash kept modulo 360 so the value stays bounded and maps straight to a hue.
+    hue = (hue * 31 + (char.codePointAt(0) ?? 0)) % 360
+  }
+  return darkModeStore.darkMode
+    ? { backgroundColor: `hsl(${hue}, 45%, 32%)`, color: `hsl(${hue}, 80%, 85%)` }
+    : { backgroundColor: `hsl(${hue}, 70%, 87%)`, color: `hsl(${hue}, 65%, 28%)` }
+}
+
 function stateIconClass(state: string): string {
   switch (state) {
     case LlmAnalysisState.InProgress:
@@ -531,5 +543,16 @@ function safeDashboardLink(url: string | undefined): string | null {
 /* No dropdown chevrons on the filter selects */
 :deep(.p-multiselect-dropdown) {
   display: none;
+}
+
+/* Commit chips keep their per-commit color; emphasize on hover with a ring + brightness. */
+.commit-chip {
+  transition:
+    box-shadow 0.1s ease,
+    filter 0.1s ease;
+}
+.commit-chip:hover {
+  box-shadow: 0 0 0 2px var(--p-primary-color, #6366f1);
+  filter: brightness(1.05);
 }
 </style>

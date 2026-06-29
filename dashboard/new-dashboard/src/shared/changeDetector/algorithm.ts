@@ -4,16 +4,20 @@ export enum ChangePointClassification {
   DEGRADATION = "Degradation",
   OPTIMIZATION = "Optimization",
   NO_CHANGE = "No Change",
+  /** A real change on a metric with no good/bad direction: marked, but not colored as good or bad. */
+  NEUTRAL = "Neutral",
 }
 
 /**
  * Which direction of change is good for a metric.
  *
  * `"lower"` (the default) treats a rise as a degradation; `"higher"` inverts that; `"stable"` treats
- * any change in either direction as a degradation, for metrics that should not move (for example a
- * completion-result count).
+ * any change in either direction as a degradation, for metrics that should not move (for example the
+ * file count of a fixed project). `"none"` still detects changes and marks them, but never colors them
+ * good or bad — for metrics with no meaningful direction (for example a count that legitimately varies
+ * run-to-run).
  */
-export type BetterDirection = "lower" | "higher" | "stable"
+export type BetterDirection = "lower" | "higher" | "stable" | "none"
 
 /** Direction a metric value moved at a change point; drives the trend-arrow orientation. */
 export type ChangeDirection = "up" | "down"
@@ -105,6 +109,9 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
       classification = ChangePointClassification.NO_CHANGE
     } else if (effectSize < 2) {
       classification = ChangePointClassification.NO_CHANGE
+    } else if (betterDirection === "none") {
+      // A real change, but the metric has no good/bad direction: mark it without judging it.
+      classification = ChangePointClassification.NEUTRAL
     } else {
       // "stable" flags any change as a regression; "higher" inverts the default lower-is-better rule.
       const isRegression = betterDirection === "stable" ? true : betterDirection === "higher" ? shiftValue < 0 : shiftValue > 0

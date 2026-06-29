@@ -16,11 +16,11 @@ describe("measure unit resolution", () => {
   it.each([
     ["freedMemoryByGC", "mebibytes"],
     ["totalHeapUsedMax", "mebibytes"],
-    ["freedMemory", "bytes"],
+    ["freedMemory", "mebibytes"],
     ["indexSize", "kilobytes"],
     ["processingSpeedAvg#PHP", "kilobytesPerSecond"],
     ["lexingSpeed#Kotlin", "kilobytesPerSecond"],
-    ["parsingSize#Java", "kilobytes"],
+    ["parsingSize#Java", "bytes"],
     ["numberOfIndexedFiles", "counter"],
     ["gcPauseCount", "counter"],
   ])("resolves %s to its declared unit (%s)", (measureName, unit) => {

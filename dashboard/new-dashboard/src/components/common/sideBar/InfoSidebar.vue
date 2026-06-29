@@ -12,7 +12,8 @@
       ></div>
       <span
         v-tooltip.left="'Close'"
-        class="infoSidebar_icon absolute top-6 right-4 text-base pi pi-plus rotate-45 cursor-pointer transition duration-150 ease-out text-gray-500 hover:text-gray-800 dark:hover:text-gray-100"
+        class="infoSidebar_icon absolute right-4 text-base pi pi-plus rotate-45 cursor-pointer transition duration-150 ease-out text-gray-500 hover:text-gray-800 dark:hover:text-gray-100"
+        :class="useScrollStore().isScrolled ? 'top-16' : 'top-6'"
         @click="handleCloseClick"
       />
 

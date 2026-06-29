@@ -334,7 +334,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   // JVM — GC (JVM-reported, independent of GCViewer)
   ["JVM.GC.collectionTimesMs", metricInfo("Total GC time as reported by the JVM. Independent cross-check against GCViewer-based `gcPause`.", "milliseconds")],
-  ["JVM.GC.collections", metricInfo("Total number of GC collections as reported by the JVM.", "counter", undefined, "stable")],
+  ["JVM.GC.collections", metricInfo("Total number of GC collections as reported by the JVM.", "counter")],
 
   // JVM — Runtime
   ["JVM.maxThreadCount", metricInfo("Peak number of live JVM threads. Unexpected growth signals thread leaks.", "counter", undefined, "stable")],

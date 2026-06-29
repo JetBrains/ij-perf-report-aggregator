@@ -15,12 +15,10 @@
         <GroupProjectsChart
           v-for="chart in group.charts"
           :key="chart.key"
-          :better-direction="chart.betterDirection"
           :description="chart.description"
           :label="`${group.prefix}: ${chart.label}`"
           :measure="chart.measure"
           :projects="group.projects"
-          :value-unit="chart.valueUnit"
         />
       </section>
     </template>
@@ -34,16 +32,13 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
-import type { ValueUnit } from "../common/chart"
-import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
 interface ChartDef {
   key: string
   label: string
   measure: string
-  description: string
-  valueUnit?: ValueUnit
-  betterDirection?: BetterDirection
+  // Only set when a chart needs a description that differs from the central metricsDescription entry.
+  description?: string
 }
 
 interface GroupDef {
@@ -99,22 +94,13 @@ const singleInspectionProjects = [
 
 const allProjects = [...fileAnalysisProjects, ...globalInspectionProjects, ...golangciLintLocalProjects, ...golangciLintGlobalProjects, ...singleInspectionProjects]
 
-const fileAnalysisCharts: ChartDef[] = [
-  {
-    key: "firstCodeAnalysis",
-    label: "File Analysis on Open",
-    measure: "firstCodeAnalysis",
-    valueUnit: "ms",
-    description: "Time to highlight a file the first time it opens (cold daemon pass).",
-  },
-]
+const fileAnalysisCharts: ChartDef[] = [{ key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" }]
 
 const globalInspectionCharts: ChartDef[] = [
   {
     key: "globalInspections",
     label: "Global Inspections",
     measure: "globalInspections",
-    valueUnit: "ms",
     description: "Batch Inspect Code over the whole project — the offline run, not on-the-fly highlighting.",
   },
 ]
@@ -124,14 +110,12 @@ const golangciLintCharts: ChartDef[] = [
     key: "localInspectionsGolangci",
     label: "Local Inspections (golangci-lint)",
     measure: "localInspections",
-    valueUnit: "ms",
     description: "On-the-fly daemon analysis time; here it includes the golangci-lint external linter.",
   },
   {
     key: "globalInspectionsGolangci",
     label: "Global Inspections (golangci-lint)",
     measure: "globalInspections",
-    valueUnit: "ms",
     description: "Batch Inspect Code with golangci-lint external linter over the whole project.",
   },
 ]
@@ -141,7 +125,6 @@ const singleInspectionCharts: ChartDef[] = [
     key: "singleInspectionsCodeStyle",
     label: "Single Inspections: Code Style",
     measure: "globalInspections",
-    valueUnit: "ms",
     description: "Batch time of each individual Go inspection run in isolation.",
   },
 ]

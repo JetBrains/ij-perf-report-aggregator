@@ -67,10 +67,12 @@ func Serve(dbUrl string, natsUrl string) error {
 	}()
 
 	cacheManager := NewResponseCacheManager(prometheusMetrics)
+	clientErrorReporter := NewClientErrorReporter(prometheusMetrics)
 	router := chi.NewRouter()
 
 	disposer := util.NewDisposer()
 	defer disposer.Dispose()
+	disposer.Add(clientErrorReporter.Close)
 	if natsUrl != "" {
 		err = listenNats(cacheManager, natsUrl, disposer)
 		if err != nil {
@@ -92,6 +94,7 @@ func Serve(dbUrl string, natsUrl string) error {
 	router.Use(middleware.Recoverer)
 
 	router.Handle("/api/metrics", prometheusMetrics.Handler())
+	router.Method(http.MethodPost, "/api/client-errors", clientErrorReporter.Handler())
 
 	router.Get("/api/meta/degradations", CreateGetDegradationsHandler(dbpool))
 

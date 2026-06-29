@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -110,6 +111,108 @@ func TestPrometheusMetricsEndpointExposesCacheMetrics(t *testing.T) {
 	clearCount := getCounterValue(t, metricFamilies["ij_perf_response_cache_clears_total"], map[string]string{})
 	if clearCount != 1 {
 		t.Fatalf("unexpected cache clear counter value: got %v, want 1", clearCount)
+	}
+}
+
+func TestClientErrorReporterAcceptsBatchAndExportsMetrics(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+	reporter := NewClientErrorReporter(metrics)
+	defer reporter.Close()
+
+	router := chi.NewRouter()
+	router.Handle("/metrics", metrics.Handler())
+	router.Method(http.MethodPost, "/api/client-errors", reporter.Handler())
+
+	body := `{"errors":[{"source":"console_error","version":"abc1234","message":"boom","count":2},{"source":"unhandled_rejection","message":"failed"}]}`
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/api/client-errors", strings.NewReader(body)))
+
+	if response.Code != http.StatusAccepted {
+		t.Fatalf("unexpected client-error response status: got %d, want %d", response.Code, http.StatusAccepted)
+	}
+
+	waitForCounterValue(t, router, "ij_perf_client_errors_total", map[string]string{"source": "console_error", "version": "abc1234"}, 2)
+	// A report without a version collapses into the "unknown" version bucket.
+	waitForCounterValue(t, router, "ij_perf_client_errors_total", map[string]string{"source": "unhandled_rejection", "version": "unknown"}, 1)
+}
+
+func TestClientErrorVersionLabel(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		version string
+		want    string
+	}{
+		{"abc1234", "abc1234"},
+		{"1.2.3", "1.2.3"},
+		{"1.2.3+build.5", "1.2.3+build.5"},
+		{"  abc1234  ", "abc1234"},
+		{"", "unknown"},
+		{"   ", "unknown"},
+		{"has space", "unknown"},
+		{"line\nbreak", "unknown"},
+		{"label\"breaker", "unknown"},
+		{strings.Repeat("a", 64), strings.Repeat("a", 64)},
+		{strings.Repeat("a", 65), "unknown"},
+	}
+	for _, c := range cases {
+		if got := clientErrorVersionLabel(c.version); got != c.want {
+			t.Errorf("clientErrorVersionLabel(%q) = %q, want %q", c.version, got, c.want)
+		}
+	}
+}
+
+func TestClientVersionLabelCapsDistinctSeries(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+
+	// Distinct, well-formed versions are admitted up to the cap.
+	for i := range maxClientVersionLabels {
+		version := "v" + strconv.Itoa(i)
+		if got := metrics.clientVersionLabel(version); got != version {
+			t.Fatalf("clientVersionLabel(%q) = %q, want %q", version, got, version)
+		}
+	}
+
+	// Once the cap is reached, a brand-new version collapses into "unknown"...
+	if got := metrics.clientVersionLabel("v-overflow"); got != "unknown" {
+		t.Fatalf("clientVersionLabel past cap = %q, want %q", got, "unknown")
+	}
+	// ...but versions already admitted keep their own series.
+	if got := metrics.clientVersionLabel("v0"); got != "v0" {
+		t.Fatalf("clientVersionLabel(%q) after cap = %q, want %q", "v0", got, "v0")
+	}
+}
+
+func TestClientErrorReporterRateLimitsByClient(t *testing.T) {
+	t.Parallel()
+
+	metrics := NewPrometheusMetrics()
+	reporter := NewClientErrorReporter(metrics)
+	defer reporter.Close()
+	reporter.rateLimiter = newClientErrorRateLimiter(1, 0, time.Now)
+
+	router := chi.NewRouter()
+	router.Method(http.MethodPost, "/api/client-errors", reporter.Handler())
+
+	body := `{"errors":[{"source":"window_error","message":"boom"}]}`
+	firstRequest := httptest.NewRequest(http.MethodPost, "/api/client-errors", strings.NewReader(body))
+	firstRequest.RemoteAddr = "192.0.2.10:12345"
+	firstResponse := httptest.NewRecorder()
+	router.ServeHTTP(firstResponse, firstRequest)
+	if firstResponse.Code != http.StatusAccepted {
+		t.Fatalf("unexpected first client-error response status: got %d, want %d", firstResponse.Code, http.StatusAccepted)
+	}
+
+	secondRequest := httptest.NewRequest(http.MethodPost, "/api/client-errors", strings.NewReader(body))
+	secondRequest.RemoteAddr = "192.0.2.10:12345"
+	secondResponse := httptest.NewRecorder()
+	router.ServeHTTP(secondResponse, secondRequest)
+	if secondResponse.Code != http.StatusTooManyRequests {
+		t.Fatalf("unexpected second client-error response status: got %d, want %d", secondResponse.Code, http.StatusTooManyRequests)
 	}
 }
 
@@ -318,6 +421,38 @@ func getCounterValue(t *testing.T, family *dto.MetricFamily, expectedLabels map[
 
 	t.Fatalf("metric %s with labels %v was not exported", family.GetName(), expectedLabels)
 	return 0
+}
+
+func waitForCounterValue(t *testing.T, handler http.Handler, familyName string, expectedLabels map[string]string, want float64) {
+	t.Helper()
+
+	deadline := time.Now().Add(2 * time.Second)
+	var last float64
+	var found bool
+	for time.Now().Before(deadline) {
+		if value, ok := findCounterValue(scrapeMetrics(t, handler)[familyName], expectedLabels); ok {
+			last = value
+			found = true
+			if value == want {
+				return
+			}
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	t.Fatalf("metric %s with labels %v: got %v (found=%t), want %v", familyName, expectedLabels, last, found, want)
+}
+
+func findCounterValue(family *dto.MetricFamily, expectedLabels map[string]string) (float64, bool) {
+	if family == nil {
+		return 0, false
+	}
+	for _, metric := range family.GetMetric() {
+		if hasExpectedLabels(metric, expectedLabels) && metric.GetCounter() != nil {
+			return metric.GetCounter().GetValue(), true
+		}
+	}
+	return 0, false
 }
 
 func hasExpectedLabels(metric *dto.Metric, expectedLabels map[string]string) bool {

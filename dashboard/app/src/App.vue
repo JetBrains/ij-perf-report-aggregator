@@ -36,12 +36,18 @@ import PageLayout from "new-dashboard/src/PageLayout.vue"
 import { PersistentStateManager } from "new-dashboard/src/components/common/PersistentStateManager"
 import { ServerWithCompressConfigurator } from "new-dashboard/src/configurators/ServerWithCompressConfigurator"
 import { limit, refToObservable } from "new-dashboard/src/configurators/rxjs"
+import { installClientErrorReporting } from "new-dashboard/src/shared/clientErrorReporter"
 import { serverUrlObservableKey } from "new-dashboard/src/shared/injectionKeys"
 import { filter, shareReplay } from "rxjs"
-import { provide, shallowRef, watch } from "vue"
+import { onBeforeUnmount, provide, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
 
 const serverUrl = shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL)
+const disposeClientErrorReporting = installClientErrorReporting({
+  endpoint: () => `${serverUrl.value}/api/client-errors`,
+})
+onBeforeUnmount(disposeClientErrorReporting)
+
 // shallow ref doesn't work - items are modified by primevue
 const serverUrlObservable = refToObservable(serverUrl).pipe(
   filter((it: string | null): it is string => it !== null && it.length > 0),

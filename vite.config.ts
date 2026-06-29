@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 import vue from "@vitejs/plugin-vue"
 // @ts-ignore
+import { execFileSync } from "child_process"
+// @ts-ignore
 import path from "path"
 // @ts-ignore
 import { ComponentResolver } from "unplugin-vue-components"
@@ -15,9 +17,29 @@ import { viteStaticCopy } from "vite-plugin-static-copy"
 import { PrimeVueResolver } from "@primevue/auto-import-resolver"
 import tailwindcss from "@tailwindcss/vite"
 
+// Resolve the build version exposed to the client error reporter for deploy correlation.
+// Prefer an explicit env override (set by CI), otherwise fall back to the short git commit.
+function resolveAppVersion(): string {
+  // @ts-ignore
+  const fromEnv = process.env.APP_VERSION
+  if (fromEnv != null && fromEnv !== "") {
+    return fromEnv
+  }
+  try {
+    return execFileSync("git", ["rev-parse", "--short", "HEAD"], { stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim()
+  } catch {
+    return "unknown"
+  }
+}
+
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(resolveAppVersion()),
+  },
   test: {
     root: "dashboard/new-dashboard",
     include: [...configDefaults.include, "**/*.{test,spec}.ts"],

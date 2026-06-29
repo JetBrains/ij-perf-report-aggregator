@@ -22,6 +22,7 @@ type PrometheusMetrics struct {
 	httpRequestsTotal   *prometheus.CounterVec
 	httpRequestDuration *prometheus.HistogramVec
 	httpUserRequests    *prometheus.CounterVec
+	clientErrorsTotal   *prometheus.CounterVec
 
 	responseCacheRequestsTotal *prometheus.CounterVec
 	responseCacheClearsTotal   prometheus.Counter
@@ -30,11 +31,15 @@ type PrometheusMetrics struct {
 	userSeenMu     sync.Mutex
 	userLastSeen   map[string]time.Time
 	now            func() time.Time
+
+	clientVersionMu sync.Mutex
+	clientVersions  map[string]struct{}
 }
 
 const (
-	maxRouteLabelLength = 64
-	maxUserLabelLength  = 64
+	maxRouteLabelLength    = 64
+	maxUserLabelLength     = 64
+	maxClientVersionLabels = 32
 )
 
 var chiPathParamPattern = regexp.MustCompile(`\{[^}/]+\}`)
@@ -68,6 +73,12 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 			Name:      "user_requests_total",
 			Help:      "Active-user activity counter, debounced to roughly one increment per user per minute so it isn't dominated by chatty page loads. Only authenticated requests (with X-Auth-Request-Email) are counted. Label is the local-part of the email. Use count(rate(ij_perf_http_user_requests_total[5m]) > 0) for unique active users in the window — the > 0 filter excludes users whose counter is flat over the range.",
 		}, []string{"user"}),
+		clientErrorsTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "ij_perf",
+			Subsystem: "client",
+			Name:      "errors_total",
+			Help:      "Total number of browser-side dashboard errors reported by the UI. Labels are the fixed source bucket and the client build version (sanitized, bounded to a fixed number of distinct values); other error details are logged instead of exported as metric labels.",
+		}, []string{"source", "version"}),
 		responseCacheRequestsTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: "ij_perf",
 			Subsystem: "response_cache",
@@ -82,6 +93,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 		}),
 		userSeenWindow: time.Minute,
 		userLastSeen:   make(map[string]time.Time),
+		clientVersions: make(map[string]struct{}),
 		now:            time.Now,
 	}
 
@@ -92,6 +104,7 @@ func NewPrometheusMetrics() *PrometheusMetrics {
 		metrics.httpRequestsTotal,
 		metrics.httpRequestDuration,
 		metrics.httpUserRequests,
+		metrics.clientErrorsTotal,
 		metrics.responseCacheRequestsTotal,
 		metrics.responseCacheClearsTotal,
 	)
@@ -146,6 +159,31 @@ func (m *PrometheusMetrics) ObserveCacheClear() {
 		return
 	}
 	m.responseCacheClearsTotal.Inc()
+}
+
+func (m *PrometheusMetrics) ObserveClientError(source, version string, count int) {
+	if m == nil {
+		return
+	}
+	if count < 1 {
+		count = 1
+	}
+	m.clientErrorsTotal.WithLabelValues(clientErrorSourceLabel(source), m.clientVersionLabel(version)).Add(float64(count))
+}
+
+func (m *PrometheusMetrics) clientVersionLabel(version string) string {
+	version = clientErrorVersionLabel(version)
+
+	m.clientVersionMu.Lock()
+	defer m.clientVersionMu.Unlock()
+	if _, ok := m.clientVersions[version]; ok {
+		return version
+	}
+	if len(m.clientVersions) >= maxClientVersionLabels {
+		return "unknown"
+	}
+	m.clientVersions[version] = struct{}{}
+	return version
 }
 
 func (m *PrometheusMetrics) shouldRecordUser(user string, now time.Time) bool {

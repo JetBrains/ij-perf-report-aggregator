@@ -34,6 +34,7 @@ require (
 	github.com/zeebo/xxh3 v1.1.0
 	go.deanishe.net/env v0.5.1
 	golang.org/x/sync v0.21.0
+	golang.org/x/time v0.5.0
 	golang.org/x/tools v0.47.0
 )
 
@@ -161,7 +162,6 @@ require (
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.155.0 // indirect
 	google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80 // indirect

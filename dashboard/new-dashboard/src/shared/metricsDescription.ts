@@ -231,6 +231,23 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["totalHeapUsedMax", metricInfo("Peak JVM heap usage during the test.", "mebibytes")],
   ["bsp.used.at.exit.mb", metricInfo("Heap used at exit.", "mebibytes")],
   ["bsp.used.after.sync.mb", metricInfo("Heap used after sync.", "mebibytes")],
+
+  // GC — GCViewer summary (parsed from the GC log)
+  ["throughput", metricInfo("Percentage of run time the application runs rather than pausing for GC.", "counter", "https://github.com/chewiebug/GCViewer#readme", "higher")],
+  ["maxPause", metricInfo("Longest single GC pause — worst-case GC latency.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
+  [
+    "accumPause",
+    metricInfo("Accumulated GC pause time across collection kinds. gcPause and fullGCPause split it by kind.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme"),
+  ],
+  [
+    "avgfootprintAfterFullGC",
+    metricInfo(
+      "Average heap retained after a full GC — the steady-state live set. totalHeapUsedMax is peak usage, including uncollected garbage.",
+      "mebibytes",
+      "https://github.com/chewiebug/GCViewer#readme"
+    ),
+  ],
+  ["totalPermUsedMax", metricInfo("Peak metaspace (class-metadata) usage.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme")],
   //others
   ["searchEverywhere_*", "Time to fill all search everywhere results."],
   ["FileStructurePopup", "Time needed to display and fill a popup with information about the structure of a given file."],
@@ -323,6 +340,25 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["JVM.maxThreadCount", metricInfo("Peak number of live JVM threads. Unexpected growth signals thread leaks.", "counter", undefined, "stable")],
   ["JVM.totalCpuTimeMs", metricInfo("Cumulative CPU time across all JVM threads. Compared with wall-clock time, reveals CPU saturation.", "milliseconds")],
   ["JVM.totalTimeToSafepointsMs", metricInfo("Time threads spent blocked waiting for JVM safepoints. Above 50 ms indicates contention.", "milliseconds")],
+  [
+    "JVM.totalTimeAtSafepointsMs",
+    metricInfo(
+      "Total stop-the-world time the application is paused at safepoints. JVM.totalTimeToSafepointsMs counts only the time to reach a safepoint, not the pause itself.",
+      "milliseconds"
+    ),
+  ],
+  ["JVM.totalSafepointCount", metricInfo("Number of safepoints reached. A superset of JVM.GC.collections, which counts only GC pauses.", "counter", undefined, "lower")],
+  ["JVM.totalMegabytesAllocated", metricInfo("Total memory allocated across all threads — allocation pressure.", "mebibytes")],
+  [
+    "JVM.usedHeapMegabytes",
+    metricInfo("Peak heap in use. JVM.maxHeapMegabytes is the configured ceiling; JVM.committedHeapMegabytes is the memory reserved from the OS.", "mebibytes"),
+  ],
+  ["JVM.usedNativeMegabytes", metricInfo("Peak off-heap native memory in use.", "mebibytes")],
+  ["JVM.totalDirectByteBuffersMegabytes", metricInfo("Peak memory held by NIO direct byte buffers.", "mebibytes")],
+  ["JVM.newThreadsCount", metricInfo("Total threads created. JVM.maxThreadCount captures only the live peak, so it hides thread churn.", "counter", undefined, "lower")],
+
+  // OS
+  ["OS.loadAverage", metricInfo("Peak OS load average — machine saturation.", "counter", undefined, "lower")],
 
   // Memory
   ["MEM.avgRamMegabytes", metricInfo("Average resident RAM of the IDE process during the test.", "mebibytes")],

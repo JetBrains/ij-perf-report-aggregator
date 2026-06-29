@@ -15,12 +15,10 @@
         <GroupProjectsChart
           v-for="chart in group.charts"
           :key="chart.key"
-          :better-direction="chart.betterDirection"
           :description="chart.description"
           :label="`${group.prefix}: ${chart.label}`"
           :measure="chart.measure"
           :projects="group.projects"
-          :value-unit="chart.valueUnit"
         />
       </section>
     </template>
@@ -34,16 +32,13 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
-import type { ValueUnit } from "../common/chart"
-import type { BetterDirection } from "../../shared/changeDetector/algorithm"
 
 interface ChartDef {
   key: string
   label: string
   measure: string
-  description: string
-  valueUnit?: ValueUnit
-  betterDirection?: BetterDirection
+  // Only set when a chart needs a description that differs from the central metricsDescription entry.
+  description?: string
 }
 
 interface GroupDef {
@@ -71,57 +66,18 @@ const inspectionCharts: ChartDef[] = [
     key: "globalInspections",
     label: "Global Inspections Time",
     measure: "globalInspections",
-    valueUnit: "ms",
     description: "Batch Inspect Code over the whole project — baseline cost before DFA analysis.",
   },
 ]
 
 const generalCharts: ChartDef[] = [
-  {
-    key: "totalTime",
-    label: "General Total Time",
-    measure: "go.dfa.general.total.time.ms",
-    valueUnit: "ms",
-    description: "Total wall-clock time for general DFA analysis across all files.",
-  },
-  {
-    key: "avgTime",
-    label: "General Average Time",
-    measure: "go.dfa.general.avg.time.ms",
-    valueUnit: "ms",
-    description: "Average DFA analysis time per file, including summary loading.",
-  },
-  {
-    key: "avgWithoutSummaryLoad",
-    label: "General Average Time Without Summary Load",
-    measure: "go.dfa.general.avg.without.summary.load.time.ms",
-    valueUnit: "ms",
-    description: "Average DFA analysis time per file excluding summary load — isolates pure analysis cost.",
-  },
-  {
-    key: "gistsCount",
-    label: "General Computed File Gists Count",
-    measure: "go.dfa.general.computed.file.gists.count",
-    valueUnit: "counter",
-    betterDirection: "stable",
-    description: "Number of file gists computed. Stable for a fixed project; changes indicate analysis scope shifts.",
-  },
-  {
-    key: "filesCount",
-    label: "General Files Count",
-    measure: "go.dfa.general.files.count",
-    valueUnit: "counter",
-    betterDirection: "stable",
-    description: "Total files analyzed. Should remain constant for a fixed project.",
-  },
-  {
-    key: "functionsCount",
-    label: "General Functions Count",
-    measure: "go.dfa.general.functions.count",
-    valueUnit: "counter",
-    betterDirection: "stable",
-    description: "Total functions analyzed. Should remain constant for a fixed project.",
-  },
+  { key: "totalTime", label: "General Total Time", measure: "go.dfa.general.total.time.ms" },
+  { key: "avgTime", label: "General Average Time", measure: "go.dfa.general.avg.time.ms" },
+  { key: "avgWithoutSummaryLoad", label: "General Average Time Without Summary Load", measure: "go.dfa.general.avg.without.summary.load.time.ms" },
+  { key: "gistsCount", label: "General Computed File Gists Count", measure: "go.dfa.general.computed.file.gists.count" },
+  { key: "filesCount", label: "General Files Count", measure: "go.dfa.general.files.count" },
+  { key: "functionsCount", label: "General Functions Count", measure: "go.dfa.general.functions.count" },
+  { key: "resolveIssues", label: "Resolve Issues", measure: "go.dfa.general.resolve.issue.count" },
 ]
 
 const allGroups: GroupDef[] = [

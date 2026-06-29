@@ -67,13 +67,11 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    descriptions: ["Time for Search Everywhere to return results."],
     projects: ["localAi/go-to-all-with-warmup/version.go/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    descriptions: ["Code-analysis time triggered while typing."],
     projects: ["act/typing"],
   },
   {

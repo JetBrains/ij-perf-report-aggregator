@@ -99,6 +99,7 @@ enum ROUTES {
   PhpStormIndexingDashboard = `${ROUTE_PREFIX.PhpStorm}/indexingDashboard`,
   PhpStormInspectionsDashboard = `${ROUTE_PREFIX.PhpStorm}/inspectionsDashboard`,
   PhpStormCodeEditingDashboard = `${ROUTE_PREFIX.PhpStorm}/codeEditingDashboard`,
+  PhpStormUnitTestsDashboard = `${ROUTE_PREFIX.PhpStorm}/unitTestsDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -496,15 +497,19 @@ const PHPSTORM: Product = {
         },
         {
           url: ROUTES.PhpStormIndexingDashboard,
-          label: "Indexing Dashboard",
+          label: "Indexing",
         },
         {
           url: ROUTES.PhpStormInspectionsDashboard,
-          label: "Inspections Dashboard",
+          label: "Inspections",
         },
         {
           url: ROUTES.PhpStormCodeEditingDashboard,
-          label: "Code Editing Dashboard",
+          label: "Code Editing",
+        },
+        {
+          url: ROUTES.PhpStormUnitTestsDashboard,
+          label: "Unit Tests",
         },
         {
           url: ROUTES.PhpStormDevTests,
@@ -1536,6 +1541,11 @@ const phpstormRoutes = [
     path: ROUTES.PhpStormCodeEditingDashboard,
     component: () => import("./components/phpstorm/CodeEditingDashboard.vue"),
     meta: { pageTitle: "PhpStorm Code Editing Dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormUnitTestsDashboard,
+    component: () => import("./components/phpstorm/UnitTestsDashboard.vue"),
+    meta: { pageTitle: "PhpStorm Unit Tests Dashboard" },
   },
   {
     path: ROUTES.PhpStormWithPluginsDashboard,

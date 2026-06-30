@@ -367,7 +367,7 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	}
 
 	if generateDescriptorData.AnalysisResult != nil && *generateDescriptorData.AnalysisResult != "" {
-		parts = append(parts, "---\n<details>\n<summary><b>LLM analysis:</b></summary>\n\n"+*generateDescriptorData.AnalysisResult+"\n\n</details>")
+		parts = append(parts, "---\n**LLM analysis:**\n\n"+*generateDescriptorData.AnalysisResult)
 	}
 
 	description := strings.Join(parts, "\n\n")

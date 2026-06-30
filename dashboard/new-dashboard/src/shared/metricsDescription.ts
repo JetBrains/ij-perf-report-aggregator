@@ -419,8 +419,8 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["go.dfa.general.avg.time.ms", metricInfo("Average DFA analysis time per file, including summary loading.", "milliseconds")],
   ["go.dfa.general.avg.without.summary.load.time.ms", metricInfo("Average DFA analysis time per file excluding summary load — isolates pure analysis cost.", "milliseconds")],
   ["go.dfa.general.computed.file.gists.count", metricInfo("Number of file gists (abstracted function summaries) computed. Varies run-to-run.", "counter", undefined, "none")],
-  ["go.dfa.general.files.count", metricInfo("Total files analyzed by DFA. Varies run-to-run.", "counter", undefined, "none")],
-  ["go.dfa.general.functions.count", metricInfo("Total functions analyzed by DFA. Varies run-to-run.", "counter", undefined, "none")],
+  ["go.dfa.general.files.count", metricInfo("Total files analyzed by DFA.", "counter", undefined, "stable")],
+  ["go.dfa.general.functions.count", metricInfo("Total functions analyzed by DFA.", "counter", undefined, "stable")],
   [
     "go.dfa.general.resolve.issue.count",
     metricInfo("Deferred-call targets DFA could not resolve. A rise signals a resolve regression; lower is better.", "counter", undefined, "lower"),

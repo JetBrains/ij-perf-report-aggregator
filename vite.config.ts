@@ -18,13 +18,21 @@ import { PrimeVueResolver } from "@primevue/auto-import-resolver"
 import tailwindcss from "@tailwindcss/vite"
 
 // Resolve the build version exposed to the client error reporter for deploy correlation.
-// Prefer an explicit env override (set by CI), otherwise fall back to the short git commit.
+// On TeamCity the git checkout may be shallow/detached (or git unavailable in the build step), so
+// `git rev-parse` fails there — TeamCity injects the revision and build number as environment
+// variables instead. Order: explicit override → TeamCity VCS commit → TeamCity build number →
+// local git → "unknown".
 function resolveAppVersion(): string {
   // @ts-ignore
-  const fromEnv = process.env.APP_VERSION
-  if (fromEnv != null && fromEnv !== "") {
-    return fromEnv
+  const env = process.env as Record<string, string | undefined>
+
+  const explicit = firstNonEmpty(env.APP_VERSION, env.BUILD_VCS_NUMBER, env.BUILD_NUMBER)
+  if (explicit != null) {
+    // Short-hash a full 40-char git SHA so the value matches the local-git format below and stays
+    // well under the server's version-label length cap; leave human-readable build numbers intact.
+    return /^[0-9a-f]{40}$/i.test(explicit) ? explicit.slice(0, 12) : explicit
   }
+
   try {
     return execFileSync("git", ["rev-parse", "--short", "HEAD"], { stdio: ["ignore", "pipe", "ignore"] })
       .toString()
@@ -32,6 +40,16 @@ function resolveAppVersion(): string {
   } catch {
     return "unknown"
   }
+}
+
+function firstNonEmpty(...values: (string | undefined)[]): string | undefined {
+  for (const value of values) {
+    const trimmed = value?.trim()
+    if (trimmed != null && trimmed !== "") {
+      return trimmed
+    }
+  }
+  return undefined
 }
 
 // https://vitejs.dev/config/

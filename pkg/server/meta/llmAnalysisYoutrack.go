@@ -70,6 +70,7 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			ProjectId:   params.ProjectId,
 			Summary:     params.TicketLabel,
 			Description: generateDescription(descriptionData),
+			ExtraTags:   []Tag{analysedByIjPerfTag},
 		}, &response.Exceptions)
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)

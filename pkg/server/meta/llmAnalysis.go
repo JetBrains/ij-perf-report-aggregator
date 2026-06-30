@@ -435,7 +435,30 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// Once the job reports a terminal result back to ij-perf, mark the linked ticket as analysed.
+		// Best-effort: a tagging failure must not fail the request.
+		if patch.State != nil && (*patch.State == LlmAnalysisStateSuccess) {
+			tagAnalysedYtIssue(request.Context(), metaDb, id)
+		}
+
 		writer.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// tagAnalysedYtIssue adds the analysed-by-ij-perf tag to the YouTrack issue linked to the analysis,
+// if any. Best-effort: all failures are logged and swallowed.
+func tagAnalysedYtIssue(ctx context.Context, metaDb *pgxpool.Pool, id int) {
+	var ytIssueId *string
+	if err := metaDb.QueryRow(ctx, "SELECT yt_issue_id FROM analyses WHERE id = $1", id).Scan(&ytIssueId); err != nil {
+		slog.Warn("cannot read yt_issue_id for analysed-by-ij-perf tagging", "id", id, "error", err)
+		return
+	}
+	if ytIssueId == nil || *ytIssueId == "" {
+		return
+	}
+	if err := youtrackClient.AddTag(ctx, *ytIssueId, analysedByIjPerfTag); err != nil {
+		slog.Warn("cannot tag linked YouTrack issue as analysed-by-ij-perf", "issueId", *ytIssueId, "error", err)
 	}
 }
 

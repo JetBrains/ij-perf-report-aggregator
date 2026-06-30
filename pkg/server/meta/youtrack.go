@@ -88,6 +88,14 @@ var (
 	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
 )
 
+// analysedByIjPerfTag marks a ticket for which an ij-perf LLM analysis was performed.
+// Distinct from the created-by-ij-perf tag (68-523929) added to every ij-perf-created issue.
+var analysedByIjPerfTag = Tag{
+	Name: "analysed-by-ij-perf",
+	ID:   "68-534888",
+	Type: "Tag",
+}
+
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		response := CreateIssueResponse{}
@@ -181,6 +189,7 @@ type CommonIssueParams struct {
 	ProjectId   string
 	Summary     string
 	Description string
+	ExtraTags   []Tag
 }
 
 func createYoutrackIssueCommon(ctx context.Context, request *http.Request, params CommonIssueParams, exceptions *[]string) (*YoutrackIssue, error) {
@@ -246,7 +255,7 @@ func createYoutrackIssueCommon(ctx context.Context, request *http.Request, param
 	}
 
 	setPriority(params.ProjectId, &issueInfo)
-	setTags(params.ProjectId, &issueInfo)
+	issueInfo.Tags = buildTags(params.ProjectId, params.ExtraTags)
 
 	return youtrackClient.CreateIssue(ctx, issueInfo)
 }
@@ -445,7 +454,10 @@ func setPriority(projectId string, issueInfo *CreateIssueInfo) {
 	issueInfo.CustomFields = append(issueInfo.CustomFields, priorityField)
 }
 
-func setTags(projectId string, issueInfo *CreateIssueInfo) {
+// buildTags returns the tags for a created issue: the project's default tags, the
+// created-by-ij-perf marker, then any extraTags (e.g. analysed-by-ij-perf for the
+// LLM-analysis flow).
+func buildTags(projectId string, extraTags []Tag) []Tag {
 	var tags []Tag
 
 	switch projectId {
@@ -483,7 +495,9 @@ func setTags(projectId string, issueInfo *CreateIssueInfo) {
 		Type: "Tag",
 	})
 
-	issueInfo.Tags = tags
+	tags = append(tags, extraTags...)
+
+	return tags
 }
 
 func getFieldIdByName(ctx context.Context, projectId, fieldName string, exceptions *[]string) string {

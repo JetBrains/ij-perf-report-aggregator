@@ -111,6 +111,7 @@ type LlmAnalysisRunPatch struct {
 	LlmGuiltyCommits *[]string         `json:"llmGuiltyCommits,omitempty"`
 	LlmComment       *string           `json:"llmComment,omitempty"`
 	TotalCostUsd     *float64          `json:"totalCostUsd,omitempty"`
+	YtIssueId        *string           `json:"ytIssueId,omitempty"`
 }
 
 var sha1HexRegex = regexp.MustCompile(`^[a-fA-F0-9]{40}$`)
@@ -518,6 +519,9 @@ func updateLlmAnalysisRun(ctx context.Context, metaDb *pgxpool.Pool, id int, pat
 	}
 	if patch.TotalCostUsd != nil {
 		add("total_cost_usd", *patch.TotalCostUsd)
+	}
+	if patch.YtIssueId != nil {
+		add("yt_issue_id", *patch.YtIssueId)
 	}
 
 	if len(setClauses) == 0 {

@@ -79,6 +79,11 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		response.Issue = *issue
 
+		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, LlmAnalysisRunPatch{YtIssueId: &issue.IDReadable}); err != nil {
+			slog.Error("failed to persist yt_issue_id on analysis", "error", err, "id", id, "issue", issue.IDReadable)
+			logError("failed to link issue to analysis", err, &response.Exceptions)
+		}
+
 		if len(params.ChartPng) > 0 {
 			if err := youtrackClient.UploadAttachment(request.Context(), issue.ID, bytes.NewReader(params.ChartPng), "dashboard.png", int64(len(params.ChartPng))); err != nil {
 				slog.Error("failed to upload chart PNG", "error", err)

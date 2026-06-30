@@ -103,6 +103,26 @@ func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueI
 	return &issue, nil
 }
 
+// AddTag adds an existing tag to an existing issue. issueID may be the readable id
+// (e.g. IJPL-1234) or the internal id; YouTrack accepts both.
+func (client *YoutrackClient) AddTag(ctx context.Context, issueID string, tag Tag) error {
+	// Associating an existing tag only needs its id; sending name/$type risks drift if they ever disagree.
+	body, err := json.Marshal(map[string]string{"id": tag.ID})
+	if err != nil {
+		return fmt.Errorf("error marshaling tag: %w", err)
+	}
+
+	endpoint := fmt.Sprintf("/api/issues/%s/tags?fields=id,name", url.PathEscape(issueID))
+	_, err = client.fetchFromYouTrack(ctx, endpoint, "POST", bytes.NewBuffer(body), map[string]string{
+		"Content-Type": "application/json",
+	})
+	if err != nil {
+		return fmt.Errorf("error adding tag %q to issue %q: %w", tag.Name, issueID, err)
+	}
+
+	return nil
+}
+
 func (client *YoutrackClient) SearchIssuesByLabel(ctx context.Context, label string) ([]YoutrackIssue, error) {
 	encodedLabel := url.QueryEscape(fmt.Sprintf("{%s}", label))
 	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?query=tag:"+encodedLabel, "GET", nil, map[string]string{"Accept": "application/json"})

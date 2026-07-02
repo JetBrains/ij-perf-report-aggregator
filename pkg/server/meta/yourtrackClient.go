@@ -123,6 +123,21 @@ func (client *YoutrackClient) AddTag(ctx context.Context, issueID string, tag Ta
 	return nil
 }
 
+func (client *YoutrackClient) ResolveIssue(ctx context.Context, issueID string) (*YoutrackIssue, error) {
+	endpoint := fmt.Sprintf("/api/issues/%s?fields=id,idReadable", url.PathEscape(issueID))
+	responseData, err := client.fetchFromYouTrack(ctx, endpoint, http.MethodGet, nil, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return nil, fmt.Errorf("error resolving issue %q: %w", issueID, err)
+	}
+
+	var issue YoutrackIssue
+	if err := json.Unmarshal(responseData, &issue); err != nil {
+		return nil, fmt.Errorf("error unmarshalling issue: %w", err)
+	}
+
+	return &issue, nil
+}
+
 func (client *YoutrackClient) SearchIssuesByLabel(ctx context.Context, label string) ([]YoutrackIssue, error) {
 	encodedLabel := url.QueryEscape(fmt.Sprintf("{%s}", label))
 	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?query=tag:"+encodedLabel, "GET", nil, map[string]string{"Accept": "application/json"})

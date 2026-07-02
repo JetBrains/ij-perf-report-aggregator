@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
@@ -90,6 +91,76 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 				slog.Error("failed to upload chart PNG", "error", err)
 				logError("failed to upload chart PNG", err, &response.Exceptions)
 			}
+		}
+
+		if err := marshalAndWriteIssueResponse(writer, &response); err != nil {
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+type LinkIssueByAnalysisRequest struct {
+	IssueId string `json:"issueId"`
+}
+
+func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		response := CreateIssueResponse{}
+
+		id, err := strconv.Atoi(chi.URLParam(request, "id"))
+		if err != nil || id <= 0 {
+			http.Error(writer, "invalid id", http.StatusBadRequest)
+			return
+		}
+
+		body, err := io.ReadAll(request.Body)
+		if err != nil {
+			handleError(writer, "cannot read body", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+		defer request.Body.Close()
+
+		var params LinkIssueByAnalysisRequest
+		if err = json.Unmarshal(body, &params); err != nil {
+			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+
+		params.IssueId = strings.TrimSpace(params.IssueId)
+		if params.IssueId == "" {
+			http.Error(writer, "issueId is required", http.StatusBadRequest)
+			return
+		}
+
+		if _, err := getAnalysisById(request.Context(), metaDb, id); err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				http.Error(writer, "analysis not found", http.StatusNotFound)
+				return
+			}
+			handleError(writer, "cannot get analysis", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+
+		issue, err := youtrackClient.ResolveIssue(request.Context(), params.IssueId)
+		if err != nil {
+			handleError(writer, "cannot resolve issue", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+		response.Issue = *issue
+
+		if err := youtrackClient.AddTag(request.Context(), issue.IDReadable, analysedByIjPerfTag); err != nil {
+			slog.Error("failed to tag linked issue", "error", err, "issue", issue.IDReadable)
+			logError("failed to tag issue", err, &response.Exceptions)
+		}
+
+		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, LlmAnalysisRunPatch{YtIssueId: &issue.IDReadable}); err != nil {
+			slog.Error("failed to persist yt_issue_id on analysis", "error", err, "id", id, "issue", issue.IDReadable)
+			logError("failed to link issue to analysis", err, &response.Exceptions)
 		}
 
 		if err := marshalAndWriteIssueResponse(writer, &response); err != nil {

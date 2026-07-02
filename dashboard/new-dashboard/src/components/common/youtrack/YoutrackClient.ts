@@ -121,9 +121,6 @@ export interface CreateIssueByAnalysisRequest {
 
 export interface LinkIssueByAnalysisRequest {
   issueId: string
-  delta: string
-  changesLink: string
-  chartPng?: string
 }
 
 export interface Project {

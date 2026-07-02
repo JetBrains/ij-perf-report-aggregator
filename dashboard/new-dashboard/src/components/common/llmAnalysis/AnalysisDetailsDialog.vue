@@ -101,7 +101,7 @@
           <dt class="col-span-2 sticky top-0 z-10 mt-4 border-t border-gray-200 bg-white pt-3 text-base font-semibold text-gray-900 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex flex-wrap items-center gap-3">
-                <span v-if="showCreateForm">Create YouTrack issue</span>
+                <span v-if="showCreateForm">YouTrack issue</span>
                 <AnalysisFeedbackInline
                   v-if="!showCreateForm && analysisId != null"
                   :analysis-id="analysisId"
@@ -122,7 +122,7 @@
                 class="flex items-center gap-1 text-sm font-normal underline decoration-dotted hover:no-underline"
               >
                 <i class="pi pi-verified text-green-600" />
-                Created {{ createdIssue.idReadable }} ↗
+                {{ createdActionLabel }} {{ createdIssue.idReadable }} ↗
               </a>
             </div>
           </dt>
@@ -190,12 +190,16 @@ const renderedComment = computed(() => {
 })
 
 const createdIssue = ref<{ id: string; idReadable: string } | null>(null)
+const createdAction = ref<"created" | "linked">("created")
 const showCreateForm = ref(false)
 
 const isTerminalState = computed(() => details.value != null && details.value.state !== LlmAnalysisState.InProgress)
 
-function onIssueCreated(issue: { id: string; idReadable: string }) {
+const createdActionLabel = computed(() => (createdAction.value === "linked" ? "Linked" : "Created"))
+
+function onIssueCreated(issue: { id: string; idReadable: string }, action: "created" | "linked") {
   createdIssue.value = issue
+  createdAction.value = action
   if (details.value != null) details.value.ytIssueId = issue.idReadable
   showCreateForm.value = false
 }

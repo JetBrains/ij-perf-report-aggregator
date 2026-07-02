@@ -19,6 +19,10 @@ export class YoutrackClient {
     return this.postCreateIssue(`${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${analysisId}/createIssue`, issueInfo)
   }
 
+  linkIssueByAnalysis(analysisId: number, request: LinkIssueByAnalysisRequest): Promise<IssueResponse> {
+    return this.postCreateIssue(`${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/${analysisId}/linkIssue`, request)
+  }
+
   private async postCreateIssue(url: string, body: object): Promise<IssueResponse> {
     const response = await fetch(url, {
       method: "POST",
@@ -113,6 +117,10 @@ export interface CreateIssueByAnalysisRequest {
   delta: string
   changesLink: string
   chartPng?: string
+}
+
+export interface LinkIssueByAnalysisRequest {
+  issueId: string
 }
 
 export interface Project {

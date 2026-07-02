@@ -298,8 +298,7 @@
           v-if="llmAnalysesConfigurator.canStart(data)"
           outlined
           class="flex-1 justify-center"
-          :loading="isLlmAnalysisStarting"
-          @click="runLlmAnalysis"
+          @click="showLlmAnalysisDialog = true"
         >
           <SparklesIcon class="w-4 h-4 mr-1.5" />
           Run LLM Analysis
@@ -340,13 +339,19 @@
       :timerange-configurator="timerangeConfigurator"
     />
   </Suspense>
+  <LlmAnalysisDialog
+    v-if="showLlmAnalysisDialog"
+    v-model:show-dialog="showLlmAnalysisDialog"
+    :data="data!!"
+    :llm-analyses-configurator="llmAnalysesConfigurator"
+  />
 </template>
 <script setup lang="ts">
 import { computed, provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
-import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"
+import LlmAnalysisDialog from "../llmAnalysis/LlmAnalysisDialog.vue"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, llmAnalysesConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
@@ -366,7 +371,6 @@ import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigura
 import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
-import { useToast } from "primevue/usetoast"
 import LlmAnalysisRuns from "../llmAnalysis/LlmAnalysisRuns.vue"
 
 const { timerangeConfigurator } = defineProps<{
@@ -378,6 +382,7 @@ const showDialog = ref(false)
 const showYoutrackDialog = ref(false)
 const showStacktrace = ref(false)
 const showBisectDialog = ref(false)
+const showLlmAnalysisDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
 const shouldRunLlmAnalysis = ref(false)
@@ -408,7 +413,6 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
-const toast = useToast()
 const router = useRouter()
 const llmAnalysesConfigurator = new LlmAnalysesConfigurator(serverConfigurator, router, timerangeConfigurator)
 provide(llmAnalysesConfiguratorKey, llmAnalysesConfigurator)
@@ -419,19 +423,6 @@ watch(
   },
   { immediate: true }
 )
-
-const isLlmAnalysisStarting = ref(false)
-
-async function runLlmAnalysis() {
-  const d = vm.data.value
-  if (d == null) return
-  isLlmAnalysisStarting.value = true
-  try {
-    await startLlmAnalysisWithToast(llmAnalysesConfigurator, d, toast)
-  } finally {
-    isLlmAnalysisStarting.value = false
-  }
-}
 
 const youtrackClient = new YoutrackClient(serverConfigurator)
 provide(youtrackClientKey, youtrackClient)

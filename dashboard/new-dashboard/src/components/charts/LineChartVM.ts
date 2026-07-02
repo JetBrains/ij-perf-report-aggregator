@@ -139,7 +139,7 @@ export class LineChartVM {
     }
     for (const param of params) {
       const seriesName = document.createElement("b")
-      seriesName.append(measureNameToLabel(param.seriesName as string))
+      seriesName.append(measureNameToLabel(param.seriesName))
       element.append(seriesName, document.createElement("br"))
       const data = param.value as (OptionDataValue | Delta)[]
       const unit = this.resolveUnit(data)
@@ -163,7 +163,7 @@ export class LineChartVM {
     const durationMs = this.settings.scaling ? data.at(-1) : data[1]
     element.append(formatMeasureValue(durationMs as number, unit), document.createElement("br"))
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
-    element.append(measureNameToLabel(params.seriesName as string))
+    element.append(measureNameToLabel(params.seriesName))
     const buildId = getFullBuildId(params)
     if (buildId != undefined) {
       element.append(document.createElement("br"), buildId)

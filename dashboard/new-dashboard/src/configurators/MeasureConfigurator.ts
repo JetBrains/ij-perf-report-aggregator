@@ -399,7 +399,7 @@ function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | nul
       }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
-        const classification = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))?.classification
+        const classification = detectedChanges.get(JSON.stringify(seriesIndex.value))?.classification
         if (classification == ChangePointClassification.DEGRADATION) {
           return "#cc0000"
         } else if (classification == ChangePointClassification.OPTIMIZATION) {
@@ -615,7 +615,7 @@ async function configureChart(
           { name: seriesName, type: "int" },
         ],
         itemStyle: getItemStyleForSeries(accidentsConfigurator, detectedChanges),
-      } as LineSeriesOption)
+      })
       if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)

@@ -17,7 +17,7 @@ require (
 	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/jackc/puddle/v2 v2.2.2
-	github.com/klauspost/compress v1.18.6
+	github.com/klauspost/compress v1.19.0
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/modelcontextprotocol/go-sdk v1.6.1
 	github.com/nats-io/nats.go v1.52.0

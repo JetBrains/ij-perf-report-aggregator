@@ -21,7 +21,7 @@ export class Delta {
         deltas.push(new Delta(values[i - 1], values[i + 1], buildIds[i - 1], buildIds[i + 1]))
       }
     }
-    deltas.push(new Delta(values.at(-2) as number, null, buildIds.at(-2) as number, undefined))
+    deltas.push(new Delta(values.at(-2) as number, null, buildIds.at(-2), undefined))
     return deltas
   }
 }

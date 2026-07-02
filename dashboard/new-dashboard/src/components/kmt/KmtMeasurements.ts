@@ -48,5 +48,5 @@ export function filterChartsByProjects(chartDefinitions: ChartDefinition[], sele
 
       return null
     })
-    .filter((chart) => chart !== null) as ChartDefinition[]
+    .filter((chart) => chart !== null)
 }

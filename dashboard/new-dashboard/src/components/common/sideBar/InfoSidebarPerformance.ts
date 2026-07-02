@@ -266,7 +266,7 @@ export function getInfoDataFrom(
       const currentSeriesData = param.value as OptionDataValue[]
       const value = currentSeriesData[1] as number
       const showValue = formatMeasureValue(value, resolveMeasureUnit(param.seriesName as string))
-      series.push({ metricName: param.seriesName as string, value: showValue, color: param.color as string, rawValue: value })
+      series.push({ metricName: param.seriesName, value: showValue, color: param.color as string, rawValue: value })
     }
 
     return {

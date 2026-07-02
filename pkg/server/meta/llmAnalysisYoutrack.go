@@ -101,10 +101,7 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 }
 
 type LinkIssueByAnalysisRequest struct {
-	IssueId     string `json:"issueId"`
-	ChangesLink string `json:"changesLink"`
-	Delta       string `json:"delta"`
-	ChartPng    []byte `json:"chartPng,omitempty"`
+	IssueId string `json:"issueId"`
 }
 
 func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -162,23 +159,10 @@ func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 		response.Issue = *issue
 
-		descriptionData := buildAnalysisDescriptionData(request.Context(), metaDb, details, CreateIssueByAnalysisRequest{
-			ProjectId:   params.IssueId,
-			ChangesLink: params.ChangesLink,
-			Delta:       params.Delta,
-		}, &response.Exceptions)
-
-		if err := youtrackClient.AddComment(request.Context(), issue.IDReadable, generateDescription(descriptionData)); err != nil {
+		if err := youtrackClient.AddComment(request.Context(), issue.IDReadable, *details.LlmComment); err != nil {
 			handleError(writer, "failed to add comment", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
-		}
-
-		if len(params.ChartPng) > 0 {
-			if err := youtrackClient.UploadAttachment(request.Context(), issue.ID, bytes.NewReader(params.ChartPng), "dashboard.png", int64(len(params.ChartPng))); err != nil {
-				slog.Error("failed to upload chart PNG", "error", err)
-				logError("failed to upload chart PNG", err, &response.Exceptions)
-			}
 		}
 
 		if err := youtrackClient.AddTag(request.Context(), issue.IDReadable, analysedByIjPerfTag); err != nil {

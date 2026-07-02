@@ -101,7 +101,10 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 }
 
 type LinkIssueByAnalysisRequest struct {
-	IssueId string `json:"issueId"`
+	IssueId     string `json:"issueId"`
+	ChangesLink string `json:"changesLink"`
+	Delta       string `json:"delta"`
+	ChartPng    []byte `json:"chartPng,omitempty"`
 }
 
 func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -135,13 +138,19 @@ func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		if _, err := getAnalysisById(request.Context(), metaDb, id); err != nil {
+		details, err := getAnalysisById(request.Context(), metaDb, id)
+		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				http.Error(writer, "analysis not found", http.StatusNotFound)
 				return
 			}
 			handleError(writer, "cannot get analysis", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+
+		if details.State != string(LlmAnalysisStateSuccess) || details.LlmComment == nil || *details.LlmComment == "" {
+			http.Error(writer, "analysis is not in success state or has no comment", http.StatusBadRequest)
 			return
 		}
 
@@ -152,6 +161,25 @@ func CreatePostLinkIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		response.Issue = *issue
+
+		descriptionData := buildAnalysisDescriptionData(request.Context(), metaDb, details, CreateIssueByAnalysisRequest{
+			ProjectId:   params.IssueId,
+			ChangesLink: params.ChangesLink,
+			Delta:       params.Delta,
+		}, &response.Exceptions)
+
+		if err := youtrackClient.AddComment(request.Context(), issue.IDReadable, generateDescription(descriptionData)); err != nil {
+			handleError(writer, "failed to add comment", err, &response.Exceptions)
+			_ = marshalAndWriteIssueResponse(writer, &response)
+			return
+		}
+
+		if len(params.ChartPng) > 0 {
+			if err := youtrackClient.UploadAttachment(request.Context(), issue.ID, bytes.NewReader(params.ChartPng), "dashboard.png", int64(len(params.ChartPng))); err != nil {
+				slog.Error("failed to upload chart PNG", "error", err)
+				logError("failed to upload chart PNG", err, &response.Exceptions)
+			}
+		}
 
 		if err := youtrackClient.AddTag(request.Context(), issue.IDReadable, analysedByIjPerfTag); err != nil {
 			slog.Error("failed to tag linked issue", "error", err, "issue", issue.IDReadable)

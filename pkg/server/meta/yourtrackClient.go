@@ -138,6 +138,25 @@ func (client *YoutrackClient) ResolveIssue(ctx context.Context, issueID string) 
 	return &issue, nil
 }
 
+// AddComment posts a markdown comment to an existing issue. issueID may be the readable id
+// (e.g. IJPL-1234) or the internal id; YouTrack accepts both.
+func (client *YoutrackClient) AddComment(ctx context.Context, issueID string, text string) error {
+	body, err := json.Marshal(map[string]string{"text": text})
+	if err != nil {
+		return fmt.Errorf("error marshaling comment: %w", err)
+	}
+
+	endpoint := fmt.Sprintf("/api/issues/%s/comments?fields=id", url.PathEscape(issueID))
+	_, err = client.fetchFromYouTrack(ctx, endpoint, "POST", bytes.NewBuffer(body), map[string]string{
+		"Content-Type": "application/json",
+	})
+	if err != nil {
+		return fmt.Errorf("error adding comment to issue %q: %w", issueID, err)
+	}
+
+	return nil
+}
+
 func (client *YoutrackClient) SearchIssuesByLabel(ctx context.Context, label string) ([]YoutrackIssue, error) {
 	encodedLabel := url.QueryEscape(fmt.Sprintf("{%s}", label))
 	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?query=tag:"+encodedLabel, "GET", nil, map[string]string{"Accept": "application/json"})

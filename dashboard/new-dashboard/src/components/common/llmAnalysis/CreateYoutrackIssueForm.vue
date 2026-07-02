@@ -61,7 +61,7 @@
         placeholder="IJPL-1234 or https://youtrack.jetbrains.com/issue/IJPL-1234"
         class="w-full"
       />
-      <small class="text-gray-500"> The issue will be linked and tagged; its content is left untouched. </small>
+      <small class="text-gray-500"> The analysis will be posted as a comment on this issue, which will be linked and tagged. </small>
     </div>
 
     <div class="flex items-center gap-2">
@@ -190,7 +190,8 @@ async function submitLink() {
   }
   isSubmitting.value = true
   try {
-    const resp = await youtrackClient.linkIssueByAnalysis(Number(analysisId), { issueId })
+    const { changesLink, delta, chartPng } = await collectAnalysisContext()
+    const resp = await youtrackClient.linkIssueByAnalysis(Number(analysisId), { issueId, delta, changesLink, chartPng })
     toast.add({ severity: "success", summary: "Issue linked", detail: resp.issue.idReadable, life: 4000 })
     emit("created", { id: resp.issue.id, idReadable: resp.issue.idReadable }, "linked")
   } catch (e) {

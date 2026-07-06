@@ -2,6 +2,7 @@
 
 import { ParentRouteRecord, TypedRouteRecord } from "./components/common/route"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
+import { MACHINE_GROUP_QODANA_FLEET_HEAVY } from "./configurators/MachineConfigurator"
 import type { PerformanceTestsProps } from "./components/common/PerformanceTests.vue"
 
 const COMPONENTS = {
@@ -2203,7 +2204,7 @@ const qodanaRoutes = [
     props: {
       dbName: "qodana",
       table: "report",
-      initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+      initialMachine: MACHINE_GROUP_QODANA_FLEET_HEAVY,
       withInstaller: false,
     },
     meta: { pageTitle: "Qodana tests" },

@@ -90,6 +90,7 @@ enum ROUTES {
   IntelliJJpsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboardDev`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
+  IntelliJGradleBenchmarks = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleBenchmarks`,
   IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${DASHBOARD_ROUTE}`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
@@ -384,6 +385,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJJpsDashboardDev,
           label: "JPS Import DevServer",
+        },
+        {
+          url: ROUTES.IntelliJGradleBenchmarks,
+          label: "Gradle Performance Unit Tests",
         },
         {
           url: ROUTES.IntelliJBuildTests,
@@ -1441,6 +1446,11 @@ const intellijRoutes = [
     path: ROUTES.IntelliJJpsDashboardDev,
     component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"),
     meta: { pageTitle: "JPS Import dashboard DevServer" },
+  },
+  {
+    path: ROUTES.IntelliJGradleBenchmarks,
+    component: () => import("./components/intelliJ/build-tools/gradle/GradleBenchmarksDashboard.vue"),
+    meta: { pageTitle: "Gradle Performance Unit Tests" },
   },
   {
     path: ROUTES.IntelliJPackageCheckerDashboard,

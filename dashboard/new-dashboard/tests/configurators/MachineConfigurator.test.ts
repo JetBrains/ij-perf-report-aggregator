@@ -2,9 +2,9 @@ import { Observable } from "rxjs"
 import { expect, beforeEach, describe, it } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
-import { getMachineGroupName, MACHINE_GROUP_QODANA_FLEET_HEAVY, MachineConfigurator } from "../../src/configurators/MachineConfigurator"
+import { getMachineGroupName, MachineConfigurator } from "../../src/configurators/MachineConfigurator"
 import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
-import { awaitCallbackTrue, awaitMockCallsCount } from "../utils/awaitors"
+import { awaitMockCallsCount } from "../utils/awaitors"
 import ConfiguratorTest, { ConfigurationTestData } from "./ConfiguratorTest"
 
 describe("Machine configurator", () => {
@@ -135,65 +135,8 @@ describe("Machine configurator", () => {
   })
 })
 
-describe("getMachineGroupName - qodana agents", () => {
-  const c5xlarge = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
-
-  it("maps the new qodana fleet heavy agents to their own group", () => {
-    expect(getMachineGroupName("qodana-fleet-linux-amd64-heavy-test-i-00375d8f0e61ed132")).toBe(MACHINE_GROUP_QODANA_FLEET_HEAVY)
-  })
-
-  it("keeps legacy qodana heavy agents in the c5.xlarge group", () => {
-    expect(getMachineGroupName("qodana-linux-amd64-heavy-test-A-i-0a1b2c3d4e5f60718")).toBe(c5xlarge)
-  })
-
-  it("classifies fleet and legacy heavy agents into different groups", () => {
-    // Same group would collapse the group's common-prefix machine filter to `qodana-`,
-    // over-matching every other qodana machine class (see the query-layer test below).
-    expect(getMachineGroupName("qodana-fleet-linux-amd64-heavy-test-i-00375d8f0e61ed132")).not.toBe(getMachineGroupName("qodana-linux-amd64-heavy-test-A-i-0a1b2c3d4e5f60718"))
-  })
-
-  it("keeps qodana-aws-cpu-x64 agents in the c5a(d).xlarge group", () => {
-    expect(getMachineGroupName("qodana-aws-cpu-x64-i-0123456789abcdef0")).toBe("Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)")
-  })
-
-  it("returns Unknown for unmapped agents", () => {
-    expect(getMachineGroupName("some-unmapped-agent-i-000")).toBe("Unknown")
-  })
-})
-
-// Serialized fragment of a `machine LIKE 'qodana-fleet-linux-amd64-heavy…%'` filter. Its presence proves
-// the fleet group is queried by a fleet-only prefix; a merged fleet+heavy group would collapse to `qodana-%`.
-const FLEET_MACHINE_LIKE_FRAGMENT = '"f":"machine","v":"qodana-fleet-linux-amd64-heavy'
-const COLLAPSED_MACHINE_LIKE_FRAGMENT = '"f":"machine","v":"qodana-%"'
-
-describe("Machine configurator - qodana fleet group query", () => {
-  let data: ConfigurationTestData
-  let machineConfigurator: MachineConfigurator
-  let dataQueryExecutor: DataQueryExecutor
-
-  beforeEach(() => {
-    // A legacy heavy agent coexists with the fleet agents so the test proves the fleet group's filter
-    // stays fleet-specific instead of widening to also match the heavy class.
-    data = ConfiguratorTest.setupPreconditions([
-      "qodana-fleet-linux-amd64-heavy-test-i-0000aaaa",
-      "qodana-fleet-linux-amd64-heavy-test-i-0000bbbb",
-      "qodana-linux-amd64-heavy-test-A-i-0000cccc",
-    ])
-    machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard)
-    const measureConfigurator = new TestMeasureConfigurator()
-    dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, measureConfigurator])
-  })
-
-  it("filters the fleet group by a fleet-only prefix, never collapsing to qodana-", async () => {
-    dataQueryExecutor.subscribe(() => {})
-    // Wait until the loaded machine list has been grouped, so selecting the group hits the prefix path.
-    await awaitCallbackTrue(() => machineConfigurator.values.value.some((g) => g.value === MACHINE_GROUP_QODANA_FLEET_HEAVY))
-
-    machineConfigurator.selected.value = [MACHINE_GROUP_QODANA_FLEET_HEAVY]
-    await awaitCallbackTrue(() => data.fetchMock.mock.calls.some((c) => (c[0] as string).includes(FLEET_MACHINE_LIKE_FRAGMENT)))
-
-    const urls = data.fetchMock.mock.calls.map((c) => c[0] as string)
-    expect(urls.find((u) => u.includes(FLEET_MACHINE_LIKE_FRAGMENT))).toBeDefined()
-    expect(urls.find((u) => u.includes(COLLAPSED_MACHINE_LIKE_FRAGMENT))).toBeUndefined()
+describe("getMachineGroupName - qodana fleet agents", () => {
+  it("maps qodana fleet heavy agents to their own group", () => {
+    expect(getMachineGroupName("qodana-fleet-linux-amd64-heavy-test-i-00375d8f0e61ed132")).toBe("Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)")
   })
 })

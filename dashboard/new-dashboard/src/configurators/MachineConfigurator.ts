@@ -11,10 +11,6 @@ import { refToObservable } from "./rxjs"
 // todo what is it?
 const macLarge = "mac large"
 
-// Group name for the fleet-provisioned qodana heavy agents. Exported so getMachineGroupName and
-// the /qodana/tests route (initialMachine) reference one string and cannot drift apart.
-export const MACHINE_GROUP_QODANA_FLEET_HEAVY = "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"
-
 export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly selected = shallowRef<string[]>([])
   readonly values = shallowRef<GroupedDimensionValue[]>([])
@@ -86,10 +82,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       const machineFromMap = MachineConfigurator.valueToGroup[value] as string | null
       if (groupName == "Unknown" && machineFromMap != null) {
         groupName = machineFromMap
-      } else if (groupName == "Unknown") {
-        // Surface unrecognised machines instead of silently bucketing them into "Unknown" — that
-        // silent path is how the renamed qodana fleet agents disappeared from the dashboard.
-        console.warn("MachineConfigurator: unrecognised machine, bucketed as Unknown:", value)
       }
 
       let item = this.groupNameToItem.get(groupName)
@@ -441,11 +433,9 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/c5/
     groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("qodana-fleet-linux-amd64-heavy")) {
-    // Fleet agents in the `qodana-linux-amd64-heavy-*` hardware class, same 4 vCPU / 8 GB
-    // (metric values within ~1% for the same test). Kept as its own group instead of merged into
-    // "Linux EC2 c5.xlarge (4 vCPU, 8 GB)": a selected group is queried by its members' common prefix,
-    // and merging the two name-stems would collapse that to `qodana-`, matching every qodana class.
-    groupName = MACHINE_GROUP_QODANA_FLEET_HEAVY
+    // Own group, not merged into "…c5.xlarge…": a group is queried by its members' common prefix,
+    // and merging the two name-stems would widen that to `qodana-`, matching every qodana class.
+    groupName = "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"
   } else if (machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     groupName = "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"

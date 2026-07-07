@@ -2203,7 +2203,7 @@ const qodanaRoutes = [
     props: {
       dbName: "qodana",
       table: "report",
-      initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+      initialMachine: "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)",
       withInstaller: false,
     },
     meta: { pageTitle: "Qodana tests" },

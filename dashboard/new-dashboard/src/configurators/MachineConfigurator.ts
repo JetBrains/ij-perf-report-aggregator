@@ -380,6 +380,12 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/c6id/
     // noinspection SpellCheckingInspection
     groupName = "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"
+  } else if (machine.startsWith("qodana-fleet-linux-amd64-heavy")) {
+    // Fleet agents in the `qodana-linux-amd64-heavy-*` hardware class, same 4 vCPU / 8 GB
+    // (metric values within ~1% for the same test). Kept as its own group instead of merged into
+    // "Linux EC2 c5.xlarge (4 vCPU, 8 GB)": a selected group is queried by its members' common prefix,
+    // and merging the two name-stems would collapse that to `qodana-`, matching every qodana class.
+    groupName = "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"
   } else if (
     machine.startsWith("intellij-linux-2004-aws-m5d-lt") ||
     machine.startsWith("intellij-linux-2204-aws-m5d-lt") ||

@@ -337,11 +337,11 @@
     },
     "convertJavaToKotlin": {
       "intelliJSources": [
-        "intellij_sources/javaToKotlin/HighlightFixUtil",
-        "intellij_sources/javaToKotlin/CompilerConfigurationImpl",
-        "intellij_sources/javaToKotlin/DaemonCodeAnalyzerImpl",
-        "intellij_sources/javaToKotlin/HighlightNamesUtil",
-        "intellij_sources/javaToKotlin/EditorImpl"
+        "intellij_commit/javaToKotlin/HighlightFixUtil",
+        "intellij_commit/javaToKotlin/CompilerConfigurationImpl",
+        "intellij_commit/javaToKotlin/DaemonCodeAnalyzerImpl",
+        "intellij_commit/javaToKotlin/HighlightNamesUtil",
+        "intellij_commit/javaToKotlin/EditorImpl"
       ]
     },
     "navigationToDeclaration": {

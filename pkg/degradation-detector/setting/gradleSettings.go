@@ -23,6 +23,7 @@ func getGradleTests() []string {
 		"project-reimport-space/",
 		"project-import-space/",
 		"project-import-open-telemetry/",
+		"project-import-gradle-bytechef/",
 	}
 }
 

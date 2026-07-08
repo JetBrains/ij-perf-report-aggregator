@@ -16,6 +16,7 @@ const PROJECT_NAMES = [
   "project-import-open-telemetry/",
   "project-import-gradle-ktor/",
   "project-import-gradle-ide-services-server/",
+  "project-import-gradle-bytechef/",
 ]
 
 export const GRADLE_PROJECTS_FAST_INSTALLERS = PROJECT_NAMES.map((name) => name + "fastInstaller")

@@ -55,14 +55,16 @@
         <span
           v-if="betterDirectionLabel"
           class="text-xs opacity-80"
-        >{{ betterDirectionLabel.arrow }} {{ betterDirectionLabel.label }}</span>
+          >{{ betterDirectionLabel.arrow }} {{ betterDirectionLabel.label }}</span
+        >
         <a
           v-if="metricInfo?.url"
           :href="metricInfo.url"
           target="_blank"
           rel="noopener"
           class="mt-1 text-xs underline decoration-dotted hover:no-underline"
-        >Open documentation ↗</a>
+          >Open documentation ↗</a
+        >
       </div>
     </Popover>
     <div

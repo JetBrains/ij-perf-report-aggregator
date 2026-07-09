@@ -9,7 +9,7 @@ import { useSettingsStore } from "../settings/settingsStore"
 
 interface MetricPoint {
   buildTime: string
-  buildNumber: string | null
+  buildId: number | null
   value: number | null
 }
 
@@ -70,7 +70,7 @@ export function exportChartMetricsAsYaml(chart: EChartsType, chartTitle: string,
       const value = values?.[i]
       points.push({
         buildTime: new Date(time).toISOString(),
-        buildNumber: info.build ?? null,
+        buildId: info.buildId ?? null,
         value: typeof value === "number" && Number.isFinite(value) ? value : null,
       })
       if (info.branch) branches.add(info.branch)

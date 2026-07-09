@@ -18,6 +18,7 @@ import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
 import { HoverFadeController } from "./hoverFade"
+import { exportChartMetricsAsYaml } from "./chartExport"
 
 class ClickedValue {
   constructor(
@@ -216,6 +217,7 @@ export class LineChartVM {
     measures: string[],
     accidentsConfigurator: AccidentsConfigurator | null,
     private readonly legendFormatter: (name: string) => string,
+    chartTitle: string,
     hasDataCallback?: (hasData: boolean) => void
   ) {
     this.accidentsConfigurator = accidentsConfigurator
@@ -253,6 +255,15 @@ export class LineChartVM {
               } else {
                 eChart.chartContainer.requestFullscreen()
               }
+            },
+          },
+          saveAsImage: {},
+          myExportMetrics: {
+            show: true,
+            title: "Export metrics",
+            icon: "path://M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25",
+            onclick: () => {
+              exportChartMetricsAsYaml(eChart.chart, chartTitle, valueUnit)
             },
           },
         },

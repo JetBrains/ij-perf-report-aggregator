@@ -234,7 +234,14 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   // GC — GCViewer summary (parsed from the GC log)
   ["throughput", metricInfo("Percentage of run time the application runs rather than pausing for GC.", "counter", "https://github.com/chewiebug/GCViewer#readme", "higher")],
-  ["maxPause", metricInfo("Longest single GC pause — worst-case GC latency.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
+  [
+    "maxPause",
+    metricInfo(
+      "Longest single stop-the-world GC pause across all young, mixed, and full GC pauses combined. Represents the worst case GC latency",
+      "milliseconds",
+      "https://github.com/chewiebug/GCViewer#readme"
+    ),
+  ],
   [
     "accumPause",
     metricInfo("Accumulated GC pause time across collection kinds. gcPause and fullGCPause split it by kind.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme"),

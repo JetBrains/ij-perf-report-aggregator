@@ -228,7 +228,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["fullGCPause", metricInfo("Time the IDE was fully paused during full GC.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPause", metricInfo("Total time spent in garbage collection, including minor collections.", "milliseconds", "https://github.com/chewiebug/GCViewer#readme")],
   ["gcPauseCount", metricInfo("Number of GC pause events.", "counter", "https://github.com/chewiebug/GCViewer#readme", "lower")],
-  ["fullGcPauseCount", metricInfo("Number of full GC pause events. The full-GC-only counterpart of gcPauseCount.", "counter", "https://github.com/chewiebug/GCViewer#readme", "lower")],
+  [
+    "fullGcPauseCount",
+    metricInfo("Number of full GC pause events. The full-GC-only counterpart of gcPauseCount.", "counter", "https://github.com/chewiebug/GCViewer#readme", "lower"),
+  ],
   ["totalHeapUsedMax", metricInfo("Peak JVM heap usage during the test.", "mebibytes")],
   ["bsp.used.at.exit.mb", metricInfo("Heap used at exit.", "mebibytes")],
   ["bsp.used.after.sync.mb", metricInfo("Heap used after sync.", "mebibytes")],

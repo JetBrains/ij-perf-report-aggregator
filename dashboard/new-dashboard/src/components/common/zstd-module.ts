@@ -17,7 +17,7 @@ function UTF8ToString(ptr: number, maxBytesToRead: number = 0) {
 
   const maxPtr = ptr + maxBytesToRead
   let end = ptr
-  for (; !(end >= maxPtr) && HEAPU8[end]; ) {
+  for (; !(end >= maxPtr) && HEAPU8[end];) {
     ++end
   }
   return UTF8Decoder.decode(HEAPU8.subarray(ptr, end))

@@ -6,6 +6,7 @@ import { dbTypeStore } from "../../../shared/dbTypes"
 import { getMachineGroupName } from "../../../configurators/MachineConfigurator"
 import { Router } from "vue-router"
 import { calculateChanges } from "../../../util/changes"
+import { pointParamName } from "../../../shared/selectedPointStore"
 
 export const tcUrl = "https://buildserver.labs.intellij.net/"
 export const buildUrl = (id: number) => `${tcUrl}viewLog.html?buildId=${id}`
@@ -131,6 +132,7 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
 
   const queryParams: string = new URLSearchParams({
     ...currentRoute.query,
+    ...(data?.buildId != undefined ? { [pointParamName]: data.buildId.toString() } : {}),
     project: data?.projectName ?? "",
     branch: majorBranch,
     machine: machineGroup,

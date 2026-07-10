@@ -1,4 +1,4 @@
-import { ECElementEvent } from "echarts/core"
+import { ECElementEvent, EChartsType } from "echarts/core"
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { watch } from "vue"
 import type { OptionDataValue } from "../../shared/echarts-types"
@@ -25,6 +25,27 @@ class ClickedValue {
     public readonly timestamp: number,
     public readonly value: number
   ) {}
+}
+
+interface ActiveSelection {
+  chart: EChartsType
+  seriesIndex: number
+  dataIndex: number
+}
+
+let activeSelection: ActiveSelection | null = null
+
+function isSamePoint(a: ActiveSelection | null, b: ActiveSelection): boolean {
+  return a != null && a.chart === b.chart && a.seriesIndex === b.seriesIndex && a.dataIndex === b.dataIndex
+}
+
+function setPointSelected(sel: ActiveSelection, selected: boolean): void {
+  if (sel.chart.isDisposed()) return
+  sel.chart.dispatchAction({
+    type: selected ? "select" : "unselect",
+    seriesIndex: sel.seriesIndex,
+    dataIndex: sel.dataIndex,
+  })
 }
 
 interface AutoOpenConfig {
@@ -63,19 +84,28 @@ export class LineChartVM {
           type: "legendUnSelect",
           name: params.seriesName,
         })
-      } else {
-        if (params.seriesName && Array.isArray(params.value)) {
-          // if the same value is clicked again remove
-          if (this.lastClickedValue.get(params.seriesName)?.timestamp == (params.value[0] as number)) {
-            this.lastClickedValue.delete(params.seriesName)
-            sidebarVm.close()
-          } else {
-            this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
-            const seriesContext = this.extractSeriesContext(chartManager, params)
-            const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }), seriesContext)
-            sidebarVm.show(infoData)
-          }
+      } else if (params.seriesName && Array.isArray(params.value) && params.seriesIndex != undefined && params.dataIndex != undefined) {
+        const clicked: ActiveSelection = { chart: chartManager.chart, seriesIndex: params.seriesIndex, dataIndex: params.dataIndex }
+        const previousSelection = activeSelection
+        const clickedAlreadySelected = isSamePoint(previousSelection, clicked)
+
+        if (clickedAlreadySelected && sidebarVm.visible.value) {
+          sidebarVm.close()
+        } else {
+          this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
+          const seriesContext = this.extractSeriesContext(chartManager, params)
+          const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }), seriesContext)
+          sidebarVm.show(infoData)
         }
+
+        activeSelection = clicked
+
+        queueMicrotask(() => {
+          if (previousSelection != null && !clickedAlreadySelected) {
+            setPointSelected(previousSelection, false)
+          }
+          setPointSelected(clicked, true)
+        })
       }
     }
   }
@@ -456,6 +486,9 @@ export class LineChartVM {
 
   dispose(): void {
     this.autoOpenConfig = null
+    if (activeSelection?.chart === this.eChart.chart) {
+      activeSelection = null
+    }
     this.hoverFade?.dispose()
     this.eChart.dispose()
   }

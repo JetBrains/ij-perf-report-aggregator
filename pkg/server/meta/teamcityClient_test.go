@@ -14,11 +14,11 @@ import (
 
 // gapStub describes the canned TeamCity responses for one getChangesGap scenario.
 type gapStub struct {
-	prevRev          string           // revision the previous dot's build was built on ("" => build has no revision)
-	branch           string           // current build's branch
-	changeIDs        map[string]int64 // revision (version) -> change id, as getChangeID resolves them
-	betweenChangeIDs []int64          // change ids attributed to the builds between the two dots
-	requested        *bool            // set true when any TeamCity endpoint is hit
+	prevRev        string           // revision the previous dot's build was built on ("" => build has no revision)
+	branch         string           // current build's branch
+	changeIDs      map[string]int64 // revision (version) -> change id, as getChangeID resolves them
+	betweenChanges []changeRef      // changes attributed to the builds between the two dots
+	requested      *bool            // set true when any TeamCity endpoint is hit
 }
 
 // versionFromLocator extracts the value of the version: dimension from a changes locator.
@@ -44,9 +44,9 @@ func newGapTestClient(t *testing.T, stub gapStub) *TeamCityClient {
 		switch {
 		case r.URL.Path == "/app/rest/builds":
 			// getChangesBetweenBuilds: one build carrying every change between the two dots.
-			changes := make([]map[string]int64, 0, len(stub.betweenChangeIDs))
-			for _, id := range stub.betweenChangeIDs {
-				changes = append(changes, map[string]int64{"id": id})
+			changes := make([]map[string]any, 0, len(stub.betweenChanges))
+			for _, c := range stub.betweenChanges {
+				changes = append(changes, map[string]any{"id": c.Id, "version": c.Version})
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"build": []map[string]any{{"changes": map[string]any{"change": changes}}},
@@ -80,12 +80,13 @@ func newGapTestClient(t *testing.T, stub gapStub) *TeamCityClient {
 func TestGetChangesGap(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		name         string
-		currentFirst string
-		stub         gapStub
-		wantKnown    bool
-		wantHasGap   bool
-		wantGapCount int
+		name              string
+		currentFirst      string
+		stub              gapStub
+		wantKnown         bool
+		wantHasGap        bool
+		wantGapCount      int
+		wantFirstAfterDot string
 	}{
 		{
 			name:         "gap: commits landed between the two dots (out-of-range and duplicate ids ignored)",
@@ -95,17 +96,26 @@ func TestGetChangesGap(t *testing.T) {
 				branch:    "master",
 				changeIDs: map[string]int64{"p": 100, "cur": 200},
 				// 150,160,170 fall in (100,200); 90 precedes the previous dot, 250 is the current
-				// build's own commit, and the repeated 160 is a duplicate — all excluded.
-				betweenChangeIDs: []int64{150, 160, 170, 90, 250, 160},
+				// build's own commit, and the repeated 160 is a duplicate — all excluded. The oldest
+				// in range (150) is the first commit after the previous dot.
+				betweenChanges: []changeRef{
+					{Id: 170, Version: "v170"},
+					{Id: 160, Version: "v160"},
+					{Id: 150, Version: "v150"},
+					{Id: 90, Version: "v90"},
+					{Id: 250, Version: "v250"},
+					{Id: 160, Version: "v160"},
+				},
 			},
-			wantKnown:    true,
-			wantHasGap:   true,
-			wantGapCount: 3,
+			wantKnown:         true,
+			wantHasGap:        true,
+			wantGapCount:      3,
+			wantFirstAfterDot: "v150",
 		},
 		{
 			name:         "no gap: previous dot is the immediate predecessor (no builds between)",
 			currentFirst: "cur",
-			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 100, "cur": 110}, betweenChangeIDs: nil},
+			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 100, "cur": 110}, betweenChanges: nil},
 			wantKnown:    true,
 			wantHasGap:   false,
 			wantGapCount: 0,
@@ -113,7 +123,7 @@ func TestGetChangesGap(t *testing.T) {
 		{
 			name:         "no gap: current range starts at or before the previous dot (out-of-order builds)",
 			currentFirst: "cur",
-			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 200, "cur": 100}, betweenChangeIDs: []int64{150}},
+			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 200, "cur": 100}, betweenChanges: []changeRef{{Id: 150, Version: "v150"}}},
 			wantKnown:    true,
 			wantHasGap:   false,
 			wantGapCount: 0,
@@ -154,6 +164,7 @@ func TestGetChangesGap(t *testing.T) {
 			assert.Equal(t, tt.wantKnown, gap.Known, "Known")
 			assert.Equal(t, tt.wantHasGap, gap.HasGap, "HasGap")
 			assert.Equal(t, tt.wantGapCount, gap.GapCommitCount, "GapCommitCount")
+			assert.Equal(t, tt.wantFirstAfterDot, gap.FirstCommitAfterPreviousDot, "FirstCommitAfterPreviousDot")
 		})
 	}
 }

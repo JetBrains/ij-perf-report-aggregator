@@ -309,6 +309,10 @@ type ChangesGap struct {
 	HasGap bool `json:"hasGap"`
 	// GapCommitCount is the number of such uncovered commits.
 	GapCommitCount int `json:"gapCommitCount"`
+	// FirstCommitAfterPreviousDot is the oldest uncovered commit — the first commit after the
+	// previous dot. Empty when there is no gap. Callers can use it as the lower bound to analyse
+	// across the gap.
+	FirstCommitAfterPreviousDot string `json:"firstCommitAfterPreviousDot"`
 }
 
 // getBuildRevision returns the VCS revision (commit SHA) the build was actually
@@ -438,9 +442,16 @@ func (client *TeamCityClient) getChangesGap(ctx context.Context, buildID, previo
 	// current build's own commits and anything an out-of-order build in the window pulled in from
 	// outside the range.
 	uncovered := make(map[int64]struct{})
+	var firstAfterID int64
 	for _, c := range changes {
 		if c.Id > prevRevID && c.Id < currentFirstID {
 			uncovered[c.Id] = struct{}{}
+			// The oldest uncovered commit (smallest change id) is the first commit after the
+			// previous dot.
+			if firstAfterID == 0 || c.Id < firstAfterID {
+				firstAfterID = c.Id
+				gap.FirstCommitAfterPreviousDot = c.Version
+			}
 		}
 	}
 	gap.GapCommitCount = len(uncovered)

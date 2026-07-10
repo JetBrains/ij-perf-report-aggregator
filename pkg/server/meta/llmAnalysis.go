@@ -139,6 +139,7 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		userEmail := request.Header.Get("X-Auth-Request-Email")
 
 		fallBackToTCCommitsRangeIfMissing(request.Context(), &llmAnalysisRequest)
+		extendRangeAcrossGap(request.Context(), &llmAnalysisRequest)
 
 		id, createdAt, err := insertLlmAnalysisRow(request.Context(), metaDb, llmAnalysisRequest, userEmail)
 		if err != nil {
@@ -512,6 +513,26 @@ func fallBackToTCCommitsRangeIfMissing(ctx context.Context, req *LLMAnalysisRequ
 	if lastMissing && commits.LastCommit != "" {
 		req.LastCommitRevision = &commits.LastCommit
 	}
+}
+
+// extendRangeAcrossGap moves the analysis range's first commit back to the first commit after the
+// previous dot when builds failed/timed out in between, so the analysis covers the commits those
+// builds consumed. Normally there is no gap and the current build's own first commit is left as
+// is. Best-effort: on any TeamCity error the range is unchanged.
+func extendRangeAcrossGap(ctx context.Context, req *LLMAnalysisRequest) {
+	if req.FirstCommitRevision == nil || *req.FirstCommitRevision == "" || req.PrevBuildId == "" || req.CurrentBuildId == "" {
+		return
+	}
+	gap, err := teamCityClient.getChangesGap(ctx, req.CurrentBuildId, req.PrevBuildId, *req.FirstCommitRevision)
+	if err != nil {
+		slog.Warn("cannot determine changes gap for LLM analysis range",
+			"currentBuildId", req.CurrentBuildId, "prevBuildId", req.PrevBuildId, "error", err)
+		return
+	}
+	if gap == nil || !gap.HasGap || gap.FirstCommitAfterPreviousDot == "" {
+		return
+	}
+	req.FirstCommitRevision = &gap.FirstCommitAfterPreviousDot
 }
 
 func markLlmAnalysisFailed(ctx context.Context, metaDb *pgxpool.Pool, id int) {

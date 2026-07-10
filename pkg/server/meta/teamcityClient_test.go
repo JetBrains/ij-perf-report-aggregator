@@ -14,22 +14,45 @@ import (
 
 // gapStub describes the canned TeamCity responses for one getChangesGap scenario.
 type gapStub struct {
-	prevRev      string   // revision the previous dot's build was built on ("" => build has no revision)
-	prevRevID    int64    // change id resolved for prevRev (0 => not found in the configuration)
-	sinceNewest  []string // commits strictly after prevRev, newest-first (as the changes endpoint returns)
-	changeIDSeen *bool    // set true if the change-id (version) lookup was hit
+	prevRev          string           // revision the previous dot's build was built on ("" => build has no revision)
+	branch           string           // current build's branch
+	changeIDs        map[string]int64 // revision (version) -> change id, as getChangeID resolves them
+	betweenChangeIDs []int64          // change ids attributed to the builds between the two dots
+	requested        *bool            // set true when any TeamCity endpoint is hit
 }
 
-// newGapTestClient returns a TeamCityClient wired to an httptest server that
-// answers the four endpoints getChangesGap calls, according to stub.
+// versionFromLocator extracts the value of the version: dimension from a changes locator.
+func versionFromLocator(locator string) string {
+	_, after, found := strings.Cut(locator, "version:")
+	if !found {
+		return ""
+	}
+	version, _, _ := strings.Cut(after, ",")
+	return version
+}
+
+// newGapTestClient returns a TeamCityClient wired to an httptest server that answers the
+// endpoints getChangesGap calls, according to stub.
 func newGapTestClient(t *testing.T, stub gapStub) *TeamCityClient {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if stub.requested != nil {
+			*stub.requested = true
+		}
 		w.Header().Set("Content-Type", "application/json")
 		locator := r.URL.Query().Get("locator")
 		switch {
+		case r.URL.Path == "/app/rest/builds":
+			// getChangesBetweenBuilds: one build carrying every change between the two dots.
+			changes := make([]map[string]int64, 0, len(stub.betweenChangeIDs))
+			for _, id := range stub.betweenChangeIDs {
+				changes = append(changes, map[string]int64{"id": id})
+			}
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"build": []map[string]any{{"changes": map[string]any{"change": changes}}},
+			})
 		case strings.HasPrefix(r.URL.Path, "/app/rest/builds/"):
-			// getBuildRevision asks for the revisions field; getBuildType does not.
+			// getBuildRevision asks for the revisions field; getBuildInfo does not.
 			if strings.Contains(r.URL.RawQuery, "revisions") {
 				rev := []map[string]string{}
 				if stub.prevRev != "" {
@@ -37,27 +60,15 @@ func newGapTestClient(t *testing.T, stub gapStub) *TeamCityClient {
 				}
 				_ = json.NewEncoder(w).Encode(map[string]any{"revisions": map[string]any{"revision": rev}})
 			} else {
-				_ = json.NewEncoder(w).Encode(map[string]string{"buildTypeId": "BT"})
+				_ = json.NewEncoder(w).Encode(map[string]any{"buildTypeId": "BT", "branchName": stub.branch})
 			}
 		case strings.HasPrefix(r.URL.Path, "/app/rest/changes"):
-			if strings.Contains(locator, "version:") {
-				// getChangeID: resolve prevRev -> change id.
-				if stub.changeIDSeen != nil {
-					*stub.changeIDSeen = true
-				}
-				change := []map[string]int64{}
-				if stub.prevRevID != 0 {
-					change = append(change, map[string]int64{"id": stub.prevRevID})
-				}
-				_ = json.NewEncoder(w).Encode(map[string]any{"change": change})
-			} else {
-				// getChangesSince: commits after prevRev, newest-first.
-				change := make([]map[string]string, 0, len(stub.sinceNewest))
-				for _, v := range stub.sinceNewest {
-					change = append(change, map[string]string{"version": v})
-				}
-				_ = json.NewEncoder(w).Encode(map[string]any{"count": len(change), "change": change})
+			// getChangeID: resolve a revision (version:) to its change id.
+			change := []map[string]int64{}
+			if id, ok := stub.changeIDs[versionFromLocator(locator)]; ok && id != 0 {
+				change = append(change, map[string]int64{"id": id})
 			}
+			_ = json.NewEncoder(w).Encode(map[string]any{"change": change})
 		default:
 			http.NotFound(w, r)
 		}
@@ -77,26 +88,32 @@ func TestGetChangesGap(t *testing.T) {
 		wantGapCount int
 	}{
 		{
-			name:         "gap: range start is newer than previous dot, leaving commits uncovered",
-			currentFirst: "c3",
-			// commits after prevRev, newest-first; c2 and c1 are older than the range start c3.
-			stub:         gapStub{prevRev: "p", prevRevID: 100, sinceNewest: []string{"c5", "c4", "c3", "c2", "c1"}},
+			name:         "gap: commits landed between the two dots (out-of-range and duplicate ids ignored)",
+			currentFirst: "cur",
+			stub: gapStub{
+				prevRev:   "p",
+				branch:    "master",
+				changeIDs: map[string]int64{"p": 100, "cur": 200},
+				// 150,160,170 fall in (100,200); 90 precedes the previous dot, 250 is the current
+				// build's own commit, and the repeated 160 is a duplicate — all excluded.
+				betweenChangeIDs: []int64{150, 160, 170, 90, 250, 160},
+			},
 			wantKnown:    true,
 			wantHasGap:   true,
-			wantGapCount: 2,
+			wantGapCount: 3,
 		},
 		{
-			name:         "no gap: range start is the immediate successor of the previous dot",
-			currentFirst: "c1",
-			stub:         gapStub{prevRev: "p", prevRevID: 100, sinceNewest: []string{"c3", "c2", "c1"}},
+			name:         "no gap: previous dot is the immediate predecessor (no builds between)",
+			currentFirst: "cur",
+			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 100, "cur": 110}, betweenChangeIDs: nil},
 			wantKnown:    true,
 			wantHasGap:   false,
 			wantGapCount: 0,
 		},
 		{
-			name:         "no gap: range reaches back to or before the previous dot (start not among newer commits)",
-			currentFirst: "older-than-prev",
-			stub:         gapStub{prevRev: "p", prevRevID: 100, sinceNewest: []string{"c2", "c1"}},
+			name:         "no gap: current range starts at or before the previous dot (out-of-order builds)",
+			currentFirst: "cur",
+			stub:         gapStub{prevRev: "p", branch: "master", changeIDs: map[string]int64{"p": 200, "cur": 100}, betweenChangeIDs: []int64{150}},
 			wantKnown:    true,
 			wantHasGap:   false,
 			wantGapCount: 0,
@@ -104,19 +121,25 @@ func TestGetChangesGap(t *testing.T) {
 		{
 			name:         "unknown: no current range start",
 			currentFirst: "",
-			stub:         gapStub{prevRev: "p", prevRevID: 100, sinceNewest: []string{"c1"}},
+			stub:         gapStub{prevRev: "p", changeIDs: map[string]int64{"p": 100}},
 			wantKnown:    false,
 		},
 		{
 			name:         "unknown: previous dot's build has no revision",
-			currentFirst: "c1",
-			stub:         gapStub{prevRev: "", prevRevID: 100, sinceNewest: []string{"c1"}},
+			currentFirst: "cur",
+			stub:         gapStub{prevRev: "", changeIDs: map[string]int64{"cur": 200}},
 			wantKnown:    false,
 		},
 		{
 			name:         "unknown: previous revision can't be located in the configuration",
-			currentFirst: "c1",
-			stub:         gapStub{prevRev: "p", prevRevID: 0, sinceNewest: []string{"c1"}},
+			currentFirst: "cur",
+			stub:         gapStub{prevRev: "p", changeIDs: map[string]int64{"cur": 200}},
+			wantKnown:    false,
+		},
+		{
+			name:         "unknown: current first commit can't be located in the configuration",
+			currentFirst: "cur",
+			stub:         gapStub{prevRev: "p", changeIDs: map[string]int64{"p": 100}},
 			wantKnown:    false,
 		},
 	}
@@ -138,10 +161,10 @@ func TestGetChangesGap(t *testing.T) {
 // Empty currentFirstCommit must short-circuit before any TeamCity call.
 func TestGetChangesGapEmptyFirstCommitSkipsRequests(t *testing.T) {
 	t.Parallel()
-	changeIDSeen := false
-	client := newGapTestClient(t, gapStub{prevRev: "p", prevRevID: 100, sinceNewest: []string{"c1"}, changeIDSeen: &changeIDSeen})
+	requested := false
+	client := newGapTestClient(t, gapStub{prevRev: "p", changeIDs: map[string]int64{"p": 100}, requested: &requested})
 	gap, err := client.getChangesGap(context.Background(), "CUR", "PREV", "")
 	require.NoError(t, err)
 	assert.False(t, gap.Known)
-	assert.False(t, changeIDSeen, "should not query TeamCity when there is no range start")
+	assert.False(t, requested, "should not query TeamCity when there is no range start")
 }

@@ -3,6 +3,7 @@
 import { ParentRouteRecord, TypedRouteRecord } from "./components/common/route"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 import type { PerformanceTestsProps } from "./components/common/PerformanceTests.vue"
+import type { PerformanceUnitTestsProps } from "./components/common/PerformanceUnitTests.vue"
 
 const COMPONENTS = {
   perfTests: () => import("./components/common/PerformanceTests.vue"),
@@ -388,7 +389,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJGradleBenchmarks,
-          label: "Gradle Performance Unit Tests",
+          label: "Gradle Benchmark",
         },
         {
           url: ROUTES.IntelliJBuildTests,
@@ -1449,9 +1450,18 @@ const intellijRoutes = [
   },
   {
     path: ROUTES.IntelliJGradleBenchmarks,
-    component: () => import("./components/intelliJ/build-tools/gradle/GradleBenchmarksDashboard.vue"),
-    meta: { pageTitle: "Gradle Performance Unit Tests" },
-  },
+    component: () => import("./components/common/PerformanceUnitTests.vue"),
+    props: {
+      dbName: "perfUnitTests",
+      table: "report",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+      projectFilter: "com.intellij.gradle.%benchmark%",
+      persistentId: "gradleBenchmarks-dashboard",
+      preselectAll: true,
+    },
+    meta: { pageTitle: "Gradle Benchmark" },
+  } satisfies TypedRouteRecord<PerformanceUnitTestsProps>,
   {
     path: ROUTES.IntelliJPackageCheckerDashboard,
     component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),

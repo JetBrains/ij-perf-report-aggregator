@@ -75,6 +75,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["act/typing"],
   },
   {
+    labels: ["UILagging"],
+    measures: ["ui.lagging#max_value"],
+    projects: ["act/typing"],
+  },
+  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
     projects: ["delve/inspection", "kubernetes/inspection"],

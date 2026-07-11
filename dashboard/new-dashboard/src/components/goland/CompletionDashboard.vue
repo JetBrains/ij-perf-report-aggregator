@@ -60,7 +60,10 @@ const allGroups = [
     title: "Typing",
     prefix: "Typing",
     projects: typingProjects,
-    charts: [{ key: "totalTime", label: "Total Time", measure: "typing" }],
+    charts: [
+      { key: "totalTime", label: "Total Time", measure: "typing" },
+      { key: "uiLagging", label: "UI Lagging (max)", measure: "ui.lagging#max_value" },
+    ],
   },
   { value: "basic", title: "Basic Completion", prefix: "Basic", projects: basicProjects, charts: completionCharts },
   { value: "smart", title: "Smart Completion", prefix: "Smart", projects: smartProjects, charts: completionCharts },

@@ -447,7 +447,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   // Other
   ["Memory | IDE | RESIDENT SIZE (MB) 95th pctl", metricInfo("95th-percentile resident set size — near-peak real memory footprint.", "mebibytes")],
-  ["ul.lagging", metricInfo("UI thread lagging duration. Time the EDT was blocked and unresponsive.", "milliseconds")],
+  ["ui.lagging#max_value", metricInfo("Maximum UI-thread lag during the run — the longest stretch the EDT stayed blocked and unresponsive.", "milliseconds")],
 ])
 
 export interface MetricInfo {

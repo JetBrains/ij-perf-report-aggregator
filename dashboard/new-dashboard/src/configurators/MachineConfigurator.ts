@@ -349,6 +349,9 @@ export function getMachineGroupName(machine: string): string {
   let groupName: string | null = "Unknown"
   if (machine.startsWith("intellij-linux-hw-blade-")) {
     groupName = "linux-blade"
+  } else if (machine.startsWith("ij-linux-x64-perf-hw-blade-")) {
+    // QA Automation perf blades in the "IntelliJ Startup Performance" pool (MRI-4570 / AT-3244)
+    groupName = "unit-perf-blade-linux"
   } else if (machine.startsWith("intellij-linux-test-hw-blade-")) {
     groupName = "linux-blade-test"
   } else if (machine.startsWith("intellij-windows-hw-blade-")) {

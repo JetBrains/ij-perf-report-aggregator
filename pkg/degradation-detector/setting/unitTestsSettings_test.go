@@ -27,17 +27,20 @@ func TestResolveRoute(t *testing.T) {
 	// one with additional metrics — enough to exercise every branch without depending on the real
 	// team/channel/package mappings. Passing it explicitly to resolveRoute keeps the test isolated
 	// from the production mapping data (and free of shared global state, so it can run in parallel).
+	const deltaMention = "<!subteam^SDELTA>"
 	configs := []teamConfig{
 		{Team: "alpha", SlackChannel: "alpha-channel", Packages: []string{"com.test.alpha"}},
 		{Team: "beta", SlackChannel: "beta-channel", Packages: []string{"com.test.beta"}, AnalysisSettings: degradationOnlyAnalysisSettings()},
 		{Team: "gamma", SlackChannel: "gamma-channel", Packages: []string{"com.test.gamma"}, AdditionalTestMetrics: map[string][]string{"com.test.gamma.PacketsTest": {"%.expected.%"}}},
+		{Team: "delta", SlackChannel: "delta-channel", Packages: []string{"com.test.delta"}, Mention: deltaMention},
 	}
 
 	const (
-		plainTest    = "com.test.alpha.SomeTest"
-		degradedTest = "com.test.beta.SomeTest"
-		metricsTest  = "com.test.gamma.PacketsTest"
-		unknownTest  = "com.test.unknown.SomeTest"
+		plainTest     = "com.test.alpha.SomeTest"
+		degradedTest  = "com.test.beta.SomeTest"
+		metricsTest   = "com.test.gamma.PacketsTest"
+		mentionedTest = "com.test.delta.SomeTest"
+		unknownTest   = "com.test.unknown.SomeTest"
 	)
 
 	tests := []struct {
@@ -48,6 +51,7 @@ func TestResolveRoute(t *testing.T) {
 		wantChannel    string
 		wantAnalysis   detector.AnalysisSettings
 		wantHasMetrics bool
+		wantMention    string
 	}{
 		{
 			name:         "no package match and no owner falls back to the catch-all channel",
@@ -108,6 +112,31 @@ func TestResolveRoute(t *testing.T) {
 			wantAnalysis:   defaultUnitTestAnalysisSettings,
 			wantHasMetrics: true,
 		},
+		{
+			name:         "mention is kept when the alert lands in the team's own channel via the package fallback",
+			test:         mentionedTest,
+			wantChannel:  "delta-channel",
+			wantAnalysis: defaultUnitTestAnalysisSettings,
+			wantMention:  deltaMention,
+		},
+		{
+			name:          "mention is kept when owner routing resolves to the team's own channel",
+			test:          mentionedTest,
+			projectOwners: map[string]string{mentionedTest: "delta-owner"},
+			ownerChannels: map[string]string{"delta-owner": "delta-channel"},
+			wantChannel:   "delta-channel",
+			wantAnalysis:  defaultUnitTestAnalysisSettings,
+			wantMention:   deltaMention,
+		},
+		{
+			name:          "mention is dropped when owner routing redirects the alert to another channel",
+			test:          mentionedTest,
+			projectOwners: map[string]string{mentionedTest: "delta-owner"},
+			ownerChannels: map[string]string{"delta-owner": "some-other-channel"},
+			wantChannel:   "some-other-channel",
+			wantAnalysis:  defaultUnitTestAnalysisSettings,
+			wantMention:   "",
+		},
 	}
 
 	for _, tc := range tests {
@@ -116,6 +145,7 @@ func TestResolveRoute(t *testing.T) {
 			route := resolveRoute(tc.test, tc.projectOwners, tc.ownerChannels, configs)
 			assert.Equal(t, tc.wantChannel, route.channel)
 			assert.Equal(t, tc.wantAnalysis, route.analysisSettings)
+			assert.Equal(t, tc.wantMention, route.mention)
 			if tc.wantHasMetrics {
 				assert.NotEmpty(t, route.additionalTestMetrics)
 			} else {

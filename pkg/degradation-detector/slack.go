@@ -31,10 +31,23 @@ type SlackSettings struct {
 	// ProductLink is the part of the link on your dashboards after https://ij-perf.labs.jb.gg/.
 	// For example: intellij,ijent, kmt, clion
 	ProductLink string
+	// Mention is an optional Slack mention prepended to PerformanceSettings messages for this channel.
+	// Use the raw Slack syntax, e.g. "<@U01ABC2DEF>" for a user or "<!subteam^S01ABC2DEF>" for a user group.
+	// Note: only PerformanceSettings.CreateSlackMessage renders it today; wire mentionPrefix() into the
+	// Startup/Fleet builders if those paths ever need mentions.
+	Mention string
 }
 
 func (s SlackSettings) SlackChannel() string {
 	return s.Channel
+}
+
+// mentionPrefix returns the mention followed by a newline when a mention is configured, otherwise an empty string.
+func (s SlackSettings) mentionPrefix() string {
+	if s.Mention == "" {
+		return ""
+	}
+	return s.Mention + "\n"
 }
 
 func eventLink(tests string, build string, timestamp int64) string {
@@ -57,7 +70,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	if s.Mode != "" {
 		mode = s.Mode
 	}
-	text := fmt.Sprintf(
+	text := s.mentionPrefix() + fmt.Sprintf(
 		"%sTest(s): %s\n"+
 			"Metric: %s\n"+
 			"Mode: %s\n"+

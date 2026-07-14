@@ -17,6 +17,11 @@ type teamConfig struct {
 	// AdditionalTestMetrics maps a test class name to extra metrics to assert alongside the
 	// default attempt.mean.ms. Values may be SQL LIKE patterns (e.g. "%.expected.%").
 	AdditionalTestMetrics map[string][]string
+	// Mention is an optional Slack mention prepended to this team's degradation messages.
+	// It only fires when the alert lands in this team's own SlackChannel (owner routing can send an
+	// alert elsewhere, in which case the ping is dropped). Use the raw Slack syntax, e.g.
+	// "<@U01ABC2DEF>" for a user or "<!subteam^S01ABC2DEF>" for a user group.
+	Mention string
 }
 
 var defaultUnitTestAnalysisSettings = detector.AnalysisSettings{
@@ -112,6 +117,7 @@ var teamConfigs = []teamConfig{
 			"com.jetbrains.php",
 		},
 		AnalysisSettings: degradationOnlyAnalysisSettings(),
+		Mention:          "<!subteam^S0BH689GW9G>", // @phpstorm-dev-duty
 	},
 	{
 		Team:         "lsp",
@@ -180,7 +186,7 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 					Branch:           mainSettings.Branch,
 					Machine:          mainSettings.Machine,
 					Metric:           metric,
-					SlackSettings:    detector.SlackSettings{Channel: route.channel, ProductLink: "perfUnit"},
+					SlackSettings:    detector.SlackSettings{Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention},
 					AnalysisSettings: route.analysisSettings,
 				},
 			})
@@ -195,6 +201,7 @@ type resolvedRoute struct {
 	channel               string
 	analysisSettings      detector.AnalysisSettings
 	additionalTestMetrics map[string][]string
+	mention               string
 }
 
 // resolveRoute determines where a test's notifications go and how it is analyzed.
@@ -205,6 +212,9 @@ type resolvedRoute struct {
 // Analysis settings and additional metrics always come from the matching package teamConfig
 // (so e.g. RubyMine/PhpStorm degradation-only analysis and debugger packet metrics are kept
 // regardless of which channel wins); they are independent of the channel decision.
+//
+// The mention also originates from the package teamConfig, but is a team-specific ping, so it is
+// dropped when owner routing redirects the alert away from that team's own channel.
 func resolveRoute(test string, projectOwners, ownerChannels map[string]string, configs []teamConfig) resolvedRoute {
 	teamCfg := matchTeamConfig(test, configs)
 
@@ -216,6 +226,7 @@ func resolveRoute(test string, projectOwners, ownerChannels map[string]string, c
 		route.channel = teamCfg.SlackChannel
 		route.analysisSettings = analysisSettingsOrDefault(teamCfg.AnalysisSettings)
 		route.additionalTestMetrics = teamCfg.AdditionalTestMetrics
+		route.mention = teamCfg.Mention
 	}
 
 	// Owner-based channel takes precedence over the package fallback.
@@ -223,6 +234,12 @@ func resolveRoute(test string, projectOwners, ownerChannels map[string]string, c
 		if channel := ownerChannels[owner]; channel != "" {
 			route.channel = channel
 		}
+	}
+
+	// A mention pings a team-specific group, so only keep it when the alert actually lands in that
+	// team's own channel. If owner routing redirected the alert elsewhere, drop the ping.
+	if teamCfg != nil && route.channel != teamCfg.SlackChannel {
+		route.mention = ""
 	}
 
 	return route

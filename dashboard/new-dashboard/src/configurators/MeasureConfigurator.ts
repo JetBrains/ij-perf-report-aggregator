@@ -452,7 +452,20 @@ class MergeResults {
   }
 }
 
-function mergeSeries(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration) {
+// Aliased series (e.g. a project's old and new name) each arrive pre-sorted by time, but covering
+// different time ranges. Concatenating their columns end-to-end can leave the combined series out
+// of chronological order, and the line chart connects points in array order, not by x value - so an
+// unsorted merge draws stray lines jumping between the end of one chunk and the start of another.
+function sortColumnsByTime(seriesData: (string | number)[][]): (string | number)[][] {
+  const time = seriesData[0]
+  if (time == undefined || time.length <= 1) {
+    return seriesData
+  }
+  const order = time.map((_, index) => index).toSorted((a, b) => (time[a] as number) - (time[b] as number))
+  return seriesData.map((column) => (column.length === time.length ? order.map((index) => column[index]) : column))
+}
+
+export function mergeSeries(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration) {
   const mergedDataList: DataQueryResult = []
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
@@ -485,6 +498,9 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
       seriesIdToSeriesName.set(newId, seriesName)
       seriesIdToMeasureName.set(newId, measureName)
     }
+  }
+  for (const [index, seriesData] of mergedDataList.entries()) {
+    mergedDataList[index] = sortColumnsByTime(seriesData)
   }
   return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName)
 }

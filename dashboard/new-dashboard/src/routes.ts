@@ -129,6 +129,7 @@ enum ROUTES {
   GoLandProductMetricsDashboard = `${ROUTE_PREFIX.GoLand}/${PRODUCT_METRICS_ROUTE}`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
+  GoLandHighlightingDashboard = `${ROUTE_PREFIX.GoLand}/highlightingDashboard`,
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
   GoLandDebuggerDashboard = `${ROUTE_PREFIX.GoLand}/debuggerDashboard`,
   GoLandFindUsagesDashboard = `${ROUTE_PREFIX.GoLand}/findUsagesDashboard`,
@@ -618,6 +619,10 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandCompletionDashboard,
           label: "Completion",
+        },
+        {
+          url: ROUTES.GoLandHighlightingDashboard,
+          label: "Highlighting",
         },
         {
           url: ROUTES.GoLandInspectionDashboard,
@@ -1652,6 +1657,11 @@ const golandRoutes = [
     path: ROUTES.GoLandCompletionDashboard,
     component: () => import("./components/goland/CompletionDashboard.vue"),
     meta: { pageTitle: "GoLand Completion dashboard" },
+  },
+  {
+    path: ROUTES.GoLandHighlightingDashboard,
+    component: () => import("./components/goland/HighlightingDashboard.vue"),
+    meta: { pageTitle: "GoLand Highlighting dashboard" },
   },
   {
     path: ROUTES.GoLandDebuggerDashboard,

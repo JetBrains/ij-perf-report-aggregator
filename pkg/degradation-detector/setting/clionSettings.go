@@ -63,22 +63,28 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/indexing") {
-		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "workspaceModel.updates.ms", "ui.lagging#average", "rd.memory.allocatedManagedMemoryMb/afterIndexing"}
+		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "rd.memory.allocatedManagedMemoryMb/afterIndexing"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"fus_time_to_show_90p"}
 	}
 	if strings.Contains(test, "/findUsages") {
-		return []string{"%syncAction FindUsages"}
+		return []string{"findUsagesInToolWindow", "findUsagesInToolWindow#number"}
 	}
 	if strings.Contains(test, "/gotoDeclaration") {
 		return []string{"clionGotoDeclaration"}
+	}
+	if strings.Contains(test, "/go-to-all-with-warmup") {
+		return []string{"searchEverywhere", "searchEverywhere_first_elements_added"}
 	}
 	if strings.Contains(test, "/checkLocalTestConfig") {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/measureResolve") {
 		return []string{"nova_total_memory_mb"}
+	}
+	if strings.Contains(test, "/typing") {
+		return []string{"typing#latency#mean_value"}
 	}
 	return getMetricFromTestName(test)
 }

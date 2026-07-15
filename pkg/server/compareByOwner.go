@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -62,10 +63,19 @@ type compareByOwnerRequest struct {
 type comparisonResponseItem struct {
 	Project            string  `json:"project"`
 	Metric             string  `json:"metric"`
+	Machine            string  `json:"machine"`
 	BaseBranchValue    float64 `json:"baseBranchValue"`
 	CompareBranchValue float64 `json:"compareBranchValue"`
 	Diff               float64 `json:"diff"`
 	Link               string  `json:"link"`
+}
+
+type ownerQueryResult struct {
+	Branch        string
+	Project       string
+	MeasureName   string
+	Machine       string
+	MeasureValues []int
 }
 
 type projectOwnerEntry struct {
@@ -132,7 +142,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}(db)
 
 		var mu sync.Mutex
-		var allItems []filteredValues
+		var allResults []ownerQueryResult
 		var wg sync.WaitGroup
 
 		// Group projects by db+table to query only relevant combinations
@@ -153,13 +163,13 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 					return
 				}
 				mu.Lock()
-				allItems = append(allItems, items...)
+				allResults = append(allResults, items...)
 				mu.Unlock()
 			})
 		}
 		wg.Wait()
 
-		response := buildComparisonResponse(allItems, projectDbTable, params.BaseBranch, params.CompareBranch, params.Machine)
+		response := buildComparisonResponse(allResults, projectDbTable, params.BaseBranch, params.CompareBranch)
 
 		jsonData, err := json.Marshal(response)
 		if err != nil {
@@ -219,12 +229,12 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]filteredValues, error) {
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]ownerQueryResult, error) {
 	sql := fmt.Sprintf(
-		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, "+
+		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, machine_group AS Machine, "+
 			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
 			"FROM ("+
-			"SELECT branch, project, measures.name AS measure_name, measures.value AS measure_value "+
+			"SELECT branch, project, %s AS machine_group, measures.name AS measure_name, measures.value AS measure_value "+
 			"FROM %s.%s ARRAY JOIN measures "+
 			"WHERE branch IN ('%s', '%s') "+
 			"AND measure_name IN (%s) "+
@@ -234,40 +244,49 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 			"AND generated_time > now() - interval 1 month "+
 			"ORDER BY generated_time DESC"+
 			") "+
-			"GROUP BY branch, project, measure_name",
-		dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr,
+			"GROUP BY branch, project, measure_name, machine_group",
+		machineGroupSQLExpr("machine"), dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr,
 	)
 
-	var queryResults []struct {
-		Branch        string
-		Project       string
-		MeasureName   string
-		MeasureValues []int
-	}
+	var queryResults []ownerQueryResult
 
 	if err := db.Select(ctx, &queryResults, sql); err != nil {
 		return nil, err
 	}
 
-	return filterQueryResults(queryResults), nil
+	return queryResults, nil
 }
 
-func buildComparisonResponse(items []filteredValues, dbTableMap map[string]dbTableKey, baseBranch, compareBranch, machine string) []comparisonResponseItem {
-	compared := buildBranchComparisonResponse(items, baseBranch, compareBranch)
-
-	response := make([]comparisonResponseItem, 0, len(compared))
-	for _, item := range compared {
-		dt := dbTableMap[item.Project]
-		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, item.Project, item.MeasureName)
-
-		response = append(response, comparisonResponseItem{
-			Project:            item.Project,
-			Metric:             item.MeasureName,
-			BaseBranchValue:    item.Median1,
-			CompareBranchValue: item.Median2,
-			Diff:               item.Diff,
-			Link:               link,
+func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]dbTableKey, baseBranch, compareBranch string) []comparisonResponseItem {
+	resultsByMachine := make(map[string][]measureQueryResult)
+	for _, r := range results {
+		resultsByMachine[r.Machine] = append(resultsByMachine[r.Machine], measureQueryResult{
+			Branch:        r.Branch,
+			Project:       r.Project,
+			MeasureName:   r.MeasureName,
+			MeasureValues: r.MeasureValues,
 		})
+	}
+
+	response := make([]comparisonResponseItem, 0)
+	for machine, machineResults := range resultsByMachine {
+		filtered := filterQueryResults(machineResults)
+		compared := buildBranchComparisonResponse(filtered, baseBranch, compareBranch)
+
+		for _, item := range compared {
+			dt := dbTableMap[item.Project]
+			link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, item.Project, item.MeasureName)
+
+			response = append(response, comparisonResponseItem{
+				Project:            item.Project,
+				Metric:             item.MeasureName,
+				Machine:            machine,
+				BaseBranchValue:    item.Median1,
+				CompareBranchValue: item.Median2,
+				Diff:               item.Diff,
+				Link:               link,
+			})
+		}
 	}
 
 	return response
@@ -275,5 +294,5 @@ func buildComparisonResponse(items []filteredValues, dbTableMap map[string]dbTab
 
 func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
 	return fmt.Sprintf("%s/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
-		ijPerfBaseURL, dbName, table, machine, baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
+		ijPerfBaseURL, dbName, table, url.QueryEscape(machine), baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
 }

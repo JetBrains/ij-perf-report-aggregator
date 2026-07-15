@@ -92,12 +92,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	var queryResults []struct {
-		Branch        string
-		Project       string
-		MeasureName   string
-		MeasureValues []int
-	}
+	var queryResults []measureQueryResult
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {
@@ -162,12 +157,7 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	var queryResults []struct {
-		Branch        string
-		Project       string
-		MeasureName   string
-		MeasureValues []int
-	}
+	var queryResults []measureQueryResult
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {

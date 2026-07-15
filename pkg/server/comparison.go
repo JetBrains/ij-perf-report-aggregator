@@ -25,13 +25,14 @@ type filteredValues struct {
 	Values      []int
 }
 
-func filterQueryResults(queryResults []struct {
+type measureQueryResult struct {
 	Branch        string
 	Project       string
 	MeasureName   string
 	MeasureValues []int
-},
-) []filteredValues {
+}
+
+func filterQueryResults(queryResults []measureQueryResult) []filteredValues {
 	resultChan := make(chan filteredValues, len(queryResults))
 	var wg sync.WaitGroup
 

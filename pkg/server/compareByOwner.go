@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -229,7 +230,7 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]ownerQueryResult, error) {
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr string) ([]ownerQueryResult, error) {
 	sql := fmt.Sprintf(
 		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, machine_group AS Machine, "+
 			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
@@ -245,7 +246,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 			"ORDER BY generated_time DESC"+
 			") "+
 			"GROUP BY branch, project, measure_name, machine_group",
-		machineGroupSQLExpr("machine"), dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr,
+		machine.GroupSQLExpr("machine"), dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr,
 	)
 
 	var queryResults []ownerQueryResult
@@ -269,18 +270,18 @@ func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]d
 	}
 
 	response := make([]comparisonResponseItem, 0)
-	for machine, machineResults := range resultsByMachine {
+	for machineGroup, machineResults := range resultsByMachine {
 		filtered := filterQueryResults(machineResults)
 		compared := buildBranchComparisonResponse(filtered, baseBranch, compareBranch)
 
 		for _, item := range compared {
 			dt := dbTableMap[item.Project]
-			link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, item.Project, item.MeasureName)
+			link := buildTestLink(dt.DbName, dt.TableName, machineGroup, baseBranch, compareBranch, item.Project, item.MeasureName)
 
 			response = append(response, comparisonResponseItem{
 				Project:            item.Project,
 				Metric:             item.MeasureName,
-				Machine:            machine,
+				Machine:            machineGroup,
 				BaseBranchValue:    item.Median1,
 				CompareBranchValue: item.Median2,
 				Diff:               item.Diff,
@@ -292,7 +293,7 @@ func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]d
 	return response
 }
 
-func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
+func buildTestLink(dbName, table, machineGroup, baseBranch, compareBranch, project, metric string) string {
 	return fmt.Sprintf("%s/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
-		ijPerfBaseURL, dbName, table, url.QueryEscape(machine), baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
+		ijPerfBaseURL, dbName, table, url.QueryEscape(machineGroup), baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
 }

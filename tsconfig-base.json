@@ -5,6 +5,9 @@
     "target": "ESNext",
     "allowJs": true,
     "resolveJsonModule": true,
+    "paths": {
+      "@machineGroups": ["./pkg/machine/machine-groups.json"]
+    },
     "moduleDetection": "force",
     "isolatedModules": true,
     "strict": true,

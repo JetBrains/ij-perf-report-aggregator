@@ -7,6 +7,8 @@ import { loadDimension } from "./DimensionConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
+// Single source of truth for machine hardware-class grouping, shared with the Go backend.
+import machineGroupsJson from "@machineGroups"
 
 // todo what is it?
 const macLarge = "mac large"
@@ -345,139 +347,28 @@ function getValueToGroup() {
   }
 }
 
-export function getMachineGroupName(machine: string): string {
-  let groupName: string | null = "Unknown"
-  if (machine.startsWith("intellij-linux-hw-blade-")) {
-    groupName = "linux-blade"
-  } else if (machine.startsWith("ij-linux-x64-perf-hw-blade-")) {
-    // QA Automation perf blades in the "IntelliJ Startup Performance" pool (MRI-4570 / AT-3244)
-    groupName = "linux-unit-perf-blade"
-  } else if (machine.startsWith("intellij-linux-test-hw-blade-")) {
-    groupName = "linux-blade-test"
-  } else if (machine.startsWith("intellij-windows-hw-blade-")) {
-    groupName = "windows-blade"
-  } else if (machine.startsWith("intellij-windows-hw-munit-")) {
-    groupName = "Windows Munich i7-3770, 32 Gb"
-  } else if (
-    machine.startsWith("intellij-linux-aws-amd-lt") ||
-    machine.startsWith("intellij-linux-aws-amd-2-lt") ||
-    machine.startsWith("intellij-linux-aws-3-lt") ||
-    machine.startsWith("intellij-linux-aws-lt")
-  ) {
-    groupName = "Linux C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
-  } else if (machine.startsWith("intellij-macos-unit-2200-large-")) {
-    groupName = macLarge
-  } else if (machine.startsWith("intellij-linux-performance-aws-i-") || machine.startsWith("intellij-linux-performance-aws-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c6i/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-  } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-") || machine.startsWith("intellij-linux-performance-tiny-aws-on-demand-i-")) {
-    // https://aws.amazon.com/ec2/instance-types/c6i/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"
-  } else if (machine.startsWith("default-linux-aws-large-disk-")) {
-    // https://aws.amazon.com/ec2/instance-types/m5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-windows-performance-aws-i-") || machine.startsWith("intellij-windows-performance-mem-aws-i")) {
-    // https://aws.amazon.com/ec2/instance-types/c6id/
-    // noinspection SpellCheckingInspection
-    groupName = "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"
-  } else if (machine.startsWith("qodana-fleet-linux-amd64-heavy")) {
-    // Fleet agents in the `qodana-linux-amd64-heavy-*` hardware class, same 4 vCPU / 8 GB
-    // (metric values within ~1% for the same test). Kept as its own group instead of merged into
-    // "Linux EC2 c5.xlarge (4 vCPU, 8 GB)": a selected group is queried by its members' common prefix,
-    // and merging the two name-stems would collapse that to `qodana-`, matching every qodana class.
-    groupName = "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"
-  } else if (
-    machine.startsWith("intellij-linux-2004-aws-m5d-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-m5d-lt") ||
-    machine.startsWith("intellij-linux-2004-aws-m5dn-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-m5dn-lt") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-1") ||
-    machine.startsWith("intellij-linux-2004-large-disk-aws-1") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-2-i") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-3-i") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-4-i") ||
-    machine.startsWith("intellij-linux-2204-aws-2-i") ||
-    machine.startsWith("intellij-linux-2204-aws-1-i") ||
-    machine.startsWith("intellij-linux-2204-aws-4-i-") ||
-    machine.startsWith("intellij-linux-2204-aws-3-i")
-  ) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)"
-  } else if (machine.startsWith("intellij-linux-hw-munit-")) {
-    groupName = "Linux Munich i7-3770, 32 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-EXC")) {
-    // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
-    groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-hetzner") || machine.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
-    groupName = "linux-blade-hetzner"
-  } else if (machine.startsWith("intellij-windows-hw-hetzner")) {
-    groupName = "windows-blade-hetzner"
-  } else if (
-    machine.startsWith("intellij-macos-munit-741-large") ||
-    machine.startsWith("intellij-macos-de-unit-1219") ||
-    machine.startsWith("intellij-macos-munit-739-large") ||
-    machine.startsWith("intellij-macos-munit-738-large") ||
-    machine.startsWith("intellij-macos-munit-676-large")
-  ) {
-    //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
-    groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
-  } else if (machine.startsWith("intellij-linux-performance-huge-aws-i")) {
-    groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
-  } else if (machine.startsWith("qodana-aws-cpu-x64")) {
-    groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("qodana-linux-amd64-large")) {
-    groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
-  } else if (
-    machine.startsWith("qodana-linux-amd64-xl") ||
-    machine.startsWith("qodana-linux-amd64-heavy") ||
-    machine.startsWith("intellij-linux-2004-aws-i") ||
-    machine.startsWith("intellij-linux-2004-aws-c5d") ||
-    machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
-    machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
-  ) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    groupName = "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-r5dn")) {
-    // https://aws.amazon.com/ec2/instance-types/r5/
-    groupName = "Linux EC2 r5dn.xlarge (4 vCPU, 32 GB)"
-  } else if (machine.startsWith("intellij-macos-perf-eqx")) {
-    groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
-  } else if (machine.startsWith("intellij-windows-aws-i")) {
-    groupName = "windows aws"
-  } else if (/ij-w.*-azr.*/.test(machine)) {
-    groupName = "windows-azure"
-  } else if (machine.startsWith("intellij-windows-hw-de-unit")) {
-    groupName = "Windows Munich i7-13700, 64 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-de-unit")) {
-    groupName = "Linux Munich i7-13700, 64 Gb"
-  } else if (machine.startsWith("fleet-linux-aws-ui")) {
-    groupName = "Linux Fleet AWS UI"
-  } else if (machine.startsWith("fleet-windows-aws-r5d") || machine.startsWith("fleet-windows-aws-m5d")) {
-    groupName = "Windows Fleet AWS UI"
-  } else if (machine.startsWith("fleet-icri-ui-agent")) {
-    groupName = "Mac Fleet AWS UI"
-  } else if (machine.startsWith("qodana-linux-arm64-memory-optimised")) {
-    groupName = "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"
-  } else if (machine.startsWith("cidr.performance.")) {
-    groupName = "Mac Cidr Performance"
-  } else if (machine.startsWith("intellij-linux-2204-aws-i4i")) {
-    groupName = "Linux EC2 i4i.xlarge (4 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-r5d")) {
-    groupName = "Linux EC2 r5d.xlarge (4 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-4-i-")) {
-    groupName = "Linux EC2 c5ad.xlarge (4 vCPU EPYC, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-c5d")) {
-    groupName = "Linux EC2 c5d.xlarge (4 vCPU Xeon, 8 GB)"
-  } else if (machine.startsWith("intellij-macos-docker-hw-de-unit")) {
-    groupName = "Mac Mini M2 Pro 12 CPU, 32 GB"
-  }
+// Hardware-class rules shared with the backend — the single source of truth is
+// pkg/machine/groups.json (see pkg/machine/machine.go). First matching rule wins.
+interface MachineGroupRule {
+  group: string
+  prefixes?: string[]
+  regex?: string
+}
+const machineGroupRules: { group: string; prefixes?: string[]; regex?: RegExp }[] = (machineGroupsJson as MachineGroupRule[]).map((rule) => ({
+  group: rule.group,
+  prefixes: rule.prefixes,
+  regex: rule.regex == null ? undefined : new RegExp(rule.regex),
+}))
 
-  return groupName
+export function getMachineGroupName(machine: string): string {
+  for (const rule of machineGroupRules) {
+    if (rule.regex != null) {
+      if (rule.regex.test(machine)) {
+        return rule.group
+      }
+    } else if (rule.prefixes?.some((prefix) => machine.startsWith(prefix))) {
+      return rule.group
+    }
+  }
+  return "Unknown"
 }

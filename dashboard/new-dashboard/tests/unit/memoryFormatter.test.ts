@@ -49,9 +49,15 @@ describe("measure unit resolution", () => {
     expect(resolveMeasureUnit("processingSpeedAvg#PHP", { scaling: true })).toBe("counter")
   })
 
-  it("honours the stored type over a name fallback", () => {
+  it("lets a clear count name win over a mis-typed stored duration", () => {
+    // The perf pipeline stores this count as "d" by mistake; the "Count" name must still win.
+    expect(resolveMeasureUnit("fileCount", { storedType: "d" })).toBe("counter")
+    expect(resolveMeasureUnit("classLoadingLoadedCount", { storedType: "d" })).toBe("counter")
+  })
+
+  it("honours the stored type for names that are not obviously a count or size", () => {
     expect(resolveMeasureUnit("undeclaredAction", { storedType: "c" })).toBe("counter")
-    expect(resolveMeasureUnit("fileCount", { storedType: "d" })).toBe("milliseconds")
+    expect(resolveMeasureUnit("undeclaredAction", { storedType: "d" })).toBe("milliseconds")
   })
 
   // The perf pipeline stores sizes and plain counts alike as "c", so a memory name must still be

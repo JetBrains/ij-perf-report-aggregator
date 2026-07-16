@@ -120,9 +120,11 @@ export type MeasureUnit = "nanoseconds" | "milliseconds" | "counter" | "bytes" |
 const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", "kilobytesPerSecond"])
 
 // Resolves how a value should be rendered. A unit declared in metricsDescription is authoritative;
-// otherwise an explicit value-unit wins. A stored "d" type is a real duration, but a stored "c" type
-// only means "not a duration" — the perf pipeline stores sizes and plain counts alike as "c" — so the
-// name-based size detection is consulted before falling back to "c" as a counter.
+// otherwise an explicit value-unit wins. Then the metric name is authoritative over the stored type:
+// the perf pipeline stores sizes and plain counts as "d"/"c" indiscriminately, so a name that is
+// clearly a size or a count ("...Count", "...number", memory suffixes) must win over a mis-typed
+// stored "d" duration. Only names that are not obviously a size/count defer to the stored type,
+// falling back to a duration by default.
 // While scaling, a physical unit is a baseline ratio and renders as a counter.
 export function resolveMeasureUnit(measureName: string, opts: { storedType?: string; valueUnit?: ValueUnit; scaling?: boolean } = {}): MeasureUnit {
   const { storedType, valueUnit = "auto", scaling = false } = opts
@@ -134,10 +136,11 @@ export function resolveMeasureUnit(measureName: string, opts: { storedType?: str
   if (valueUnit === "counter") return "counter"
   if (valueUnit === "ns") return "nanoseconds"
   if (valueUnit === "ms") return "milliseconds"
-  if (storedType === "d" || storedType === "duration") return "milliseconds"
   if (isMemoryMeasure(measureName)) return isKilobyteMeasure(measureName) ? "kibibytes" : "mebibytes"
+  if (!isDurationFormatterApplicable(measureName)) return "counter"
+  if (storedType === "d" || storedType === "duration") return "milliseconds"
   if (storedType === "c" || storedType === "counter") return "counter"
-  return isDurationFormatterApplicable(measureName) ? "milliseconds" : "counter"
+  return "milliseconds"
 }
 
 // Formats a single value that is already known to be in `unit`. Nanosecond values are converted to

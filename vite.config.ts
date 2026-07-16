@@ -65,12 +65,6 @@ export default defineConfig({
   ],
   root: "dashboard/app",
   publicDir: path.resolve(__dirname, "dashboard/app/public"),
-  resolve: {
-    alias: {
-      // Single source of truth for machine hardware-class grouping, shared with the Go backend.
-      "@machineGroups": path.resolve(__dirname, "pkg/machine/machine-groups.json"),
-    },
-  },
   server: {
     host: "localhost",
     port: 8080,

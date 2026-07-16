@@ -53,7 +53,13 @@ type QueryDimension struct {
 }
 
 func ReadQueryV2(request *http.Request) ([]Query, bool, error) {
-	decompressed, err := util.DecodeQuery(request.URL.Path[len("/api/q/"):])
+	return ReadQueryV2WithPrefix(request, "/api/q/")
+}
+
+// ReadQueryV2WithPrefix decodes a compressed query that follows the given URL path prefix,
+// letting endpoints other than /api/q reuse the same query payload format.
+func ReadQueryV2WithPrefix(request *http.Request, pathPrefix string) ([]Query, bool, error) {
+	decompressed, err := util.DecodeQuery(request.URL.Path[len(pathPrefix):])
 	if err != nil {
 		return nil, false, fmt.Errorf("cannot decode query: %w", err)
 	}

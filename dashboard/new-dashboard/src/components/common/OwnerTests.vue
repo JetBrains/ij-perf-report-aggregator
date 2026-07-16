@@ -21,7 +21,8 @@ const router = useRouter()
 
 const dbName = route.query["dbName"] as string
 const table = route.query["table"] as string
-const machine = (route.query["machine"] as string) ?? null
+// `machine` may be a single value or several (?machine=a&machine=b) — keep it as given.
+const machine = (route.query["machine"] as string | string[]) ?? null
 const withInstaller = dbName === "perfint" || dbName === "ij"
 
 watch(

@@ -3,7 +3,6 @@ import { Accident } from "../../../configurators/accidents/AccidentsConfigurator
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { ServerConfigurator } from "../dataQuery"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { getMachineGroupName } from "../../../configurators/MachineConfigurator"
 import { Router } from "vue-router"
 import { calculateChanges } from "../../../util/changes"
 import { pointParamName } from "../../../shared/selectedPointStore"
@@ -125,7 +124,6 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
     parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   }
   const branch = data?.branch ?? ""
-  const machineGroup = getMachineGroupName(data?.machineName ?? "")
   const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
   const mode = data?.mode ?? ""
   const testURL = parts.join("/")
@@ -135,7 +133,7 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
     ...(data?.buildId != undefined ? { [pointParamName]: data.buildId.toString() } : {}),
     project: data?.projectName ?? "",
     branch: majorBranch,
-    machine: machineGroup,
+    machine: data?.machineName ?? "",
     mode: mode !== "" ? mode : "default",
   }).toString()
 

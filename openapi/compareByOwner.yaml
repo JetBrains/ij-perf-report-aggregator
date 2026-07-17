@@ -11,9 +11,10 @@ paths:
       summary: Compare metrics between two branches by owner
       description: >
         Looks up all projects belonging to the given owners, queries metric values
-        for both branches across all product tables, computes medians (using change-point
-        detection), and returns the percentage difference. Only items where both branches
-        have data are included in the response.
+        for both branches across all product tables, groups runs by hardware-class
+        machine group (runs are never pooled across groups), computes medians per group
+        (using change-point detection), and returns the percentage difference. Only items
+        where both branches have data are included in the response.
       requestBody:
         required: true
         content:
@@ -24,7 +25,9 @@ paths:
         '200':
           description: >
             Returns an array of comparison items. Each item contains the project,
-            metric name, median values for both branches, and the percentage difference.
+            metric name, the machine group the comparison was computed on, median values
+            for both branches, and the percentage difference. A project/metric pair can
+            appear multiple times — once per machine group that has data on both branches.
             Returns an empty array if the owners have no projects or no data is found.
           content:
             application/json:
@@ -89,6 +92,7 @@ components:
       required:
         - project
         - metric
+        - machine
         - baseBranchValue
         - compareBranchValue
         - diff
@@ -102,6 +106,12 @@ components:
           type: string
           description: The metric name.
           example: 'indexingTimeWithoutPauses'
+        machine:
+          type: string
+          description: >
+            The hardware-class machine group this comparison was computed on. Medians are
+            computed per group, so the same project/metric can appear once per group.
+          example: 'linux-blade'
         baseBranchValue:
           type: number
           format: double
@@ -123,5 +133,5 @@ components:
           type: string
           description: >
             Full URL to the performance tests dashboard page with preselected
-            database, table, machine, branch, test, and metric.
-          example: 'https://ij-perf.labs.jb.gg/owners/test?branch=master&dbName=perfint&machine=linux&measure=indexingTimeWithoutPauses&project=community%2Findexing&table=idea'
+            database, table, machine group, branch, test, and metric.
+          example: 'https://ij-perf.labs.jb.gg/owners/test?branch=master&dbName=perfint&machine=linux-blade&measure=indexingTimeWithoutPauses&project=community%2Findexing&table=idea'

@@ -94,6 +94,29 @@ describe("Machine configurator", () => {
     })
   })
 
+  describe("selection normalization", () => {
+    it("keeps a group selection absent from the current window instead of rewriting it to Unknown", async () => {
+      // A window where the selected group has no agents, but unmapped agents exist: the group
+      // list carries an "Unknown" bucket, and the lookup resolves the group's display name to
+      // "Unknown" (it matches no raw-agent rule). The selection must survive untouched.
+      data.fetchMock.mockReturnValue(
+        new Observable((sub) => {
+          sub.next([...machineGroupsResponse, { group: "Unknown", machines: ["some-new-agent-1"] }])
+        })
+      )
+      const groupLookup = vi.fn<() => Promise<{ json: () => Promise<{ group: string }> }>>(() => Promise.resolve({ json: () => Promise.resolve({ group: "Unknown" }) }))
+      vi.stubGlobal("fetch", groupLookup)
+
+      machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard, [], true, ["linux-blade-hetzner"])
+      await awaitMockCallsCount(groupLookup, 1)
+      // Let the in-flight normalization settle before asserting it left the selection alone.
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0)
+      })
+      expect(machineConfigurator.selected.value).toStrictEqual(["linux-blade-hetzner"])
+    })
+  })
+
   describe("tests with branch and time filters", () => {
     let branchConfigurator: BranchConfigurator
     beforeEach(() => {

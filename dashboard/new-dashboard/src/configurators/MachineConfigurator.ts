@@ -90,8 +90,11 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     const next = [
       ...new Set(
         selected.map((value) => {
+          // The backend answers "Unknown" for anything it can't map — including a selected group
+          // name whose agents merely didn't run in the current filtered window. Never rewrite to
+          // that bucket: the rewrite is persisted and would destroy the real selection.
           const group = rawToGroup.get(value)
-          return group != null && groupNames.has(group) ? group : value
+          return group != null && group !== "Unknown" && groupNames.has(group) ? group : value
         })
       ),
     ]

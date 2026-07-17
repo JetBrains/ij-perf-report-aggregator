@@ -72,11 +72,8 @@ type comparisonResponseItem struct {
 }
 
 type ownerQueryResult struct {
-	Branch        string
-	Project       string
-	MeasureName   string
-	Machine       string
-	MeasureValues []int
+	measureQueryResult
+	Machine string
 }
 
 type projectOwnerEntry struct {
@@ -261,12 +258,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]dbTableKey, baseBranch, compareBranch string) []comparisonResponseItem {
 	resultsByMachine := make(map[string][]measureQueryResult)
 	for _, r := range results {
-		resultsByMachine[r.Machine] = append(resultsByMachine[r.Machine], measureQueryResult{
-			Branch:        r.Branch,
-			Project:       r.Project,
-			MeasureName:   r.MeasureName,
-			MeasureValues: r.MeasureValues,
-		})
+		resultsByMachine[r.Machine] = append(resultsByMachine[r.Machine], r.measureQueryResult)
 	}
 
 	response := make([]comparisonResponseItem, 0)

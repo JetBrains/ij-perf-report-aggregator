@@ -7,6 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func ownerResult(branch, project, metric, machine string, values []int) ownerQueryResult {
+	return ownerQueryResult{
+		measureQueryResult: measureQueryResult{Branch: branch, Project: project, MeasureName: metric, MeasureValues: values},
+		Machine:            machine,
+	}
+}
+
 // TestBuildComparisonResponseComparesPerMachine verifies the AT-4930 fix: values from
 // distinct agents matching the same machine filter must be compared per-agent and never
 // pooled together. Here each agent is stable across branches (no real regression), yet the
@@ -24,10 +31,10 @@ func TestBuildComparisonResponseComparesPerMachine(t *testing.T) {
 	slow := []int{400, 405, 398, 402, 401, 399}
 
 	results := []ownerQueryResult{
-		{Branch: "261", Project: project, MeasureName: metric, Machine: fastMachine, MeasureValues: fast},
-		{Branch: "master", Project: project, MeasureName: metric, Machine: fastMachine, MeasureValues: fast},
-		{Branch: "261", Project: project, MeasureName: metric, Machine: slowMachine, MeasureValues: slow},
-		{Branch: "master", Project: project, MeasureName: metric, Machine: slowMachine, MeasureValues: slow},
+		ownerResult("261", project, metric, fastMachine, fast),
+		ownerResult("master", project, metric, fastMachine, fast),
+		ownerResult("261", project, metric, slowMachine, slow),
+		ownerResult("master", project, metric, slowMachine, slow),
 	}
 
 	dbTableMap := map[string]dbTableKey{project: {DbName: "perfintDev", TableName: "clion"}}
@@ -71,7 +78,7 @@ func TestBuildComparisonResponseSkipsSingleAgentBranch(t *testing.T) {
 	const machine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 
 	results := []ownerQueryResult{
-		{Branch: "261", Project: project, MeasureName: metric, Machine: machine, MeasureValues: []int{100, 101, 99}},
+		ownerResult("261", project, metric, machine, []int{100, 101, 99}),
 		// no "master" data on this machine
 	}
 

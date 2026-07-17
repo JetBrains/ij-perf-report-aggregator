@@ -309,11 +309,17 @@ if (machineFilters.length > 0 && machineConfigurator != null) {
       if (groups.length > 0) {
         const wanted = machineFilters.map((it) => it.toLowerCase())
         // Match either a group by name, or the group whose members contain a given raw machine.
-        const matching = groups
-          .filter((g) => wanted.some((filter) => g.value.toLowerCase().includes(filter) || (g.children?.some((child) => child.value.toLowerCase() === filter) ?? false)))
-          .map((g) => g.value)
-        if (matching.length > 0) {
-          machineConfigurator.selected.value = matching
+        // Exact matches win: group names can be prefixes of sibling groups (linux-blade vs linux-blade-hetzner),
+        // so substring matching is only a fallback for legacy links with fuzzy machine values.
+        const matching = new Set<string>()
+        for (const filter of wanted) {
+          const exact = groups.filter((g) => g.value.toLowerCase() === filter || (g.children?.some((child) => child.value.toLowerCase() === filter) ?? false))
+          for (const g of exact.length > 0 ? exact : groups.filter((g) => g.value.toLowerCase().includes(filter))) {
+            matching.add(g.value)
+          }
+        }
+        if (matching.size > 0) {
+          machineConfigurator.selected.value = [...matching]
           stopWatch()
         }
       }

@@ -7,12 +7,14 @@ import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
 import { awaitCallbackTrue, awaitMockCallsCount } from "../utils/awaitors"
 import ConfiguratorTest, { ConfigurationTestData } from "./ConfiguratorTest"
 
-// The backend returns machines already grouped by hardware class. Each test group has a single
-// member, so selecting a group expands to exactly one machine — keeping the query assertions
-// identical to selecting that machine directly.
+// The backend returns machines already grouped by hardware class, each group carrying the
+// filter predicate rendered from its grouping rule — selecting a group serializes as that
+// predicate ({f: "machine", q: ...}), not as the member list.
+const bladePredicate = "like 'intellij-linux-hw-blade-%'"
+const macLargePredicate = "like 'intellij-macos-unit-2200-large-%'"
 const machineGroupsResponse = [
-  { group: "linux-blade", machines: ["intellij-linux-hw-blade-test"] },
-  { group: "mac large", machines: ["intellij-macos-unit-2200-large-test"] },
+  { group: "linux-blade", machines: ["intellij-linux-hw-blade-test"], predicate: bladePredicate },
+  { group: "mac large", machines: ["intellij-macos-unit-2200-large-test"], predicate: macLargePredicate },
 ]
 
 describe("Machine configurator", () => {
@@ -22,6 +24,9 @@ describe("Machine configurator", () => {
   let machineGroupsUrl: string
 
   beforeEach(() => {
+    // PersistentStateManager writes selections to localStorage on a 300ms debounce, so a
+    // previous test's selection can leak into the next construction — start clean.
+    localStorage.clear()
     data = ConfiguratorTest.setupPreconditions(["intellij-linux-hw-blade-test", "intellij-macos-unit-2200-large-test"])
     machineGroupsUrl = data.serverUrl.replace("/api/q/", "/api/machineGroups/")
 
@@ -71,11 +76,11 @@ describe("Machine configurator", () => {
       await awaitMockCallsCount(data.fetchMock, 2)
 
       machineConfigurator.selected.value = ["linux-blade"]
-      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]}]}]`
+      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${bladePredicate}"}]}]`
       await awaitMockCallsCount(data.fetchMock, 3)
       expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
 
-      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-macos-unit-2200-large-test"]}]}]`
+      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${macLargePredicate}"}]}]`
       machineConfigurator.selected.value = ["mac large"]
       await awaitMockCallsCount(data.fetchMock, 4)
       expect(data.fetchMock.mock.calls[3][0]).toBe(expectedValue)
@@ -86,11 +91,48 @@ describe("Machine configurator", () => {
       await awaitMockCallsCount(data.fetchMock, 2)
 
       machineConfigurator.selected.value = ["linux-blade", "mac large"]
-      const expectedValue1 = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]}]}]`
-      const expectedValue2 = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-macos-unit-2200-large-test"]}]}]`
+      const expectedValue1 = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${bladePredicate}"}]}]`
+      const expectedValue2 = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${macLargePredicate}"}]}]`
       await awaitMockCallsCount(data.fetchMock, 4)
       expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue1)
       expect(data.fetchMock.mock.calls[3][0]).toBe(expectedValue2)
+    })
+
+    it("serializes a group without a predicate (the Unknown bucket) by its member list", async () => {
+      // Serve the group list for every URL — chart-query responses are unused by assertions.
+      data.fetchMock.mockReturnValue(
+        new Observable((sub) => {
+          sub.next([...machineGroupsResponse, { group: "Unknown", machines: ["zeta-agent-1", "alpha-agent-2"] }])
+        })
+      )
+      machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard)
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, new TestMeasureConfigurator()])
+      dataQueryExecutor.subscribe(() => {})
+      await awaitMockCallsCount(data.fetchMock, 2)
+
+      machineConfigurator.selected.value = ["Unknown"]
+      await awaitMockCallsCount(data.fetchMock, 3)
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["alpha-agent-2","zeta-agent-1"]}]}]`
+      expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
+    })
+
+    it("passes a multi-prefix group predicate through verbatim", async () => {
+      const hetznerPredicate = "like 'intellij-linux-hw-hetzner%' or machine like 'intellij-linux-agg-hw-hetzner-agent%'"
+      // Serve the group list for every URL — chart-query responses are unused by assertions.
+      data.fetchMock.mockReturnValue(
+        new Observable((sub) => {
+          sub.next([{ group: "linux-blade-hetzner", machines: ["intellij-linux-agg-hw-hetzner-agent-1", "intellij-linux-hw-hetzner-agent-2"], predicate: hetznerPredicate }])
+        })
+      )
+      machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard)
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, new TestMeasureConfigurator()])
+      dataQueryExecutor.subscribe(() => {})
+      await awaitMockCallsCount(data.fetchMock, 2)
+
+      machineConfigurator.selected.value = ["linux-blade-hetzner"]
+      await awaitMockCallsCount(data.fetchMock, 3)
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${hetznerPredicate}"}]}]`
+      expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
     })
   })
 
@@ -157,11 +199,11 @@ describe("Machine configurator", () => {
       branchConfigurator.selected.value = ["branch1"]
       machineConfigurator.selected.value = ["linux-blade"]
       dataQueryExecutor.subscribe(() => {})
-      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${bladePredicate}"},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       await awaitMockCallsCount(data.fetchMock, 4)
       expect(data.fetchMock.mock.calls[3][0]).toBe(expectedValue)
 
-      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-macos-unit-2200-large-test"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${macLargePredicate}"},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       machineConfigurator.selected.value = ["mac large"]
       await awaitMockCallsCount(data.fetchMock, 5)
       expect(data.fetchMock.mock.calls[4][0]).toBe(expectedValue)
@@ -184,14 +226,19 @@ describe("Machine configurator", () => {
       branchConfigurator.selected.value = ["branch1"]
       machineConfigurator.selected.value = ["linux-blade", "mac large"]
       dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 4)
-      const expectedMachines = ["intellij-linux-hw-blade-test", "intellij-macos-unit-2200-large-test"]
-      const actual = expectedMachines.map((_, index) => data.fetchMock.mock.calls[3 + index][0] as string)
-      const expected = expectedMachines.map(
-        (machine) =>
-          `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["${machine}"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      // Leftover async emissions from earlier tests can inject stray calls into the shared
+      // fetch spy, so assert on content rather than call indices.
+      const expected = [bladePredicate, macLargePredicate].map(
+        (predicate) =>
+          `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","q":"${predicate}"},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       )
-      expect(actual).toStrictEqual(expected)
+      await awaitCallbackTrue(() => {
+        const urls = new Set(data.fetchMock.mock.calls.map((call) => call[0] as string))
+        return expected.every((url) => urls.has(url))
+      })
+      const urls = data.fetchMock.mock.calls.map((call) => call[0] as string)
+      expect(urls).toContain(expected[0])
+      expect(urls).toContain(expected[1])
     })
 
     it("valid query when select multiple value for branch configurator", async () => {

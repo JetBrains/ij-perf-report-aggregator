@@ -33,11 +33,12 @@ type rule struct {
 // fixed-name agents (kept in sync with what used to be MachineConfigurator's valueToGroup —
 // only entries not already covered by a prefix rule are listed here).
 //
-// Keep one group's member names sharing a discriminating common prefix: the frontend queries
-// a selected group as `machine LIKE '<common prefix of live members>%'` (deliberate —
-// ClickHouse is much slower on `machine IN (...)` with hundreds of agents). Merging divergent
-// name stems into one rule widens that LIKE to sibling classes, or to every machine once no
-// common prefix is left.
+// The frontend queries a selected group by GroupPredicate — an OR of per-prefix LIKEs rendered
+// from the rule itself (deliberate: ClickHouse is much slower on `machine IN (...)` with
+// hundreds of agents). Keep prefixes selective, and keep them non-overlapping across groups —
+// TestGroupPredicateSoundness enforces that no rule's prefix subsumes another group's prefix
+// or name, which is what makes the per-group predicate equivalent to first-match-wins
+// GroupName.
 var rules = []rule{
 	{prefixes: []string{"intellij-linux-hw-blade-"}, group: "linux-blade"},
 	{prefixes: []string{"ij-linux-x64-perf-hw-blade-"}, group: "linux-unit-perf-blade"},
@@ -143,6 +144,33 @@ func GroupName(name string) string {
 		}
 	}
 	return unknownGroup
+}
+
+// GroupPredicate renders the WHERE-clause suffix (the part after the column name) that selects
+// exactly the given group's agents, e.g. "like 'a%' or machine like 'b%'". The suffix form is
+// the /api/q filter contract: {f: col, q: suffix} renders as "(col suffix)", and since every
+// term is a disjunct, callers may chain several predicates with " or <col> ". Returns "" for
+// groups no prefix/name rule defines (Unknown, regex-matched groups) — callers fall back to
+// filtering by the member list. Unlike a common prefix inferred from live members, the rule's
+// own prefixes stay exact for groups mixing name stems and stable as agents churn.
+func GroupPredicate(col, group string) string {
+	var parts []string
+	for _, r := range rules {
+		if r.group != group {
+			continue
+		}
+		for _, p := range r.prefixes {
+			parts = append(parts, "like '"+sql_util.StringEscaper.Replace(p)+"%'")
+		}
+		if len(r.names) != 0 {
+			quoted := make([]string, len(r.names))
+			for i, n := range r.names {
+				quoted[i] = "'" + sql_util.StringEscaper.Replace(n) + "'"
+			}
+			parts = append(parts, "in ("+strings.Join(quoted, ", ")+")")
+		}
+	}
+	return strings.Join(parts, " or "+col+" ")
 }
 
 // GroupSQLExpr renders the rules as a ClickHouse multiIf() over the given machine column, so

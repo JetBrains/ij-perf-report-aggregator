@@ -29,6 +29,11 @@ func (t *StatsServer) handleMachineGroupLookup(w http.ResponseWriter, request *h
 type machineGroupResponseItem struct {
 	Group    string   `json:"group"`
 	Machines []string `json:"machines"`
+	// Predicate is the /api/q filter suffix ({f: "machine", q: <predicate>}) selecting exactly
+	// this hardware class — rendered from the grouping rule itself, so the frontend never has
+	// to infer one from the members. Empty for groups without a prefix/name rule (e.g.
+	// "Unknown"); callers then filter by the member list.
+	Predicate string `json:"predicate,omitempty"`
 }
 
 // handleMachineGroups runs the distinct-machine query the caller supplies (same DataQuery
@@ -76,7 +81,7 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 	response := make([]machineGroupResponseItem, 0, len(byGroup))
 	for group, members := range byGroup {
 		slices.Sort(members)
-		response = append(response, machineGroupResponseItem{Group: group, Machines: members})
+		response = append(response, machineGroupResponseItem{Group: group, Machines: members, Predicate: machine.GroupPredicate("machine", group)})
 	}
 	slices.SortFunc(response, func(a, b machineGroupResponseItem) int {
 		return strings.Compare(a.Group, b.Group)

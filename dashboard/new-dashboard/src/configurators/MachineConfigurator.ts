@@ -113,11 +113,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private buildGroups(data: MachineGroupResponseItem[]): GroupedDimensionValue[] {
     const grouped: GroupedDimensionValue[] = []
-    for (const { group, machines } of data) {
+    for (const { group, machines, predicate } of data) {
       const item: GroupedDimensionValue = {
         value: group,
         children: machines.map((value) => ({ value })),
         icon: this.getIcons(group),
+        predicate,
       }
       this.groupNameToItem.set(group, item)
       grouped.push(item)
@@ -161,19 +162,21 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         const value = selected[index]
         const groupItem = groupNameToItem.get(value)
         values.length = 0
+        filter.v = values
+        filter.o = undefined
+        filter.q = undefined
         if (groupItem == null) {
+          // a raw machine name (e.g. from a drilldown link)
           values.push(value)
-        } else {
-          // it's group
-          if (groupItem.children != null) {
-            if (groupItem.children.length > 1) {
-              filter.v = prefix(groupItem.children.map((it) => it.value)) + "%"
-              filter.o = "like"
-              return
-            }
-            for (const child of groupItem.children) {
-              values.push(child.value)
-            }
+        } else if (groupItem.predicate) {
+          // The backend renders the class predicate from the grouping rule itself — exact for
+          // groups mixing name stems, and stable as agents churn (unlike a members-derived prefix).
+          filter.v = undefined
+          filter.q = groupItem.predicate
+        } else if (groupItem.children != null) {
+          // group without a rule predicate (the Unknown bucket): filter by the member list
+          for (const child of groupItem.children) {
+            values.push(child.value)
           }
           values.sort()
         }
@@ -206,16 +209,31 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   }
 
   private configureQueryAsFilter(selected: string[], query: DataQuery) {
+    // When every selected group carries a backend-rendered predicate, combine them into one
+    // exact disjunction. Raw names and predicate-less groups (the Unknown bucket) keep the
+    // member-list form below — merging the two shapes into a single filter would require
+    // client-side SQL quoting of machine names.
+    const predicates: string[] = []
+    let allHavePredicates = true
+    for (const value of selected) {
+      const groupItem = this.groupNameToItem.get(value)
+      if (groupItem?.predicate) {
+        predicates.push(groupItem.predicate)
+      } else {
+        allHavePredicates = false
+      }
+    }
+    if (allHavePredicates && predicates.length > 0) {
+      query.addFilter({ f: "machine", q: predicates.join(" or machine ") })
+      return
+    }
+
     const values = this.getSelectedValues(selected)
 
     if (values.length > 0) {
       // stable order of fields in query (caching)
       values.sort()
-      if (values.length > 50) {
-        query.addFilter({ f: "machine", v: prefix(values) + "%", o: "like" })
-      } else {
-        query.addFilter({ f: "machine", v: values })
-      }
+      query.addFilter({ f: "machine", v: values })
     }
   }
 
@@ -241,6 +259,10 @@ export interface GroupedDimensionValue {
   value: string
   children?: GroupedDimensionValue[]
   icon?: string
+  // /api/q filter suffix ({f: "machine", q: <predicate>}) selecting exactly this hardware
+  // class, rendered by the backend from the grouping rule. Absent for rule-less groups
+  // (the Unknown bucket), which are filtered by their member list instead.
+  predicate?: string
 }
 
 function prefix(words: string[]): string {
@@ -253,6 +275,7 @@ function prefix(words: string[]): string {
 interface MachineGroupResponseItem {
   group: string
   machines: string[]
+  predicate?: string
 }
 
 // Resolves a single raw agent name to its hardware-class group via the backend (the sole owner

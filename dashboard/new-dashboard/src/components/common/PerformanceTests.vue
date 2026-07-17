@@ -243,8 +243,8 @@ const {
 
 // Normalize the machine props (single value, several, or none) to arrays once, so the rest of
 // the component never has to branch on the shape.
-const initialMachines = initialMachine == null ? [] : Array.isArray(initialMachine) ? initialMachine : [initialMachine]
-const machineFilters = machineGroupFilter == null ? [] : Array.isArray(machineGroupFilter) ? machineGroupFilter : [machineGroupFilter]
+const initialMachines = toArray(initialMachine)
+const machineFilters = toArray(machineGroupFilter)
 
 enum TestMetricSwitcher {
   Tests = "Tests",
@@ -314,8 +314,9 @@ if (machineFilters.length > 0 && machineConfigurator != null) {
         const matching = new Set<string>()
         for (const filter of wanted) {
           const exact = groups.filter((g) => g.value.toLowerCase() === filter || (g.children?.some((child) => child.value.toLowerCase() === filter) ?? false))
-          for (const g of exact.length > 0 ? exact : groups.filter((g) => g.value.toLowerCase().includes(filter))) {
-            matching.add(g.value)
+          const matched = exact.length > 0 ? exact : groups.filter((g) => g.value.toLowerCase().includes(filter))
+          for (const group of matched) {
+            matching.add(group.value)
           }
         }
         if (matching.size > 0) {

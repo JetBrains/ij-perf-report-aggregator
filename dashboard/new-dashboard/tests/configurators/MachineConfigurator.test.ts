@@ -4,7 +4,7 @@ import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../src/configurators/MachineConfigurator"
 import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
-import { awaitMockCallsCount } from "../utils/awaitors"
+import { awaitCallbackTrue, awaitMockCallsCount } from "../utils/awaitors"
 import ConfiguratorTest, { ConfigurationTestData } from "./ConfiguratorTest"
 
 // The backend returns machines already grouped by hardware class. Each test group has a single
@@ -114,6 +114,22 @@ describe("Machine configurator", () => {
         setTimeout(resolve, 0)
       })
       expect(machineConfigurator.selected.value).toStrictEqual(["linux-blade-hetzner"])
+    })
+
+    it("keeps a deliberately selected single agent instead of expanding it to its group", async () => {
+      // "intellij-linux-hw-blade-test" is a live leaf of the "linux-blade" group in the loaded
+      // list — a user-picked single agent. It must not be expanded to the whole group, and the
+      // backend lookup (which would resolve it to "linux-blade") must not even be consulted.
+      const groupLookup = vi.fn<() => Promise<{ json: () => Promise<{ group: string }> }>>(() => Promise.resolve({ json: () => Promise.resolve({ group: "linux-blade" }) }))
+      vi.stubGlobal("fetch", groupLookup)
+
+      machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard, [], true, ["intellij-linux-hw-blade-test"])
+      await awaitCallbackTrue(() => machineConfigurator.values.value.length > 0)
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0)
+      })
+      expect(machineConfigurator.selected.value).toStrictEqual(["intellij-linux-hw-blade-test"])
+      expect(groupLookup).not.toHaveBeenCalled()
     })
   })
 

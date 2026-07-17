@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"slices"
+	"strings"
 
 	data_query "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
@@ -42,28 +43,24 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 	if len(dataQueries) == 0 {
 		// The cache manager dereferences the returned buffer unconditionally, so it must never
 		// be nil on success — mirror /api/q and answer an empty query list with an empty result.
-		buffer := bytebufferpool.Get()
-		_, _ = buffer.WriteString("[]")
+		buffer, err := toJSONBuffer([]machineGroupResponseItem{})
+		if err != nil {
+			return nil, false, err
+		}
 		return buffer, true, nil
-	}
-
-	query := dataQueries[0]
-	table := query.Table
-	if table == "" {
-		table = "report"
 	}
 
 	// Reuse the standard query pipeline to fetch the flat list of distinct machine names.
 	raw := bytebufferpool.Get()
 	defer bytebufferpool.Put(raw)
 	writer := quicktemplate.AcquireWriter(raw)
-	err = data_query.SelectRows(request.Context(), query, table, t, writer.N())
+	err = t.computeMeasureResponse(request.Context(), dataQueries[0], writer.N())
 	quicktemplate.ReleaseWriter(writer)
 	if err != nil {
 		return nil, false, err
 	}
 
-	machines := []string{}
+	var machines []string
 	if len(raw.B) != 0 {
 		if err := json.Unmarshal(raw.B, &machines); err != nil {
 			return nil, false, err
@@ -82,13 +79,7 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 		response = append(response, machineGroupResponseItem{Group: group, Machines: members})
 	}
 	slices.SortFunc(response, func(a, b machineGroupResponseItem) int {
-		if a.Group < b.Group {
-			return -1
-		}
-		if a.Group > b.Group {
-			return 1
-		}
-		return 0
+		return strings.Compare(a.Group, b.Group)
 	})
 
 	buffer, err := toJSONBuffer(response)

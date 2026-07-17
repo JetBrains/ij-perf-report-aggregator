@@ -91,11 +91,9 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 		return 0
 	})
 
-	jsonData, err := json.Marshal(response)
+	buffer, err := toJSONBuffer(response)
 	if err != nil {
 		return nil, false, err
 	}
-	buffer := bytebufferpool.Get()
-	_, _ = buffer.Write(jsonData)
 	return buffer, true, nil
 }

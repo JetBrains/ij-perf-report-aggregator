@@ -40,7 +40,11 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 	if len(dataQueries) == 0 {
-		return nil, false, nil
+		// The cache manager dereferences the returned buffer unconditionally, so it must never
+		// be nil on success — mirror /api/q and answer an empty query list with an empty result.
+		buffer := bytebufferpool.Get()
+		_, _ = buffer.WriteString("[]")
+		return buffer, true, nil
 	}
 
 	query := dataQueries[0]

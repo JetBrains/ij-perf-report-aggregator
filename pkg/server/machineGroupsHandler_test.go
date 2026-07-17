@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,4 +31,20 @@ func TestHandleMachineGroupLookup(t *testing.T) {
 		require.NoErrorf(t, json.Unmarshal(rec.Body.Bytes(), &body), "decode for %q", machineName)
 		assert.Equalf(t, want, body["group"], "group for %q", machineName)
 	}
+}
+
+// An empty query list must yield an empty result, not a nil buffer — the cache manager
+// dereferences the returned buffer whenever err is nil.
+func TestHandleMachineGroupsEmptyQueryList(t *testing.T) {
+	t.Parallel()
+	encoded, err := util.EncodeQuery([]byte("[]"))
+	require.NoError(t, err)
+
+	server := &StatsServer{}
+	request := httptest.NewRequest(http.MethodGet, machineGroupsPathPrefix+encoded, http.NoBody)
+	buffer, releaseBuffer, err := server.handleMachineGroups(request)
+	require.NoError(t, err)
+	require.NotNil(t, buffer)
+	assert.True(t, releaseBuffer)
+	assert.JSONEq(t, "[]", string(buffer.B))
 }

@@ -1,11 +1,12 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, Observable, of, shareReplay, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeQuery, ServerConfigurator, toArray } from "../components/common/dataQuery"
-import { ComponentState, createComponentState, updateComponentState } from "./componentState"
-import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
-import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator, toArray } from "../components/common/dataQuery"
+import { createComponentState, updateComponentState } from "./componentState"
+import { loadDimension } from "./DimensionConfigurator"
+import { createFilterObservable, FilterConfigurator } from "./filter"
+import { refToObservable } from "./rxjs"
 
 export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly selected = shallowRef<string[]>([])
@@ -40,7 +41,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
     const listObservable = filterObservable.pipe(
       switchMap(() => {
-        return loadMachineGroups(serverConfigurator, this.filters.value, this.state)
+        // The same distinct-machine query as any dimension, but answered by /api/machineGroups/
+        // with the agents already bucketed into hardware-class groups by the backend (the sole
+        // owner of the grouping — see pkg/machine).
+        return loadDimension<MachineGroupResponseItem[]>(name, serverConfigurator, this.filters.value, this.state, "/api/machineGroups/")
       }),
       updateComponentState(this.state),
       shareReplay(1)
@@ -261,22 +265,4 @@ async function fetchMachineGroup(serverConfigurator: ServerConfigurator, machine
   } catch {
     return machineName
   }
-}
-
-// Fetches the distinct machines matching the current filters, already bucketed into
-// hardware-class groups by the backend (the sole owner of the grouping — see pkg/machine).
-function loadMachineGroups(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState): Observable<MachineGroupResponseItem[] | null> {
-  const query = new DataQuery()
-  query.addField({ n: "machine", sql: "distinct machine" })
-  query.order = "machine"
-  query.flat = true
-
-  const configuration = new DataQueryExecutorConfiguration()
-  if (!serverConfigurator.configureQuery(query, configuration) || !configureQueryFilters(query, filters)) {
-    return of(null)
-  }
-
-  state.loading = true
-  const url = `${serverConfigurator.serverUrl}/api/machineGroups/${serverConfigurator.compressString(serializeQuery(query))}`
-  return fromFetchWithRetryAndErrorHandling<MachineGroupResponseItem[]>(url)
 }

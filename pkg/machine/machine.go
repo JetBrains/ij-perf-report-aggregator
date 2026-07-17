@@ -16,6 +16,8 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 )
 
 const unknownGroup = "Unknown"
@@ -152,26 +154,22 @@ func GroupSQLExpr(col string) string {
 	for _, r := range rules {
 		switch {
 		case r.regex != nil:
-			b.WriteString("match(" + col + ", '" + chEscape(r.regex.String()) + "')")
+			b.WriteString("match(" + col + ", '" + sql_util.StringEscaper.Replace(r.regex.String()) + "')")
 		case len(r.names) != 0:
 			quoted := make([]string, len(r.names))
 			for i, n := range r.names {
-				quoted[i] = "'" + chEscape(n) + "'"
+				quoted[i] = "'" + sql_util.StringEscaper.Replace(n) + "'"
 			}
 			b.WriteString(col + " IN (" + strings.Join(quoted, ", ") + ")")
 		default:
 			conds := make([]string, len(r.prefixes))
 			for i, p := range r.prefixes {
-				conds[i] = "startsWith(" + col + ", '" + chEscape(p) + "')"
+				conds[i] = "startsWith(" + col + ", '" + sql_util.StringEscaper.Replace(p) + "')"
 			}
 			b.WriteString("(" + strings.Join(conds, " OR ") + ")")
 		}
-		b.WriteString(", '" + chEscape(r.group) + "', ")
+		b.WriteString(", '" + sql_util.StringEscaper.Replace(r.group) + "', ")
 	}
 	b.WriteString("'" + unknownGroup + "')")
 	return b.String()
-}
-
-func chEscape(s string) string {
-	return strings.ReplaceAll(s, "'", "''")
 }

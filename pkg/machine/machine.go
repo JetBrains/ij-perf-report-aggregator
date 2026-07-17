@@ -30,6 +30,12 @@ type rule struct {
 // Order matters: first matching rule wins. Prefix/regex rules come first, then the legacy
 // fixed-name agents (kept in sync with what used to be MachineConfigurator's valueToGroup —
 // only entries not already covered by a prefix rule are listed here).
+//
+// Keep one group's member names sharing a discriminating common prefix: the frontend queries
+// a selected group as `machine LIKE '<common prefix of live members>%'` (deliberate —
+// ClickHouse is much slower on `machine IN (...)` with hundreds of agents). Merging divergent
+// name stems into one rule widens that LIKE to sibling classes, or to every machine once no
+// common prefix is left.
 var rules = []rule{
 	{prefixes: []string{"intellij-linux-hw-blade-"}, group: "linux-blade"},
 	{prefixes: []string{"ij-linux-x64-perf-hw-blade-"}, group: "linux-unit-perf-blade"},
@@ -45,6 +51,9 @@ var rules = []rule{
 	{prefixes: []string{"intellij-linux-performance-tiny-aws-i-", "intellij-linux-performance-tiny-aws-on-demand-i-"}, group: "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"},
 	{prefixes: []string{"default-linux-aws-large-disk-"}, group: "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"},
 	{prefixes: []string{"intellij-windows-performance-aws-i-", "intellij-windows-performance-mem-aws-i"}, group: "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"},
+	// Same 4 vCPU / 8 GB hardware as "Linux EC2 c5.xlarge (4 vCPU, 8 GB)" (metric values within
+	// ~1% for the same test), but kept as its own group: merged, the members' common prefix
+	// would collapse to "qodana-" and the group's LIKE query would match every qodana class.
 	{prefixes: []string{"qodana-fleet-linux-amd64-heavy"}, group: "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"},
 	{prefixes: []string{
 		"intellij-linux-2004-aws-m5d-lt", "intellij-linux-2204-aws-m5d-lt",

@@ -154,8 +154,6 @@ function projectsToDefinition(projectsByOS: ProjectsByOS[]): ComputedRef<ChartDe
   )
 }
 
-export const completionProjects = { ...KOTLIN_PROJECTS.linux.completion, ...KOTLIN_PROJECTS.mac.completion }
-
 export const completionChartsDescription =
   "A Completion test invokes completion (CTRL + Space) explicitly at a specific position in a file. Depending on the test, the completion can be invoked with or without already typed text."
 
@@ -175,8 +173,6 @@ export const completionCharts = projectsToDefinition([
 /**
  * Highlighting projects are also the projects for local inspections.
  */
-
-export const highlightingProjects = { ...KOTLIN_PROJECTS.linux.highlighting, ...KOTLIN_PROJECTS.mac.highlighting }
 
 export const codeAnalysisChartsDescription = "A Code Analysis test measures the full highlighting of a single file, including inspections."
 
@@ -233,8 +229,6 @@ export const codeTypingCharts = projectsToDefinition([
     machines: [MACHINES.linux],
   },
 ])
-
-export const findUsagesProjects = { ...KOTLIN_PROJECTS.linux.findUsages, ...KOTLIN_PROJECTS.mac.findUsages }
 
 export const findUsagesChartsDescription =
   "A Find Usages test invokes Find Usages (Option + F7) on a specific declaration in a file. It waits until all usages have been found and compares the number of usages with the" +

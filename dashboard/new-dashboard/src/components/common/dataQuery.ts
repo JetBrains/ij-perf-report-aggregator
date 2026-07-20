@@ -186,10 +186,6 @@ export class DataQueryExecutorConfiguration {
   }
 }
 
-export interface Machine {
-  readonly name: string
-}
-
 export function toMutableArray(value: string | string[] | null): string[] {
   return value == null || value === "" ? [] : Array.isArray(value) ? [...value] : [value]
 }

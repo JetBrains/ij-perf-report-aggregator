@@ -157,35 +157,6 @@ func (client *YoutrackClient) AddComment(ctx context.Context, issueID string, te
 	return nil
 }
 
-func (client *YoutrackClient) SearchIssuesByLabel(ctx context.Context, label string) ([]YoutrackIssue, error) {
-	encodedLabel := url.QueryEscape(fmt.Sprintf("{%s}", label))
-	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?query=tag:"+encodedLabel, "GET", nil, map[string]string{"Accept": "application/json"})
-	if err != nil {
-		return nil, fmt.Errorf("error fetching issues: %w", err)
-	}
-
-	var issues []YoutrackIssue
-	if err := json.Unmarshal(responseData, &issues); err != nil {
-		return nil, fmt.Errorf("error unmarshalling issues: %w", err)
-	}
-
-	return issues, nil
-}
-
-func (client *YoutrackClient) GetCustomFields(ctx context.Context, projectId string) ([]CustomField, error) {
-	responseData, err := client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/admin/projects/%s/customFields?fields=value(name)", projectId), "GET", nil, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching custom fields: %w", err)
-	}
-
-	var customFields []CustomField
-	if err := json.Unmarshal(responseData, &customFields); err != nil {
-		return nil, fmt.Errorf("error unmarshalling custom fields: %w", err)
-	}
-
-	return customFields, nil
-}
-
 const maxAttachmentSize = 95 * 1024 * 1024 // 95 MB
 
 func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId string, content io.Reader, fileName string, contentLength int64) error {

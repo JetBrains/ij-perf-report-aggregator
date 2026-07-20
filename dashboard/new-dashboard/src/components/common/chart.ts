@@ -1,20 +1,10 @@
 import { ECBasicOption } from "echarts/types/dist/shared"
-import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { DataQueryExecutorConfiguration } from "./dataQuery"
 
 export const DEFAULT_LINE_CHART_HEIGHT = 340
 
-export declare type ToolTipFormatter = (params: CallbackDataParams[]) => string | null
-
 // natural sort of alphanumerical strings
 export const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" })
-
-export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: CallbackDataParams | CallbackDataParams[]) => string {
-  return function (params: CallbackDataParams | CallbackDataParams[]): string {
-    // function return type doesn't allow null, but actually it can be returned
-    return formatter(Array.isArray(params) ? params : [params]) as never
-  }
-}
 
 export type ChartType = "line" | "scatter"
 

@@ -6,15 +6,6 @@ export function nsToMs(v: number) {
   return v / 1_000_000
 }
 
-export function formatPercentage(difference: number): string {
-  return difference.toLocaleString(undefined, { style: "percent", minimumFractionDigits: 2 })
-}
-
-// https://github.com/apache/echarts/issues/8294
-export const numberFormat = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 0,
-})
-
 const durationFormatOptions: HumanizerOptions = {
   language: "shortEn",
   round: true,

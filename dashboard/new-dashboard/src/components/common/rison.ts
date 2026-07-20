@@ -28,24 +28,6 @@ const notIdChar = " '!:(),*@$"
 const notIdStart = "-0123456789"
 const idOk = new RegExp(`^[^${notIdStart}${notIdChar}][^${notIdChar}]*$`)
 
-/**
- * this is like encodeURIComponent() but quotes fewer characters.
- *
- * encodeURIComponent passes   ~!*()-_.'
- * rison.quote also passes   ,:@$
- */
-export function makeUrlSafe(x: string): string {
-  // if (/^[-A-Za-z\d~!*()_.',:@$]*$/.test(x)) {
-  //   return x
-  // }
-
-  return encodeURIComponent(x)
-  // .replace(/%2C/g, ",")
-  // .replace(/%3A/g, ":")
-  // .replace(/%40/g, "@")
-  // .replace(/%24/g, "$")
-}
-
 function doEncode(value: any) {
   // typeof for array also object
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

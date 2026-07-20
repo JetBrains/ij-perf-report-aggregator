@@ -7,28 +7,6 @@ import (
 	"github.com/AndreyAkinshin/pragmastat/go/v4"
 )
 
-func MedianF(nums []float64) float64 {
-	if len(nums) == 0 {
-		return 0
-	}
-
-	var sortedNums []float64
-	if slices.IsSorted(nums) {
-		sortedNums = nums
-	} else {
-		sortedNums = make([]float64, len(nums))
-		copy(sortedNums, nums)
-		slices.Sort(sortedNums)
-	}
-
-	middle := len(sortedNums) / 2
-	if len(sortedNums)%2 == 0 {
-		return (sortedNums[middle-1] + sortedNums[middle]) / 2
-	}
-
-	return sortedNums[middle]
-}
-
 func Median(nums []int) float64 {
 	if len(nums) == 0 {
 		return 0

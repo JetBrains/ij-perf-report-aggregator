@@ -487,7 +487,3 @@ export function getMetricDescription(metric: string | undefined): MetricInfo | n
 export function getMeasureUnit(metric: string | undefined): MeasureUnit | undefined {
   return getMetricDescription(metric)?.unit ?? undefined
 }
-
-export function getBetterDirection(metric: string | undefined): BetterDirection | undefined {
-  return getMetricDescription(metric)?.betterDirection ?? undefined
-}

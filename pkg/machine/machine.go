@@ -124,6 +124,24 @@ var rules = []rule{
 	}, group: "Linux Space i7-3770, 16Gb"},
 }
 
+// groupNames is the set of every group display name the rules can produce, plus the
+// "Unknown" fallback.
+var groupNames = func() map[string]bool {
+	m := make(map[string]bool, len(rules)+1)
+	for _, r := range rules {
+		m[r.group] = true
+	}
+	m[unknownGroup] = true
+	return m
+}()
+
+// IsGroup reports whether the given machine-selector value is a hardware-class group name (as
+// opposed to a raw agent name). Group display names never collide with raw agent names, so a
+// machine selection can mix both and be classified value by value.
+func IsGroup(name string) bool {
+	return groupNames[name]
+}
+
 // GroupName returns the hardware-class group for a raw machine name (first matching rule
 // wins), falling back to "Unknown" for unmapped names.
 func GroupName(name string) string {

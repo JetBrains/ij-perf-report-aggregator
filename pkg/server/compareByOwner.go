@@ -256,30 +256,22 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 }
 
 func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]dbTableKey, baseBranch, compareBranch string) []comparisonResponseItem {
-	resultsByMachine := make(map[string][]measureQueryResult)
-	for _, r := range results {
-		resultsByMachine[r.Machine] = append(resultsByMachine[r.Machine], r.measureQueryResult)
-	}
+	grouped := buildGroupedComparisonResponse(results, baseBranch, compareBranch)
 
-	response := make([]comparisonResponseItem, 0)
-	for machineGroup, machineResults := range resultsByMachine {
-		filtered := filterQueryResults(machineResults)
-		compared := buildBranchComparisonResponse(filtered, baseBranch, compareBranch)
+	response := make([]comparisonResponseItem, 0, len(grouped))
+	for _, item := range grouped {
+		dt := dbTableMap[item.Project]
+		link := buildTestLink(dt.DbName, dt.TableName, item.Machine, baseBranch, compareBranch, item.Project, item.MeasureName)
 
-		for _, item := range compared {
-			dt := dbTableMap[item.Project]
-			link := buildTestLink(dt.DbName, dt.TableName, machineGroup, baseBranch, compareBranch, item.Project, item.MeasureName)
-
-			response = append(response, comparisonResponseItem{
-				Project:            item.Project,
-				Metric:             item.MeasureName,
-				Machine:            machineGroup,
-				BaseBranchValue:    item.Median1,
-				CompareBranchValue: item.Median2,
-				Diff:               item.Diff,
-				Link:               link,
-			})
-		}
+		response = append(response, comparisonResponseItem{
+			Project:            item.Project,
+			Metric:             item.MeasureName,
+			Machine:            item.Machine,
+			BaseBranchValue:    item.Median1,
+			CompareBranchValue: item.Median2,
+			Diff:               item.Diff,
+			Link:               link,
+		})
 	}
 
 	return response

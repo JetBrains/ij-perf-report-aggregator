@@ -42,6 +42,18 @@ func TestGroupNameFallbackUnknown(t *testing.T) {
 	assert.Equal(t, "Unknown", GroupName(""))
 }
 
+// TestIsGroup distinguishes group display names from raw agent names.
+func TestIsGroup(t *testing.T) {
+	t.Parallel()
+	assert.True(t, IsGroup("linux-blade"))
+	assert.True(t, IsGroup("Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"))
+	assert.True(t, IsGroup("macMini 2018"))                 // fixed-name rule
+	assert.True(t, IsGroup("windows-azure"))                // regex rule
+	assert.True(t, IsGroup(unknownGroup))                   // the fallback bucket is selectable too
+	assert.False(t, IsGroup("intellij-linux-hw-blade-023")) // raw agent
+	assert.False(t, IsGroup(""))
+}
+
 // TestGroupSQLExpr sanity-checks the generated ClickHouse expression.
 func TestGroupSQLExpr(t *testing.T) {
 	t.Parallel()

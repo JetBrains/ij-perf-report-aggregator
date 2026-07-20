@@ -203,11 +203,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return true
   }
 
-  getMergedValue(): string {
-    const values: string[] = this.getSelectedValues(this.selected.value)
-    return prefix(values) + "%"
-  }
-
   private configureQueryAsFilter(selected: string[], query: DataQuery) {
     // When every selected group carries a backend-rendered predicate, combine them into one
     // exact disjunction. Raw names and predicate-less groups (the Unknown bucket) keep the
@@ -263,13 +258,6 @@ export interface GroupedDimensionValue {
   // class, rendered by the backend from the grouping rule. Absent for rule-less groups
   // (the Unknown bucket), which are filtered by their member list instead.
   predicate?: string
-}
-
-function prefix(words: string[]): string {
-  if (!words[0] || words.length == 1) return words[0] || ""
-  let i = 0
-  while (words[0][i] && words.every((w) => w[i] === words[0][i])) i++
-  return words[0].slice(0, Math.max(0, i))
 }
 
 interface MachineGroupResponseItem {

@@ -18,6 +18,41 @@ type branchComparisonResponseItem struct {
 	Diff        float64
 }
 
+type machineComparisonResponseItem struct {
+	Project     string
+	MeasureName string
+	Machine     string
+	Median1     float64
+	Median2     float64
+	Diff        float64
+}
+
+// buildGroupedComparisonResponse splits the results by machine group and compares value1
+// against value2 within each group only — runs from different hardware classes are never
+// pooled into one median (AT-4930). A project/metric pair therefore yields one row per group.
+func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 string) []machineComparisonResponseItem {
+	resultsByMachine := make(map[string][]measureQueryResult)
+	for _, r := range results {
+		resultsByMachine[r.Machine] = append(resultsByMachine[r.Machine], r.measureQueryResult)
+	}
+
+	response := make([]machineComparisonResponseItem, 0)
+	for machineGroup, machineResults := range resultsByMachine {
+		filtered := filterQueryResults(machineResults)
+		for _, item := range buildBranchComparisonResponse(filtered, value1, value2) {
+			response = append(response, machineComparisonResponseItem{
+				Project:     item.Project,
+				MeasureName: item.MeasureName,
+				Machine:     machineGroup,
+				Median1:     item.Median1,
+				Median2:     item.Median2,
+				Diff:        item.Diff,
+			})
+		}
+	}
+	return response
+}
+
 type filteredValues struct {
 	Branch      string
 	Project     string

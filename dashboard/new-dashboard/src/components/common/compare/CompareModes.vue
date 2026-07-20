@@ -72,6 +72,11 @@
         :sortable="true"
       />
       <Column
+        field="machine"
+        header="Machine"
+        :sortable="true"
+      />
+      <Column
         field="mode1"
         :header="mode1 ?? ''"
       >
@@ -133,6 +138,7 @@ interface CompareBranchesProps {
 interface TableRow {
   test: string
   metric: string
+  machine: string
   build1: number
   build2: number
   difference: number
@@ -212,7 +218,7 @@ combineLatest([testModeConfigurator1.createObservable(), testModeConfigurator2.c
           !/.*_\d+(#.*)?$/.test(r.MeasureName) //don't add metrics like foo_1
         ) {
           tests.add(r.Project)
-          table.push({ test: r.Project, metric: r.MeasureName, build1: r.Median1, build2: r.Median2, difference: r.Diff })
+          table.push({ test: r.Project, metric: r.MeasureName, machine: r.Machine, build1: r.Median1, build2: r.Median2, difference: r.Diff })
         }
       }
       testConfigurator.initData([...tests])
@@ -240,6 +246,7 @@ class ComparisonResult {
   public constructor(
     readonly Project: string,
     readonly MeasureName: string,
+    readonly Machine: string,
     readonly Median1: number,
     readonly Median2: number,
     readonly Diff: number
@@ -270,7 +277,9 @@ function compareModes(machineConfigurator: MachineConfigurator, mode1Value: stri
     branch: branchConfigurator.selected.value,
     table: dbName + "." + table,
     measure_names: metricNames,
-    machine: machineConfigurator.getMergedValue(),
+    // group names and/or raw agent names, as-is — the backend owns the group resolution and
+    // compares within each hardware class separately
+    machines: machineConfigurator.selected.value,
   }
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<ComparisonResult[]>(serverConfigurator.serverUrl + "/api/compareModes/" + compressedParams)

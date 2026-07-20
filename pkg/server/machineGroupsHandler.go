@@ -49,10 +49,7 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 		// The cache manager dereferences the returned buffer unconditionally, so it must never
 		// be nil on success — mirror /api/q and answer an empty query list with an empty result.
 		buffer, err := toJSONBuffer([]machineGroupResponseItem{})
-		if err != nil {
-			return nil, false, err
-		}
-		return buffer, true, nil
+		return buffer, true, err
 	}
 
 	// Reuse the standard query pipeline to fetch the flat list of distinct machine names.
@@ -88,8 +85,5 @@ func (t *StatsServer) handleMachineGroups(request *http.Request) (*bytebufferpoo
 	})
 
 	buffer, err := toJSONBuffer(response)
-	if err != nil {
-		return nil, false, err
-	}
-	return buffer, true, nil
+	return buffer, true, err
 }

@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -120,14 +119,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}
 
 		machineLike := "%" + params.Machine + "%"
-
-		metrics := buildMetricsList(params.AdditionalMetrics)
-
-		quotedMetrics := make([]string, len(metrics))
-		for i, m := range metrics {
-			quotedMetrics[i] = "'" + m + "'"
-		}
-		metricsStr := strings.Join(quotedMetrics, ",")
+		metricsStr := quoteAndJoin(buildMetricsList(params.AdditionalMetrics))
 
 		db, err := t.openDatabaseConnection()
 		if err != nil {
@@ -228,23 +220,9 @@ func buildMetricsList(additionalMetrics []string) []string {
 }
 
 func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr string) ([]ownerQueryResult, error) {
-	sql := fmt.Sprintf(
-		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, machine_group AS Machine, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM ("+
-			"SELECT branch, project, %s AS machine_group, measures.name AS measure_name, measures.value AS measure_value "+
-			"FROM %s.%s ARRAY JOIN measures "+
-			"WHERE branch IN ('%s', '%s') "+
-			"AND measure_name IN (%s) "+
-			"AND machine LIKE '%s' "+
-			"AND mode = '%s' "+
-			"AND project IN (%s) "+
-			"AND generated_time > now() - interval 1 month "+
-			"ORDER BY generated_time DESC"+
-			") "+
-			"GROUP BY branch, project, measure_name, machine_group",
-		machine.GroupSQLExpr("machine"), dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr,
-	)
+	sql := groupedComparisonSQL("branch", dbName+"."+table, fmt.Sprintf(
+		"branch IN ('%s', '%s') AND measure_name IN (%s) AND machine LIKE '%s' AND mode = '%s' AND project IN (%s)",
+		baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr))
 
 	var queryResults []ownerQueryResult
 

@@ -146,22 +146,21 @@ func IsGroup(name string) bool {
 // wins), falling back to "Unknown" for unmapped names.
 func GroupName(name string) string {
 	for _, r := range rules {
-		if r.regex != nil {
-			if r.regex.MatchString(name) {
-				return r.group
-			}
-			continue
-		}
-		if slices.Contains(r.names, name) {
+		if (r.regex != nil && r.regex.MatchString(name)) || slices.Contains(r.names, name) ||
+			slices.ContainsFunc(r.prefixes, func(p string) bool { return strings.HasPrefix(name, p) }) {
 			return r.group
-		}
-		for _, p := range r.prefixes {
-			if strings.HasPrefix(name, p) {
-				return r.group
-			}
 		}
 	}
 	return unknownGroup
+}
+
+// quoteList renders values as a comma-separated list of escaped SQL string literals.
+func quoteList(values []string) string {
+	quoted := make([]string, len(values))
+	for i, v := range values {
+		quoted[i] = "'" + sql_util.StringEscaper.Replace(v) + "'"
+	}
+	return strings.Join(quoted, ", ")
 }
 
 // GroupPredicate renders the WHERE-clause suffix (the part after the column name) that selects
@@ -181,11 +180,7 @@ func GroupPredicate(col, group string) string {
 			parts = append(parts, "like '"+sql_util.StringEscaper.Replace(p)+"%'")
 		}
 		if len(r.names) != 0 {
-			quoted := make([]string, len(r.names))
-			for i, n := range r.names {
-				quoted[i] = "'" + sql_util.StringEscaper.Replace(n) + "'"
-			}
-			parts = append(parts, "in ("+strings.Join(quoted, ", ")+")")
+			parts = append(parts, "in ("+quoteList(r.names)+")")
 		}
 	}
 	return strings.Join(parts, " or "+col+" ")
@@ -202,11 +197,7 @@ func GroupSQLExpr(col string) string {
 		case r.regex != nil:
 			b.WriteString("match(" + col + ", '" + sql_util.StringEscaper.Replace(r.regex.String()) + "')")
 		case len(r.names) != 0:
-			quoted := make([]string, len(r.names))
-			for i, n := range r.names {
-				quoted[i] = "'" + sql_util.StringEscaper.Replace(n) + "'"
-			}
-			b.WriteString(col + " IN (" + strings.Join(quoted, ", ") + ")")
+			b.WriteString(col + " IN (" + quoteList(r.names) + ")")
 		default:
 			conds := make([]string, len(r.prefixes))
 			for i, p := range r.prefixes {

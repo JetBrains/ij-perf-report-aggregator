@@ -163,7 +163,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         const groupItem = groupNameToItem.get(value)
         values.length = 0
         filter.v = values
-        filter.o = undefined
         filter.q = undefined
         if (groupItem == null) {
           // a raw machine name (e.g. from a drilldown link)

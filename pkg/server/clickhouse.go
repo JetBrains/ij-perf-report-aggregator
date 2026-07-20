@@ -93,26 +93,14 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	quotedMeasureNames := make([]string, len(params.MeasureNames))
-	for i, name := range params.MeasureNames {
-		quotedMeasureNames[i] = "'" + name + "'"
-	}
-	measureNamesString := strings.Join(quotedMeasureNames, ",")
-
 	mode := params.Mode
 	if params.Mode == "default" {
 		mode = ""
 	}
 
-	sql := fmt.Sprintf(
-		"SELECT branch as Branch, project as Project, measure_name as MeasureName, machine_group AS Machine, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM (SELECT branch, project, %s AS machine_group, measures.name as measure_name, measures.value as measure_value "+
-			"FROM %s ARRAY JOIN measures "+
-			"WHERE branch IN ('%s', '%s') AND measure_name in (%s) AND (%s) and mode = '%s' "+
-			"AND generated_time > subtractMonths(now(), 1) ORDER BY generated_time DESC) "+
-			"GROUP BY branch, project, measure_name, machine_group",
-		machine.GroupSQLExpr("machine"), params.Table, params.Branch1, params.Branch2, measureNamesString, machineCondition(params.Machines), mode)
+	sql := groupedComparisonSQL("branch", params.Table, fmt.Sprintf(
+		"branch IN ('%s', '%s') AND measure_name IN (%s) AND (%s) AND mode = '%s'",
+		params.Branch1, params.Branch2, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines), mode))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -153,12 +141,6 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	quotedMeasureNames := make([]string, len(params.MeasureNames))
-	for i, name := range params.MeasureNames {
-		quotedMeasureNames[i] = "'" + name + "'"
-	}
-	measureNamesString := strings.Join(quotedMeasureNames, ",")
-
 	mode1 := params.Mode1
 	if mode1 == "default" {
 		mode1 = ""
@@ -168,15 +150,9 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		mode2 = ""
 	}
 
-	sql := fmt.Sprintf(
-		"SELECT mode as Branch, project as Project, measure_name as MeasureName, machine_group AS Machine, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM (SELECT mode, project, %s AS machine_group, measures.name as measure_name, measures.value as measure_value "+
-			"FROM %s ARRAY JOIN measures "+
-			"WHERE mode IN ('%s', '%s') AND branch = '%s' AND measure_name in (%s) AND (%s) "+
-			"AND generated_time > subtractMonths(now(),1) ORDER BY generated_time DESC) "+
-			"GROUP BY mode, project, measure_name, machine_group",
-		machine.GroupSQLExpr("machine"), params.Table, mode1, mode2, params.Branch, measureNamesString, machineCondition(params.Machines))
+	sql := groupedComparisonSQL("mode", params.Table, fmt.Sprintf(
+		"mode IN ('%s', '%s') AND branch = '%s' AND measure_name IN (%s) AND (%s)",
+		mode1, mode2, params.Branch, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines)))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()

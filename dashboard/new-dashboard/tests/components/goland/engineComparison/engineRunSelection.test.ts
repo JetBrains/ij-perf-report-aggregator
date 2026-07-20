@@ -20,19 +20,39 @@ describe("engine run selection", () => {
   })
 
   it("aggregated mode returns every run's value", () => {
-    const values = pickRunValues(false, null, [{ t: DAY0, v: 100 }, { t: DAY1, v: 110 }], [{ t: DAY0, v: 50 }])
+    const values = pickRunValues(
+      false,
+      null,
+      [
+        { t: DAY0, v: 100 },
+        { t: DAY1, v: 110 },
+      ],
+      [{ t: DAY0, v: 50 }]
+    )
     expect(values).toStrictEqual({ legacy: [100, 110], new: [50] })
   })
 
   it("single mode with no day picks the latest common day", () => {
-    const legacy = [{ t: DAY0, v: 100 }, { t: DAY1, v: 110 }]
-    const brandNew = [{ t: DAY0, v: 50 }, { t: DAY1, v: 40 }]
+    const legacy = [
+      { t: DAY0, v: 100 },
+      { t: DAY1, v: 110 },
+    ]
+    const brandNew = [
+      { t: DAY0, v: 50 },
+      { t: DAY1, v: 40 },
+    ]
     expect(pickRunValues(true, null, legacy, brandNew)).toStrictEqual({ legacy: [110], new: [40] })
   })
 
   it("single mode honors an explicit day", () => {
-    const legacy = [{ t: DAY0, v: 100 }, { t: DAY1, v: 110 }]
-    const brandNew = [{ t: DAY0, v: 50 }, { t: DAY1, v: 40 }]
+    const legacy = [
+      { t: DAY0, v: 100 },
+      { t: DAY1, v: 110 },
+    ]
+    const brandNew = [
+      { t: DAY0, v: 50 },
+      { t: DAY1, v: 40 },
+    ]
     expect(pickRunValues(true, 0, legacy, brandNew)).toStrictEqual({ legacy: [100], new: [50] })
   })
 

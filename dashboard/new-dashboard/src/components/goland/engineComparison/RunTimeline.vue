@@ -19,7 +19,11 @@
             v-tooltip.top="run.label"
             type="button"
             class="relative z-10 rounded-full transition-all"
-            :class="isSelected(run.day) ? 'w-3.5 h-3.5 bg-blue-500 ring-2 ring-blue-300 dark:ring-blue-700' : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-500 hover:bg-gray-400 dark:hover:bg-gray-400'"
+            :class="
+              isSelected(run.day)
+                ? 'w-3.5 h-3.5 bg-blue-500 ring-2 ring-blue-300 dark:ring-blue-700'
+                : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-500 hover:bg-gray-400 dark:hover:bg-gray-400'
+            "
             :aria-label="`Show run ${run.label}`"
             :aria-pressed="isSelected(run.day)"
             @click="select(run.day)"

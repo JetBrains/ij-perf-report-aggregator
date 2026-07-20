@@ -37,11 +37,7 @@ describe("engine comparison aggregates", () => {
   })
 
   it("groups per phase and averages within a phase", () => {
-    const rows = [
-      point({ phase: "coldStartHighlighting", ratio: 0.5 }),
-      point({ phase: "coldStartHighlighting", ratio: 2 }),
-      point({ phase: "warmStartHighlighting", ratio: 4 }),
-    ]
+    const rows = [point({ phase: "coldStartHighlighting", ratio: 0.5 }), point({ phase: "coldStartHighlighting", ratio: 2 }), point({ phase: "warmStartHighlighting", ratio: 4 })]
     const aggregates = computeEngineAggregates(rows)
     expect(aggregates.perPhase.map((group) => group.key)).toStrictEqual(["coldStartHighlighting", "warmStartHighlighting"])
     // cold has ratios 0.5 and 2 -> geomean 1

@@ -23,7 +23,12 @@ export function latestRunByDay(runs: readonly SeriesRun[]): Map<number, SeriesRu
 //   - aggregated (single=false): every run's value.
 //   - single: the run of `selectedDay` (or the latest day both engines share when selectedDay is null).
 // Returns null when a single-run day lacks one of the engines — the caller skips that cell.
-export function pickRunValues(single: boolean, selectedDay: number | null, legacyRuns: readonly SeriesRun[], newRuns: readonly SeriesRun[]): { legacy: number[]; new: number[] } | null {
+export function pickRunValues(
+  single: boolean,
+  selectedDay: number | null,
+  legacyRuns: readonly SeriesRun[],
+  newRuns: readonly SeriesRun[]
+): { legacy: number[]; new: number[] } | null {
   if (!single) {
     return { legacy: legacyRuns.map((run) => run.v), new: newRuns.map((run) => run.v) }
   }

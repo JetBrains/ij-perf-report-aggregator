@@ -16,10 +16,7 @@ describe("index series runs", () => {
         [2000, 1000],
         [20, 10],
       ],
-      [
-        [3000],
-        [30],
-      ],
+      [[3000], [30]],
     ]
     const indexed = indexSeriesRuns(data, configOf(["p1", "p2"], ["m1", "m1"]), ["b1"], ["p1", "p2"], ["m1"])
     expect(indexed.get(seriesKey("b1", "p1", "m1"))).toStrictEqual([

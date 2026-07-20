@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-3 py-3 px-5 border border-solid rounded-md">
-    <div class="text-sm font-semibold">Movers, ranked by Δ% <span class="font-normal text-gray-500">(worst regression at top; red = slower, green = faster; hover for values)</span></div>
+    <div class="text-sm font-semibold">
+      Movers, ranked by Δ% <span class="font-normal text-gray-500">(worst regression at top; red = slower, green = faster; hover for values)</span>
+    </div>
     <div
       v-if="phaseGroups.length === 0"
       class="text-sm text-gray-500 py-2"
@@ -24,7 +26,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { EngineCompareRow } from "./useEngineComparison"
-import { PHASES, phaseLabel } from "./highlightingMetrics"
+import { phaseLabel, PHASES } from "./highlightingMetrics"
 import EngineCompareBarsChart from "./EngineCompareBarsChart.vue"
 
 const { rows } = defineProps<{ rows: EngineCompareRow[] }>()

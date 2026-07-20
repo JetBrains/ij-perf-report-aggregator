@@ -23,10 +23,17 @@
         <div class="flex flex-col gap-2 text-sm max-w-md">
           <span class="font-semibold">How this verdict is computed</span>
           <hr class="w-full border-gray-200 dark:border-gray-600" />
-          <p>The overall figure is the geometric mean of each scenario's NEW ÷ LEGACY ratio — the SPEC-style summary that keeps a 180× spread of absolute values from letting slow files dominate.</p>
-          <p>A single grand mean can hide a Simpson's-paradox split (NEW winning overall while losing every bucket), so the per-bucket and per-phase means are shown alongside it — trust the verdict only when they agree.</p>
           <p>
-            Improved / regressed / neutral counts apply the same two-gate significance test as the compare table (robust effect size <em>and</em> ≥5% change); everything else is neutral.
+            The overall figure is the geometric mean of each scenario's NEW ÷ LEGACY ratio — the SPEC-style summary that keeps a 180× spread of absolute values from letting slow
+            files dominate.
+          </p>
+          <p>
+            A single grand mean can hide a Simpson's-paradox split (NEW winning overall while losing every bucket), so the per-bucket and per-phase means are shown alongside it —
+            trust the verdict only when they agree.
+          </p>
+          <p>
+            Improved / regressed / neutral counts apply the same two-gate significance test as the compare table (robust effect size <em>and</em> ≥5% change); everything else is
+            neutral.
           </p>
         </div>
       </Popover>
@@ -101,7 +108,8 @@
     </div>
 
     <p class="text-xs text-gray-500">
-      A synthetic win here maps to revenue only when the interactive First-Code-Analysis APDEX gate (which covers highlighting) moves too — read this as a sensor, not a money metric.
+      A synthetic win here maps to revenue only when the interactive First-Code-Analysis APDEX gate (which covers highlighting) moves too — read this as a sensor, not a money
+      metric.
     </p>
   </div>
 </template>
@@ -111,7 +119,7 @@ import { computed, useTemplateRef } from "vue"
 import { PopoverMethods } from "primevue/popover"
 import { EngineAggregates } from "./engineCompareAggregates"
 import { EngineComparisonMode } from "./useEngineComparison"
-import { metricTypeLabel, phaseLabel, bucketLabel } from "./highlightingMetrics"
+import { bucketLabel, metricTypeLabel, phaseLabel } from "./highlightingMetrics"
 import { formatSignedPercent } from "../../charts/compareStats"
 
 const { aggregates, mode, runLabel } = defineProps<{ aggregates: EngineAggregates; mode: EngineComparisonMode; runLabel: string }>()

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 
+import { RouteRecordRaw } from "vue-router"
 import { ParentRouteRecord, TypedRouteRecord } from "./components/common/route"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
-import type { PerformanceTestsProps } from "./components/common/PerformanceTests.vue"
+import type { PerformanceTestsProps } from "./components/common/PerformanceTests.props"
 import type { PerformanceUnitTestsProps } from "./components/common/PerformanceUnitTests.vue"
 
 const COMPONENTS = {
@@ -274,6 +275,42 @@ const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
 const PRODUCT_METRICS_LABEL = "Product Metrics"
 
+type LazyComponent = NonNullable<RouteRecordRaw["component"]>
+
+// A single navigation tab.
+function tab(url: ROUTES, label: string): Tab {
+  return { url, label }
+}
+
+// A dashboard route: { path, component, meta: { pageTitle } }. `props` covers the few dashboards
+// that pass static props to their component.
+function dashboard(path: ROUTES, component: LazyComponent, pageTitle: string, props?: Record<string, unknown>): RouteRecordRaw {
+  return props === undefined ? { path, component, meta: { pageTitle } } : { path, component, props, meta: { pageTitle } }
+}
+
+// Performance-tests page, typed against the shared PerformanceTests component props.
+function perfTests(path: ROUTES, props: PerformanceTestsProps, pageTitle: string) {
+  return { path, component: COMPONENTS.perfTests, props, meta: { pageTitle } } satisfies TypedRouteRecord<PerformanceTestsProps>
+}
+
+// Startup metrics dashboard page.
+function startupDashboard(path: ROUTES, props: { table: string; defaultProject?: string }, pageTitle: string): RouteRecordRaw {
+  return { path, component: COMPONENTS.startupDashboard, props, meta: { pageTitle } }
+}
+
+// Compare-builds / compare-branches / compare-modes pages; the page title defaults to the standard label.
+function compareBuilds(path: ROUTES, props: { dbName: string; table: string }, pageTitle: string = COMPARE_BUILDS_LABEL): RouteRecordRaw {
+  return { path, component: COMPONENTS.compareBuilds, props, meta: { pageTitle } }
+}
+
+function compareBranches(path: ROUTES, props: { dbName: string; table: string; metricsNames?: string[] }, pageTitle: string = COMPARE_BRANCHES_LABEL): RouteRecordRaw {
+  return { path, component: COMPONENTS.compareBranches, props, meta: { pageTitle } }
+}
+
+function compareModes(path: ROUTES, props: { dbName: string; table: string }, pageTitle: string = COMPARE_MODES_LABEL): RouteRecordRaw {
+  return { path, component: COMPONENTS.compareModes, props, meta: { pageTitle } }
+}
+
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
   label: "IntelliJ Startup (deprecated)",
@@ -282,34 +319,13 @@ const IJ_STARTUP: Product = {
       url: ROUTE_PREFIX.Startup,
       label: "",
       tabs: [
-        {
-          url: ROUTES.StartupPulse,
-          label: "Pulse",
-        },
-        {
-          url: ROUTES.StartupPulseInstaller,
-          label: "Pulse (Installer)",
-        },
-        {
-          url: ROUTES.StartupModuleLoading,
-          label: "Module Loading",
-        },
-        {
-          url: ROUTES.StartupGcAndMemory,
-          label: "GC and Memory",
-        },
-        {
-          url: ROUTES.StartupProgress,
-          label: "Progress Over Time",
-        },
-        {
-          url: ROUTES.StartupExplore,
-          label: "Explore",
-        },
-        {
-          url: ROUTES.StartupExploreInstaller,
-          label: "Explore (Installer)",
-        },
+        tab(ROUTES.StartupPulse, "Pulse"),
+        tab(ROUTES.StartupPulseInstaller, "Pulse (Installer)"),
+        tab(ROUTES.StartupModuleLoading, "Module Loading"),
+        tab(ROUTES.StartupGcAndMemory, "GC and Memory"),
+        tab(ROUTES.StartupProgress, "Progress Over Time"),
+        tab(ROUTES.StartupExplore, "Explore"),
+        tab(ROUTES.StartupExploreInstaller, "Explore (Installer)"),
       ],
     },
   ],
@@ -322,163 +338,63 @@ const IDEA: Product = {
       url: ROUTE_PREFIX.IntelliJ,
       label: "Primary Functionality",
       tabs: [
-        {
-          url: ROUTES.IntelliJStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJIndexingDashboard,
-          label: "Indexes",
-        },
-        {
-          url: ROUTES.IntelliJJavaDashboard,
-          label: "Java",
-        },
-        {
-          url: ROUTES.IntelliJKotlinDashboard,
-          label: "Kotlin",
-        },
-        {
-          url: ROUTES.IntelliJUltimateDashboard,
-          label: "Ultimate",
-        },
-        {
-          url: ROUTES.IntelliJUIDashboard,
-          label: "UI",
-        },
-        {
-          url: ROUTES.IntelliJSearchEverywhereExDashboard,
-          label: "Search Everywhere Ex",
-        },
-        {
-          url: ROUTES.IntelliJDevTests,
-          label: "Tests (Dev)",
-        },
-        {
-          url: ROUTES.IntelliJCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJCompareModes,
-          label: COMPARE_MODES_LABEL,
-        },
+        tab(ROUTES.IntelliJStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.IntelliJProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.IntelliJIndexingDashboard, "Indexes"),
+        tab(ROUTES.IntelliJJavaDashboard, "Java"),
+        tab(ROUTES.IntelliJKotlinDashboard, "Kotlin"),
+        tab(ROUTES.IntelliJUltimateDashboard, "Ultimate"),
+        tab(ROUTES.IntelliJUIDashboard, "UI"),
+        tab(ROUTES.IntelliJSearchEverywhereExDashboard, "Search Everywhere Ex"),
+        tab(ROUTES.IntelliJDevTests, "Tests (Dev)"),
+        tab(ROUTES.IntelliJCompareBranches, COMPARE_BRANCHES_LABEL),
+        tab(ROUTES.IntelliJCompareModes, COMPARE_MODES_LABEL),
       ],
     },
     {
       url: ROUTE_PREFIX.IntelliJBuildTools,
       label: "Build Tools",
       tabs: [
-        {
-          url: ROUTES.IntelliJGradleDashboardDev,
-          label: "Gradle Import DevServer",
-        },
-        {
-          url: ROUTES.IntelliJMavenDashboardDev,
-          label: "Maven Import DevServer",
-        },
-        {
-          url: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
-          label: "Maven Importers and Configurators DevServer",
-        },
-        {
-          url: ROUTES.IntelliJJpsDashboardDev,
-          label: "JPS Import DevServer",
-        },
-        {
-          url: ROUTES.IntelliJGradleBenchmarks,
-          label: "Gradle Benchmark",
-        },
-        {
-          url: ROUTES.IntelliJBuildTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJBuildTestsDev,
-          label: "Tests (DevServer)",
-        },
+        tab(ROUTES.IntelliJGradleDashboardDev, "Gradle Import DevServer"),
+        tab(ROUTES.IntelliJMavenDashboardDev, "Maven Import DevServer"),
+        tab(ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev, "Maven Importers and Configurators DevServer"),
+        tab(ROUTES.IntelliJJpsDashboardDev, "JPS Import DevServer"),
+        tab(ROUTES.IntelliJGradleBenchmarks, "Gradle Benchmark"),
+        tab(ROUTES.IntelliJBuildTests, TESTS_LABEL),
+        tab(ROUTES.IntelliJBuildTestsDev, "Tests (DevServer)"),
       ],
     },
     {
       url: ROUTE_PREFIX.IntelliJSharedIndexes,
       label: "Shared Indexes",
-      tabs: [
-        {
-          url: ROUTES.IntelliJSharedIndicesDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesTests,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.IntelliJSharedIndicesDashboard, DASHBOARD_LABEL), tab(ROUTES.IntelliJSharedIndicesTests, TESTS_LABEL)],
     },
     {
       url: ROUTE_PREFIX.IntelliJKotlinK2Performance,
       label: "Performance K2",
-      tabs: [
-        {
-          url: ROUTES.IntelliJK2Dashboard,
-          label: DASHBOARD_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.IntelliJK2Dashboard, DASHBOARD_LABEL)],
     },
     {
       url: ROUTE_PREFIX.IntelliJPackageChecker,
       label: "Package Checker",
-      tabs: [
-        {
-          url: ROUTES.IntelliJPackageCheckerDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJPackageCheckerTests,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.IntelliJPackageCheckerDashboard, DASHBOARD_LABEL), tab(ROUTES.IntelliJPackageCheckerTests, TESTS_LABEL)],
     },
     {
       url: ROUTE_PREFIX.Vcs,
       label: "VCS",
       tabs: [
-        {
-          url: ROUTES.VcsIdeaDashboardDev,
-          label: "Performance dashboard idea project DevServer",
-        },
-        {
-          url: ROUTES.VcsSpaceDashboardDev,
-          label: "Performance dashboard space project DevServer",
-        },
-        {
-          url: ROUTES.VcsStarterDashboardDev,
-          label: "Performance dashboard starter project DevServer",
-        },
-        {
-          url: ROUTES.VcsIdeaDashboard,
-          label: "Performance dashboard idea project (obsolete)",
-        },
-        {
-          url: ROUTES.VcsSpaceDashboard,
-          label: "Performance dashboard space project (obsolete)",
-        },
-        {
-          url: ROUTES.VcsStarterDashboard,
-          label: "Performance dashboard starter project (obsolete)",
-        },
+        tab(ROUTES.VcsIdeaDashboardDev, "Performance dashboard idea project DevServer"),
+        tab(ROUTES.VcsSpaceDashboardDev, "Performance dashboard space project DevServer"),
+        tab(ROUTES.VcsStarterDashboardDev, "Performance dashboard starter project DevServer"),
+        tab(ROUTES.VcsIdeaDashboard, "Performance dashboard idea project (obsolete)"),
+        tab(ROUTES.VcsSpaceDashboard, "Performance dashboard space project (obsolete)"),
+        tab(ROUTES.VcsStarterDashboard, "Performance dashboard starter project (obsolete)"),
       ],
     },
     {
       url: ROUTE_PREFIX.EmbeddingSearch,
       label: "Embedding Search",
-      tabs: [
-        {
-          url: ROUTES.IntelliJEmbeddingSearchDashboard,
-          label: "Embedding Search",
-        },
-      ],
+      tabs: [tab(ROUTES.IntelliJEmbeddingSearchDashboard, "Embedding Search")],
     },
   ],
 }
@@ -490,54 +406,18 @@ const PHPSTORM: Product = {
       url: ROUTE_PREFIX.PhpStorm,
       label: "",
       tabs: [
-        {
-          url: ROUTES.PhpStormStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormLLMDashboard,
-          label: "LLM Dashboard",
-        },
-        {
-          url: ROUTES.PhpStormIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.PhpStormInspectionsDashboard,
-          label: "Inspections",
-        },
-        {
-          url: ROUTES.PhpStormCodeEditingDashboard,
-          label: "Code Editing",
-        },
-        {
-          url: ROUTES.PhpStormUnitTestsDashboard,
-          label: "Unit Tests",
-        },
-        {
-          url: ROUTES.PhpStormDevTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormCompareModes,
-          label: COMPARE_MODES_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormWithPluginsDashboard,
-          label: "Dashboard with Plugins",
-        },
-        {
-          url: ROUTES.PhpStormWithPluginsTests,
-          label: "Tests with Plugins",
-        },
+        tab(ROUTES.PhpStormStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.PhpStormProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.PhpStormLLMDashboard, "LLM Dashboard"),
+        tab(ROUTES.PhpStormIndexingDashboard, "Indexing"),
+        tab(ROUTES.PhpStormInspectionsDashboard, "Inspections"),
+        tab(ROUTES.PhpStormCodeEditingDashboard, "Code Editing"),
+        tab(ROUTES.PhpStormUnitTestsDashboard, "Unit Tests"),
+        tab(ROUTES.PhpStormDevTests, TESTS_LABEL),
+        tab(ROUTES.PhpStormCompareBranches, COMPARE_BRANCHES_LABEL),
+        tab(ROUTES.PhpStormCompareModes, COMPARE_MODES_LABEL),
+        tab(ROUTES.PhpStormWithPluginsDashboard, "Dashboard with Plugins"),
+        tab(ROUTES.PhpStormWithPluginsTests, "Tests with Plugins"),
       ],
     },
   ],
@@ -550,49 +430,19 @@ const KOTLIN: Product = {
       url: ROUTE_PREFIX.Kotlin,
       label: "Performance dashboards",
       tabs: [
-        {
-          url: ROUTES.KotlinDashboardDev,
-          label: DASHBOARD_LABEL + " (dev)",
-        },
-        {
-          url: ROUTES.KotlinUserScenariosDashboardDev,
-          label: "User Scenarios(dev)",
-        },
-        {
-          url: ROUTES.KotlinDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.KotlinTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.KotlinTestsDev,
-          label: "Tests (dev)",
-        },
-        {
-          url: ROUTES.KotlinCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-        {
-          url: ROUTES.KotlinCompareBranchesDev,
-          label: COMPARE_BRANCHES_LABEL + " (dev)",
-        },
+        tab(ROUTES.KotlinDashboardDev, DASHBOARD_LABEL + " (dev)"),
+        tab(ROUTES.KotlinUserScenariosDashboardDev, "User Scenarios(dev)"),
+        tab(ROUTES.KotlinDashboard, DASHBOARD_LABEL),
+        tab(ROUTES.KotlinTests, TESTS_LABEL),
+        tab(ROUTES.KotlinTestsDev, "Tests (dev)"),
+        tab(ROUTES.KotlinCompareBranches, COMPARE_BRANCHES_LABEL),
+        tab(ROUTES.KotlinCompareBranchesDev, COMPARE_BRANCHES_LABEL + " (dev)"),
       ],
     },
     {
       url: ROUTE_PREFIX.KotlinMemory,
       label: "Memory dashboards",
-      tabs: [
-        {
-          url: ROUTES.KotlinMemoryDashboardDev,
-          label: "Memory (dev)",
-        },
-        {
-          url: ROUTES.KotlinMemoryDashboard,
-          label: "Memory",
-        },
-      ],
+      tabs: [tab(ROUTES.KotlinMemoryDashboardDev, "Memory (dev)"), tab(ROUTES.KotlinMemoryDashboard, "Memory")],
     },
   ],
 }
@@ -604,54 +454,18 @@ const GOLAND: Product = {
       url: ROUTE_PREFIX.GoLand,
       label: "Primary Functionality",
       tabs: [
-        {
-          url: ROUTES.GoLandStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.GoLandProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.GoLandIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.GoLandCompletionDashboard,
-          label: "Completion",
-        },
-        {
-          url: ROUTES.GoLandHighlightingDashboard,
-          label: "Highlighting",
-        },
-        {
-          url: ROUTES.GoLandInspectionDashboard,
-          label: "Inspections",
-        },
-        {
-          url: ROUTES.GoLandDebuggerDashboard,
-          label: "Debugger",
-        },
-        {
-          url: ROUTES.GoLandFindUsagesDashboard,
-          label: "Find Usages",
-        },
-        {
-          url: ROUTES.GoLandDFADashboard,
-          label: "DFA",
-        },
-        {
-          url: ROUTES.GoLandTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.GoLandCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-        {
-          url: ROUTES.GoLandCompareModes,
-          label: COMPARE_MODES_LABEL,
-        },
+        tab(ROUTES.GoLandStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.GoLandProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.GoLandIndexingDashboard, "Indexing"),
+        tab(ROUTES.GoLandCompletionDashboard, "Completion"),
+        tab(ROUTES.GoLandHighlightingDashboard, "Highlighting"),
+        tab(ROUTES.GoLandInspectionDashboard, "Inspections"),
+        tab(ROUTES.GoLandDebuggerDashboard, "Debugger"),
+        tab(ROUTES.GoLandFindUsagesDashboard, "Find Usages"),
+        tab(ROUTES.GoLandDFADashboard, "DFA"),
+        tab(ROUTES.GoLandTests, TESTS_LABEL),
+        tab(ROUTES.GoLandCompareBranches, COMPARE_BRANCHES_LABEL),
+        tab(ROUTES.GoLandCompareModes, COMPARE_MODES_LABEL),
       ],
     },
   ],
@@ -664,38 +478,14 @@ const RUBYMINE: Product = {
       url: ROUTE_PREFIX.RubyMine,
       label: "",
       tabs: [
-        {
-          url: ROUTES.RubyStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.RubyMineProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.RubyMineDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.RubyMineInspectionsDashBoard,
-          label: "Inspections",
-        },
-        {
-          url: ROUTES.RubyMineIndexingDashBoard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.RubyMineTestsDev,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.RubyMineCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-        {
-          url: ROUTES.RubyMineCompareModes,
-          label: COMPARE_MODES_LABEL,
-        },
+        tab(ROUTES.RubyStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.RubyMineProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.RubyMineDashboard, DASHBOARD_LABEL),
+        tab(ROUTES.RubyMineInspectionsDashBoard, "Inspections"),
+        tab(ROUTES.RubyMineIndexingDashBoard, "Indexing"),
+        tab(ROUTES.RubyMineTestsDev, TESTS_LABEL),
+        tab(ROUTES.RubyMineCompareBranches, COMPARE_BRANCHES_LABEL),
+        tab(ROUTES.RubyMineCompareModes, COMPARE_MODES_LABEL),
       ],
     },
   ],
@@ -709,46 +499,16 @@ const PYCHARM: Product = {
       url: ROUTE_PREFIX.PyCharm,
       label: "Primary Functionality",
       tabs: [
-        {
-          url: ROUTES.PyCharmStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.PyCharmProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.PyCharmDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.PyCharmExternalTypeProviders,
-          label: "External Type Providers",
-        },
-        {
-          url: ROUTES.PyCharmExternalTypeProvidersUnitPerfTests,
-          label: "External Type Providers Unit Performance Tests",
-        },
-        {
-          url: ROUTES.PyCharmPerfUnitTests,
-          label: "Performance Unit Tests",
-        },
-        {
-          url: ROUTES.PyCharmOldDashboard,
-          label: DASHBOARD_LABEL + " (Old)",
-        },
-        {
-          url: ROUTES.PyCharmDevTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.PyCharmTests,
-          label: TESTS_LABEL + " (Old)",
-        },
-        {
-          url: ROUTES.PyCharmCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
+        tab(ROUTES.PyCharmStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.PyCharmProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.PyCharmDashboard, DASHBOARD_LABEL),
+        tab(ROUTES.PyCharmExternalTypeProviders, "External Type Providers"),
+        tab(ROUTES.PyCharmExternalTypeProvidersUnitPerfTests, "External Type Providers Unit Performance Tests"),
+        tab(ROUTES.PyCharmPerfUnitTests, "Performance Unit Tests"),
+        tab(ROUTES.PyCharmOldDashboard, DASHBOARD_LABEL + " (Old)"),
+        tab(ROUTES.PyCharmDevTests, TESTS_LABEL),
+        tab(ROUTES.PyCharmTests, TESTS_LABEL + " (Old)"),
+        tab(ROUTES.PyCharmCompareBranches, COMPARE_BRANCHES_LABEL),
       ],
     },
   ],
@@ -762,30 +522,12 @@ const WEBSTORM: Product = {
       url: ROUTE_PREFIX.WebStorm,
       label: "",
       tabs: [
-        {
-          url: ROUTES.WebStormStartupDashboard,
-          label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.WebStormProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.WebStormDashboardBuiltInVsNEXT,
-          label: "Built-in vs NEXT",
-        },
-        {
-          url: ROUTES.WebStormDashboardDelicateProjects,
-          label: "Delicate Projects",
-        },
-        {
-          url: ROUTES.WebStormTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.WebStormCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
+        tab(ROUTES.WebStormStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.WebStormProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.WebStormDashboardBuiltInVsNEXT, "Built-in vs NEXT"),
+        tab(ROUTES.WebStormDashboardDelicateProjects, "Delicate Projects"),
+        tab(ROUTES.WebStormTests, TESTS_LABEL),
+        tab(ROUTES.WebStormCompareBranches, COMPARE_BRANCHES_LABEL),
       ],
     },
   ],
@@ -799,38 +541,14 @@ const RUST: Product = {
       url: ROUTE_PREFIX.Rust,
       label: "",
       tabs: [
-        {
-          url: ROUTES.RustRoverFirstStartupDashboardDev,
-          label: "RustRover First Startup Dashboard",
-        },
-        {
-          url: ROUTES.RustRoverProductMetricsDashboardDev,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.RustRoverDashboardDev,
-          label: "RustRover Dashboard",
-        },
-        {
-          url: ROUTES.RustRoverDebuggerDashboardDev,
-          label: "Debugger",
-        },
-        {
-          url: ROUTES.RustRoverRefactoringDashboardDev,
-          label: "Refactoring",
-        },
-        {
-          url: ROUTES.RustRoverUnitTestsDashboardDev,
-          label: "Unit Tests",
-        },
-        {
-          url: ROUTES.RustTestsDev,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.RustCompareBranchesDev,
-          label: COMPARE_BRANCHES_LABEL,
-        },
+        tab(ROUTES.RustRoverFirstStartupDashboardDev, "RustRover First Startup Dashboard"),
+        tab(ROUTES.RustRoverProductMetricsDashboardDev, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.RustRoverDashboardDev, "RustRover Dashboard"),
+        tab(ROUTES.RustRoverDebuggerDashboardDev, "Debugger"),
+        tab(ROUTES.RustRoverRefactoringDashboardDev, "Refactoring"),
+        tab(ROUTES.RustRoverUnitTestsDashboardDev, "Unit Tests"),
+        tab(ROUTES.RustTestsDev, TESTS_LABEL),
+        tab(ROUTES.RustCompareBranchesDev, COMPARE_BRANCHES_LABEL),
       ],
     },
   ],
@@ -842,16 +560,7 @@ const SCALA: Product = {
     {
       url: ROUTE_PREFIX.Scala,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.ScalaTests,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.ScalaCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.ScalaTests, TESTS_LABEL), tab(ROUTES.ScalaCompareBranches, COMPARE_BRANCHES_LABEL)],
     },
   ],
 }
@@ -863,38 +572,14 @@ const JBR: Product = {
       url: ROUTE_PREFIX.JBR,
       label: "",
       tabs: [
-        {
-          url: ROUTES.DaCapoDashboard,
-          label: "DaCapo",
-        },
-        {
-          url: ROUTES.J2DBenchDashboard,
-          label: "J2DBench",
-        },
-        {
-          url: ROUTES.JavaDrawDashboard,
-          label: "JavaDraw",
-        },
-        {
-          url: ROUTES.RenderDashboard,
-          label: "Render",
-        },
-        {
-          url: ROUTES.SPECjbb2015Dashboard,
-          label: "SPECjbb2015",
-        },
-        {
-          url: ROUTES.SwingMarkDashboard,
-          label: "SwingMark",
-        },
-        {
-          url: ROUTES.MapBenchDashboard,
-          label: "MapBench",
-        },
-        {
-          url: ROUTES.JBRTests,
-          label: TESTS_LABEL,
-        },
+        tab(ROUTES.DaCapoDashboard, "DaCapo"),
+        tab(ROUTES.J2DBenchDashboard, "J2DBench"),
+        tab(ROUTES.JavaDrawDashboard, "JavaDraw"),
+        tab(ROUTES.RenderDashboard, "Render"),
+        tab(ROUTES.SPECjbb2015Dashboard, "SPECjbb2015"),
+        tab(ROUTES.SwingMarkDashboard, "SwingMark"),
+        tab(ROUTES.MapBenchDashboard, "MapBench"),
+        tab(ROUTES.JBRTests, TESTS_LABEL),
       ],
     },
   ],
@@ -907,26 +592,11 @@ const FLEET: Product = {
       url: ROUTE_PREFIX.Fleet,
       label: "",
       tabs: [
-        {
-          url: ROUTES.FleetStartupDashboard,
-          label: "Startup Dashboard",
-        },
-        {
-          url: ROUTES.FleetStartupExplore,
-          label: "Startup Explore",
-        },
-        {
-          url: ROUTES.FleetPerfDashboard,
-          label: "Performance Dashboard",
-        },
-        {
-          url: ROUTES.FleetPerfStartupComparisonDashboard,
-          label: "Startup Comparison Dashboard",
-        },
-        {
-          url: ROUTES.FleetTest,
-          label: TESTS_LABEL,
-        },
+        tab(ROUTES.FleetStartupDashboard, "Startup Dashboard"),
+        tab(ROUTES.FleetStartupExplore, "Startup Explore"),
+        tab(ROUTES.FleetPerfDashboard, "Performance Dashboard"),
+        tab(ROUTES.FleetPerfStartupComparisonDashboard, "Startup Comparison Dashboard"),
+        tab(ROUTES.FleetTest, TESTS_LABEL),
       ],
     },
   ],
@@ -939,16 +609,7 @@ const BAZEL: Product = {
     {
       url: ROUTE_PREFIX.Bazel,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.BazelPluginDashboard,
-          label: "Bazel Plugin Dashboard",
-        },
-        {
-          url: ROUTES.BazelTest,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.BazelPluginDashboard, "Bazel Plugin Dashboard"), tab(ROUTES.BazelTest, TESTS_LABEL)],
     },
   ],
 }
@@ -960,12 +621,7 @@ const QODANA: Product = {
     {
       url: ROUTE_PREFIX.Qodana,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.QodanaTest,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.QodanaTest, TESTS_LABEL)],
     },
   ],
 }
@@ -978,50 +634,17 @@ const CLION: Product = {
       url: ROUTE_PREFIX.Clion,
       label: "",
       tabs: [
-        {
-          url: ROUTES.ClionStartupDashboard,
-          label: "CLion Startup",
-        },
-        {
-          url: ROUTES.ClionProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.ClionPerfDashboard,
-          label: "Performance",
-        },
-        {
-          url: ROUTES.ClionDetailedPerfDashboard,
-          label: "Detailed Performance",
-        },
-        {
-          url: ROUTES.ClionFindUsageDashboard,
-          label: "Find Usages",
-        },
-        {
-          url: ROUTES.ClionMemoryDashboard,
-          label: "Memory",
-        },
-        {
-          url: ROUTES.ClionProjectModelDashboard,
-          label: "Project Model",
-        },
-        {
-          url: ROUTES.ClionLaggingLatencyDashboard,
-          label: "Lagging/Latency",
-        },
-        {
-          url: ROUTES.CLionOldVsNewSeDashboard,
-          label: "Old vs New SE",
-        },
-        {
-          url: ROUTES.ClionTest,
-          label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.ClionCompareBranches,
-          label: COMPARE_BRANCHES_LABEL,
-        },
+        tab(ROUTES.ClionStartupDashboard, "CLion Startup"),
+        tab(ROUTES.ClionProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.ClionPerfDashboard, "Performance"),
+        tab(ROUTES.ClionDetailedPerfDashboard, "Detailed Performance"),
+        tab(ROUTES.ClionFindUsageDashboard, "Find Usages"),
+        tab(ROUTES.ClionMemoryDashboard, "Memory"),
+        tab(ROUTES.ClionProjectModelDashboard, "Project Model"),
+        tab(ROUTES.ClionLaggingLatencyDashboard, "Lagging/Latency"),
+        tab(ROUTES.CLionOldVsNewSeDashboard, "Old vs New SE"),
+        tab(ROUTES.ClionTest, TESTS_LABEL),
+        tab(ROUTES.ClionCompareBranches, COMPARE_BRANCHES_LABEL),
       ],
     },
   ],
@@ -1035,22 +658,10 @@ const DATAGRIP: Product = {
       url: ROUTE_PREFIX.DataGrip,
       label: "",
       tabs: [
-        {
-          url: ROUTES.DataGripProductMetricsDashboard,
-          label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.DataGripIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.DataGripDataGridRenderingDashboard,
-          label: "Data Grid Rendering",
-        },
-        {
-          url: ROUTES.DataGripTests,
-          label: TESTS_LABEL,
-        },
+        tab(ROUTES.DataGripProductMetricsDashboard, PRODUCT_METRICS_LABEL),
+        tab(ROUTES.DataGripIndexingDashboard, "Indexing"),
+        tab(ROUTES.DataGripDataGridRenderingDashboard, "Data Grid Rendering"),
+        tab(ROUTES.DataGripTests, TESTS_LABEL),
       ],
     },
   ],
@@ -1063,12 +674,7 @@ const PERF_UNIT: Product = {
     {
       url: ROUTE_PREFIX.PerfUnit,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.PerfUnitTests,
-          label: "Tests",
-        },
-      ],
+      tabs: [tab(ROUTES.PerfUnitTests, "Tests")],
     },
   ],
 }
@@ -1081,26 +687,11 @@ const IJENT: Product = {
       url: ROUTE_PREFIX.IJent,
       label: "",
       tabs: [
-        {
-          url: ROUTES.IJentBenchmarksDashboard,
-          label: "Benchmarks Dashboard",
-        },
-        {
-          url: ROUTES.IJentPerfTestsDashboard,
-          label: "Performance Dashboard",
-        },
-        {
-          url: ROUTES.IJentProjectLoadingDashboard,
-          label: "Project Loading (Community)",
-        },
-        {
-          url: ROUTES.IJentRuntimeDashboard,
-          label: "Runtime (Community)",
-        },
-        {
-          url: ROUTES.IJentRawPerfData,
-          label: "Raw Performance Data",
-        },
+        tab(ROUTES.IJentBenchmarksDashboard, "Benchmarks Dashboard"),
+        tab(ROUTES.IJentPerfTestsDashboard, "Performance Dashboard"),
+        tab(ROUTES.IJentProjectLoadingDashboard, "Project Loading (Community)"),
+        tab(ROUTES.IJentRuntimeDashboard, "Runtime (Community)"),
+        tab(ROUTES.IJentRawPerfData, "Raw Performance Data"),
       ],
     },
   ],
@@ -1114,26 +705,11 @@ const ML_TESTS: Product = {
       url: ROUTE_PREFIX.ML,
       label: "",
       tabs: [
-        {
-          url: ROUTES.AIAssistantApiTests,
-          label: "AI Assistant Api Tests",
-        },
-        {
-          url: ROUTES.AIAssistantTestGeneration,
-          label: "Test generation",
-        },
-        {
-          url: ROUTES.LLMDevTests,
-          label: "AIA Dashboard",
-        },
-        {
-          url: ROUTES.AIAPrivacyDashboard,
-          label: "AIA Privacy Dashboard",
-        },
-        {
-          url: ROUTES.MLDevTests,
-          label: "ML Tests on dev-server/fast-installer",
-        },
+        tab(ROUTES.AIAssistantApiTests, "AI Assistant Api Tests"),
+        tab(ROUTES.AIAssistantTestGeneration, "Test generation"),
+        tab(ROUTES.LLMDevTests, "AIA Dashboard"),
+        tab(ROUTES.AIAPrivacyDashboard, "AIA Privacy Dashboard"),
+        tab(ROUTES.MLDevTests, "ML Tests on dev-server/fast-installer"),
       ],
     },
   ],
@@ -1147,30 +723,12 @@ const AIA: Product = {
       url: ROUTE_PREFIX.AIA,
       label: "",
       tabs: [
-        {
-          url: ROUTES.AIATests,
-          label: "All",
-        },
-        {
-          url: ROUTES.AIACompletionDashboard,
-          label: "Completion",
-        },
-        {
-          url: ROUTES.AIACodeGenerationDashboard,
-          label: "Code Generation",
-        },
-        {
-          url: ROUTES.AIAChatCodeGenerationDashboard,
-          label: "Chat Code Generation",
-        },
-        {
-          url: ROUTES.AIANameSuggestionDashboard,
-          label: "Name Suggestion",
-        },
-        {
-          url: ROUTES.AIATestGenerationDashboard,
-          label: "Test Generation",
-        },
+        tab(ROUTES.AIATests, "All"),
+        tab(ROUTES.AIACompletionDashboard, "Completion"),
+        tab(ROUTES.AIACodeGenerationDashboard, "Code Generation"),
+        tab(ROUTES.AIAChatCodeGenerationDashboard, "Chat Code Generation"),
+        tab(ROUTES.AIANameSuggestionDashboard, "Name Suggestion"),
+        tab(ROUTES.AIATestGenerationDashboard, "Test Generation"),
       ],
     },
   ],
@@ -1183,20 +741,7 @@ const KMT: Product = {
     {
       url: ROUTE_PREFIX.KMT,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.KMTDashboard,
-          label: "Dashboard",
-        },
-        {
-          url: ROUTES.KMTIntegrationTests,
-          label: "Integration Tests",
-        },
-        {
-          url: ROUTES.KMTTests,
-          label: "Unit Tests",
-        },
-      ],
+      tabs: [tab(ROUTES.KMTDashboard, "Dashboard"), tab(ROUTES.KMTIntegrationTests, "Integration Tests"), tab(ROUTES.KMTTests, "Unit Tests")],
     },
   ],
 }
@@ -1208,16 +753,7 @@ const DIOGEN: Product = {
     {
       url: ROUTE_PREFIX.Diogen,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.DiogenDashboard,
-          label: "Pipeline",
-        },
-        {
-          url: ROUTES.DiogenTests,
-          label: "All",
-        },
-      ],
+      tabs: [tab(ROUTES.DiogenDashboard, "Pipeline"), tab(ROUTES.DiogenTests, "All")],
     },
   ],
 }
@@ -1229,16 +765,7 @@ const TOOLBOX: Product = {
     {
       url: ROUTE_PREFIX.Toolbox,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.ToolboxTests,
-          label: "All",
-        },
-        {
-          url: ROUTES.ToolboxTestsGwDeployDashboard,
-          label: "GW Deploy",
-        },
-      ],
+      tabs: [tab(ROUTES.ToolboxTests, "All"), tab(ROUTES.ToolboxTestsGwDeployDashboard, "GW Deploy")],
     },
   ],
 }
@@ -1250,12 +777,7 @@ const KOTLIN_BUILD_TOOLS: Product = {
     {
       url: ROUTE_PREFIX.KotlinBuildTools,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.KotlinBuildToolsTests,
-          label: "All",
-        },
-      ],
+      tabs: [tab(ROUTES.KotlinBuildToolsTests, "All")],
     },
   ],
 }
@@ -1267,16 +789,7 @@ const LSP: Product = {
     {
       url: ROUTE_PREFIX.LSP,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.LSPDashboard,
-          label: "Dashboard",
-        },
-        {
-          url: ROUTES.LSPTests,
-          label: "Tests",
-        },
-      ],
+      tabs: [tab(ROUTES.LSPDashboard, "Dashboard"), tab(ROUTES.LSPTests, "Tests")],
     },
   ],
 }
@@ -1288,16 +801,7 @@ const KOTLIN_NOTEBOOKS: Product = {
     {
       url: ROUTE_PREFIX.KotlinNotebooks,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.KotlinNotebooksDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.KotlinNotebooksTests,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.KotlinNotebooksDashboard, DASHBOARD_LABEL), tab(ROUTES.KotlinNotebooksTests, TESTS_LABEL)],
     },
   ],
 }
@@ -1337,122 +841,37 @@ export function getNavigationElement(path: string): Product {
 }
 
 const startupRoutes = [
-  {
-    path: ROUTES.StartupPulse,
-    component: () => import("./components/startup/IntelliJPulse.vue"),
-    meta: { pageTitle: "Pulse" },
-  },
-  {
-    path: ROUTES.StartupPulseInstaller,
-    component: () => import("./components/startup/IntelliJPulse.vue"),
-    props: {
-      withInstaller: true,
-    },
-    meta: { pageTitle: "Pulse" },
-  },
-  {
-    path: ROUTES.StartupModuleLoading,
-    component: () => import("./components/startup/IntelliJModuleLoading.vue"),
-    meta: { pageTitle: "Module Loading" },
-  },
-  {
-    path: ROUTES.StartupGcAndMemory,
-    component: () => import("./components/startup/GcAndMemory.vue"),
-    meta: { pageTitle: "GC and Memory" },
-  },
-  {
-    path: ROUTES.StartupProgress,
-    component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
-    meta: { pageTitle: "Progress Over Time" },
-  },
-  {
-    path: ROUTES.StartupExplore,
-    component: () => import("./components/startup/IntelliJExplore.vue"),
-    props: {
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Explore" },
-  },
-  {
-    path: ROUTES.StartupExploreInstaller,
-    component: () => import("./components/startup/IntelliJExplore.vue"),
-    props: {
-      withInstaller: true,
-    },
-    meta: { pageTitle: "Explore (Installer)" },
-  },
+  dashboard(ROUTES.StartupPulse, () => import("./components/startup/IntelliJPulse.vue"), "Pulse"),
+  dashboard(ROUTES.StartupPulseInstaller, () => import("./components/startup/IntelliJPulse.vue"), "Pulse", { withInstaller: true }),
+  dashboard(ROUTES.StartupModuleLoading, () => import("./components/startup/IntelliJModuleLoading.vue"), "Module Loading"),
+  dashboard(ROUTES.StartupGcAndMemory, () => import("./components/startup/GcAndMemory.vue"), "GC and Memory"),
+  dashboard(ROUTES.StartupProgress, () => import("./components/startup/IntelliJProgressOverTime.vue"), "Progress Over Time"),
+  dashboard(ROUTES.StartupExplore, () => import("./components/startup/IntelliJExplore.vue"), "Explore", { withInstaller: false }),
+  dashboard(ROUTES.StartupExploreInstaller, () => import("./components/startup/IntelliJExplore.vue"), "Explore (Installer)", { withInstaller: true }),
 ]
 
 const intellijRoutes = [
-  {
-    path: ROUTES.IntelliJStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "idea",
-      defaultProject: "idea",
-    },
-    meta: { pageTitle: "IDEA Startup dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJProductMetricsDashboard,
-    component: () => import("./components/intelliJ/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "IDEA product metrics" },
-  },
-  {
-    path: ROUTES.IntelliJIndexingDashboard,
-    component: () => import("./components/intelliJ/IndexingDashboard.vue"),
-    meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJJavaDashboard,
-    component: () => import("./components/intelliJ/JavaDashboard.vue"),
-    meta: { pageTitle: "IntelliJ Java Performance dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJKotlinDashboard,
-    component: () => import("./components/intelliJ/KotlinDashboard.vue"),
-    meta: { pageTitle: "IntelliJ Kotlin Performance dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJUltimateDashboard,
-    component: () => import("./components/intelliJ/UltimateDashboard.vue"),
-    meta: { pageTitle: "IntelliJ Ultimate Performance dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJUIDashboard,
-    component: () => import("./components/intelliJ/UIDashboard.vue"),
-    meta: { pageTitle: "IntelliJ UI Performance dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJSearchEverywhereExDashboard,
-    component: () => import("./components/intelliJ/SearchEverywhereExDashboard.vue"),
-    meta: { pageTitle: "IntelliJ Search Everywhere Ex dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJK2Dashboard,
-    component: () => import("./components/intelliJ/PerformanceK2Dashboard.vue"),
-    meta: { pageTitle: "IntelliJ Performance K2 dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJGradleDashboardDev,
-    component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardDevServer.vue"),
-    meta: { pageTitle: "Gradle Import DevServer" },
-  },
-  {
-    path: ROUTES.IntelliJMavenDashboardDev,
-    component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardDevServer.vue"),
-    meta: { pageTitle: "Maven Import dashboard DevServer" },
-  },
-  {
-    path: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
-    component: () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
-    meta: { pageTitle: "Maven Importers And Configurators dashboard DevServer" },
-  },
-  {
-    path: ROUTES.IntelliJJpsDashboardDev,
-    component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"),
-    meta: { pageTitle: "JPS Import dashboard DevServer" },
-  },
+  startupDashboard(ROUTES.IntelliJStartupDashboard, { table: "idea", defaultProject: "idea" }, "IDEA Startup dashboard"),
+  dashboard(ROUTES.IntelliJProductMetricsDashboard, () => import("./components/intelliJ/ProductMetricsDashboard.vue"), "IDEA product metrics"),
+  dashboard(ROUTES.IntelliJIndexingDashboard, () => import("./components/intelliJ/IndexingDashboard.vue"), "IntelliJ Indexing Performance dashboard"),
+  dashboard(ROUTES.IntelliJJavaDashboard, () => import("./components/intelliJ/JavaDashboard.vue"), "IntelliJ Java Performance dashboard"),
+  dashboard(ROUTES.IntelliJKotlinDashboard, () => import("./components/intelliJ/KotlinDashboard.vue"), "IntelliJ Kotlin Performance dashboard"),
+  dashboard(ROUTES.IntelliJUltimateDashboard, () => import("./components/intelliJ/UltimateDashboard.vue"), "IntelliJ Ultimate Performance dashboard"),
+  dashboard(ROUTES.IntelliJUIDashboard, () => import("./components/intelliJ/UIDashboard.vue"), "IntelliJ UI Performance dashboard"),
+  dashboard(ROUTES.IntelliJSearchEverywhereExDashboard, () => import("./components/intelliJ/SearchEverywhereExDashboard.vue"), "IntelliJ Search Everywhere Ex dashboard"),
+  dashboard(ROUTES.IntelliJK2Dashboard, () => import("./components/intelliJ/PerformanceK2Dashboard.vue"), "IntelliJ Performance K2 dashboard"),
+  dashboard(ROUTES.IntelliJGradleDashboardDev, () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardDevServer.vue"), "Gradle Import DevServer"),
+  dashboard(
+    ROUTES.IntelliJMavenDashboardDev,
+    () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardDevServer.vue"),
+    "Maven Import dashboard DevServer"
+  ),
+  dashboard(
+    ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
+    () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
+    "Maven Importers And Configurators dashboard DevServer"
+  ),
+  dashboard(ROUTES.IntelliJJpsDashboardDev, () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"), "JPS Import dashboard DevServer"),
   {
     path: ROUTES.IntelliJGradleBenchmarks,
     component: () => import("./components/common/PerformanceUnitTests.vue"),
@@ -1467,21 +886,9 @@ const intellijRoutes = [
     },
     meta: { pageTitle: "Gradle Benchmark" },
   } satisfies TypedRouteRecord<PerformanceUnitTestsProps>,
-  {
-    path: ROUTES.IntelliJPackageCheckerDashboard,
-    component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
-    meta: { pageTitle: "Package Checker" },
-  },
-  {
-    path: ROUTES.IntelliJSharedIndicesDashboard,
-    component: () => import("./components/intelliJ/SharedIndexesDashboard.vue"),
-    meta: { pageTitle: "Shared Indexes Performance Dashboard" },
-  },
-  {
-    path: ROUTES.IntelliJEmbeddingSearchDashboard,
-    component: () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"),
-    meta: { pageTitle: "IntelliJ performance tests for embedding search" },
-  },
+  dashboard(ROUTES.IntelliJPackageCheckerDashboard, () => import("./components/intelliJ/PackageCheckerDashboard.vue"), "Package Checker"),
+  dashboard(ROUTES.IntelliJSharedIndicesDashboard, () => import("./components/intelliJ/SharedIndexesDashboard.vue"), "Shared Indexes Performance Dashboard"),
+  dashboard(ROUTES.IntelliJEmbeddingSearchDashboard, () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"), "IntelliJ performance tests for embedding search"),
   {
     path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
     component: COMPONENTS.perfTests,
@@ -1512,878 +919,196 @@ const intellijRoutes = [
     },
     meta: { pageTitle: COMPARE_BUILDS_LABEL },
   },
-  {
-    path: ROUTES.IntelliJCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "idea",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
-    path: ROUTES.IntelliJCompareModes,
-    component: COMPONENTS.compareModes,
-    props: {
-      dbName: "perfintDev",
-      table: "idea",
-    },
-    meta: { pageTitle: COMPARE_MODES_LABEL },
-  },
+  compareBranches(ROUTES.IntelliJCompareBranches, { dbName: "perfintDev", table: "idea" }),
+  compareModes(ROUTES.IntelliJCompareModes, { dbName: "perfintDev", table: "idea" }),
 ]
 
 const phpstormRoutes = [
-  {
-    path: ROUTES.PhpStormStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "phpstorm",
-      defaultProject: "stitcher_with_composer",
-    },
-    meta: { pageTitle: "PhpStorm Startup dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormProductMetricsDashboard,
-    component: () => import("./components/phpstorm/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "PhpStorm product metrics" },
-  },
-  {
-    path: ROUTES.PhpStormLLMDashboard,
-    component: () => import("./components/phpstorm/MLDashboard.vue"),
-    meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormIndexingDashboard,
-    component: () => import("./components/phpstorm/IndexingDashboard.vue"),
-    meta: { pageTitle: "PhpStorm Indexing Dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormInspectionsDashboard,
-    component: () => import("./components/phpstorm/InspectionsDashboard.vue"),
-    meta: { pageTitle: "PhpStorm Inspections Dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormCodeEditingDashboard,
-    component: () => import("./components/phpstorm/CodeEditingDashboard.vue"),
-    meta: { pageTitle: "PhpStorm Code Editing Dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormUnitTestsDashboard,
-    component: () => import("./components/phpstorm/UnitTestsDashboard.vue"),
-    meta: { pageTitle: "PhpStorm Unit Tests Dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormWithPluginsDashboard,
-    component: () => import("./components/phpstorm/PerformanceDashboardWithPlugins.vue"),
-    meta: { pageTitle: "PhpStorm With Plugins Performance dashboard" },
-  },
-  {
-    path: ROUTES.PhpStormWithPluginsTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "phpstormWithPlugins",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "PhpStorm Performance tests with plugins" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.PhpStormTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "phpstorm",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "PhpStorm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.PhpStormDevTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "phpstorm",
-      initialMachine: MACHINES.HETZNER,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "PhpStorm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.PhpStormCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "phpstorm",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
-    path: ROUTES.PhpStormCompareModes,
-    component: COMPONENTS.compareModes,
-    props: {
-      dbName: "perfintDev",
-      table: "phpstorm",
-    },
-    meta: { pageTitle: COMPARE_MODES_LABEL },
-  },
+  startupDashboard(ROUTES.PhpStormStartupDashboard, { table: "phpstorm", defaultProject: "stitcher_with_composer" }, "PhpStorm Startup dashboard"),
+  dashboard(ROUTES.PhpStormProductMetricsDashboard, () => import("./components/phpstorm/ProductMetricsDashboard.vue"), "PhpStorm product metrics"),
+  dashboard(ROUTES.PhpStormLLMDashboard, () => import("./components/phpstorm/MLDashboard.vue"), "PhpStorm LLM Performance dashboard"),
+  dashboard(ROUTES.PhpStormIndexingDashboard, () => import("./components/phpstorm/IndexingDashboard.vue"), "PhpStorm Indexing Dashboard"),
+  dashboard(ROUTES.PhpStormInspectionsDashboard, () => import("./components/phpstorm/InspectionsDashboard.vue"), "PhpStorm Inspections Dashboard"),
+  dashboard(ROUTES.PhpStormCodeEditingDashboard, () => import("./components/phpstorm/CodeEditingDashboard.vue"), "PhpStorm Code Editing Dashboard"),
+  dashboard(ROUTES.PhpStormUnitTestsDashboard, () => import("./components/phpstorm/UnitTestsDashboard.vue"), "PhpStorm Unit Tests Dashboard"),
+  dashboard(ROUTES.PhpStormWithPluginsDashboard, () => import("./components/phpstorm/PerformanceDashboardWithPlugins.vue"), "PhpStorm With Plugins Performance dashboard"),
+  perfTests(ROUTES.PhpStormWithPluginsTests, { dbName: "perfint", table: "phpstormWithPlugins", initialMachine: MACHINES.HETZNER }, "PhpStorm Performance tests with plugins"),
+  perfTests(ROUTES.PhpStormTests, { dbName: "perfint", table: "phpstorm", initialMachine: MACHINES.HETZNER }, "PhpStorm Performance tests"),
+  perfTests(ROUTES.PhpStormDevTests, { dbName: "perfintDev", table: "phpstorm", initialMachine: MACHINES.HETZNER, withInstaller: false }, "PhpStorm Performance tests"),
+  compareBranches(ROUTES.PhpStormCompareBranches, { dbName: "perfintDev", table: "phpstorm" }),
+  compareModes(ROUTES.PhpStormCompareModes, { dbName: "perfintDev", table: "phpstorm" }),
 ]
 
 const golandRoutes = [
-  {
-    path: ROUTES.GoLandInspectionDashboard,
-    component: () => import("./components/goland/InspectionsDashboard.vue"),
-    meta: { pageTitle: "GoLand Inspections dashboard" },
-  },
-  {
-    path: ROUTES.GoLandStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "goland",
-      defaultProject: "pocketbase",
-    },
-    meta: { pageTitle: "GoLand Startup dashboard" },
-  },
-  {
-    path: ROUTES.GoLandProductMetricsDashboard,
-    component: () => import("./components/goland/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "GoLand product metrics" },
-  },
-  {
-    path: ROUTES.GoLandIndexingDashboard,
-    component: () => import("./components/goland/IndexingDashboard.vue"),
-    meta: { pageTitle: "GoLand Indexing dashboard" },
-  },
-  {
-    path: ROUTES.GoLandCompletionDashboard,
-    component: () => import("./components/goland/CompletionDashboard.vue"),
-    meta: { pageTitle: "GoLand Completion dashboard" },
-  },
-  {
-    path: ROUTES.GoLandHighlightingDashboard,
-    component: () => import("./components/goland/HighlightingDashboard.vue"),
-    meta: { pageTitle: "GoLand Highlighting dashboard" },
-  },
-  {
-    path: ROUTES.GoLandDebuggerDashboard,
-    component: () => import("./components/goland/DebuggerDashboard.vue"),
-    meta: { pageTitle: "GoLand Debugger dashboard" },
-  },
-  {
-    path: ROUTES.GoLandFindUsagesDashboard,
-    component: () => import("./components/goland/FindUsagesDashboard.vue"),
-    meta: { pageTitle: "GoLand Find Usages dashboard" },
-  },
-  {
-    path: ROUTES.GoLandDFADashboard,
-    component: () => import("./components/goland/DataFlowAnalysisDashboard.vue"),
-    meta: { pageTitle: "GoLand DFA dashboard" },
-  },
-  {
-    path: ROUTES.GoLandTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "goland",
-      withInstaller: false,
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "GoLand Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.GoLandCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfintDev",
-      table: "goland",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.GoLandCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "goland",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
-    path: ROUTES.GoLandCompareModes,
-    component: COMPONENTS.compareModes,
-    props: {
-      dbName: "perfintDev",
-      table: "goland",
-    },
-    meta: { pageTitle: COMPARE_MODES_LABEL },
-  },
+  dashboard(ROUTES.GoLandInspectionDashboard, () => import("./components/goland/InspectionsDashboard.vue"), "GoLand Inspections dashboard"),
+  startupDashboard(ROUTES.GoLandStartupDashboard, { table: "goland", defaultProject: "pocketbase" }, "GoLand Startup dashboard"),
+  dashboard(ROUTES.GoLandProductMetricsDashboard, () => import("./components/goland/ProductMetricsDashboard.vue"), "GoLand product metrics"),
+  dashboard(ROUTES.GoLandIndexingDashboard, () => import("./components/goland/IndexingDashboard.vue"), "GoLand Indexing dashboard"),
+  dashboard(ROUTES.GoLandCompletionDashboard, () => import("./components/goland/CompletionDashboard.vue"), "GoLand Completion dashboard"),
+  dashboard(ROUTES.GoLandHighlightingDashboard, () => import("./components/goland/HighlightingDashboard.vue"), "GoLand Highlighting dashboard"),
+  dashboard(ROUTES.GoLandDebuggerDashboard, () => import("./components/goland/DebuggerDashboard.vue"), "GoLand Debugger dashboard"),
+  dashboard(ROUTES.GoLandFindUsagesDashboard, () => import("./components/goland/FindUsagesDashboard.vue"), "GoLand Find Usages dashboard"),
+  dashboard(ROUTES.GoLandDFADashboard, () => import("./components/goland/DataFlowAnalysisDashboard.vue"), "GoLand DFA dashboard"),
+  perfTests(ROUTES.GoLandTests, { dbName: "perfintDev", table: "goland", withInstaller: false, initialMachine: MACHINES.HETZNER }, "GoLand Performance tests"),
+  compareBuilds(ROUTES.GoLandCompare, { dbName: "perfintDev", table: "goland" }),
+  compareBranches(ROUTES.GoLandCompareBranches, { dbName: "perfintDev", table: "goland" }),
+  compareModes(ROUTES.GoLandCompareModes, { dbName: "perfintDev", table: "goland" }),
 ]
 
 const pycharmRoutes = [
-  {
-    path: ROUTES.PyCharmStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "pycharm",
-      defaultProject: "tensorflow",
-    },
-    meta: { pageTitle: "PyCharm Startup dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmProductMetricsDashboard,
-    component: () => import("./components/pycharm/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "PyCharm product metrics" },
-  },
-  {
-    path: ROUTES.PyCharmDashboard,
-    component: () => import("./components/pycharm/PerformanceDashboard.vue"),
-    meta: { pageTitle: "PyCharm Performance dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmExternalTypeProviders,
-    component: () => import("./components/pycharm/ExternalTypeProviders.vue"),
-    meta: { pageTitle: "PyCharm External Type Providers dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmExternalTypeProvidersUnitPerfTests,
-    component: () => import("./components/pycharm/ExternalTypeProvidersUnitPerfTests.vue"),
-    meta: { pageTitle: "PyCharm External Type Providers Unit Performance Tests dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmPerfUnitTests,
-    component: () => import("./components/pycharm/PyPerfUnitTests.vue"),
-    meta: { pageTitle: "PyCharm Performance Unit Tests dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmOldDashboard,
-    component: () => import("./components/pycharm/PerformanceDashboardOld.vue"),
-    meta: { pageTitle: "PyCharm Performance dashboard" },
-  },
-  {
-    path: ROUTES.PyCharmTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "pycharm",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "PyCharm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.PyCharmDevTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "pycharm",
-      initialMachine: MACHINES.HETZNER,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "PyCharm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.PyCharmCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfint",
-      table: "pycharm",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.PyCharmCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "pycharm",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
+  startupDashboard(ROUTES.PyCharmStartupDashboard, { table: "pycharm", defaultProject: "tensorflow" }, "PyCharm Startup dashboard"),
+  dashboard(ROUTES.PyCharmProductMetricsDashboard, () => import("./components/pycharm/ProductMetricsDashboard.vue"), "PyCharm product metrics"),
+  dashboard(ROUTES.PyCharmDashboard, () => import("./components/pycharm/PerformanceDashboard.vue"), "PyCharm Performance dashboard"),
+  dashboard(ROUTES.PyCharmExternalTypeProviders, () => import("./components/pycharm/ExternalTypeProviders.vue"), "PyCharm External Type Providers dashboard"),
+  dashboard(
+    ROUTES.PyCharmExternalTypeProvidersUnitPerfTests,
+    () => import("./components/pycharm/ExternalTypeProvidersUnitPerfTests.vue"),
+    "PyCharm External Type Providers Unit Performance Tests dashboard"
+  ),
+  dashboard(ROUTES.PyCharmPerfUnitTests, () => import("./components/pycharm/PyPerfUnitTests.vue"), "PyCharm Performance Unit Tests dashboard"),
+  dashboard(ROUTES.PyCharmOldDashboard, () => import("./components/pycharm/PerformanceDashboardOld.vue"), "PyCharm Performance dashboard"),
+  perfTests(ROUTES.PyCharmTests, { dbName: "perfint", table: "pycharm", initialMachine: MACHINES.HETZNER }, "PyCharm Performance tests"),
+  perfTests(ROUTES.PyCharmDevTests, { dbName: "perfintDev", table: "pycharm", initialMachine: MACHINES.HETZNER, withInstaller: false }, "PyCharm Performance tests"),
+  compareBuilds(ROUTES.PyCharmCompare, { dbName: "perfint", table: "pycharm" }),
+  compareBranches(ROUTES.PyCharmCompareBranches, { dbName: "perfintDev", table: "pycharm" }),
 ]
 
 const webstormRoutes = [
-  {
-    path: ROUTES.WebStormStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "webstorm",
-      defaultProject: "angular",
-    },
-    meta: { pageTitle: "WebStorm Startup dashboard" },
-  },
-  {
-    path: ROUTES.WebStormProductMetricsDashboard,
-    component: () => import("./components/webstorm/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "WebStorm product metrics" },
-  },
-  {
-    path: ROUTES.WebStormTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      withInstaller: false,
-      table: "webstorm",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "WebStorm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.WebStormDashboardBuiltInVsNEXT,
-    component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
-    meta: { pageTitle: "Built-in vs NEXT" },
-  },
-  {
-    path: ROUTES.WebStormDashboardDelicateProjects,
-    component: () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"),
-    meta: { pageTitle: "Delicate Projects" },
-  },
-  {
-    path: ROUTES.WebStormCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfintDev",
-      table: "webstorm",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.WebStormCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "webstorm",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
+  startupDashboard(ROUTES.WebStormStartupDashboard, { table: "webstorm", defaultProject: "angular" }, "WebStorm Startup dashboard"),
+  dashboard(ROUTES.WebStormProductMetricsDashboard, () => import("./components/webstorm/ProductMetricsDashboard.vue"), "WebStorm product metrics"),
+  perfTests(ROUTES.WebStormTests, { dbName: "perfintDev", withInstaller: false, table: "webstorm", initialMachine: MACHINES.HETZNER }, "WebStorm Performance tests"),
+  dashboard(ROUTES.WebStormDashboardBuiltInVsNEXT, () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"), "Built-in vs NEXT"),
+  dashboard(ROUTES.WebStormDashboardDelicateProjects, () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"), "Delicate Projects"),
+  compareBuilds(ROUTES.WebStormCompare, { dbName: "perfintDev", table: "webstorm" }),
+  compareBranches(ROUTES.WebStormCompareBranches, { dbName: "perfintDev", table: "webstorm" }),
 ]
 
 const rubymineRoutes = [
-  {
-    path: ROUTES.RubyStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "ruby",
-      defaultProject: "diaspora",
-    },
-    meta: { pageTitle: "Ruby Startup dashboard" },
-  },
-  {
-    path: ROUTES.RubyMineProductMetricsDashboard,
-    component: () => import("./components/rubymine/ProductMetricsDevDashboard.vue"),
-    meta: { pageTitle: "RubyMine product metrics" },
-  },
-  {
-    path: ROUTES.RubyMineDashboard,
-    component: () => import("./components/rubymine/PerformanceDevDashboard.vue"),
-    meta: { pageTitle: "RubyMine Performance Dashboard" },
-  },
-  {
-    path: ROUTES.RubyMineInspectionsDashBoard,
-    component: () => import("./components/rubymine/InspectionsDevDashboard.vue"),
-    meta: { pageTitle: "RubyMine Inspections Dashboard" },
-  },
-  {
-    path: ROUTES.RubyMineIndexingDashBoard,
-    component: () => import("./components/rubymine/IndexingDevDashboard.vue"),
-    meta: { pageTitle: "RubyMine Indexing Dashboard" },
-  },
-  {
-    path: ROUTES.RubyMineTestsDev,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "ruby",
-      initialMachine: MACHINES.AWS_LINUX,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "RubyMine Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.RubyMineCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfint",
-      table: "ruby",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.RubyMineCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "ruby",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
-    path: ROUTES.RubyMineCompareModes,
-    component: COMPONENTS.compareModes,
-    props: {
-      dbName: "perfintDev",
-      table: "ruby",
-    },
-    meta: { pageTitle: COMPARE_MODES_LABEL },
-  },
+  startupDashboard(ROUTES.RubyStartupDashboard, { table: "ruby", defaultProject: "diaspora" }, "Ruby Startup dashboard"),
+  dashboard(ROUTES.RubyMineProductMetricsDashboard, () => import("./components/rubymine/ProductMetricsDevDashboard.vue"), "RubyMine product metrics"),
+  dashboard(ROUTES.RubyMineDashboard, () => import("./components/rubymine/PerformanceDevDashboard.vue"), "RubyMine Performance Dashboard"),
+  dashboard(ROUTES.RubyMineInspectionsDashBoard, () => import("./components/rubymine/InspectionsDevDashboard.vue"), "RubyMine Inspections Dashboard"),
+  dashboard(ROUTES.RubyMineIndexingDashBoard, () => import("./components/rubymine/IndexingDevDashboard.vue"), "RubyMine Indexing Dashboard"),
+  perfTests(ROUTES.RubyMineTestsDev, { dbName: "perfintDev", table: "ruby", initialMachine: MACHINES.AWS_LINUX, withInstaller: false }, "RubyMine Performance tests"),
+  compareBuilds(ROUTES.RubyMineCompare, { dbName: "perfint", table: "ruby" }),
+  compareBranches(ROUTES.RubyMineCompareBranches, { dbName: "perfintDev", table: "ruby" }),
+  compareModes(ROUTES.RubyMineCompareModes, { dbName: "perfintDev", table: "ruby" }),
 ]
 
 const rustRoutes = [
-  {
-    path: ROUTES.RustRoverProductMetricsDashboardDev,
-    component: () => import("./components/rust/ProductMetricsDashboardDev.vue"),
-    meta: { pageTitle: "RustRover product metrics" },
-  },
-  {
-    path: ROUTES.RustRoverDashboardDev,
-    component: () => import("./components/rust/PerformanceDashboardRustRoverDev.vue"),
-    meta: { pageTitle: "RustRover Performance dashboard" },
-  },
-  {
-    path: ROUTES.RustRoverFirstStartupDashboardDev,
-    component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartupDev.vue"),
-    meta: { pageTitle: "RustRover First Startup Performance dashboard" },
-  },
-  {
-    path: ROUTES.RustRoverDebuggerDashboardDev,
-    component: () => import("./components/rust/DebuggerDashboard.vue"),
-    meta: { pageTitle: "RustRover Debugger dashboard" },
-  },
-  {
-    path: ROUTES.RustRoverRefactoringDashboardDev,
-    component: () => import("./components/rust/RefactoringDashboard.vue"),
-    meta: { pageTitle: "RustRover Refactoring dashboard" },
-  },
-  {
-    path: ROUTES.RustRoverUnitTestsDashboardDev,
-    component: () => import("./components/rust/UnitTestsDashboard.vue"),
-    meta: { pageTitle: "Rust Unit Tests dashboard" },
-  },
-  {
-    path: ROUTES.RustTestsDev,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "rust",
-      initialMachine: MACHINES.AWS_LINUX,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Rust Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.RustCompareBranchesDev,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "rust",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
+  dashboard(ROUTES.RustRoverProductMetricsDashboardDev, () => import("./components/rust/ProductMetricsDashboardDev.vue"), "RustRover product metrics"),
+  dashboard(ROUTES.RustRoverDashboardDev, () => import("./components/rust/PerformanceDashboardRustRoverDev.vue"), "RustRover Performance dashboard"),
+  dashboard(
+    ROUTES.RustRoverFirstStartupDashboardDev,
+    () => import("./components/rust/PerformanceDashboardRustRoverFirstStartupDev.vue"),
+    "RustRover First Startup Performance dashboard"
+  ),
+  dashboard(ROUTES.RustRoverDebuggerDashboardDev, () => import("./components/rust/DebuggerDashboard.vue"), "RustRover Debugger dashboard"),
+  dashboard(ROUTES.RustRoverRefactoringDashboardDev, () => import("./components/rust/RefactoringDashboard.vue"), "RustRover Refactoring dashboard"),
+  dashboard(ROUTES.RustRoverUnitTestsDashboardDev, () => import("./components/rust/UnitTestsDashboard.vue"), "Rust Unit Tests dashboard"),
+  perfTests(ROUTES.RustTestsDev, { dbName: "perfintDev", table: "rust", initialMachine: MACHINES.AWS_LINUX, withInstaller: false }, "Rust Performance tests"),
+  compareBranches(ROUTES.RustCompareBranchesDev, { dbName: "perfintDev", table: "rust" }),
 ]
 
 const kotlinRoutes = [
-  {
-    path: ROUTES.KotlinTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "kotlin",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "Kotlin Performance tests explore" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.KotlinTestsDev,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "kotlin",
-      initialMachine: MACHINES.HETZNER,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.KotlinDashboard,
-    component: () => import("./components/kotlin/PerformanceDashboard.vue"),
-    meta: { pageTitle: "Kotlin Performance dashboard" },
-  },
-  {
-    path: ROUTES.KotlinDashboardDev,
-    component: () => import("./components/kotlin/dev/PerformanceDashboard.vue"),
-    meta: { pageTitle: "Kotlin Performance dashboard (dev)" },
-  },
-  {
-    path: ROUTES.KotlinUserScenariosDashboardDev,
-    component: () => import("./components/kotlin/dev/UserScenariosDashboard.vue"),
-    meta: { pageTitle: "User scenarios dashboard (dev)" },
-  },
-  {
-    path: ROUTES.KotlinCodeAnalysisDev,
-    component: () => import("./components/kotlin/dev/KotlinCodeAnalysisChartsDashboard.vue"),
-    meta: { pageTitle: "Code analysis (dev)" },
-  },
-  {
-    path: ROUTES.KotlinCompletionDev,
-    component: () => import("./components/kotlin/dev/CompletionDashboard.vue"),
-    meta: { pageTitle: "Kotlin completion (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinFindUsagesDev,
-    component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
-    meta: { pageTitle: "Kotlin findUsages (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinRefactoringDev,
-    component: () => import("./components/kotlin/dev/RefactoringDashboard.vue"),
-    meta: { pageTitle: "Kotlin refactoring (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinDebuggerDev,
-    component: () => import("./components/kotlin/dev/DebuggerDashboard.vue"),
-    meta: { pageTitle: "Kotlin debugger (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinScriptDev,
-    component: () => import("./components/kotlin/dev/ScriptDashboard.vue"),
-    meta: { pageTitle: "Kts (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfint",
-      table: "kotlin",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.KotlinCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfint",
-      table: "kotlin",
-      metricsNames: KOTLIN_MAIN_METRICS,
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
-    path: ROUTES.KotlinCompareBranchesDev,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "kotlin",
-      metricsNames: KOTLIN_MAIN_METRICS,
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL + "(dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinMemoryDashboard,
-    component: () => import("./components/kotlin/MemoryPerformanceDashboard.vue"),
-    meta: { pageTitle: "Memory" },
-  },
-  {
-    path: ROUTES.KotlinMemoryDashboardDev,
-    component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
-    meta: { pageTitle: "Memory (dev)" },
-  },
+  perfTests(ROUTES.KotlinTests, { dbName: "perfint", table: "kotlin", initialMachine: MACHINES.HETZNER }, "Kotlin Performance tests explore"),
+  perfTests(
+    ROUTES.KotlinTestsDev,
+    { dbName: "perfintDev", table: "kotlin", initialMachine: MACHINES.HETZNER, withInstaller: false },
+    "Kotlin Performance tests explore (dev/fast installer)"
+  ),
+  dashboard(ROUTES.KotlinDashboard, () => import("./components/kotlin/PerformanceDashboard.vue"), "Kotlin Performance dashboard"),
+  dashboard(ROUTES.KotlinDashboardDev, () => import("./components/kotlin/dev/PerformanceDashboard.vue"), "Kotlin Performance dashboard (dev)"),
+  dashboard(ROUTES.KotlinUserScenariosDashboardDev, () => import("./components/kotlin/dev/UserScenariosDashboard.vue"), "User scenarios dashboard (dev)"),
+  dashboard(ROUTES.KotlinCodeAnalysisDev, () => import("./components/kotlin/dev/KotlinCodeAnalysisChartsDashboard.vue"), "Code analysis (dev)"),
+  dashboard(ROUTES.KotlinCompletionDev, () => import("./components/kotlin/dev/CompletionDashboard.vue"), "Kotlin completion (dev/fast)"),
+  dashboard(ROUTES.KotlinFindUsagesDev, () => import("./components/kotlin/dev/FindUsagesDashboard.vue"), "Kotlin findUsages (dev/fast)"),
+  dashboard(ROUTES.KotlinRefactoringDev, () => import("./components/kotlin/dev/RefactoringDashboard.vue"), "Kotlin refactoring (dev/fast)"),
+  dashboard(ROUTES.KotlinDebuggerDev, () => import("./components/kotlin/dev/DebuggerDashboard.vue"), "Kotlin debugger (dev/fast)"),
+  dashboard(ROUTES.KotlinScriptDev, () => import("./components/kotlin/dev/ScriptDashboard.vue"), "Kts (dev/fast)"),
+  compareBuilds(ROUTES.KotlinCompare, { dbName: "perfint", table: "kotlin" }),
+  compareBranches(ROUTES.KotlinCompareBranches, { dbName: "perfint", table: "kotlin", metricsNames: KOTLIN_MAIN_METRICS }),
+  compareBranches(ROUTES.KotlinCompareBranchesDev, { dbName: "perfintDev", table: "kotlin", metricsNames: KOTLIN_MAIN_METRICS }, COMPARE_BRANCHES_LABEL + "(dev/fast)"),
+  dashboard(ROUTES.KotlinMemoryDashboard, () => import("./components/kotlin/MemoryPerformanceDashboard.vue"), "Memory"),
+  dashboard(ROUTES.KotlinMemoryDashboardDev, () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"), "Memory (dev)"),
 ]
 
 const scalaRoutes = [
-  {
-    path: ROUTES.ScalaTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "scala",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "Scala Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.ScalaCompare,
-    component: COMPONENTS.compareBuilds,
-    props: {
-      dbName: "perfint",
-      table: "scala",
-    },
-    meta: { pageTitle: COMPARE_BUILDS_LABEL },
-  },
-  {
-    path: ROUTES.ScalaCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfint",
-      table: "scala",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
+  perfTests(ROUTES.ScalaTests, { dbName: "perfint", table: "scala", initialMachine: MACHINES.HETZNER }, "Scala Performance tests"),
+  compareBuilds(ROUTES.ScalaCompare, { dbName: "perfint", table: "scala" }),
+  compareBranches(ROUTES.ScalaCompareBranches, { dbName: "perfint", table: "scala" }),
 ]
 
 const jbrRoutes = [
-  {
-    path: ROUTES.JBRTests,
-    component: () => import("./components/jbr/PerformanceTests.vue"),
-    meta: { pageTitle: "JBR Performance tests" },
-  },
-  {
-    path: ROUTES.MapBenchDashboard,
-    component: () => import("./components/jbr/MapBenchDashboard.vue"),
-    meta: { pageTitle: "MapBench Dashboard" },
-  },
-  {
-    path: ROUTES.DaCapoDashboard,
-    component: () => import("./components/jbr/DaCapoDashboard.vue"),
-    meta: { pageTitle: "DaCapo Dashboard" },
-  },
-  {
-    path: ROUTES.J2DBenchDashboard,
-    component: () => import("./components/jbr/J2DBenchDashboard.vue"),
-    meta: { pageTitle: "J2DBench Dashboard" },
-  },
-  {
-    path: ROUTES.JavaDrawDashboard,
-    component: () => import("./components/jbr/JavaDrawDashboard.vue"),
-    meta: { pageTitle: "JavaDraw Dashboard" },
-  },
-  {
-    path: ROUTES.RenderDashboard,
-    component: () => import("./components/jbr/RenderDashboard.vue"),
-    meta: { pageTitle: "Render Dashboard" },
-  },
-  {
-    path: ROUTES.SPECjbb2015Dashboard,
-    component: () => import("./components/jbr/SPECjbb2015Dashboard.vue"),
-    meta: { pageTitle: "Spec Dashboard" },
-  },
-  {
-    path: ROUTES.SwingMarkDashboard,
-    component: () => import("./components/jbr/SwingMarkDashboard.vue"),
-    meta: { pageTitle: "SwingMark Dashboard" },
-  },
+  dashboard(ROUTES.JBRTests, () => import("./components/jbr/PerformanceTests.vue"), "JBR Performance tests"),
+  dashboard(ROUTES.MapBenchDashboard, () => import("./components/jbr/MapBenchDashboard.vue"), "MapBench Dashboard"),
+  dashboard(ROUTES.DaCapoDashboard, () => import("./components/jbr/DaCapoDashboard.vue"), "DaCapo Dashboard"),
+  dashboard(ROUTES.J2DBenchDashboard, () => import("./components/jbr/J2DBenchDashboard.vue"), "J2DBench Dashboard"),
+  dashboard(ROUTES.JavaDrawDashboard, () => import("./components/jbr/JavaDrawDashboard.vue"), "JavaDraw Dashboard"),
+  dashboard(ROUTES.RenderDashboard, () => import("./components/jbr/RenderDashboard.vue"), "Render Dashboard"),
+  dashboard(ROUTES.SPECjbb2015Dashboard, () => import("./components/jbr/SPECjbb2015Dashboard.vue"), "Spec Dashboard"),
+  dashboard(ROUTES.SwingMarkDashboard, () => import("./components/jbr/SwingMarkDashboard.vue"), "SwingMark Dashboard"),
 ]
 
 const fleetRoutes = [
-  {
-    path: ROUTES.FleetTest,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "fleet",
-      table: "measure_new",
-      initialMachine: MACHINES.HETZNER,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Fleet Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.FleetPerfDashboard,
-    component: () => import("./components/fleet/PerformanceDashboard.vue"),
-    meta: { pageTitle: "Fleet Performance dashboard" },
-  },
-  {
-    path: ROUTES.FleetPerfStartupComparisonDashboard,
-    component: () => import("./components/fleet/StartupComparisonDashboard.vue"),
-    meta: { pageTitle: "Fleet Startup Comparison dashboard" },
-  },
-  {
-    path: ROUTES.FleetStartupDashboard,
-    component: () => import("./components/fleet/FleetDashboard.vue"),
-    meta: { pageTitle: "Fleet Startup dashboard" },
-  },
-  {
-    path: ROUTES.FleetStartupExplore,
-    component: () => import("./components/fleet/FleetExplore.vue"),
-    meta: { pageTitle: "Fleet Startup Explore" },
-    props: {
-      withInstaller: true,
-    },
-  },
+  perfTests(ROUTES.FleetTest, { dbName: "fleet", table: "measure_new", initialMachine: MACHINES.HETZNER, withInstaller: false }, "Fleet Performance tests"),
+  dashboard(ROUTES.FleetPerfDashboard, () => import("./components/fleet/PerformanceDashboard.vue"), "Fleet Performance dashboard"),
+  dashboard(ROUTES.FleetPerfStartupComparisonDashboard, () => import("./components/fleet/StartupComparisonDashboard.vue"), "Fleet Startup Comparison dashboard"),
+  dashboard(ROUTES.FleetStartupDashboard, () => import("./components/fleet/FleetDashboard.vue"), "Fleet Startup dashboard"),
+  dashboard(ROUTES.FleetStartupExplore, () => import("./components/fleet/FleetExplore.vue"), "Fleet Startup Explore", { withInstaller: true }),
 ]
 
 const bazelRoutes = [
-  {
-    path: ROUTES.BazelTest,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "bazel",
-      table: "report",
-      initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)",
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Bazel Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.BazelPluginDashboard,
-    component: () => import("./components/bazel/BazelPluginDashboard.vue"),
-    meta: { pageTitle: "Bazel Plugin Dashboard" },
-  },
+  perfTests(ROUTES.BazelTest, { dbName: "bazel", table: "report", initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)", withInstaller: false }, "Bazel Performance tests"),
+  dashboard(ROUTES.BazelPluginDashboard, () => import("./components/bazel/BazelPluginDashboard.vue"), "Bazel Plugin Dashboard"),
 ]
 
 const qodanaRoutes = [
-  {
-    path: ROUTES.QodanaTest,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "qodana",
-      table: "report",
-      initialMachine: "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)",
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Qodana tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  perfTests(ROUTES.QodanaTest, { dbName: "qodana", table: "report", initialMachine: "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)", withInstaller: false }, "Qodana tests"),
 ]
 
 const clionRoutes = [
-  {
-    path: ROUTES.ClionTest,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "clion",
-      withInstaller: false,
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.ClionStartupDashboard,
-    component: COMPONENTS.startupDashboard,
-    props: {
-      table: "clion",
-      defaultProject: "radler/radler/cmake",
-    },
-    meta: { pageTitle: "CLion Startup dashboard" },
-  },
-  {
-    path: ROUTES.ClionProductMetricsDashboard,
-    component: () => import("./components/clion/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "CLion product metrics" },
-  },
-  {
-    path: ROUTES.ClionPerfDashboard,
-    component: () => import("./components/clion/PerformanceDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion dashboard" },
-  },
-  {
-    path: ROUTES.ClionDetailedPerfDashboard,
-    component: () => import("./components/clion/DetailedPerformanceDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Detailed Performance dashboard" },
-  },
-  {
-    path: ROUTES.ClionFindUsageDashboard,
-    component: () => import("./components/clion/FindUsageDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Find Usages dashboard" },
-  },
-  {
-    path: ROUTES.ClionMemoryDashboard,
-    component: () => import("./components/clion/MemoryDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Memory dashboard" },
-  },
-  {
-    path: ROUTES.ClionProjectModelDashboard,
-    component: () => import("./components/clion/ProjectModelDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Project Model dashboard" },
-  },
-  {
-    path: ROUTES.ClionLaggingLatencyDashboard,
-    component: () => import("./components/clion/CLionLaggingLatencyDashboard.vue"),
-    meta: { pageTitle: "CLion Lagging/Latency dashboard" },
-  },
-  {
-    path: ROUTES.CLionOldVsNewSeDashboard,
-    component: () => import("./components/clion/oldVsNewSeDashboard.vue"),
-    meta: { pageTitle: "CLion Old vs New SE dashboard" },
-  },
-  {
-    path: ROUTES.ClionCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfintDev",
-      table: "clion",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
+  perfTests(ROUTES.ClionTest, { dbName: "perfintDev", table: "clion", withInstaller: false, initialMachine: MACHINES.AWS_LINUX }, "CLion tests"),
+  startupDashboard(ROUTES.ClionStartupDashboard, { table: "clion", defaultProject: "radler/radler/cmake" }, "CLion Startup dashboard"),
+  dashboard(ROUTES.ClionProductMetricsDashboard, () => import("./components/clion/ProductMetricsDashboard.vue"), "CLion product metrics"),
+  dashboard(ROUTES.ClionPerfDashboard, () => import("./components/clion/PerformanceDashboard.vue"), "CLion dashboard", { initialMachine: MACHINES.AWS_LINUX }),
+  dashboard(ROUTES.ClionDetailedPerfDashboard, () => import("./components/clion/DetailedPerformanceDashboard.vue"), "CLion Detailed Performance dashboard", {
+    initialMachine: MACHINES.AWS_LINUX,
+  }),
+  dashboard(ROUTES.ClionFindUsageDashboard, () => import("./components/clion/FindUsageDashboard.vue"), "CLion Find Usages dashboard", { initialMachine: MACHINES.AWS_LINUX }),
+  dashboard(ROUTES.ClionMemoryDashboard, () => import("./components/clion/MemoryDashboard.vue"), "CLion Memory dashboard", { initialMachine: MACHINES.AWS_LINUX }),
+  dashboard(ROUTES.ClionProjectModelDashboard, () => import("./components/clion/ProjectModelDashboard.vue"), "CLion Project Model dashboard", {
+    initialMachine: MACHINES.AWS_LINUX,
+  }),
+  dashboard(ROUTES.ClionLaggingLatencyDashboard, () => import("./components/clion/CLionLaggingLatencyDashboard.vue"), "CLion Lagging/Latency dashboard"),
+  dashboard(ROUTES.CLionOldVsNewSeDashboard, () => import("./components/clion/oldVsNewSeDashboard.vue"), "CLion Old vs New SE dashboard"),
+  compareBranches(ROUTES.ClionCompareBranches, { dbName: "perfintDev", table: "clion" }),
 ]
 
 const vcsRoutes = [
-  {
-    path: ROUTES.VcsIdeaDashboardDev,
-    component: () => import("./components/vcs/PerformanceDashboardDev.vue"),
-    meta: { pageTitle: "Vcs Idea performance dashboard DevServer" },
-  },
-  {
-    path: ROUTES.VcsSpaceDashboardDev,
-    component: () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"),
-    meta: { pageTitle: "Vcs Space performance dashboard DevServer" },
-  },
-  {
-    path: ROUTES.VcsStarterDashboardDev,
-    component: () => import("./components/vcs/PerformanceStarterDashboardDev.vue"),
-    meta: { pageTitle: "Vcs Starer performance dashboard DevServer" },
-  },
-  {
-    path: ROUTES.VcsIdeaDashboard,
-    component: () => import("./components/vcs/PerformanceDashboard.vue"),
-    meta: { pageTitle: "Vcs Idea performance dashboard (obsolete)" },
-  },
-  {
-    path: ROUTES.VcsSpaceDashboard,
-    component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
-    meta: { pageTitle: "Vcs Space performance dashboard (obsolete)" },
-  },
-  {
-    path: ROUTES.VcsStarterDashboard,
-    component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
-    meta: { pageTitle: "Vcs Starer performance dashboard (obsolete)" },
-  },
+  dashboard(ROUTES.VcsIdeaDashboardDev, () => import("./components/vcs/PerformanceDashboardDev.vue"), "Vcs Idea performance dashboard DevServer"),
+  dashboard(ROUTES.VcsSpaceDashboardDev, () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"), "Vcs Space performance dashboard DevServer"),
+  dashboard(ROUTES.VcsStarterDashboardDev, () => import("./components/vcs/PerformanceStarterDashboardDev.vue"), "Vcs Starer performance dashboard DevServer"),
+  dashboard(ROUTES.VcsIdeaDashboard, () => import("./components/vcs/PerformanceDashboard.vue"), "Vcs Idea performance dashboard (obsolete)"),
+  dashboard(ROUTES.VcsSpaceDashboard, () => import("./components/vcs/PerformanceSpaceDashboard.vue"), "Vcs Space performance dashboard (obsolete)"),
+  dashboard(ROUTES.VcsStarterDashboard, () => import("./components/vcs/PerformanceStarterDashboard.vue"), "Vcs Starer performance dashboard (obsolete)"),
 ]
 
 const datagripRoutes = [
-  {
-    path: ROUTES.DataGripTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "datagrip",
-      initialMachine: "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)",
-      withInstaller: false,
-    },
-    meta: { pageTitle: "DataGrip Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.DataGripProductMetricsDashboard,
-    component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
-    meta: { pageTitle: "DataGrip product metrics" },
-  },
-  {
-    path: ROUTES.DataGripIndexingDashboard,
-    component: () => import("./components/datagrip/IndexingDashboard.vue"),
-    meta: { pageTitle: "DataGrip Indexing dashboard" },
-  },
-  {
-    path: ROUTES.DataGripDataGridRenderingDashboard,
-    component: () => import("./components/datagrip/DataGridRenderingDashboard.vue"),
-    meta: { pageTitle: "DataGrip Data Grid Rendering dashboard" },
-  },
+  perfTests(
+    ROUTES.DataGripTests,
+    { dbName: "perfintDev", table: "datagrip", initialMachine: "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)", withInstaller: false },
+    "DataGrip Performance tests"
+  ),
+  dashboard(ROUTES.DataGripProductMetricsDashboard, () => import("./components/datagrip/ProductMetricsDashboard.vue"), "DataGrip product metrics"),
+  dashboard(ROUTES.DataGripIndexingDashboard, () => import("./components/datagrip/IndexingDashboard.vue"), "DataGrip Indexing dashboard"),
+  dashboard(ROUTES.DataGripDataGridRenderingDashboard, () => import("./components/datagrip/DataGridRenderingDashboard.vue"), "DataGrip Data Grid Rendering dashboard"),
 ]
 
 const toolboxRoutes = [
-  {
-    path: ROUTES.ToolboxTests,
-    component: COMPONENTS.perfTests,
-    props: {
+  perfTests(
+    ROUTES.ToolboxTests,
+    {
       dbName: "toolbox",
       table: "report",
       withInstaller: false,
@@ -2391,181 +1116,55 @@ const toolboxRoutes = [
       initialMachine: "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)",
       withoutAccidents: true,
     },
-    meta: { pageTitle: "Toolbox" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.ToolboxTestsGwDeployDashboard,
-    component: () => import("./components/toolbox/GwDeployMetricsDashboard.vue"),
-    props: {
-      dbName: "toolbox",
-      table: "report",
-      withInstaller: false,
-      branch: "refs/heads/master",
-      withoutAccidents: true,
-    },
-    meta: { pageTitle: "GW Dashboard" },
-  },
+    "Toolbox"
+  ),
+  dashboard(ROUTES.ToolboxTestsGwDeployDashboard, () => import("./components/toolbox/GwDeployMetricsDashboard.vue"), "GW Dashboard", {
+    dbName: "toolbox",
+    table: "report",
+    withInstaller: false,
+    branch: "refs/heads/master",
+    withoutAccidents: true,
+  }),
 ]
 
 const ijentRoutes = [
-  {
-    path: ROUTES.IJentBenchmarksDashboard,
-    component: () => import("./components/ijent/IJentBenchmarskDashboard.vue"),
-    meta: { pageTitle: "IJent Benchmarks Dashboard" },
-  },
-  {
-    path: ROUTES.IJentPerfTestsDashboard,
-    component: () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"),
-    meta: { pageTitle: "IJent Performance Tests Dashboard" },
-  },
-  {
-    path: ROUTES.IJentProjectLoadingDashboard,
-    component: () => import("./components/ijent/IJentProjectLoadingDashboard.vue"),
-    meta: { pageTitle: "IJent Project Loading (Community)" },
-  },
-  {
-    path: ROUTES.IJentRuntimeDashboard,
-    component: () => import("./components/ijent/IJentRuntimeDashboard.vue"),
-    meta: { pageTitle: "IJent Runtime (Community)" },
-  },
-  {
-    path: ROUTES.IJentRawPerfData,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "ijent",
-      initialMachine: "Linux Munich i7-13700, 64 Gb",
-      withInstaller: false,
-    },
-    meta: { pageTitle: "IJent Raw Performance Data" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  dashboard(ROUTES.IJentBenchmarksDashboard, () => import("./components/ijent/IJentBenchmarskDashboard.vue"), "IJent Benchmarks Dashboard"),
+  dashboard(ROUTES.IJentPerfTestsDashboard, () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"), "IJent Performance Tests Dashboard"),
+  dashboard(ROUTES.IJentProjectLoadingDashboard, () => import("./components/ijent/IJentProjectLoadingDashboard.vue"), "IJent Project Loading (Community)"),
+  dashboard(ROUTES.IJentRuntimeDashboard, () => import("./components/ijent/IJentRuntimeDashboard.vue"), "IJent Runtime (Community)"),
+  perfTests(ROUTES.IJentRawPerfData, { dbName: "perfintDev", table: "ijent", initialMachine: "Linux Munich i7-13700, 64 Gb", withInstaller: false }, "IJent Raw Performance Data"),
 ]
 
 const mlRoutes = [
-  {
-    path: ROUTES.AIAssistantApiTests,
-    component: () => import("./components/ml/dev/AiAssistantApiTests.vue"),
-    meta: { pageTitle: "AI API Tests" },
-  },
-  {
-    path: ROUTES.AIAssistantTestGeneration,
-    component: () => import("./components/ml/dev/TestGenerationDashboard.vue"),
-    meta: { pageTitle: "Test generation" },
-  },
-  {
-    path: ROUTES.LLMDevTests,
-    component: () => import("./components/ml/dev/LLMDashboard.vue"),
-    meta: { pageTitle: "AIA dashboard" },
-  },
-  {
-    path: ROUTES.AIAPrivacyDashboard,
-    component: () => import("./components/ml/dev/AIAPrivacyDashboard.vue"),
-    meta: { pageTitle: "AIA Privacy" },
-  },
-  {
-    path: ROUTES.MLDevTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "ml",
-      initialMachine: MACHINES.AWS_LINUX,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "ML Tests dev-server" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  dashboard(ROUTES.AIAssistantApiTests, () => import("./components/ml/dev/AiAssistantApiTests.vue"), "AI API Tests"),
+  dashboard(ROUTES.AIAssistantTestGeneration, () => import("./components/ml/dev/TestGenerationDashboard.vue"), "Test generation"),
+  dashboard(ROUTES.LLMDevTests, () => import("./components/ml/dev/LLMDashboard.vue"), "AIA dashboard"),
+  dashboard(ROUTES.AIAPrivacyDashboard, () => import("./components/ml/dev/AIAPrivacyDashboard.vue"), "AIA Privacy"),
+  perfTests(ROUTES.MLDevTests, { dbName: "perfintDev", table: "ml", initialMachine: MACHINES.AWS_LINUX, withInstaller: false }, "ML Tests dev-server"),
 ]
 
 const aiaRoutes = [
-  {
-    path: ROUTES.AIATests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "mlEvaluation",
-      table: "report",
-      withInstaller: false,
-      branch: null,
-      initialMachine: null,
-    },
-    meta: { pageTitle: "AIA Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.AIACompletionDashboard,
-    component: () => import("./components/aia/AIACompletionDashboard.vue"),
-    meta: { pageTitle: "AIA completion dashboard" },
-  },
-  {
-    path: ROUTES.AIACodeGenerationDashboard,
-    component: () => import("./components/aia/AIACodeGeneration.vue"),
-    meta: { pageTitle: "AIA code generation dashboard" },
-  },
-  {
-    path: ROUTES.AIAChatCodeGenerationDashboard,
-    component: () => import("./components/aia/ChatCodeGeneration.vue"),
-    meta: { pageTitle: "AIA chat code generation dashboard" },
-  },
-  {
-    path: ROUTES.AIANameSuggestionDashboard,
-    component: () => import("./components/aia/AIANameSuggestion.vue"),
-    meta: { pageTitle: "AIA name suggestion dashboard" },
-  },
-  {
-    path: ROUTES.AIATestGenerationDashboard,
-    component: () => import("./components/aia/AIATestGeneration.vue"),
-    meta: { pageTitle: "AIA test generation dashboard" },
-  },
+  perfTests(ROUTES.AIATests, { dbName: "mlEvaluation", table: "report", withInstaller: false, branch: null, initialMachine: null }, "AIA Tests"),
+  dashboard(ROUTES.AIACompletionDashboard, () => import("./components/aia/AIACompletionDashboard.vue"), "AIA completion dashboard"),
+  dashboard(ROUTES.AIACodeGenerationDashboard, () => import("./components/aia/AIACodeGeneration.vue"), "AIA code generation dashboard"),
+  dashboard(ROUTES.AIAChatCodeGenerationDashboard, () => import("./components/aia/ChatCodeGeneration.vue"), "AIA chat code generation dashboard"),
+  dashboard(ROUTES.AIANameSuggestionDashboard, () => import("./components/aia/AIANameSuggestion.vue"), "AIA name suggestion dashboard"),
+  dashboard(ROUTES.AIATestGenerationDashboard, () => import("./components/aia/AIATestGeneration.vue"), "AIA test generation dashboard"),
 ]
 
 const kmtRoutes = [
-  {
-    path: ROUTES.KMTTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "swift",
-      withInstaller: false,
-      branch: null,
-      initialMachine: "Mac Cidr Performance",
-    },
-    meta: { pageTitle: "KMT Unit Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.KMTIntegrationTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "kmt",
-      withInstaller: false,
-      branch: "master",
-      initialMachine: "Mac Cidr Performance",
-    },
-    meta: { pageTitle: "KMT Integration Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.KMTDashboard,
-    component: () => import("./components/kmt/PerformanceDashboard.vue"),
-    meta: { pageTitle: "KMT Dashboard" },
-  },
+  perfTests(ROUTES.KMTTests, { dbName: "perfintDev", table: "swift", withInstaller: false, branch: null, initialMachine: "Mac Cidr Performance" }, "KMT Unit Tests"),
+  perfTests(
+    ROUTES.KMTIntegrationTests,
+    { dbName: "perfintDev", table: "kmt", withInstaller: false, branch: "master", initialMachine: "Mac Cidr Performance" },
+    "KMT Integration Tests"
+  ),
+  dashboard(ROUTES.KMTDashboard, () => import("./components/kmt/PerformanceDashboard.vue"), "KMT Dashboard"),
 ]
 
 const diogenRoutes = [
-  {
-    path: ROUTES.DiogenTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "diogen",
-      table: "report",
-      withInstaller: false,
-      branch: "refs/heads/main",
-      initialMachine: null,
-      withoutAccidents: true,
-    },
-    meta: { pageTitle: "Diogen" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.DiogenDashboard,
-    component: () => import("./components/diogen/DiogenPipelineDashboard.vue"),
-    meta: { pageTitle: "Diogen Pipeline" },
-  },
+  perfTests(ROUTES.DiogenTests, { dbName: "diogen", table: "report", withInstaller: false, branch: "refs/heads/main", initialMachine: null, withoutAccidents: true }, "Diogen"),
+  dashboard(ROUTES.DiogenDashboard, () => import("./components/diogen/DiogenPipelineDashboard.vue"), "Diogen Pipeline"),
 ]
 
 const perfUnitTestsRoutes = [
@@ -2583,18 +1182,11 @@ const perfUnitTestsRoutes = [
 ]
 
 const kotlinBuildToolsRoutes = [
-  {
-    path: ROUTES.KotlinBuildToolsTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "kotlinBuildTools",
-      withInstaller: false,
-      branch: "master",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "Kotlin Build Tools Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  perfTests(
+    ROUTES.KotlinBuildToolsTests,
+    { dbName: "perfintDev", table: "kotlinBuildTools", withInstaller: false, branch: "master", initialMachine: MACHINES.HETZNER },
+    "Kotlin Build Tools Tests"
+  ),
 ]
 
 const lspRoutes = [
@@ -2609,30 +1201,16 @@ const lspRoutes = [
     },
     meta: { pageTitle: "LSP Tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.LSPDashboard,
-    component: () => import("./components/lsp/LSPDashboard.vue"),
-    meta: { pageTitle: "LSP Dashboard" },
-  },
+  dashboard(ROUTES.LSPDashboard, () => import("./components/lsp/LSPDashboard.vue"), "LSP Dashboard"),
 ]
 
 const kotlinNotebooksRoutes = [
-  {
-    path: ROUTES.KotlinNotebooksTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfintDev",
-      table: "kotlinNotebooks",
-      initialMachine: MACHINES.AWS_LINUX,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "Kotlin Notebooks Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.KotlinNotebooksDashboard,
-    component: () => import("./components/kotlinNotebooks/PerformanceDashboard.vue"),
-    meta: { pageTitle: "Kotlin Notebooks Dashboard" },
-  },
+  perfTests(
+    ROUTES.KotlinNotebooksTests,
+    { dbName: "perfintDev", table: "kotlinNotebooks", initialMachine: MACHINES.AWS_LINUX, withInstaller: false },
+    "Kotlin Notebooks Performance tests"
+  ),
+  dashboard(ROUTES.KotlinNotebooksDashboard, () => import("./components/kotlinNotebooks/PerformanceDashboard.vue"), "Kotlin Notebooks Dashboard"),
 ]
 
 export function getNewDashboardRoutes(): ParentRouteRecord[] {

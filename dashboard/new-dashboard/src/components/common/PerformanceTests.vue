@@ -181,7 +181,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
+import { nightly, ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import {
@@ -216,18 +216,7 @@ import { AccidentsConfiguratorForTests } from "../../configurators/accidents/Acc
 import { createTestModeConfigurator, defaultModeName } from "../../configurators/TestModeConfigurator"
 import { dbTypeStore } from "../../shared/dbTypes"
 import { FilterConfigurator } from "../../configurators/filter"
-
-export interface PerformanceTestsProps {
-  dbName: string
-  table: string
-  initialMachine: string | string[] | null
-  withInstaller?: boolean
-  unit?: "ns" | "ms"
-  releaseConfigurator?: ReleaseType
-  branch?: string | null
-  withoutAccidents?: boolean
-  machineGroupFilter?: string | string[] | null
-}
+import type { PerformanceTestsProps } from "./PerformanceTests.props"
 
 const {
   dbName,

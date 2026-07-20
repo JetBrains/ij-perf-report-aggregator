@@ -17,7 +17,7 @@ In the `ROUTE_PREFIX` enum, add a new entry. Use PascalCase for the key and a lo
 Example:
 
 ```typescript
-const enum ROUTE_PREFIX {
+enum ROUTE_PREFIX {
   // ... existing entries
   MyCategory = "/myCategory",
 }
@@ -37,7 +37,7 @@ enum ROUTES {
 
 ### 3. Add Product definition
 
-Before `export const PRODUCTS`, add the Product object:
+Before `export const PRODUCTS`, add the Product object. Tabs are built with the `tab(url, label)` helper:
 
 ```typescript
 const MY_CATEGORY: Product = {
@@ -47,16 +47,7 @@ const MY_CATEGORY: Product = {
     {
       url: ROUTE_PREFIX.MyCategory,
       label: "",
-      tabs: [
-        {
-          url: ROUTES.MyCategoryDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.MyCategoryTests,
-          label: TESTS_LABEL,
-        },
-      ],
+      tabs: [tab(ROUTES.MyCategoryDashboard, DASHBOARD_LABEL), tab(ROUTES.MyCategoryTests, TESTS_LABEL)],
     },
   ],
 }
@@ -68,28 +59,25 @@ Insert the new product in alphabetical order within the `PRODUCTS` array.
 
 ### 5. Add route handlers
 
-Before `export function getNewDashboardRoutes()`, add the routes array:
+Before `export function getNewDashboardRoutes()`, add the routes array. Use the route-builder helpers rather than raw object literals:
 
 ```typescript
 const myCategoryRoutes = [
-  {
-    path: ROUTES.MyCategoryTests,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "<the dbName argument>",
-      table: "<the table argument>",
-      initialMachine: MACHINES.HETZNER,
-      withInstaller: false,
-    },
-    meta: { pageTitle: "My Category Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.MyCategoryDashboard,
-    component: () => import("./components/myCategory/PerformanceDashboard.vue"),
-    meta: { pageTitle: "My Category Dashboard" },
-  },
+  perfTests(
+    ROUTES.MyCategoryTests,
+    { dbName: "<the dbName argument>", table: "<the table argument>", initialMachine: MACHINES.HETZNER, withInstaller: false },
+    "My Category Performance tests"
+  ),
+  dashboard(ROUTES.MyCategoryDashboard, () => import("./components/myCategory/PerformanceDashboard.vue"), "My Category Dashboard"),
 ]
 ```
+
+The route-builder helpers (defined near the top of `routes.ts`):
+
+- `perfTests(path, props: PerformanceTestsProps, pageTitle)` — a Performance-tests page using the shared `PerformanceTests.vue`. The `satisfies TypedRouteRecord<PerformanceTestsProps>` annotation lives inside the helper, so you don't write it here.
+- `dashboard(path, component, pageTitle, props?)` — a dashboard page; `component` is a lazy `() => import(...)`, `props` is an optional static-props record.
+- `startupDashboard(path, { table, defaultProject? }, pageTitle)` — a startup-metrics dashboard.
+- `compareBuilds(path, { dbName, table }, pageTitle?)`, `compareBranches(path, { dbName, table, metricsNames? }, pageTitle?)`, `compareModes(path, { dbName, table }, pageTitle?)` — comparison pages; `pageTitle` defaults to the standard label.
 
 The `dbName` and `table` are extracted from the argument: if the argument is `perfintDev_kotlinNotebooks`, then `dbName` is `perfintDev` and `table` is `kotlinNotebooks`. If no underscore separator is present, use the full value as both `dbName` and `table`.
 
@@ -126,5 +114,6 @@ The component directory name should match the table name (camelCase).
 - Product const names use UPPER_SNAKE_CASE: `KOTLIN_NOTEBOOKS`
 - Route array variable names use camelCase: `kotlinNotebooksRoutes`
 - PRODUCTS array is sorted alphabetically
-- Use existing constants like `DASHBOARD_LABEL`, `TESTS_LABEL`, `TEST_ROUTE`, `DASHBOARD_ROUTE`
-- The `satisfies TypedRouteRecord<PerformanceTestsProps>` annotation is required on test routes
+- Build tabs with `tab(url, label)`; build routes with the `perfTests` / `dashboard` / `startupDashboard` / `compareBuilds` / `compareBranches` / `compareModes` helpers
+- Use existing constants like `DASHBOARD_LABEL`, `TESTS_LABEL`, `TEST_ROUTE`, `DASHBOARD_ROUTE`, and `MACHINES.HETZNER` / `MACHINES.AWS_LINUX`
+- Only drop to a raw object literal with `satisfies TypedRouteRecord<...>` for special cases the helpers don't cover (e.g. the `PerformanceUnitTests.vue` component, or a `:subproject?` path param)

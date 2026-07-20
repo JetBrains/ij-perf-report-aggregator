@@ -234,7 +234,7 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 		}
 
 		// Replace all matches with %
-		machine := removeLastPart(params.Machine) + "%"
+		machineLike := removeLastPart(params.Machine) + "%"
 		// Map product to table - this is a simplified mapping, adjust as needed
 		table := mapProductToTable(params.Product)
 		if table == "" {
@@ -256,7 +256,7 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 			AND generated_time >= now() - INTERVAL 1 MONTH
 			ORDER BY generated_time
 		)
-	`, table, params.Branch, params.MetricName, machine, params.TestName, params.Mode)
+	`, table, params.Branch, params.MetricName, machineLike, params.TestName, params.Mode)
 
 		db, err := t.openDatabaseConnection()
 		if err != nil {

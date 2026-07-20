@@ -72,6 +72,7 @@ type comparisonResponseItem struct {
 
 type ownerQueryResult struct {
 	measureQueryResult
+
 	Machine string
 }
 

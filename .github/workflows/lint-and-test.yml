@@ -20,6 +20,17 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.12.2
+      - name: Check for dead code
+        run: |
+          # Whole-program reachability from every main(). Generated code (quicktemplate .qtpl,
+          # protobuf *_pb.go) legitimately contains unreferenced helpers, so it is filtered out.
+          dead=$(go tool deadcode -test ./... | grep -vE '\.qtpl:|_pb\.go:|\.pb\.go:' || true)
+          if [ -n "$dead" ]; then
+            echo "$dead"
+            echo "::error::deadcode found unreachable functions. Remove them (or wire them up)."
+            exit 1
+          fi
+          echo "deadcode: no unreachable functions"
       - name: Run Go tests
         run: go test ./pkg/...
       - uses: ./.github/send-notification-action
@@ -47,6 +58,8 @@ jobs:
         run: pnpm oxlint --type-aware
       - name: Run Oxfmt
         run: pnpm oxfmt --check
+      - name: Run Knip
+        run: pnpm knip
       - name: Run tests
         run: pnpm test
       - uses: ./.github/send-notification-action

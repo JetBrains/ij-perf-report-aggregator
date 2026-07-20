@@ -15,10 +15,12 @@ lint:
 	go test ./pkg/...
 	pnpm test
 	golangci-lint run cmd/... pkg/...
+	go tool deadcode -test ./... | grep -vE '\.qtpl:|_pb\.go:|\.pb\.go:' && exit 1 || true
 #To fix run: pnpm oxfmt
 	pnpm oxfmt --check
 	pnpm oxlint --type-aware
 	pnpm vue-tsc
+	pnpm knip
 
 
 build-server:

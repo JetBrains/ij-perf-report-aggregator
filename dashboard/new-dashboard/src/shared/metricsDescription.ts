@@ -445,6 +445,15 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     metricInfo("Deferred-call targets DFA could not resolve. A rise signals a resolve regression; lower is better.", "counter", undefined, "lower"),
   ],
 
+  // GoLand — per-scenario JVM sub-metrics (the `#jvm.*` suffix on highlighting metric names). Resolved
+  // by the sub-metric type after `#`, so one entry covers every scenario/file that publishes it.
+  ["jvm.alloc.mb", metricInfo("Allocation churn: total memory allocated across threads during the scenario (not live heap).", "mebibytes", undefined, "lower")],
+  ["jvm.cpu.time.ms", metricInfo("Thread CPU time during the scenario.", "milliseconds", undefined, "lower")],
+  ["jvm.gc.time.ms", metricInfo("Time in GC during the scenario.", "milliseconds", undefined, "lower")],
+  ["jvm.gc.full.time.ms", metricInfo("Time in full GC during the scenario.", "milliseconds", undefined, "lower")],
+  ["jvm.gc.count", metricInfo("GC cycles during the scenario.", "counter", undefined, "lower")],
+  ["jvm.gc.full.count", metricInfo("Full GC cycles during the scenario.", "counter", undefined, "lower")],
+
   // Other
   ["Memory | IDE | RESIDENT SIZE (MB) 95th pctl", metricInfo("95th-percentile resident set size — near-peak real memory footprint.", "mebibytes")],
   ["ui.lagging#max_value", metricInfo("Maximum UI-thread lag during the run — the longest stretch the EDT stayed blocked and unresponsive.", "milliseconds")],
@@ -468,13 +477,23 @@ function extractMainPrefix(inputString: string): string {
   return match ? match[1] : "non-matching"
 }
 
+// The sub-metric type after the first `#` (e.g. "coldStart_slow#jvm.alloc.mb" -> "jvm.alloc.mb"),
+// or "" when the token carries no `#`. The before-`#` wildcard (`\w+#*`) cannot match a dotted type,
+// so this is the resolution path for `#`-suffixed sub-metrics declared by their type alone.
+function afterHash(token: string): string {
+  const index = token.indexOf("#")
+  return index === -1 ? "" : token.slice(index + 1)
+}
+
 export function getMetricDescription(metric: string | undefined): MetricInfo | null {
   if (metric == undefined) return null
   // A chart series' measureName is a composite of producer parts joined by SERIES_NAME_SEPARATOR
   // (machine/branch/dimension producers prepend non-metric tokens), so the metric is not always the
-  // whole string nor at its start. Resolve from the first token matching an exact or "#*" wildcard entry.
+  // whole string nor at its start. Resolve from the first token matching an exact entry, then the
+  // before-`#` "#*" wildcard, then the after-`#` sub-metric type. Later fallbacks fire only when the
+  // earlier ones miss, so declared `prefix#*` metrics keep resolving through the wildcard.
   for (const token of metric.split(SERIES_NAME_SEPARATOR)) {
-    const metricDescription = metricsDescription.get(token) ?? metricsDescription.get(extractMainPrefix(token) + "*")
+    const metricDescription = metricsDescription.get(token) ?? metricsDescription.get(extractMainPrefix(token) + "*") ?? metricsDescription.get(afterHash(token))
     if (metricDescription != undefined) {
       return typeof metricDescription == "string" ? { description: metricDescription } : metricDescription
     }

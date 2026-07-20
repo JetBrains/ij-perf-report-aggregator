@@ -138,9 +138,7 @@ import { BaseAndCompared, CompareSectionConfig, pickBaseAndCompared } from "./co
 import { indexSeries, seriesKey } from "./compareQuery"
 import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, DISPARITY_SIGNIFICANT_THRESHOLD } from "./compareStats"
 import { formatMeasureValue, resolveMeasureUnit } from "../common/formatter"
-
-const DIFF_PERCENT_WARN = 5
-const DIFF_PERCENT_SEVERE = 20
+import "./compareCells.css"
 
 interface CompareRow {
   key: string
@@ -459,33 +457,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<!-- Cell tints apply via PrimeVue's pt:bodyCell, which sets classes on the <td> outside
-     Vue's component scope — so these rules must not be scoped. -->
-<style>
-.compare-cell-degradation-severe {
-  background-color: rgba(220, 38, 38, 0.12);
-}
-.compare-cell-degradation-warn {
-  background-color: rgba(217, 119, 6, 0.1);
-}
-.compare-cell-improvement-severe {
-  background-color: rgba(22, 163, 74, 0.12);
-}
-.compare-cell-improvement-warn {
-  background-color: rgba(132, 204, 22, 0.12);
-}
-
-.dark-mode .compare-cell-degradation-severe {
-  background-color: rgba(248, 113, 113, 0.22);
-}
-.dark-mode .compare-cell-degradation-warn {
-  background-color: rgba(251, 146, 60, 0.18);
-}
-.dark-mode .compare-cell-improvement-severe {
-  background-color: rgba(74, 222, 128, 0.22);
-}
-.dark-mode .compare-cell-improvement-warn {
-  background-color: rgba(163, 230, 53, 0.2);
-}
-</style>

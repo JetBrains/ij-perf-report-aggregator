@@ -20,6 +20,17 @@ interface Dimensions {
   measuresSet: ReadonlySet<string>
 }
 
+function makeDimensions(branches: readonly string[], projects: readonly string[], measures: readonly string[]): Dimensions {
+  return {
+    branches,
+    projects,
+    measures,
+    branchesSet: new Set(branches),
+    projectsSet: new Set(projects),
+    measuresSet: new Set(measures),
+  }
+}
+
 export function indexSeries(
   data: DataQueryResult,
   configuration: DataQueryExecutorConfiguration,
@@ -29,14 +40,7 @@ export function indexSeries(
 ): IndexedSeries {
   const byKey = new Map<string, number[]>()
   const unresolvedNames: string[] = []
-  const dims: Dimensions = {
-    branches,
-    projects,
-    measures,
-    branchesSet: new Set(branches),
-    projectsSet: new Set(projects),
-    measuresSet: new Set(measures),
-  }
+  const dims = makeDimensions(branches, projects, measures)
   for (let i = 0; i < data.length; i++) {
     const seriesData = data[i]
     if (seriesData == null || seriesData[1] == null) continue
@@ -62,6 +66,58 @@ export function indexSeries(
 
 export function seriesKey(branch: string, project: string, metric: string): string {
   return `${branch}::${project}::${metric}`
+}
+
+// One measured build within a series: its generated_time (ms) and value.
+export interface SeriesRun {
+  t: number
+  v: number
+}
+
+// Like indexSeries, but retains the per-build (timestamp, value) pairs instead of merging values into
+// one bag — the single-run comparison needs to pick a specific run. Each key's runs are sorted by
+// timestamp ascending. Series-name resolution reuses resolveSeriesKey, so it matches indexSeries.
+export function indexSeriesRuns(
+  data: DataQueryResult,
+  configuration: DataQueryExecutorConfiguration,
+  branches: readonly string[],
+  projects: readonly string[],
+  measures: readonly string[]
+): Map<string, SeriesRun[]> {
+  const byKey = new Map<string, SeriesRun[]>()
+  const dims = makeDimensions(branches, projects, measures)
+  for (let i = 0; i < data.length; i++) {
+    const seriesData = data[i]
+    // Column 0 is the timestamp array, column 1 the value array (MeasureConfigurator forces this order).
+    if (seriesData == null || seriesData[0] == null || seriesData[1] == null) continue
+    const timestamps = seriesData[0] as unknown[]
+    const values = seriesData[1] as unknown[]
+    const seriesName = configuration.seriesNames[i] ?? ""
+    const measureName = configuration.measureNames[i] ?? ""
+    const resolved = resolveSeriesKey(seriesName, measureName, dims)
+    if (resolved.branch === "" || resolved.project === "" || resolved.metric === "") continue
+
+    const runs: SeriesRun[] = []
+    for (let k = 0; k < values.length; k++) {
+      const t = timestamps[k]
+      const v = values[k]
+      if (typeof t === "number" && Number.isFinite(t) && typeof v === "number" && Number.isFinite(v)) {
+        runs.push({ t, v })
+      }
+    }
+    if (runs.length === 0) continue
+    runs.sort((a, b) => a.t - b.t)
+
+    const key = seriesKey(resolved.branch, resolved.project, resolved.metric)
+    const existing = byKey.get(key)
+    if (existing == null) {
+      byKey.set(key, runs)
+    } else {
+      existing.push(...runs)
+      existing.sort((a, b) => a.t - b.t)
+    }
+  }
+  return byKey
 }
 
 interface ResolvedSeriesKey {

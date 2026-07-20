@@ -92,6 +92,52 @@ export function computeBaseStats(values: number[]): BaseStats {
   }
 }
 
+// A |Δ%| at or above this is a practically-relevant change; below it is treated as flat.
+export const DIFF_PERCENT_WARN = 5
+// A |Δ%| at or above this is a severe change (drives the darker heatmap/cell tint).
+export const DIFF_PERCENT_SEVERE = 20
+
+export interface ImpactSeverity {
+  direction: "degradation" | "improvement"
+  severity: "severe" | "warn"
+}
+
+// Classifies a Δ% into a tint bucket (direction + severity) or null when it is missing, zero, or
+// below the warn threshold. Shared by CompareTable's cell tints and the engine-comparison heatmap.
+export function diffPercentSeverity(diffPercent: number | undefined): ImpactSeverity | null {
+  if (diffPercent == null || !Number.isFinite(diffPercent) || diffPercent === 0) return null
+  const abs = Math.abs(diffPercent)
+  if (abs < DIFF_PERCENT_WARN) return null
+  return {
+    direction: diffPercent > 0 ? "degradation" : "improvement",
+    severity: abs >= DIFF_PERCENT_SEVERE ? "severe" : "warn",
+  }
+}
+
+// The compareCells.css tint class for a Δ%, or undefined when the change is sub-threshold or missing.
+// Keeps the class-name convention next to the CSS contract; shared by CompareTable and the heatmap.
+export function severityCellClass(diffPercent: number | undefined): string | undefined {
+  const severity = diffPercentSeverity(diffPercent)
+  return severity == null ? undefined : `compare-cell-${severity.direction}-${severity.severity}`
+}
+
+// A Δ% rendered with an explicit sign (e.g. "+3.2%", "-12%"); "—" when not a finite number.
+export function formatSignedPercent(value: number, fractionDigits = 1): string {
+  if (!Number.isFinite(value)) return "—"
+  return `${value >= 0 ? "+" : ""}${value.toFixed(fractionDigits)}%`
+}
+
+// Whether a branch differs from base both statistically and practically. Two gates, both required:
+//   - |D| ≥ threshold filters out statistical noise (tight-baseline rows that aren't real)
+//   - |Δ%| ≥ threshold filters out practically-irrelevant changes (0.0 %/0.1 % at very high D)
+// ±Infinity D paired with any finite non-zero Δ% still counts — flat baseline + any real change.
+export function isSignificantBranch(stats: BranchStats): boolean {
+  if (Number.isNaN(stats.disparity)) return false
+  if (Math.abs(stats.disparity) < DISPARITY_SIGNIFICANT_THRESHOLD) return false
+  if (!Number.isFinite(stats.diffPercent)) return false
+  return Math.abs(stats.diffPercent) >= DIFF_PERCENT_WARN
+}
+
 export function computeBranchStats(base: BaseStats, values: number[]): BranchStats {
   const branchCenter = safeCenter(values)
 

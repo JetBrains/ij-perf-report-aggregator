@@ -107,7 +107,7 @@
         >
           <template #body="slotProps">
             <span v-if="Number.isFinite(slotProps.data.compared[index].diffPercent)">
-              {{ formatSigned(slotProps.data.compared[index].diffPercent, "%") }}
+              {{ formatSignedPercent(slotProps.data.compared[index].diffPercent) }}
             </span>
             <span
               v-else
@@ -130,13 +130,13 @@ import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
-import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { DimensionConfigurator, selectedToArray } from "../../configurators/DimensionConfigurator"
 import { injectOrError } from "../../shared/injectionKeys"
 import { branchConfiguratorKey, compareSectionsRegistryKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { openTestDrilldown } from "../../util/testDrilldown"
 import { BaseAndCompared, CompareSectionConfig, pickBaseAndCompared } from "./compareMode"
 import { indexSeries, seriesKey } from "./compareQuery"
-import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, DISPARITY_SIGNIFICANT_THRESHOLD } from "./compareStats"
+import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, formatSignedPercent, isSignificantBranch, severityCellClass } from "./compareStats"
 import { formatMeasureValue, resolveMeasureUnit } from "../common/formatter"
 import "./compareCells.css"
 
@@ -174,11 +174,7 @@ const sectionRows = shallowRef(new Map<string, CompareRow[]>())
 const sectionLoading = shallowRef(new Map<string, boolean>())
 const significantOnly = ref(true)
 
-const selectedBranches = computed<string[]>(() => {
-  const sel = branchConfigurator.selected.value
-  if (sel == null) return []
-  return Array.isArray(sel) ? sel : [sel]
-})
+const selectedBranches = computed<string[]>(() => selectedToArray(branchConfigurator.selected.value))
 
 const selection = computed<BaseAndCompared | null>(() => pickBaseAndCompared(selectedBranches.value))
 const baseHeader = computed(() => selection.value?.base ?? "base")
@@ -209,12 +205,7 @@ const visibleRows = computed(() => (significantOnly.value ? rowsState.value.sign
 const hasRows = computed(() => rowsState.value.all.length > 0)
 const totalRows = computed(() => rowsState.value.all.length)
 const significantCount = computed(() => rowsState.value.significant.length)
-const isLoading = computed(() => {
-  for (const v of sectionLoading.value.values()) {
-    if (v) return true
-  }
-  return false
-})
+const isLoading = computed(() => [...sectionLoading.value.values()].some(Boolean))
 
 interface SubscriptionEntry {
   config: CompareSectionConfig
@@ -352,32 +343,6 @@ function recompute(entry: SubscriptionEntry, data: DataQueryResult, configuratio
   triggerRef(sectionRows)
 }
 
-function isSignificantBranch(stats: BranchStats): boolean {
-  // Two gates, both required:
-  //   - |D| ≥ threshold filters out statistical noise (tight-baseline rows that aren't real)
-  //   - |Δ%| ≥ threshold filters out practically-irrelevant changes (0.0 %/0.1 % at very high D)
-  // ±Infinity D paired with any finite non-zero Δ% still counts — flat baseline + any real change.
-  if (Number.isNaN(stats.disparity)) return false
-  if (Math.abs(stats.disparity) < DISPARITY_SIGNIFICANT_THRESHOLD) return false
-  if (!Number.isFinite(stats.diffPercent)) return false
-  return Math.abs(stats.diffPercent) >= DIFF_PERCENT_WARN
-}
-
-interface ImpactSeverity {
-  direction: "degradation" | "improvement"
-  severity: "severe" | "warn"
-}
-
-function diffPercentSeverity(diffPercent: number | undefined): ImpactSeverity | null {
-  if (diffPercent == null || !Number.isFinite(diffPercent) || diffPercent === 0) return null
-  const abs = Math.abs(diffPercent)
-  if (abs < DIFF_PERCENT_WARN) return null
-  return {
-    direction: diffPercent > 0 ? "degradation" : "improvement",
-    severity: abs >= DIFF_PERCENT_SEVERE ? "severe" : "warn",
-  }
-}
-
 // Tint the cell's <td> directly via PrimeVue 4's pt API; `parent.props.rowData` is the row
 // for this body cell. Improvements get green, degradations red; sub-threshold or missing
 // Δ% leaves the cell untinted.
@@ -385,14 +350,9 @@ function cellTintPt(comparedIndex: number) {
   return {
     bodyCell: ({ parent }: { parent: { props: { rowData?: CompareRow } } }) => {
       const diffPercent = parent.props.rowData?.compared[comparedIndex]?.diffPercent
-      const sev = diffPercentSeverity(diffPercent)
-      return { class: sev == null ? undefined : `compare-cell-${sev.direction}-${sev.severity}` }
+      return { class: severityCellClass(diffPercent) }
     },
   }
-}
-
-function formatSigned(value: number, suffix: string): string {
-  return `${value >= 0 ? "+" : ""}${value.toFixed(1)}${suffix}`
 }
 
 // Mirrors LineChart's valueUnitFromMeasure: a metric ending in `.ns` or `.ms` carries its

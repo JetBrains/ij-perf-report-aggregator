@@ -6,6 +6,12 @@ import { ComponentState, createComponentState, updateComponentState } from "./co
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
+// A DimensionConfigurator's `selected` as a plain array: [] when nothing is selected, a single-element
+// array for a single selection. Normalizes the string | string[] | null shape callers otherwise re-handle.
+export function selectedToArray(selected: string | string[] | null | undefined): string[] {
+  return selected == null ? [] : Array.isArray(selected) ? selected : [selected]
+}
+
 export class DimensionConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly state = createComponentState()
 

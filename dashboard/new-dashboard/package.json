@@ -3,19 +3,19 @@
   "private": true,
   "dependencies": {
     "@heroicons/vue": "2.2.0",
-    "@primevue/core": "^4.5.5",
+    "@primevue/core": "^5.0.0",
     "@vueuse/core": "^14.3.0",
     "echarts": "6.1.0",
     "fast-equals": "6.0.2",
     "humanize-duration": "3.34.0",
     "marked": "^18.0.6",
     "p-limit": "^7.3.0",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.2",
     "pragmastat": "13.0.1",
     "primevue": "4.5.5",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.39",
-    "vue-router": "5.1.0"
+    "vue": "3.5.40",
+    "vue-router": "5.2.0"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4"

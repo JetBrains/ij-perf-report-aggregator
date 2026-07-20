@@ -2,15 +2,15 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.2.8",
-    "@fontsource/jetbrains-mono": "5.2.8",
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
     "@primeuix/themes": "^2.0.3",
     "echarts": "6.1.0",
     "new-dashboard": "workspace:*",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.2",
     "primevue": "4.5.5",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.39",
-    "vue-router": "5.1.0"
+    "vue": "3.5.40",
+    "vue-router": "5.2.0"
   }
 }

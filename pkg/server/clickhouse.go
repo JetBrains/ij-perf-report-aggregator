@@ -10,7 +10,9 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/outlier-detection"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/bytebufferpool"
 )
@@ -44,13 +46,40 @@ func toJSONBuffer(data any) (*bytebufferpool.ByteBuffer, error) {
 	return buffer, nil
 }
 
+// machineCondition renders the WHERE condition for a machine selection mixing hardware-class
+// group names and raw agent names: groups match by the computed machine_group alias (ClickHouse
+// allows aliases in WHERE), raw names by exact machine. An empty selection matches everything.
+func machineCondition(selection []string) string {
+	var groups, names []string
+	for _, value := range selection {
+		quoted := "'" + sql_util.StringEscaper.Replace(value) + "'"
+		if machine.IsGroup(value) {
+			groups = append(groups, quoted)
+		} else {
+			names = append(names, quoted)
+		}
+	}
+
+	var conditions []string
+	if len(groups) > 0 {
+		conditions = append(conditions, "machine_group IN ("+strings.Join(groups, ", ")+")")
+	}
+	if len(names) > 0 {
+		conditions = append(conditions, "machine IN ("+strings.Join(names, ", ")+")")
+	}
+	if len(conditions) == 0 {
+		return "1"
+	}
+	return strings.Join(conditions, " OR ")
+}
+
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	type requestParams struct {
 		Table        string   `json:"table"`
 		MeasureNames []string `json:"measure_names"`
 		Branch1      string   `json:"branch1"`
 		Branch2      string   `json:"branch2"`
-		Machine      string   `json:"machine"`
+		Machines     []string `json:"machines"`
 		Mode         string   `json:"mode"`
 	}
 
@@ -64,26 +93,14 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	quotedMeasureNames := make([]string, len(params.MeasureNames))
-	for i, name := range params.MeasureNames {
-		quotedMeasureNames[i] = "'" + name + "'"
-	}
-	measureNamesString := strings.Join(quotedMeasureNames, ",")
-
 	mode := params.Mode
 	if params.Mode == "default" {
 		mode = ""
 	}
 
-	sql := fmt.Sprintf(
-		"SELECT branch as Branch, project as Project, measure_name as MeasureName, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM (SELECT branch, project, measures.name as measure_name, measures.value as measure_value "+
-			"FROM %s ARRAY JOIN measures "+
-			"WHERE branch IN ('%s', '%s') AND measure_name in (%s) AND machine like '%s' and mode = '%s' "+
-			"AND generated_time > subtractMonths(now(), 1) ORDER BY generated_time DESC) "+
-			"GROUP BY branch, project, measure_name",
-		params.Table, params.Branch1, params.Branch2, measureNamesString, params.Machine, mode)
+	sql := groupedComparisonSQL("branch", params.Table, fmt.Sprintf(
+		"branch IN ('%s', '%s') AND measure_name IN (%s) AND (%s) AND mode = '%s'",
+		params.Branch1, params.Branch2, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines), mode))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -92,20 +109,14 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	var queryResults []struct {
-		Branch        string
-		Project       string
-		MeasureName   string
-		MeasureValues []int
-	}
+	var queryResults []ownerQueryResult
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {
 		return nil, false, err
 	}
 
-	filtered := filterQueryResults(queryResults)
-	response := buildBranchComparisonResponse(filtered, params.Branch1, params.Branch2)
+	response := buildGroupedComparisonResponse(queryResults, params.Branch1, params.Branch2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
 }
@@ -115,7 +126,7 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		Table        string   `json:"table"`
 		MeasureNames []string `json:"measure_names"`
 		Branch       string   `json:"branch"`
-		Machine      string   `json:"machine"`
+		Machines     []string `json:"machines"`
 		Mode1        string   `json:"mode1"`
 		Mode2        string   `json:"mode2"`
 	}
@@ -130,12 +141,6 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	quotedMeasureNames := make([]string, len(params.MeasureNames))
-	for i, name := range params.MeasureNames {
-		quotedMeasureNames[i] = "'" + name + "'"
-	}
-	measureNamesString := strings.Join(quotedMeasureNames, ",")
-
 	mode1 := params.Mode1
 	if mode1 == "default" {
 		mode1 = ""
@@ -145,15 +150,9 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		mode2 = ""
 	}
 
-	sql := fmt.Sprintf(
-		"SELECT mode as Branch, project as Project, measure_name as MeasureName, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM (SELECT mode, project, measures.name as measure_name, measures.value as measure_value "+
-			"FROM %s ARRAY JOIN measures "+
-			"WHERE mode IN ('%s', '%s') AND branch = '%s' AND measure_name in (%s) AND machine like '%s' "+
-			"AND generated_time > subtractMonths(now(),1) ORDER BY generated_time DESC) "+
-			"GROUP BY mode, project, measure_name",
-		params.Table, mode1, mode2, params.Branch, measureNamesString, params.Machine)
+	sql := groupedComparisonSQL("mode", params.Table, fmt.Sprintf(
+		"mode IN ('%s', '%s') AND branch = '%s' AND measure_name IN (%s) AND (%s)",
+		mode1, mode2, params.Branch, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines)))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -162,20 +161,14 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	var queryResults []struct {
-		Branch        string
-		Project       string
-		MeasureName   string
-		MeasureValues []int
-	}
+	var queryResults []ownerQueryResult
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {
 		return nil, false, err
 	}
 
-	filtered := filterQueryResults(queryResults)
-	response := buildBranchComparisonResponse(filtered, mode1, mode2)
+	response := buildGroupedComparisonResponse(queryResults, mode1, mode2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
 }
@@ -241,7 +234,7 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 		}
 
 		// Replace all matches with %
-		machine := removeLastPart(params.Machine) + "%"
+		machineLike := removeLastPart(params.Machine) + "%"
 		// Map product to table - this is a simplified mapping, adjust as needed
 		table := mapProductToTable(params.Product)
 		if table == "" {
@@ -263,7 +256,7 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 			AND generated_time >= now() - INTERVAL 1 MONTH
 			ORDER BY generated_time
 		)
-	`, table, params.Branch, params.MetricName, machine, params.TestName, params.Mode)
+	`, table, params.Branch, params.MetricName, machineLike, params.TestName, params.Mode)
 
 		db, err := t.openDatabaseConnection()
 		if err != nil {

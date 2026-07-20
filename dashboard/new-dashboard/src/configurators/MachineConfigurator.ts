@@ -3,13 +3,10 @@ import { combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator, toArray } from "../components/common/dataQuery"
-import { loadDimension } from "./DimensionConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
+import { loadDimension } from "./DimensionConfigurator"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
-
-// todo what is it?
-const macLarge = "mac large"
 
 export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly selected = shallowRef<string[]>([])
@@ -18,8 +15,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private readonly observable: Observable<unknown>
   readonly state = createComponentState()
   private readonly groupNameToItem = new Map<string, GroupedDimensionValue>()
-
-  private static readonly valueToGroup: Record<string, string> = getValueToGroup()
 
   readonly filters = shallowRef<FilterConfigurator[]>([])
 
@@ -46,7 +41,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
     const listObservable = filterObservable.pipe(
       switchMap(() => {
-        return loadDimension(name, serverConfigurator, this.filters.value, this.state)
+        // The same distinct-machine query as any dimension, but answered by /api/machineGroups/
+        // with the agents already bucketed into hardware-class groups by the backend (the sole
+        // owner of the grouping — see pkg/machine).
+        return loadDimension<MachineGroupResponseItem[]>(name, serverConfigurator, this.filters.value, this.state, "/api/machineGroups/")
       }),
       updateComponentState(this.state),
       shareReplay(1)
@@ -58,13 +56,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       }
 
       this.groupNameToItem.clear()
-      this.values.value = this.groupValues(data)
+      this.values.value = this.buildGroups(data)
+      void this.normalizeSelectionToGroups(serverConfigurator)
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update
     this.observable = combineLatest([refToObservable(this.selected, true), listObservable]).pipe(distinctUntilChanged(deepEqual))
-    // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart
-    this.groupValues(Object.keys(MachineConfigurator.valueToGroup))
   }
 
   updateFilters(newFilters: FilterConfigurator[]) {
@@ -75,28 +72,56 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return this.observable
   }
 
-  private groupValues(values: string[]): GroupedDimensionValue[] {
+  // Drilldown links may carry a raw agent name in the selection; map it to its hardware-class
+  // group so the dropdown highlights the group and the chart queries the whole class. The
+  // backend owns the mapping — the group is not derivable from the loaded (filtered) member
+  // lists, which may not contain that exact ephemeral instance.
+  private async normalizeSelectionToGroups(serverConfigurator: ServerConfigurator): Promise<void> {
+    const selected = this.selected.value
+    const groupNames = new Set(this.values.value.map((group) => group.value))
+    // A name present as a live agent in the loaded list is a deliberate single-agent choice
+    // (leaves are selectable in the dropdown) — only names absent from the list (ephemeral
+    // drilldown instances) are mapped to their group.
+    const leafNames = new Set(this.values.value.flatMap((group) => group.children?.map((child) => child.value) ?? []))
+    const unresolved = selected.filter((value) => !groupNames.has(value) && !leafNames.has(value))
+    if (unresolved.length === 0) {
+      return
+    }
+
+    const resolved = await Promise.all(unresolved.map((value) => fetchMachineGroup(serverConfigurator, value)))
+    // The selection may have changed while the lookup was in flight (user picked another machine,
+    // or a filter change re-ran this). Don't clobber the newer choice with a stale result.
+    if (!deepEqual(this.selected.value, selected)) {
+      return
+    }
+    const rawToGroup = new Map(unresolved.map((value, index) => [value, resolved[index]]))
+    const next = [
+      ...new Set(
+        selected.map((value) => {
+          // The backend answers "Unknown" for anything it can't map — including a selected group
+          // name whose agents merely didn't run in the current filtered window. Never rewrite to
+          // that bucket: the rewrite is persisted and would destroy the real selection.
+          const group = rawToGroup.get(value)
+          return group != null && group !== "Unknown" && groupNames.has(group) ? group : value
+        })
+      ),
+    ]
+    if (!deepEqual(next, selected)) {
+      this.selected.value = next
+    }
+  }
+
+  private buildGroups(data: MachineGroupResponseItem[]): GroupedDimensionValue[] {
     const grouped: GroupedDimensionValue[] = []
-    for (const value of values) {
-      let groupName: string | null = getMachineGroupName(value)
-      const machineFromMap = MachineConfigurator.valueToGroup[value] as string | null
-      if (groupName == "Unknown" && machineFromMap != null) {
-        groupName = machineFromMap
+    for (const { group, machines, predicate } of data) {
+      const item: GroupedDimensionValue = {
+        value: group,
+        children: machines.map((value) => ({ value })),
+        icon: this.getIcons(group),
+        predicate,
       }
-
-      let item = this.groupNameToItem.get(groupName)
-      if (item == null) {
-        item = {
-          value: groupName,
-          children: [],
-          icon: this.getIcons(groupName),
-        }
-        grouped.push(item)
-        this.groupNameToItem.set(groupName, item)
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      item.children!.push({ value })
+      this.groupNameToItem.set(group, item)
+      grouped.push(item)
     }
     grouped.sort((a, b) => a.value.localeCompare(b.value))
     return grouped
@@ -137,19 +162,20 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         const value = selected[index]
         const groupItem = groupNameToItem.get(value)
         values.length = 0
+        filter.v = values
+        filter.q = undefined
         if (groupItem == null) {
+          // a raw machine name (e.g. from a drilldown link)
           values.push(value)
-        } else {
-          // it's group
-          if (groupItem.children != null) {
-            if (groupItem.children.length > 1) {
-              filter.v = prefix(groupItem.children.map((it) => it.value)) + "%"
-              filter.o = "like"
-              return
-            }
-            for (const child of groupItem.children) {
-              values.push(child.value)
-            }
+        } else if (groupItem.predicate) {
+          // The backend renders the class predicate from the grouping rule itself — exact for
+          // groups mixing name stems, and stable as agents churn (unlike a members-derived prefix).
+          filter.v = undefined
+          filter.q = groupItem.predicate
+        } else if (groupItem.children != null) {
+          // group without a rule predicate (the Unknown bucket): filter by the member list
+          for (const child of groupItem.children) {
+            values.push(child.value)
           }
           values.sort()
         }
@@ -176,22 +202,32 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return true
   }
 
-  getMergedValue(): string {
-    const values: string[] = this.getSelectedValues(this.selected.value)
-    return prefix(values) + "%"
-  }
-
   private configureQueryAsFilter(selected: string[], query: DataQuery) {
+    // When every selected group carries a backend-rendered predicate, combine them into one
+    // exact disjunction. Raw names and predicate-less groups (the Unknown bucket) keep the
+    // member-list form below — merging the two shapes into a single filter would require
+    // client-side SQL quoting of machine names.
+    const predicates: string[] = []
+    let allHavePredicates = true
+    for (const value of selected) {
+      const groupItem = this.groupNameToItem.get(value)
+      if (groupItem?.predicate) {
+        predicates.push(groupItem.predicate)
+      } else {
+        allHavePredicates = false
+      }
+    }
+    if (allHavePredicates && predicates.length > 0) {
+      query.addFilter({ f: "machine", q: predicates.join(" or machine ") })
+      return
+    }
+
     const values = this.getSelectedValues(selected)
 
     if (values.length > 0) {
       // stable order of fields in query (caching)
       values.sort()
-      if (values.length > 50) {
-        query.addFilter({ f: "machine", v: prefix(values) + "%", o: "like" })
-      } else {
-        query.addFilter({ f: "machine", v: values })
-      }
+      query.addFilter({ f: "machine", v: values })
     }
   }
 
@@ -217,267 +253,26 @@ export interface GroupedDimensionValue {
   value: string
   children?: GroupedDimensionValue[]
   icon?: string
+  // /api/q filter suffix ({f: "machine", q: <predicate>}) selecting exactly this hardware
+  // class, rendered by the backend from the grouping rule. Absent for rule-less groups
+  // (the Unknown bucket), which are filtered by their member list instead.
+  predicate?: string
 }
 
-function prefix(words: string[]): string {
-  if (!words[0] || words.length == 1) return words[0] || ""
-  let i = 0
-  while (words[0][i] && words.every((w) => w[i] === words[0][i])) i++
-  return words[0].slice(0, Math.max(0, i))
+interface MachineGroupResponseItem {
+  group: string
+  machines: string[]
+  predicate?: string
 }
 
-function getValueToGroup() {
-  // Mac mini Space Gray/3.0 GHz 6C/8GB/256GB
-  const macMini = "macMini 2018"
-  const macMiniIntel = "macMini Intel 3.2, 16GB"
-  // Mac Mini M1 Chip with 8‑Core CPU und 8‑Core GPU, SSD 256Gb, RAM 16Gb
-  const macMiniM1 = "macMini M1 2020"
-  const macMiniM1_16 = "macMini M1, 16 Gb"
-  // Mac Mini M2 Pro with 12-Core CPU, RAM 32 GB
-  const macMiniM2 = "macMini M2 Pro, 32 GB"
-
-  // Core i7-3770 16Gb, Intel SSD 535
-  const win = "Windows Space i7-3770, 16Gb"
-
-  // old RAM	RAM	RAM type	CPU	CPU CLOCK	MotherBoard	HDDs
-
-  // 16384 Mb	16384 Mb	2xDDR3-12800 1600MHz 8Gb(8192Mb)	Core i7-3770	3400 Mhz	Intel DH77EB	240 Gb
-  const linux = "Linux Space i7-3770, 16Gb"
-
-  const blade = "linux-blade"
-
-  return {
-    "intellij-macos-hw-unit-1550": macMini,
-    "intellij-macos-hw-unit-1551": macMini,
-    "intellij-macos-hw-unit-1772": macMini,
-    "intellij-macos-hw-unit-1773": macMini,
-
-    "intellij-macos-hw-munit-716": macMiniIntel,
-    "intellij-macos-hw-munit-721": macMiniIntel,
-    "intellij-macos-hw-munit-722": macMiniIntel,
-    "intellij-macos-hw-munit-723": macMiniIntel,
-    "intellij-macos-hw-munit-724": macMiniIntel,
-
-    "intellij-macos-hw-munit-608": macMiniM1_16,
-    "intellij-macos-hw-munit-689": macMiniM1_16,
-    "intellij-macos-hw-munit-690": macMiniM1_16,
-    "intellij-macos-hw-munit-691": macMiniM1_16,
-    "intellij-macos-hw-munit-692": macMiniM1_16,
-    "intellij-macos-hw-munit-693": macMiniM1_16,
-    "intellij-macos-hw-munit-694": macMiniM1_16,
-    "intellij-macos-hw-munit-695": macMiniM1_16,
-    "intellij-macos-hw-munit-696": macMiniM1_16,
-    "intellij-macos-hw-munit-697": macMiniM1_16,
-    "intellij-macos-hw-munit-698": macMiniM1_16,
-
-    "intellij-macos-hw-unit-2204": macMiniM1,
-    "intellij-macos-hw-unit-2205": macMiniM1,
-    "intellij-macos-hw-unit-2206": macMiniM1,
-    "intellij-macos-hw-unit-2207": macMiniM1,
-
-    "intellij-macos-unit-2200-large-10298": macLarge,
-
-    "intellij-macos-docker-hw-de-unit-1500": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1501": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1502": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1503": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1574": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1575": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1576": macMiniM2,
-    "intellij-macos-docker-hw-de-unit-1577": macMiniM2,
-
-    "intellij-windows-hw-unit-498": win,
-    "intellij-windows-hw-unit-499": win,
-    "intellij-windows-hw-unit-449": win,
-    "intellij-windows-hw-unit-463": win,
-    "intellij-windows-hw-unit-493": win,
-    "intellij-windows-hw-unit-504": win,
-
-    "intellij-linux-hw-unit-449": linux,
-    "intellij-linux-hw-unit-499": linux,
-    "intellij-linux-hw-unit-450": linux,
-    "intellij-linux-hw-unit-484": linux,
-
-    // error in info table - only 16GB ram and not 32
-    "intellij-linux-hw-unit-493": linux,
-
-    "intellij-linux-hw-unit-504": linux,
-    "intellij-linux-hw-unit-531": linux,
-    "intellij-linux-hw-unit-534": linux,
-    "intellij-linux-hw-unit-556": linux,
-    "intellij-linux-hw-unit-558": linux,
-
-    "intellij-linux-hw-blade-023": blade,
-    "intellij-linux-hw-blade-024": blade,
-    "intellij-linux-hw-blade-025": blade,
-    "intellij-linux-hw-blade-026": blade,
-    "intellij-linux-hw-blade-027": blade,
-    "intellij-linux-hw-blade-028": blade,
-    "intellij-linux-hw-blade-029": blade,
-    "intellij-linux-hw-blade-030": blade,
-    "intellij-linux-hw-blade-031": blade,
-    "intellij-linux-hw-blade-032": blade,
-    "intellij-linux-hw-blade-033": blade,
-    "intellij-linux-hw-blade-034": blade,
-    "intellij-linux-hw-blade-035": blade,
-    "intellij-linux-hw-blade-036": blade,
-    "intellij-linux-hw-blade-037": blade,
-    "intellij-linux-hw-blade-038": blade,
-    "intellij-linux-hw-blade-039": blade,
-    "intellij-linux-hw-blade-040": blade,
-    "intellij-linux-hw-blade-041": blade,
-    "intellij-linux-hw-blade-042": blade,
-    "intellij-linux-hw-blade-043": blade,
-    "intellij-linux-hw-blade-044": blade,
-    "intellij-linux-hw-blade-045": blade,
-    "intellij-linux-hw-blade-046": blade,
-    "intellij-linux-hw-blade-047": blade,
-    "intellij-linux-hw-blade-048": blade,
-    "intellij-linux-hw-blade-049": blade,
-    "intellij-linux-test-hw-blade-002": blade,
-
-    "intellij-linux-hw-de-unit-1705": "Linux Munich i7-13700, 64 Gb",
-    "intellij-linux-hw-de-unit-1716": "Linux Munich i7-13700, 64 Gb",
-    "intellij-linux-hw-de-unit-1715": "Linux Munich i7-13700, 64 Gb",
-    "intellij-windows-hw-de-unit-1702": "Windows Munich i7-13700, 64 Gb",
-    "intellij-windows-hw-de-unit-1703": "Windows Munich i7-13700, 64 Gb",
-    "intellij-windows-hw-de-unit-1704": "Windows Munich i7-13700, 64 Gb",
+// Resolves a single raw agent name to its hardware-class group via the backend (the sole owner
+// of the mapping). Falls back to the given name on error.
+async function fetchMachineGroup(serverConfigurator: ServerConfigurator, machineName: string): Promise<string> {
+  try {
+    const response = await fetch(`${serverConfigurator.serverUrl}/api/machineGroup?machine=${encodeURIComponent(machineName)}`)
+    const parsed = (await response.json()) as { group: string }
+    return parsed.group
+  } catch {
+    return machineName
   }
-}
-
-export function getMachineGroupName(machine: string): string {
-  let groupName: string | null = "Unknown"
-  if (machine.startsWith("intellij-linux-hw-blade-")) {
-    groupName = "linux-blade"
-  } else if (machine.startsWith("ij-linux-x64-perf-hw-blade-")) {
-    // QA Automation perf blades in the "IntelliJ Startup Performance" pool (MRI-4570 / AT-3244)
-    groupName = "linux-unit-perf-blade"
-  } else if (machine.startsWith("intellij-linux-test-hw-blade-")) {
-    groupName = "linux-blade-test"
-  } else if (machine.startsWith("intellij-windows-hw-blade-")) {
-    groupName = "windows-blade"
-  } else if (machine.startsWith("intellij-windows-hw-munit-")) {
-    groupName = "Windows Munich i7-3770, 32 Gb"
-  } else if (
-    machine.startsWith("intellij-linux-aws-amd-lt") ||
-    machine.startsWith("intellij-linux-aws-amd-2-lt") ||
-    machine.startsWith("intellij-linux-aws-3-lt") ||
-    machine.startsWith("intellij-linux-aws-lt")
-  ) {
-    groupName = "Linux C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
-  } else if (machine.startsWith("intellij-macos-unit-2200-large-")) {
-    groupName = macLarge
-  } else if (machine.startsWith("intellij-linux-performance-aws-i-") || machine.startsWith("intellij-linux-performance-aws-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c6i/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-  } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-") || machine.startsWith("intellij-linux-performance-tiny-aws-on-demand-i-")) {
-    // https://aws.amazon.com/ec2/instance-types/c6i/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"
-  } else if (machine.startsWith("default-linux-aws-large-disk-")) {
-    // https://aws.amazon.com/ec2/instance-types/m5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-windows-performance-aws-i-") || machine.startsWith("intellij-windows-performance-mem-aws-i")) {
-    // https://aws.amazon.com/ec2/instance-types/c6id/
-    // noinspection SpellCheckingInspection
-    groupName = "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"
-  } else if (machine.startsWith("qodana-fleet-linux-amd64-heavy")) {
-    // Fleet agents in the `qodana-linux-amd64-heavy-*` hardware class, same 4 vCPU / 8 GB
-    // (metric values within ~1% for the same test). Kept as its own group instead of merged into
-    // "Linux EC2 c5.xlarge (4 vCPU, 8 GB)": a selected group is queried by its members' common prefix,
-    // and merging the two name-stems would collapse that to `qodana-`, matching every qodana class.
-    groupName = "Linux EC2 c5.xlarge fleet (4 vCPU, 8 GB)"
-  } else if (
-    machine.startsWith("intellij-linux-2004-aws-m5d-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-m5d-lt") ||
-    machine.startsWith("intellij-linux-2004-aws-m5dn-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-m5dn-lt") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-1") ||
-    machine.startsWith("intellij-linux-2004-large-disk-aws-1") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-2-i") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-3-i") ||
-    machine.startsWith("intellij-linux-2204-large-disk-aws-4-i") ||
-    machine.startsWith("intellij-linux-2204-aws-2-i") ||
-    machine.startsWith("intellij-linux-2204-aws-1-i") ||
-    machine.startsWith("intellij-linux-2204-aws-4-i-") ||
-    machine.startsWith("intellij-linux-2204-aws-3-i")
-  ) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)"
-  } else if (machine.startsWith("intellij-linux-hw-munit-")) {
-    groupName = "Linux Munich i7-3770, 32 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-EXC")) {
-    // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
-    groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-hetzner") || machine.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
-    groupName = "linux-blade-hetzner"
-  } else if (machine.startsWith("intellij-windows-hw-hetzner")) {
-    groupName = "windows-blade-hetzner"
-  } else if (
-    machine.startsWith("intellij-macos-munit-741-large") ||
-    machine.startsWith("intellij-macos-de-unit-1219") ||
-    machine.startsWith("intellij-macos-munit-739-large") ||
-    machine.startsWith("intellij-macos-munit-738-large") ||
-    machine.startsWith("intellij-macos-munit-676-large")
-  ) {
-    //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
-    groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
-  } else if (machine.startsWith("intellij-linux-performance-huge-aws-i")) {
-    groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
-  } else if (machine.startsWith("qodana-aws-cpu-x64")) {
-    groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("qodana-linux-amd64-large")) {
-    groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
-  } else if (
-    machine.startsWith("qodana-linux-amd64-xl") ||
-    machine.startsWith("qodana-linux-amd64-heavy") ||
-    machine.startsWith("intellij-linux-2004-aws-i") ||
-    machine.startsWith("intellij-linux-2004-aws-c5d") ||
-    machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
-    machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
-  ) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    groupName = "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-r5dn")) {
-    // https://aws.amazon.com/ec2/instance-types/r5/
-    groupName = "Linux EC2 r5dn.xlarge (4 vCPU, 32 GB)"
-  } else if (machine.startsWith("intellij-macos-perf-eqx")) {
-    groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
-  } else if (machine.startsWith("intellij-windows-aws-i")) {
-    groupName = "windows aws"
-  } else if (/ij-w.*-azr.*/.test(machine)) {
-    groupName = "windows-azure"
-  } else if (machine.startsWith("intellij-windows-hw-de-unit")) {
-    groupName = "Windows Munich i7-13700, 64 Gb"
-  } else if (machine.startsWith("intellij-linux-hw-de-unit")) {
-    groupName = "Linux Munich i7-13700, 64 Gb"
-  } else if (machine.startsWith("fleet-linux-aws-ui")) {
-    groupName = "Linux Fleet AWS UI"
-  } else if (machine.startsWith("fleet-windows-aws-r5d") || machine.startsWith("fleet-windows-aws-m5d")) {
-    groupName = "Windows Fleet AWS UI"
-  } else if (machine.startsWith("fleet-icri-ui-agent")) {
-    groupName = "Mac Fleet AWS UI"
-  } else if (machine.startsWith("qodana-linux-arm64-memory-optimised")) {
-    groupName = "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"
-  } else if (machine.startsWith("cidr.performance.")) {
-    groupName = "Mac Cidr Performance"
-  } else if (machine.startsWith("intellij-linux-2204-aws-i4i")) {
-    groupName = "Linux EC2 i4i.xlarge (4 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-r5d")) {
-    groupName = "Linux EC2 r5d.xlarge (4 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-4-i-")) {
-    groupName = "Linux EC2 c5ad.xlarge (4 vCPU EPYC, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-c5d")) {
-    groupName = "Linux EC2 c5d.xlarge (4 vCPU Xeon, 8 GB)"
-  } else if (machine.startsWith("intellij-macos-docker-hw-de-unit")) {
-    groupName = "Mac Mini M2 Pro 12 CPU, 32 GB"
-  }
-
-  return groupName
 }

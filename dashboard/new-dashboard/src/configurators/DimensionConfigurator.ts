@@ -1,7 +1,7 @@
 import { Observable, of, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { ComponentState, createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
@@ -54,7 +54,16 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   }
 }
 
-export function loadDimension(name: string, serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState) {
+// Loads the distinct values of one dimension, honouring the current filters. An endpoint
+// serving a different response shape for the same query payload (e.g. /api/machineGroups/)
+// can be substituted for the default /api/q/.
+export function loadDimension<T = string[]>(
+  name: string,
+  serverConfigurator: ServerConfigurator,
+  filters: FilterConfigurator[],
+  state: ComponentState,
+  apiPath: string = "/api/q/"
+): Observable<T | null> {
   const query = new DataQuery()
   query.addField({ n: name, sql: `distinct ${name}` })
   query.order = name
@@ -66,7 +75,7 @@ export function loadDimension(name: string, serverConfigurator: ServerConfigurat
   }
 
   state.loading = true
-  return fromFetchWithRetryAndErrorHandling<string[]>(serverConfigurator.computeQueryUrl(query))
+  return fromFetchWithRetryAndErrorHandling<T>(`${serverConfigurator.serverUrl}${apiPath}${serverConfigurator.compressString(serializeQuery(query))}`)
 }
 
 export function dimensionConfigurator(

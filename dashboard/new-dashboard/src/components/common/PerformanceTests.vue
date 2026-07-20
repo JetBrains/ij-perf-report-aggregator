@@ -206,7 +206,7 @@ import PlotSettings from "../settings/PlotSettings.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
-import { DataQueryConfigurator } from "./dataQuery"
+import { DataQueryConfigurator, toArray } from "./dataQuery"
 import CompareTable from "../charts/CompareTable.vue"
 import { CompareSectionsRegistry, RenderMode } from "../charts/compareMode"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
@@ -220,13 +220,13 @@ import { FilterConfigurator } from "../../configurators/filter"
 export interface PerformanceTestsProps {
   dbName: string
   table: string
-  initialMachine: string | null
+  initialMachine: string | string[] | null
   withInstaller?: boolean
   unit?: "ns" | "ms"
   releaseConfigurator?: ReleaseType
   branch?: string | null
   withoutAccidents?: boolean
-  machineGroupFilter?: string | null
+  machineGroupFilter?: string | string[] | null
 }
 
 const {
@@ -240,6 +240,8 @@ const {
   withoutAccidents = false,
   machineGroupFilter = null,
 } = defineProps<PerformanceTestsProps>()
+
+const machineFilters = toArray(machineGroupFilter)
 
 enum TestMetricSwitcher {
   Tests = "Tests",
@@ -295,17 +297,27 @@ let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistent
 
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
 if (initialMachine != null && machineConfigurator?.selected.value.length === 0) {
-  machineConfigurator.selected.value = [initialMachine]
+  machineConfigurator.selected.value = toArray(initialMachine)
 }
-if (machineGroupFilter != null && machineConfigurator != null) {
+if (machineFilters.length > 0 && machineConfigurator != null) {
   const stopWatch = watch(
     machineConfigurator.values,
     (groups) => {
       if (groups.length > 0) {
-        const filter = machineGroupFilter.toLowerCase()
-        const matching = groups.filter((g) => g.value.toLowerCase().includes(filter)).map((g) => g.value)
-        if (matching.length > 0) {
-          machineConfigurator.selected.value = matching
+        const wanted = machineFilters.map((it) => it.toLowerCase())
+        // Match groups by name. Exact matches win: group names can be prefixes of sibling groups
+        // (linux-blade vs linux-blade-hetzner), so substring matching is only a fallback for
+        // legacy links with fuzzy machine values.
+        const matching = new Set<string>()
+        for (const filter of wanted) {
+          const exact = groups.filter((g) => g.value.toLowerCase() === filter)
+          const matched = exact.length > 0 ? exact : groups.filter((g) => g.value.toLowerCase().includes(filter))
+          for (const group of matched) {
+            matching.add(group.value)
+          }
+        }
+        if (matching.size > 0) {
+          machineConfigurator.selected.value = [...matching]
           stopWatch()
         }
       }
@@ -449,14 +461,6 @@ watch(
   },
   { immediate: true }
 )
-
-function toArray(value: string | string[] | null): string[] {
-  if (value == null) return []
-  if (Array.isArray(value)) {
-    return value
-  }
-  return [value]
-}
 
 let scenarios = toArray(scenarioConfigurator.selected.value)
 

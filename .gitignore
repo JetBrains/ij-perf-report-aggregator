@@ -15,3 +15,7 @@ values-resolved.yaml
 .eslintcache
 .DS_Store
 jb
+
+# Go build cache / compiled binaries
+.tmp/
+/backend

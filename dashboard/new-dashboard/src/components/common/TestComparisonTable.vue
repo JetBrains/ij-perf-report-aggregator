@@ -81,7 +81,6 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from
 import { formatMeasureValue, formatPercentage, resolveMeasureUnit } from "./formatter"
 import { DBType } from "./sideBar/InfoSidebar"
 import { dbTypeStore } from "../../shared/dbTypes"
-import { getMachineGroupName } from "../../configurators/MachineConfigurator"
 import { useRouter } from "vue-router"
 
 /**
@@ -170,12 +169,11 @@ function navigateToTest(propsData: TestComparisonTableEntry) {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   const branch = propsData.branch ?? ""
-  const machineGroup = getMachineGroupName(propsData.machineName ?? "")
   const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
   const queryParams: string = new URLSearchParams({
     branch: majorBranch,
-    machine: machineGroup,
+    machine: propsData.machineName ?? "",
     type: "Tests",
   }).toString()
   const projects = ["_k1", "_k2"].map((v) => `&project=${propsData.test}${v}`).join("")

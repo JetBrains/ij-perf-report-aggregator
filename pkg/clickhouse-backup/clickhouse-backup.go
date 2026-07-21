@@ -39,9 +39,12 @@ func BinaryPath() string {
 // see https://github.com/Altinity/clickhouse-backup#default-config
 func backupEnv() []string {
 	overrides := map[string]string{
-		"REMOTE_STORAGE":              "s3",
-		"BACKUPS_TO_KEEP_REMOTE":      strconv.Itoa(BackupsToKeepRemote),
-		"CLICKHOUSE_HOST":             "127.0.0.1",
+		"REMOTE_STORAGE":         "s3",
+		"BACKUPS_TO_KEEP_REMOTE": strconv.Itoa(BackupsToKeepRemote),
+		"CLICKHOUSE_HOST":        "127.0.0.1",
+		// must be pinned: kubernetes service links inject CLICKHOUSE_PORT=tcp://<ip>:9000,
+		// which breaks the binary's numeric port parsing
+		"CLICKHOUSE_PORT":             "9000",
 		"S3_ALLOW_MULTIPART_DOWNLOAD": "true",
 		// v2 requires backups to live under a non-empty prefix, disjoint from object_disk_path;
 		// legacy v1 backups at the bucket root can be targeted by explicitly setting S3_PATH=""

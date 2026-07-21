@@ -16,6 +16,8 @@ spec:
         app: clickhouse
         {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
+      # service-link env vars (CLICKHOUSE_PORT=tcp://...) break clickhouse-backup's config parsing
+      enableServiceLinks: false
       securityContext:
         fsGroup: 65532
       initContainers:

@@ -9,7 +9,6 @@ require (
 	github.com/VictoriaMetrics/fastcache v1.13.3
 	github.com/alitto/pond v1.9.2
 	github.com/andybalholm/brotli v1.2.2
-	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/go-chi/chi/v5 v5.3.1

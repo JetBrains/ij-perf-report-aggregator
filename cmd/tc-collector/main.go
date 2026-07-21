@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"github.com/araddon/dateparse"
 	"go.deanishe.net/env"
 )
 
@@ -47,9 +46,12 @@ func configureCollectFromTeamCity() error {
 	var since time.Time
 	if *sinceDate != "" {
 		var err error
-		since, err = dateparse.ParseStrict(*sinceDate)
+		since, err = time.Parse(time.RFC3339, *sinceDate)
 		if err != nil {
-			return fmt.Errorf("cannot parse since date: %w", err)
+			since, err = time.Parse("2006-01-02", *sinceDate)
+		}
+		if err != nil {
+			return fmt.Errorf("cannot parse since date (expected YYYY-MM-DD or RFC3339): %w", err)
 		}
 	}
 

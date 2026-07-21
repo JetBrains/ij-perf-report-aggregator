@@ -31,6 +31,18 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 		"refGraphBuilding",
 		"globalInspectionsAnalysis",
 		"localInspectionsAnalysis",
+		"OpenGrepGlobalInspection",
+		"Building IR",
+		"Collecting Opengrep AST/Problems",
+		"Building IR library symbols",
+		"Building IR project",
+		"Running RML + IFDS",
+	}
+
+	aggregatedSpansToReport := []string{
+		"Matching taint entries",
+		"Running DFA engine",
+		"Running reverse debug",
 	}
 
 	runResult.Report = &model.Report{}
@@ -49,7 +61,12 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 	measureValues := make([]int32, 0)
 	measureTypes := make([]string, 0)
 
-	spanDurations := analyzeOtJson(runResult.RawReport, spansToReport)
+	var trace Trace
+	if err := json.Unmarshal(runResult.RawReport, &trace); err != nil {
+		trace = Trace{}
+	}
+
+	spanDurations := analyzeOtJson(trace, spansToReport)
 	for spanName, values := range spanDurations {
 		for _, value := range values {
 			measureNames = append(measureNames, spanName)
@@ -57,16 +74,23 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 			measureTypes = append(measureTypes, "d")
 		}
 	}
+
+	aggregatedSpanDurations := aggregateOtJson(trace, aggregatedSpansToReport)
+	for spanName, aggregated := range aggregatedSpanDurations {
+		measureNames = append(measureNames, spanName)
+		measureValues = append(measureValues, aggregated.sum)
+		measureTypes = append(measureTypes, "d")
+
+		measureNames = append(measureNames, spanName+".count")
+		measureValues = append(measureValues, aggregated.count)
+		measureTypes = append(measureTypes, "c")
+	}
+
 	runResult.ExtraFieldData = []any{measureNames, measureValues, measureTypes /*mode*/, ""}
 	return false
 }
 
-func analyzeOtJson(ot []byte, operationNames []string) map[string][]int32 {
-	var trace Trace
-	err := json.Unmarshal(ot, &trace)
-	if err != nil {
-		return nil
-	}
+func analyzeOtJson(trace Trace, operationNames []string) map[string][]int32 {
 	durationMap := make(map[string][]int32)
 	for _, data := range trace.Data {
 		for _, span := range data.Spans {
@@ -78,4 +102,26 @@ func analyzeOtJson(ot []byte, operationNames []string) map[string][]int32 {
 		}
 	}
 	return durationMap
+}
+
+type aggregatedSpan struct {
+	sum   int32
+	count int32
+}
+
+func aggregateOtJson(trace Trace, operationNames []string) map[string]aggregatedSpan {
+	aggregatedMap := make(map[string]aggregatedSpan)
+	for _, data := range trace.Data {
+		for _, span := range data.Spans {
+			for _, operationName := range operationNames {
+				if span.OperationName == operationName {
+					aggregated := aggregatedMap[operationName]
+					aggregated.sum += int32(span.Duration / 1000)
+					aggregated.count++
+					aggregatedMap[operationName] = aggregated
+				}
+			}
+		}
+	}
+	return aggregatedMap
 }

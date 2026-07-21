@@ -46,6 +46,8 @@ func backupEnv() []string {
 		// which breaks the binary's numeric port parsing
 		"CLICKHOUSE_PORT":             "9000",
 		"S3_ALLOW_MULTIPART_DOWNLOAD": "true",
+		// the default is derived from the node CPU count and OOMs the sidecar's memory limit
+		"UPLOAD_CONCURRENCY": "2",
 		// v2 requires backups to live under a non-empty prefix, disjoint from object_disk_path;
 		// legacy v1 backups at the bucket root can be targeted by explicitly setting S3_PATH=""
 		"S3_PATH": envOrDefault("S3_PATH", "backup"),

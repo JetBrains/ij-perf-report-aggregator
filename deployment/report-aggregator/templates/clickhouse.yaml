@@ -56,13 +56,17 @@ spec:
           resources:
             requests:
               cpu: "0.1"
-              memory: 256Mi
+              memory: 512Mi
               ephemeral-storage: "4Gi"
             limits:
-              # should be at least 512 because MinIO uploads in chunks (128MB by default) plus some internal buffers
+              # v2 buffers multipart uploads plus server-side object-disk copies; 1Gi gets OOMKilled
               cpu: "0.2"
-              memory: 1024Mi
+              memory: 2Gi
               ephemeral-storage: "4Gi"
+          env:
+            # keep Go GC ahead of the cgroup memory limit
+            - name: GOMEMLIMIT
+              value: "1536MiB"
           volumeMounts: *clickhouseVolumeMounts
       imagePullSecrets:
         - name: ghcr

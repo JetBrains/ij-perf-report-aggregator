@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 	"time"
@@ -10,19 +11,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFilter(t *testing.T) {
-	t.Parallel()
+func readTestTrace(t *testing.T) Trace {
+	t.Helper()
 	data, err := os.ReadFile("../../testData/opentelemetry.json")
 	if err != nil {
 		t.Fatalf("Failed to read file: %v", err)
 	}
+	var trace Trace
+	if err := json.Unmarshal(data, &trace); err != nil {
+		t.Fatalf("Failed to unmarshal trace: %v", err)
+	}
+	return trace
+}
+
+func TestFilter(t *testing.T) {
+	t.Parallel()
+	trace := readTestTrace(t)
 
 	testCases := map[string]int32{
 		"project.opening":   5035,
 		"globalInspections": 141561,
 	}
 
-	got := analyzeOtJson(data, []string{"globalInspections", "project.opening"})
+	got := analyzeOtJson(trace, []string{"globalInspections", "project.opening"})
 
 	for name, expected := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -35,10 +46,7 @@ func TestFilter(t *testing.T) {
 
 func TestFilterNewOpenGrepSpans(t *testing.T) {
 	t.Parallel()
-	data, err := os.ReadFile("../../testData/opentelemetry.json")
-	if err != nil {
-		t.Fatalf("Failed to read file: %v", err)
-	}
+	trace := readTestTrace(t)
 
 	testCases := map[string]int32{
 		"OpenGrepGlobalInspection":         500,
@@ -54,7 +62,7 @@ func TestFilterNewOpenGrepSpans(t *testing.T) {
 		operationNames = append(operationNames, name)
 	}
 
-	got := analyzeOtJson(data, operationNames)
+	got := analyzeOtJson(trace, operationNames)
 
 	for name, expected := range testCases {
 		t.Run(name, func(t *testing.T) {
@@ -68,12 +76,9 @@ func TestFilterNewOpenGrepSpans(t *testing.T) {
 
 func TestAggregateOtJson(t *testing.T) {
 	t.Parallel()
-	data, err := os.ReadFile("../../testData/opentelemetry.json")
-	if err != nil {
-		t.Fatalf("Failed to read file: %v", err)
-	}
+	trace := readTestTrace(t)
 
-	got := aggregateOtJson(data, []string{"Matching taint entries", "Running DFA engine", "Running reverse debug", "SpanThatDoesNotExist"})
+	got := aggregateOtJson(trace, []string{"Matching taint entries", "Running DFA engine", "Running reverse debug", "SpanThatDoesNotExist"})
 
 	assert.Contains(t, got, "Matching taint entries")
 	assert.Equal(t, int32(60), got["Matching taint entries"].sum)
@@ -87,7 +92,6 @@ func TestAggregateOtJson(t *testing.T) {
 	assert.Equal(t, int32(15), got["Running reverse debug"].sum)
 	assert.Equal(t, int32(1), got["Running reverse debug"].count)
 
-	// a name with zero occurrences must be absent from the map, not present with a zero value
 	assert.NotContains(t, got, "SpanThatDoesNotExist")
 }
 
@@ -134,7 +138,6 @@ func TestAnalyzeQodanaReportAggregatesRepeatedSpans(t *testing.T) {
 	assert.Equal(t, int32(2), measureValues[dfaCountIndex])
 	assert.Equal(t, "c", measureTypes[dfaCountIndex])
 
-	// "Running DFA engine" must not appear as raw per-occurrence entries alongside the aggregate
 	occurrences := 0
 	for _, n := range measureNames {
 		if n == "Running DFA engine" {

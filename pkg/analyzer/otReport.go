@@ -61,7 +61,12 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 	measureValues := make([]int32, 0)
 	measureTypes := make([]string, 0)
 
-	spanDurations := analyzeOtJson(runResult.RawReport, spansToReport)
+	var trace Trace
+	if err := json.Unmarshal(runResult.RawReport, &trace); err != nil {
+		trace = Trace{}
+	}
+
+	spanDurations := analyzeOtJson(trace, spansToReport)
 	for spanName, values := range spanDurations {
 		for _, value := range values {
 			measureNames = append(measureNames, spanName)
@@ -70,7 +75,7 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 		}
 	}
 
-	aggregatedSpanDurations := aggregateOtJson(runResult.RawReport, aggregatedSpansToReport)
+	aggregatedSpanDurations := aggregateOtJson(trace, aggregatedSpansToReport)
 	for spanName, aggregated := range aggregatedSpanDurations {
 		measureNames = append(measureNames, spanName)
 		measureValues = append(measureValues, aggregated.sum)
@@ -85,12 +90,7 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 	return false
 }
 
-func analyzeOtJson(ot []byte, operationNames []string) map[string][]int32 {
-	var trace Trace
-	err := json.Unmarshal(ot, &trace)
-	if err != nil {
-		return nil
-	}
+func analyzeOtJson(trace Trace, operationNames []string) map[string][]int32 {
 	durationMap := make(map[string][]int32)
 	for _, data := range trace.Data {
 		for _, span := range data.Spans {
@@ -109,15 +109,7 @@ type aggregatedSpan struct {
 	count int32
 }
 
-// aggregateOtJson sums the durations and counts occurrences of spans that are expected to repeat
-// multiple times with the same operation name within a single report (e.g. one span per chunk in a
-// loop). A name with zero occurrences is simply absent from the returned map.
-func aggregateOtJson(ot []byte, operationNames []string) map[string]aggregatedSpan {
-	var trace Trace
-	err := json.Unmarshal(ot, &trace)
-	if err != nil {
-		return nil
-	}
+func aggregateOtJson(trace Trace, operationNames []string) map[string]aggregatedSpan {
 	aggregatedMap := make(map[string]aggregatedSpan)
 	for _, data := range trace.Data {
 		for _, span := range data.Spans {

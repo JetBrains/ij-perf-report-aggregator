@@ -1,6 +1,7 @@
 package tc_properties
 
 import (
+	"encoding/json"
 	"strings"
 )
 
@@ -55,14 +56,49 @@ var excludedTcProperties = map[string]bool{
 	"teamcity.agent.ownPort":                true,
 }
 
+// isJsonInt reports whether v can be emitted as a bare JSON number:
+// optional '-', then '0' or a non-zero digit followed by digits
+// (leading '+' or leading zeros would produce invalid JSON)
+func isJsonInt(v string) bool {
+	s := strings.TrimPrefix(v, "-")
+	if s == "" || (len(s) > 1 && s[0] == '0') {
+		return false
+	}
+	for i := range len(s) {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
 func ReadProperties(data []byte) ([]byte, error) {
 	p, err := LoadBytes(data, IsExcludedProperty)
 	if err != nil {
 		return nil, err
 	}
+	return propertiesToJson(p)
+}
 
-	json := PropertiesToJson(p)
-	return []byte(json), nil
+// booleans and integers are emitted as JSON literals, everything else as strings
+func propertiesToJson(p *Properties) ([]byte, error) {
+	m := make(map[string]any, len(p.m))
+	for key, v := range p.m {
+		if v == "" {
+			continue
+		}
+		switch {
+		case v == "true":
+			m[key] = true
+		case v == "false":
+			m[key] = false
+		case isJsonInt(v):
+			m[key] = json.RawMessage(v)
+		default:
+			m[key] = v
+		}
+	}
+	return json.Marshal(m)
 }
 
 // IsExcludedProperty obtained by cat '/Volumes/data/Downloads/build.finish.properties' | python -m json.tool > f.json

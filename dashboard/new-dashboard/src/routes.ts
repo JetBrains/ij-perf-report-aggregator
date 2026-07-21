@@ -201,7 +201,6 @@ enum ROUTES {
   ClionFindUsageDashboard = `${ROUTE_PREFIX.Clion}/findUsageDashboard`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
-  CLionOldVsNewSeDashboard = `${ROUTE_PREFIX.Clion}/oldVsNewSeDashboard`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
@@ -640,7 +639,6 @@ const CLION: Product = {
         tab(ROUTES.ClionFindUsageDashboard, "Find Usages"),
         tab(ROUTES.ClionMemoryDashboard, "Memory"),
         tab(ROUTES.ClionLaggingLatencyDashboard, "Lagging/Latency"),
-        tab(ROUTES.CLionOldVsNewSeDashboard, "Old vs New SE"),
         tab(ROUTES.ClionTest, TESTS_LABEL),
         tab(ROUTES.ClionCompareBranches, COMPARE_BRANCHES_LABEL),
       ],
@@ -1076,7 +1074,6 @@ const clionRoutes = [
   dashboard(ROUTES.ClionFindUsageDashboard, () => import("./components/clion/FindUsageDashboard.vue"), "CLion Find Usages dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionMemoryDashboard, () => import("./components/clion/MemoryDashboard.vue"), "CLion Memory dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionLaggingLatencyDashboard, () => import("./components/clion/CLionLaggingLatencyDashboard.vue"), "CLion Lagging/Latency dashboard"),
-  dashboard(ROUTES.CLionOldVsNewSeDashboard, () => import("./components/clion/oldVsNewSeDashboard.vue"), "CLion Old vs New SE dashboard"),
   compareBranches(ROUTES.ClionCompareBranches, { dbName: "perfintDev", table: "clion" }),
 ]
 

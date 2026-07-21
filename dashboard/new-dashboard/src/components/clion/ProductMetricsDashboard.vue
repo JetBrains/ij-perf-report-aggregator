@@ -8,13 +8,24 @@
     :with-installer="false"
   >
     <section>
-      <GroupProjectsChart
+      <template
         v-for="chart in mainCharts"
         :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
+      >
+        <SearchEverywhereChart
+          v-if="containsSeMeasure(chart.definition.measure)"
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
+          :aliases="chart.aliases"
+        />
+        <GroupProjectsChart
+          v-else
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
+        />
+      </template>
     </section>
   </DashboardPage>
 </template>
@@ -23,6 +34,8 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import SearchEverywhereChart from "./SearchEverywhereChart.vue"
+import { containsSeMeasure, toNewSeProjects } from "./searchEverywhereMetrics"
 
 const mainChartsDeclaration: ChartDefinition[] = [
   {
@@ -84,6 +97,12 @@ const mainChartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["SearchEverywhere (Inserting Whole Word) - Wait Until Full or Done", "SearchEverywhere (Inserting Whole Word) - First Elements Added"],
+    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
+    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/insertingTheWholeWord"],
+    aliases: ["Type_Boolean"],
+  },
+  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
     projects: ["radler/fmtlib/globalInspection"],
@@ -92,5 +111,7 @@ const mainChartsDeclaration: ChartDefinition[] = [
 ]
 
 const mainCharts = combineCharts(mainChartsDeclaration)
-const charts = combineCharts([...mainChartsDeclaration])
+const charts = combineCharts(
+  mainChartsDeclaration.map((chart) => (containsSeMeasure(chart.measures.flat()) ? { ...chart, projects: [...chart.projects, ...toNewSeProjects(chart.projects)] } : chart))
+)
 </script>

@@ -24,7 +24,6 @@ declare module 'vue' {
     DatePicker: typeof import('primevue/datepicker')['default']
     DeferredContent: typeof import('primevue/deferredcontent')['default']
     Dialog: typeof import('primevue/dialog')['default']
-    Divider: typeof import('primevue/divider')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']

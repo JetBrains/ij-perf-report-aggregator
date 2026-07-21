@@ -31,6 +31,18 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 		"refGraphBuilding",
 		"globalInspectionsAnalysis",
 		"localInspectionsAnalysis",
+		"OpenGrepGlobalInspection",
+		"Building IR",
+		"Collecting Opengrep AST/Problems",
+		"Building IR library symbols",
+		"Building IR project",
+		"Running RML + IFDS",
+	}
+
+	aggregatedSpansToReport := []string{
+		"Matching taint entries",
+		"Running DFA engine",
+		"Running reverse debug",
 	}
 
 	runResult.Report = &model.Report{}
@@ -57,6 +69,18 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 			measureTypes = append(measureTypes, "d")
 		}
 	}
+
+	aggregatedSpanDurations := aggregateOtJson(runResult.RawReport, aggregatedSpansToReport)
+	for spanName, aggregated := range aggregatedSpanDurations {
+		measureNames = append(measureNames, spanName)
+		measureValues = append(measureValues, aggregated.sum)
+		measureTypes = append(measureTypes, "d")
+
+		measureNames = append(measureNames, spanName+".count")
+		measureValues = append(measureValues, aggregated.count)
+		measureTypes = append(measureTypes, "c")
+	}
+
 	runResult.ExtraFieldData = []any{measureNames, measureValues, measureTypes /*mode*/, ""}
 	return false
 }
@@ -78,4 +102,34 @@ func analyzeOtJson(ot []byte, operationNames []string) map[string][]int32 {
 		}
 	}
 	return durationMap
+}
+
+type aggregatedSpan struct {
+	sum   int32
+	count int32
+}
+
+// aggregateOtJson sums the durations and counts occurrences of spans that are expected to repeat
+// multiple times with the same operation name within a single report (e.g. one span per chunk in a
+// loop). A name with zero occurrences is simply absent from the returned map.
+func aggregateOtJson(ot []byte, operationNames []string) map[string]aggregatedSpan {
+	var trace Trace
+	err := json.Unmarshal(ot, &trace)
+	if err != nil {
+		return nil
+	}
+	aggregatedMap := make(map[string]aggregatedSpan)
+	for _, data := range trace.Data {
+		for _, span := range data.Spans {
+			for _, operationName := range operationNames {
+				if span.OperationName == operationName {
+					aggregated := aggregatedMap[operationName]
+					aggregated.sum += int32(span.Duration / 1000)
+					aggregated.count++
+					aggregatedMap[operationName] = aggregated
+				}
+			}
+		}
+	}
+	return aggregatedMap
 }

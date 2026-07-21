@@ -1,2 +1,5 @@
 baseImageOverrides:
-  github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse: ghcr.io/jetbrains/ij-perf-report-aggregator/clickhouse@sha256:3c23f2deef974780ee381d8e75ecd9ccb8c14fe489e4017a3a1d8d68240fe45f
+  # both images share the same base: it provides /usr/bin/clickhouse and /usr/bin/clickhouse-backup
+  # (built from deployment/clickhouse/Dockerfile; update the digest after CI pushes a new base image)
+  github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse: ghcr.io/jetbrains/ij-perf-report-aggregator/clickhouse@sha256:41b4a65a52d63633d9c8fca04945e6315cbf3725aaf3977e7ec488fa79154ee4
+  github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup: ghcr.io/jetbrains/ij-perf-report-aggregator/clickhouse@sha256:41b4a65a52d63633d9c8fca04945e6315cbf3725aaf3977e7ec488fa79154ee4

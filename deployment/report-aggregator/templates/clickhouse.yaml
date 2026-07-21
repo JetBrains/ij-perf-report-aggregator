@@ -31,8 +31,6 @@ spec:
           env:
             - name: RESTORE_DB
               value: "true"
-            - name: DISABLE_PROGRESS
-              value: "true"
           volumeMounts: &clickhouseVolumeMounts
             - name: clickhouse-data
               mountPath: /var/lib/clickhouse
@@ -63,9 +61,6 @@ spec:
               cpu: "0.2"
               memory: 1024Mi
               ephemeral-storage: "4Gi"
-          env:
-            - name: CLICKHOUSE
-              value: "127.0.0.1:9000"
           volumeMounts: *clickhouseVolumeMounts
       imagePullSecrets:
         - name: ghcr
@@ -85,8 +80,6 @@ spec:
             items:
               - key: AWS_ACCESS_KEY_ID
                 path: accessKey
-              - key: AWS_SECRET_ACCESS_KEY
-                path: secretKey
               - key: AWS_SECRET_ACCESS_KEY
                 path: secretKey
               - key: bucket-name

@@ -45,7 +45,7 @@
   <user_files_path>/Volumes/data/ij-perf-db/clickhouse/user_files/</user_files_path>
 
   <!-- Path to configuration file with users, access rights, profiles of settings, quotas. -->
-  <users_config>ch-local-users.xml</users_config>
+  <users_config>users.xml</users_config>
 
   <!-- Default profile of settings. -->
   <default_profile>default</default_profile>

@@ -54,7 +54,7 @@ update-deps:
 
 # install clickhouse for macOS: brew install clickhouse
 
-# clickhouse server -C ~/Documents/report-aggregator/deployment/ch-local-config.xml
+# clickhouse server -C deployment/ch-local/config.xml
 # clickhouse client -h 127.0.0.1 -d ij
 
 # nats-server

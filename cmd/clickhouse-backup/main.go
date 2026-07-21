@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/Altinity/clickhouse-backup/pkg/backup"
-	"github.com/Altinity/clickhouse-backup/pkg/status"
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/nats-io/nats.go"
@@ -31,11 +29,8 @@ func start(natsUrl string) error {
 		clickhousebackup.SetS3EnvForLocalRun(taskContext)
 	}
 
-	backuper := clickhousebackup.CreateBackuper()
-
 	if env.GetBool("DO_BACKUP") {
-		err := executeBackup(taskContext, backuper)
-		return err
+		return executeBackup(taskContext)
 	}
 
 	slog.Info("started", "nats", natsUrl)
@@ -72,7 +67,7 @@ func start(natsUrl string) error {
 		}
 
 		slog.Info("backup requested")
-		err = executeBackup(taskContext, backuper)
+		err = executeBackup(taskContext)
 		if err != nil {
 			slog.Error("cannot backup", "error", err)
 		} else {
@@ -83,29 +78,8 @@ func start(natsUrl string) error {
 	return nil
 }
 
-func executeBackup(taskContext context.Context, backuper *backup.Backuper) error {
-	backupName := backup.NewBackupName()
-	logger := slog.With("backup", backupName)
-
-	err := backuper.CreateBackup(backupName, "", nil, false, false, false, false, "unknown", status.NotFromAPI)
-	if err != nil {
-		return fmt.Errorf("cannot create backup: %w", err)
-	}
-
-	if taskContext.Err() != nil {
-		return nil
-	}
-
-	logger.Info("upload")
-	err = backuper.Upload(backupName, "", "", "", nil, false, false, status.NotFromAPI)
-	if err != nil {
-		return err
-	}
-
-	if taskContext.Err() != nil {
-		return nil
-	}
-
-	logger.Info("uploaded")
-	return nil
+func executeBackup(taskContext context.Context) error {
+	// the backup name is auto-generated from the current UTC time,
+	// remote retention (BACKUPS_TO_KEEP_REMOTE) is applied after upload
+	return clickhousebackup.Run(taskContext, "create_remote", "--delete-source")
 }

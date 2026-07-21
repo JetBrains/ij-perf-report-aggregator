@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Altinity/clickhouse-backup/pkg/status"
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
 	"github.com/nats-io/nats.go"
 	"go.deanishe.net/env"
@@ -44,10 +43,19 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		configFile = filepath.Join(workingDir, "deployment", "ch-local-config.xml")
+		// the file must be named config.xml: clickhouse-backup reads object disk credentials
+		// from the preprocessed config, which clickhouse names after the main config file
+		configFile = filepath.Join(workingDir, "deployment", "ch-local", "config.xml")
 	}
 
 	if restoreData {
+		// the data dir is about to be wiped — refuse if another server still uses it
+		dialer := net.Dialer{Timeout: time.Second}
+		if conn, err := dialer.DialContext(ctx, "tcp", "127.0.0.1:9000"); err == nil {
+			_ = conn.Close()
+			log.Fatal("another clickhouse-server is already running on 127.0.0.1:9000, stop it before restore")
+		}
+
 		err := prepareConfigAndDir(isLocalRun, bucket, s3AccessKey, s3SecretKey, configFile)
 		if err != nil {
 			log.Fatal(err)
@@ -77,7 +85,7 @@ func main() {
 			}
 		}()
 
-		err = restoreDb()
+		err = restoreDb(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -133,41 +141,36 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
 	return nil
 }
 
-func restoreDb() error {
+func restoreDb(ctx context.Context) error {
 	// wait a little bit for clickhouse start
 	time.Sleep(4 * time.Second)
 
-	backuper := clickhousebackup.CreateBackuper()
-
 	attemptCount := 3
 	var backupName string
-main:
+	var err error
 	for i := range attemptCount {
-		backups, err := backuper.GetRemoteBackups(context.Background(), true)
-		if err != nil {
-			if i < attemptCount {
-				time.Sleep(time.Duration((i+1)*3) * time.Second)
-				continue
-			}
-			return fmt.Errorf("%w", err)
+		backupName, err = clickhousebackup.LatestRemoteBackup(ctx)
+		if err == nil {
+			break
 		}
-
-		if len(backups) != 0 {
-			for j := len(backups) - 1; j > 0; j-- {
-				if backups[j].Broken == "" {
-					backupName = backups[j].BackupName
-					break main
-				}
-			}
+		log.Println("cannot get latest remote backup", err)
+		if i < attemptCount-1 {
+			time.Sleep(time.Duration((i+1)*3) * time.Second)
 		}
 	}
-	if backupName == "" {
-		return errors.New("no remote backup")
+	if err != nil {
+		return err
 	}
 
-	err := backuper.RestoreFromRemote(backupName, "", nil, nil, false, false, false, false, false, false, false, status.NotFromAPI)
+	err = clickhousebackup.Run(ctx, "restore_remote", backupName)
 	if err != nil {
 		return fmt.Errorf("%w", err)
+	}
+
+	// the downloaded backup copy is not needed after restore
+	err = clickhousebackup.Run(ctx, "delete", "local", backupName)
+	if err != nil {
+		log.Println("cannot delete local backup copy", err)
 	}
 
 	log.Println("DB is restored (backup=" + backupName + ")")

@@ -18,7 +18,8 @@ import (
 	"go.deanishe.net/env"
 )
 
-const BackupsToKeepRemote = 128
+// BackupsToKeepRemote keeps a month of daily restore points; self-contained backups are ~28 GB each
+const BackupsToKeepRemote = 30
 
 func BinaryPath() string {
 	if p := os.Getenv("CLICKHOUSE_BACKUP_BIN"); p != "" {

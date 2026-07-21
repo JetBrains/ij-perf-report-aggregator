@@ -17,7 +17,6 @@ require (
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/jackc/puddle/v2 v2.2.2
 	github.com/klauspost/compress v1.19.1
-	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/modelcontextprotocol/go-sdk v1.6.1
 	github.com/nats-io/nats.go v1.52.0
 	github.com/prometheus/client_golang v1.23.2

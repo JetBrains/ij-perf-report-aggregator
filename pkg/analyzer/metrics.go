@@ -3,9 +3,9 @@ package analyzer
 import (
 	"fmt"
 	"log/slog"
+	"strconv"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/mcuadros/go-version"
 )
 
 type Metric struct {
@@ -209,7 +209,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]a
 
 		// undefined
 		(*result)[nonMetricFieldCount+metric.index] = 0
-		if metric.sinceVersion != "" && version.Compare(report.Version, metric.sinceVersion, ">=") {
+		if metric.sinceVersion != "" && reportVersionAtLeast(report.Version, metric.sinceVersion) {
 			notFoundMetrics = append(notFoundMetrics, metric.Name)
 		}
 	}
@@ -221,13 +221,20 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]a
 	return nil
 }
 
+// report format versions are plain integers ("18", "19", ...); unparsable versions count as older
+func reportVersionAtLeast(reportVersion string, since string) bool {
+	v, err1 := strconv.Atoi(reportVersion)
+	s, err2 := strconv.Atoi(since)
+	return err1 == nil && err2 == nil && v >= s
+}
+
 func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.Report, result *[]any) error {
 	info, ok := metricNameToDescriptor[activity.Name]
 	if !ok {
 		return nil
 	}
 
-	if info.sinceVersion != "" && version.Compare(report.Version, info.sinceVersion, "<") {
+	if info.sinceVersion != "" && !reportVersionAtLeast(report.Version, info.sinceVersion) {
 		return nil
 	}
 

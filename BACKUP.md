@@ -62,9 +62,10 @@ Run this periodically — a backup you have not restored is not a backup.
    (the dir that gets wiped and restored into), `CLICKHOUSE_PORT` (numeric only — non-numeric values
    fall back to 9000), `RESTORE_BACKUP_NAME` (pin a specific backup instead of latest). Together these
    allow a second instance side by side (e.g. `deployment/ch-local-candidate` on ports 9010/8124 for
-   version comparison — see the `clickhouse-update` skill). Two *concurrent* restores of the same backup also need distinct `TMPDIR`s:
+   version comparison — see the `clickhouse-update` skill). Two _concurrent_ restores of the same backup also need distinct `TMPDIR`s:
    clickhouse-backup's pid file is keyed by backup name. If a restore fails, the temporary server may
    be left running — kill it before retrying.
+
 5. Start ClickHouse from the restored data and verify:
    ```sh
    ~/clickhouse server --config-file=deployment/ch-local/config.xml

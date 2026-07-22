@@ -77,14 +77,27 @@ diagnosis, mitigations tested) and copy `report.tsv` to
 
 ## 6. Ship (only if the evaluation passed)
 
-1. Update the release URL in `deployment/clickhouse/Dockerfile` (and clickhouse-backup if bumped).
-2. Deploy via the pin dance (BACKUP.md): push → new digests in build log → update `images:` pins
-   in `jb/values.yaml` → push jb repo.
-3. Watch the rollout: `kubectl logs -n idea <new-pod> -c restore-clickhouse-backup -f` must end
-   with `DB is restored`; then confirm the next sidecar backup succeeds (`create_remote` in the
-   clickhouse-backup container logs within ~24h).
-4. Rollback insurance: after the new version writes its first backup, rolling back requires
-   `RESTORE_BACKUP_NAME` pinned to a pre-upgrade backup (BACKUP.md "Restore in prod").
+Before the first push, note the latest prod backup name (`list remote`) — that is the rollback pin.
+
+1. Update the release URL in `deployment/clickhouse/Dockerfile` (and clickhouse-backup if bumped);
+   commit and push. CI builds the new **base** image (entrypoint `/usr/bin/entrypoint` — a
+   placeholder; this image is not deployable on its own).
+2. Find the new base digest in the ghcr `clickhouse` package (upload time after your push;
+   `org.opencontainers.image.revision` label = your commit SHA). Update **both**
+   `baseImageOverrides` entries in `.ko.yaml` to it; commit and push. CI now ko-builds the pod
+   images on the 25.x base.
+3. Find the fresh ko-built digests (upload time after the second push; entrypoint
+   `/ko-app/clickhouse` in the `clickhouse` package, `/ko-app/clickhouse-backup` in the
+   `clickhouse-backup` package — ko images inherit the base's revision label, so match on upload
+   time + entrypoint, not revision). Pin both in `images:` in `jb/values.yaml`, commit, push the
+   jb repo — this triggers the real rollout. Never pin the raw base image.
+4. Watch the rollout: `kubectl logs -n idea <new-pod> -c restore-clickhouse-backup -f` must end
+   with `DB is restored`; the old pod keeps serving until the new one answers `/ping`. Verify
+   `SELECT version()` afterwards. Then confirm the next sidecar backup succeeds (`create_remote`
+   in the clickhouse-backup container logs — the rate-limit clock resets on pod restart, so it
+   lands within ~20–40 min of the rollout).
+5. Rollback insurance: after the new version writes its first backup, rolling back requires
+   `RESTORE_BACKUP_NAME` pinned to the pre-upgrade backup noted above (BACKUP.md "Restore in prod").
 
 ## Cleanup
 

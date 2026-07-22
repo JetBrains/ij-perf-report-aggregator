@@ -111,6 +111,15 @@ with ko but then applies `jb/values.yaml` (separate repo, cloned into `jb/`) **l
 2. Put the new digests into `images:` in `jb/values.yaml`, commit, push the `jb/` repo.
 3. The build triggered by that push performs the real rollout.
 
+**Changing the ClickHouse version itself has an extra stage**: `deployment/clickhouse/Dockerfile` builds a
+_base_ image (entrypoint `/usr/bin/entrypoint` — a placeholder, not deployable), and ko layers the Go
+wrappers onto the base digest pinned in `.ko.yaml` `baseImageOverrides`. So: push the Dockerfile change →
+find the new base digest in ghcr (`org.opencontainers.image.revision` label = your commit) → update both
+`baseImageOverrides` entries in `.ko.yaml` → push again → only then do fresh _pod_ images exist to pin in
+`jb/values.yaml`. Pin the ko-built images (entrypoint `/ko-app/clickhouse` and `/ko-app/clickhouse-backup`),
+never the raw base — a base pin leaves the pod without its entrypoint and the rollout stalls (safely,
+thanks to maxUnavailable=0, but stalls).
+
 ## Gotchas (all bitten in production)
 
 - **Service links**: k8s injects `CLICKHOUSE_PORT=tcp://<ip>:9000` per Service; the binary's envconfig needs

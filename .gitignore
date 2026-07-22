@@ -19,3 +19,5 @@ jb
 # Go build cache / compiled binaries
 .tmp/
 /backend
+benchmark/results/
+/clickhouse

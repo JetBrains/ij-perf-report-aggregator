@@ -27,7 +27,11 @@ func main() {
 	isLocalRun := os.Getenv("KUBERNETES_SERVICE_HOST") == ""
 	ctx := context.Background()
 	if isLocalRun {
-		clickhouseExecutable = "/Users/maxim.kolmakov/clickhouse"
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal(err)
+		}
+		clickhouseExecutable = util.GetEnv("CLICKHOUSE_BIN", filepath.Join(home, "clickhouse"))
 		clickhousebackup.SetS3EnvForLocalRun(ctx)
 	}
 
@@ -39,21 +43,29 @@ func main() {
 
 	configFile := "/var/lib/clickhouse/config.xml"
 	if isLocalRun {
-		workingDir, err := os.Getwd()
-		if err != nil {
-			log.Fatal(err)
+		if custom := os.Getenv("CLICKHOUSE_CONFIG"); custom != "" {
+			configFile = custom
+		} else {
+			workingDir, err := os.Getwd()
+			if err != nil {
+				log.Fatal(err)
+			}
+			configFile = filepath.Join(workingDir, "deployment", "ch-local", "config.xml")
 		}
 		// the file must be named config.xml: clickhouse-backup reads object disk credentials
 		// from the preprocessed config, which clickhouse names after the main config file
-		configFile = filepath.Join(workingDir, "deployment", "ch-local", "config.xml")
+		if filepath.Base(configFile) != "config.xml" {
+			log.Fatal("config file must be named config.xml, got: " + configFile)
+		}
 	}
 
 	if restoreData {
 		// the data dir is about to be wiped — refuse if another server still uses it
+		addr := "127.0.0.1:" + clickhousebackup.Port()
 		dialer := net.Dialer{Timeout: time.Second}
-		if conn, err := dialer.DialContext(ctx, "tcp", "127.0.0.1:9000"); err == nil {
+		if conn, err := dialer.DialContext(ctx, "tcp", addr); err == nil {
 			_ = conn.Close()
-			log.Fatal("another clickhouse-server is already running on 127.0.0.1:9000, stop it before restore")
+			log.Fatal("another clickhouse-server is already running on " + addr + ", stop it before restore")
 		}
 
 		err := prepareConfigAndDir(isLocalRun, bucket, s3AccessKey, s3SecretKey, configFile)
@@ -145,24 +157,28 @@ func restoreDb(ctx context.Context) error {
 	// wait a little bit for clickhouse start
 	time.Sleep(4 * time.Second)
 
-	attemptCount := 3
-	var backupName string
-	var err error
-	for i := range attemptCount {
-		backupName, err = clickhousebackup.LatestRemoteBackup(ctx)
-		if err == nil {
-			break
+	// pin a specific (non-latest) backup — e.g. restoring a pre-upgrade backup after a
+	// server downgrade, or restoring the same backup into a second instance for comparison
+	backupName := os.Getenv("RESTORE_BACKUP_NAME")
+	if backupName == "" {
+		attemptCount := 3
+		var err error
+		for i := range attemptCount {
+			backupName, err = clickhousebackup.LatestRemoteBackup(ctx)
+			if err == nil {
+				break
+			}
+			log.Println("cannot get latest remote backup", err)
+			if i < attemptCount-1 {
+				time.Sleep(time.Duration((i+1)*3) * time.Second)
+			}
 		}
-		log.Println("cannot get latest remote backup", err)
-		if i < attemptCount-1 {
-			time.Sleep(time.Duration((i+1)*3) * time.Second)
+		if err != nil {
+			return err
 		}
-	}
-	if err != nil {
-		return err
 	}
 
-	err = clickhousebackup.Run(ctx, "restore_remote", backupName)
+	err := clickhousebackup.Run(ctx, "restore_remote", backupName)
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}

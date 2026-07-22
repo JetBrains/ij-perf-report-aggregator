@@ -34,16 +34,27 @@ func BinaryPath() string {
 	return "/usr/bin/clickhouse-backup"
 }
 
+// Port returns the ClickHouse TCP port used by the backup binary and local tooling.
+// CLICKHOUSE_PORT is honored only when numeric (allows pointing a local run at a second
+// instance): kubernetes service links inject CLICKHOUSE_PORT=tcp://<ip>:9000, which
+// breaks the binary's numeric port parsing — non-numeric values fall back to 9000.
+func Port() string {
+	if p := os.Getenv("CLICKHOUSE_PORT"); p != "" {
+		if _, err := strconv.Atoi(p); err == nil {
+			return p
+		}
+	}
+	return "9000"
+}
+
 // backupEnv returns the process environment for the clickhouse-backup binary,
 // see https://github.com/Altinity/clickhouse-backup#default-config
 func backupEnv() []string {
 	overrides := map[string]string{
-		"REMOTE_STORAGE":         "s3",
-		"BACKUPS_TO_KEEP_REMOTE": strconv.Itoa(BackupsToKeepRemote),
-		"CLICKHOUSE_HOST":        "127.0.0.1",
-		// must be pinned: kubernetes service links inject CLICKHOUSE_PORT=tcp://<ip>:9000,
-		// which breaks the binary's numeric port parsing
-		"CLICKHOUSE_PORT":             "9000",
+		"REMOTE_STORAGE":              "s3",
+		"BACKUPS_TO_KEEP_REMOTE":      strconv.Itoa(BackupsToKeepRemote),
+		"CLICKHOUSE_HOST":             "127.0.0.1",
+		"CLICKHOUSE_PORT":             Port(),
 		"S3_ALLOW_MULTIPART_DOWNLOAD": "true",
 		// the default is derived from the node CPU count and OOMs the sidecar's memory limit
 		"UPLOAD_CONCURRENCY": "2",

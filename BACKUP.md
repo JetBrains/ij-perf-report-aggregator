@@ -56,6 +56,15 @@ Run this periodically — a backup you have not restored is not a backup.
 3. Make sure nothing listens on 127.0.0.1:9000 (the drill refuses to wipe under a running server).
 4. Run the drill — **wipes `/Volumes/data/ij-perf-db/clickhouse`**, downloads ~12 GB:
    `RESTORE_DB=true go run ./cmd/clickhouse`
+
+   Local knobs (env): `CLICKHOUSE_BIN` (server binary, default `~/clickhouse`), `CLICKHOUSE_CONFIG`
+   (must be named `config.xml`, default `deployment/ch-local/config.xml`), `CLICKHOUSE_DATA_PATH`
+   (the dir that gets wiped and restored into), `CLICKHOUSE_PORT` (numeric only — non-numeric values
+   fall back to 9000), `RESTORE_BACKUP_NAME` (pin a specific backup instead of latest). Together these
+   allow a second instance side by side (e.g. `deployment/ch-local-candidate` on ports 9010/8124 for
+   version comparison — see the `clickhouse-update` skill). Two *concurrent* restores of the same backup also need distinct `TMPDIR`s:
+   clickhouse-backup's pid file is keyed by backup name. If a restore fails, the temporary server may
+   be left running — kill it before retrying.
 5. Start ClickHouse from the restored data and verify:
    ```sh
    ~/clickhouse server --config-file=deployment/ch-local/config.xml
@@ -84,9 +93,11 @@ drops out of the Service the moment it starts terminating, and the replacement c
 for two ClickHouse pods at once), nothing breaks — the old pod keeps serving and the restore just waits.
 
 Up to 24h of data since the last backup is re-collected automatically by tc-collector after restore.
-To restore a _specific_ (non-latest) backup, exec the binary manually in the pod is not possible
-(distroless); instead temporarily delete newer backups' `metadata.json` is **not** recommended — ask for a
-code change adding a `RESTORE_BACKUP_NAME` env instead.
+To restore a _specific_ (non-latest) backup, set `RESTORE_BACKUP_NAME=<backup-name>` on the
+`restore-clickhouse-backup` init container and roll the deployment (`kubectl edit deployment` or a chart
+change — `kubectl set env` does not reach init containers). This is also the rollback path after a
+ClickHouse **version upgrade**: once the new version has written its first backup, plain restore-latest
+on the old version would try to restore a newer-version backup — pin a pre-upgrade backup instead.
 
 ## Deploying changes to backup code (the pin dance)
 

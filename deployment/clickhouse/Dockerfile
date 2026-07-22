@@ -1,6 +1,6 @@
 FROM buildpack-deps:curl AS builder
 
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v24.3.5.46-lts/clickhouse-common-static-24.3.5.46-amd64.tgz | tar xvz --strip-components=1
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v25.8.28.1-lts/clickhouse-common-static-25.8.28.1-amd64.tgz | tar xvz --strip-components=1
 RUN cd /tmp && curl -L https://github.com/Altinity/clickhouse-backup/releases/download/v2.8.0/clickhouse-backup-linux-amd64.tar.gz | tar xz
 RUN mkdir /var/lib/clickhouse
 

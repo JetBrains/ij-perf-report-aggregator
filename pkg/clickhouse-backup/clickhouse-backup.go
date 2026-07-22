@@ -53,10 +53,15 @@ func backupEnv() []string {
 		// where backups keep server-side copies of s3-disk (object disk) data — this is what
 		// makes backups self-contained, unlike v1 which stored only the pointer files
 		"S3_OBJECT_DISK_PATH": "object_disks",
-		"S3_ACCESS_KEY":       util.GetEnvOrFileOrPanic("S3_ACCESS_KEY", "/etc/s3/accessKey"),
-		"S3_SECRET_KEY":       util.GetEnvOrFileOrPanic("S3_SECRET_KEY", "/etc/s3/secretKey"),
-		"S3_BUCKET":           util.GetEnvOrFileOrPanic("S3_BUCKET", "/etc/s3/bucket"),
-		"S3_REGION":           util.GetEnv("S3_REGION", "eu-west-1"),
+		// local restores copy object-disk data from AWS into MinIO — different endpoints,
+		// so server-side copy is impossible and the data must stream through the client;
+		// in k8s source and destination are the same bucket and server-side copy is faster
+		"ALLOW_OBJECT_DISK_STREAMING": envOrDefault("ALLOW_OBJECT_DISK_STREAMING",
+			strconv.FormatBool(os.Getenv("KUBERNETES_SERVICE_HOST") == "")),
+		"S3_ACCESS_KEY": util.GetEnvOrFileOrPanic("S3_ACCESS_KEY", "/etc/s3/accessKey"),
+		"S3_SECRET_KEY": util.GetEnvOrFileOrPanic("S3_SECRET_KEY", "/etc/s3/secretKey"),
+		"S3_BUCKET":     util.GetEnvOrFileOrPanic("S3_BUCKET", "/etc/s3/bucket"),
+		"S3_REGION":     util.GetEnv("S3_REGION", "eu-west-1"),
 	}
 
 	result := make([]string, 0, len(os.Environ())+len(overrides))

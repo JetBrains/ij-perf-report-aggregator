@@ -42,6 +42,12 @@ spec:
       containers:
         - name: clickhouse
           image: {{ .Values.images.clickhouse }}
+          # gates the rolling-update cutover: the old pod is killed only once the new server answers queries
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8123
+            periodSeconds: 5
           resources:
             requests:
               cpu: "3"
@@ -71,6 +77,7 @@ spec:
       imagePullSecrets:
         - name: ghcr
       volumes:
+        # per-pod PVC, deleted with the pod: data is ephemeral by design, restored from backup on boot (BACKUP.md)
         - name: clickhouse-data
           ephemeral:
             volumeClaimTemplate:
@@ -79,7 +86,7 @@ spec:
                   - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 100Gi  # Set this to match your ephemeral-storage requirement
+                    storage: 100Gi  # must fit the restored DB plus the downloaded backup tars during restore
         - name: s3
           secret:
             secretName: ij-perf-data-s3-rw

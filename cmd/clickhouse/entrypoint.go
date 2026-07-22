@@ -14,8 +14,8 @@ import (
 	"time"
 
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/nats-io/nats.go"
-	"go.deanishe.net/env"
 )
 
 //go:embed config.xml
@@ -107,7 +107,7 @@ func main() {
 func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3SecretKey string, configFile string) error {
 	chDir := "/var/lib/clickhouse"
 	if isLocalRun {
-		chDir = env.GetString("CLICKHOUSE_DATA_PATH", "/Volumes/data/ij-perf-db/clickhouse")
+		chDir = util.GetEnv("CLICKHOUSE_DATA_PATH", "/Volumes/data/ij-perf-db/clickhouse")
 	}
 
 	entries, err := os.ReadDir(chDir)

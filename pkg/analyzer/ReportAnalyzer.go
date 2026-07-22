@@ -14,8 +14,8 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.deanishe.net/env"
 )
 
 type ReportAnalyzer struct {
@@ -36,7 +36,7 @@ type ReportAnalyzer struct {
 }
 
 func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, metaDb *pgxpool.Pool, config DatabaseConfiguration, logger *slog.Logger) (*ReportAnalyzer, error) {
-	insertReportManager, err := NewInsertReportManager(parentContext, db, metaDb, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1))
+	insertReportManager, err := NewInsertReportManager(parentContext, db, metaDb, config, "report", util.GetEnvAsInt("INSERT_WORKER_COUNT", -1))
 	if err != nil {
 		return nil, err
 	}

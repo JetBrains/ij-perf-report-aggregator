@@ -15,7 +15,6 @@ import (
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/fastjson"
-	"go.deanishe.net/env"
 )
 
 // BackupsToKeepRemote keeps a month of daily restore points; self-contained backups are ~28 GB each
@@ -57,7 +56,7 @@ func backupEnv() []string {
 		"S3_ACCESS_KEY":       util.GetEnvOrFileOrPanic("S3_ACCESS_KEY", "/etc/s3/accessKey"),
 		"S3_SECRET_KEY":       util.GetEnvOrFileOrPanic("S3_SECRET_KEY", "/etc/s3/secretKey"),
 		"S3_BUCKET":           util.GetEnvOrFileOrPanic("S3_BUCKET", "/etc/s3/bucket"),
-		"S3_REGION":           env.GetString("S3_REGION", "eu-west-1"),
+		"S3_REGION":           util.GetEnv("S3_REGION", "eu-west-1"),
 	}
 
 	result := make([]string, 0, len(os.Environ())+len(overrides))

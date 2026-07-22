@@ -13,7 +13,6 @@ import (
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"go.deanishe.net/env"
 )
 
 /*
@@ -21,9 +20,9 @@ import (
 2. change `migrate/report.sql` as needed and execute.
 */
 func main() {
-	db := env.Get("DB")
-	table := env.Get("TABLE")
-	split := strings.Split(env.Get("DB"), "_")
+	db := util.GetEnv("DB", "")
+	table := util.GetEnv("TABLE", "")
+	split := strings.Split(db, "_")
 	if len(split) > 1 {
 		table = split[1]
 	}

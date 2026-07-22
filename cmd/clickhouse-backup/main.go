@@ -10,11 +10,10 @@ import (
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/nats-io/nats.go"
-	"go.deanishe.net/env"
 )
 
 func main() {
-	err := start("nats://" + env.Get("NATS", "nats:4222"))
+	err := start("nats://" + util.GetEnv("NATS", "nats:4222"))
 	if err != nil {
 		slog.Error("cannot start backup", "err", err)
 		os.Exit(1)
@@ -29,7 +28,7 @@ func start(natsUrl string) error {
 		clickhousebackup.SetS3EnvForLocalRun(taskContext)
 	}
 
-	if env.GetBool("DO_BACKUP") {
+	if util.GetEnvAsBool("DO_BACKUP", false) {
 		return executeBackup(taskContext)
 	}
 

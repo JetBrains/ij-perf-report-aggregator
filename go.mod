@@ -28,7 +28,6 @@ require (
 	github.com/valyala/fastjson v1.6.10
 	github.com/valyala/quicktemplate v1.8.0
 	github.com/zeebo/xxh3 v1.1.0
-	go.deanishe.net/env v0.5.1
 	golang.org/x/sync v0.22.0
 	golang.org/x/tools v0.48.0
 )

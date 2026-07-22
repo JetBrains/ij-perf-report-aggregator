@@ -27,7 +27,6 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/rs/cors"
 	"github.com/valyala/bytebufferpool"
-	"go.deanishe.net/env"
 )
 
 const DefaultDbUrl = "127.0.0.1:9000"
@@ -178,7 +177,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		})
 	})
 
-	server := listenAndServe(env.Get("SERVER_PORT", "9044"), router)
+	server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), router)
 	slog.Info("started", "server", server.Addr, "clickhouse", dbUrl, "nats", natsUrl)
 
 	waitUntilTerminated(server, 1*time.Minute)

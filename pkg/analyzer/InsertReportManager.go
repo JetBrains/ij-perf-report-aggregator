@@ -12,8 +12,8 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.deanishe.net/env"
 )
 
 // use `select distinct cast(machine, 'Uint16') as id, machine as name FROM report order by id` to get current enum values
@@ -109,7 +109,7 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 	insertManager := sql_util.NewBatchInsertManager(ctx, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
 
 	// large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
-	insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
+	insertManager.BatchSize = util.GetEnvAsInt("INSERT_BATCH_SIZE", 20_000)
 
 	var installerManager *InsertInstallerManager
 	if config.HasInstallerField || config.HasNoInstallerButHasChanges {

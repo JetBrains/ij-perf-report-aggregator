@@ -30,9 +30,11 @@ describe("userLabel helper", () => {
   it("prefers userName", () => {
     expect(userLabel(item({ userName: "Jane Doe", userEmail: "jane@x.com" }))).toBe("Jane Doe")
   })
+
   it("falls back to email local part", () => {
     expect(userLabel(item({ userName: undefined, userEmail: "jane@jetbrains.com" }))).toBe("jane")
   })
+
   it("empty when nothing", () => {
     expect(userLabel(item({ userName: undefined, userEmail: undefined }))).toBe("")
   })
@@ -42,13 +44,16 @@ describe("currentUserLabel helper", () => {
   it("prefers name", () => {
     expect(currentUserLabel({ name: "Jane Doe", email: "jane@x.com" })).toBe("Jane Doe")
   })
+
   it("falls back to email local part", () => {
     expect(currentUserLabel({ name: "", email: "jane@jetbrains.com" })).toBe("jane")
   })
+
   it("empty when no user", () => {
     expect(currentUserLabel(null)).toBe("")
     expect(currentUserLabel({})).toBe("")
   })
+
   it("matches the label used by the user filter for the same identity", () => {
     const label = currentUserLabel({ name: "Jane Doe", email: "jane@x.com" })
     expect(matches(item({ userName: "Jane Doe" }), filter({ users: [label] }))).toBe(1)

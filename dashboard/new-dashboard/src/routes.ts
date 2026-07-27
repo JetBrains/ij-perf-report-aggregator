@@ -211,6 +211,7 @@ enum ROUTES {
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   IJentBenchmarksDashboard = `${ROUTE_PREFIX.IJent}/benchmarksDashboard`,
   IJentPerfTestsDashboard = `${ROUTE_PREFIX.IJent}/performanceDashboard`,
+  IJentSshPerfDashboard = `${ROUTE_PREFIX.IJent}/sshPerformanceDashboard`,
   IJentProjectLoadingDashboard = `${ROUTE_PREFIX.IJent}/projectLoadingDashboard`,
   IJentRuntimeDashboard = `${ROUTE_PREFIX.IJent}/runtimeDashboard`,
   IJentRawPerfData = `${ROUTE_PREFIX.IJent}/rawPerfData`,
@@ -685,6 +686,7 @@ const IJENT: Product = {
       tabs: [
         tab(ROUTES.IJentBenchmarksDashboard, "Benchmarks Dashboard"),
         tab(ROUTES.IJentPerfTestsDashboard, "Performance Dashboard"),
+        tab(ROUTES.IJentSshPerfDashboard, "SSH Performance"),
         tab(ROUTES.IJentProjectLoadingDashboard, "Project Loading (Community)"),
         tab(ROUTES.IJentRuntimeDashboard, "Runtime (Community)"),
         tab(ROUTES.IJentRawPerfData, "Raw Performance Data"),
@@ -1122,6 +1124,7 @@ const toolboxRoutes = [
 const ijentRoutes = [
   dashboard(ROUTES.IJentBenchmarksDashboard, () => import("./components/ijent/IJentBenchmarskDashboard.vue"), "IJent Benchmarks Dashboard"),
   dashboard(ROUTES.IJentPerfTestsDashboard, () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"), "IJent Performance Tests Dashboard"),
+  dashboard(ROUTES.IJentSshPerfDashboard, () => import("./components/ijent/IJentSshPerformanceDashboard.vue"), "IJent SSH Performance Dashboard"),
   dashboard(ROUTES.IJentProjectLoadingDashboard, () => import("./components/ijent/IJentProjectLoadingDashboard.vue"), "IJent Project Loading (Community)"),
   dashboard(ROUTES.IJentRuntimeDashboard, () => import("./components/ijent/IJentRuntimeDashboard.vue"), "IJent Runtime (Community)"),
   perfTests(ROUTES.IJentRawPerfData, { dbName: "perfintDev", table: "ijent", initialMachine: "Linux Munich i7-13700, 64 Gb", withInstaller: false }, "IJent Raw Performance Data"),

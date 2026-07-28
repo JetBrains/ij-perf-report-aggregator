@@ -15,6 +15,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private readonly observable: Observable<unknown>
   readonly state = createComponentState()
   private readonly groupNameToItem = new Map<string, GroupedDimensionValue>()
+  private readonly predefinedMachineNames: ReadonlySet<string>
 
   readonly filters = shallowRef<FilterConfigurator[]>([])
 
@@ -26,6 +27,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     predefinedMachines?: string[]
   ) {
     const name = "machine"
+    this.predefinedMachineNames = new Set(predefinedMachines)
     persistentStateManager?.add(name, this.selected, (it) => toArray(it as never))
     if (predefinedMachines) {
       this.selected.value = predefinedMachines
@@ -79,11 +81,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private async normalizeSelectionToGroups(serverConfigurator: ServerConfigurator): Promise<void> {
     const selected = this.selected.value
     const groupNames = new Set(this.values.value.map((group) => group.value))
-    // A name present as a live agent in the loaded list is a deliberate single-agent choice
-    // (leaves are selectable in the dropdown) — only names absent from the list (ephemeral
-    // drilldown instances) are mapped to their group.
+    // Keep a pinned agent as-is; map any other raw agent (e.g. from a drilldown) to its group.
     const leafNames = new Set(this.values.value.flatMap((group) => group.children?.map((child) => child.value) ?? []))
-    const unresolved = selected.filter((value) => !groupNames.has(value) && !leafNames.has(value))
+    const unresolved = selected.filter((value) => !groupNames.has(value) && !(leafNames.has(value) && this.predefinedMachineNames.has(value)))
     if (unresolved.length === 0) {
       return
     }

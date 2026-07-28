@@ -173,6 +173,27 @@ describe("Machine configurator", () => {
       expect(machineConfigurator.selected.value).toStrictEqual(["intellij-linux-hw-blade-test"])
       expect(groupLookup).not.toHaveBeenCalled()
     })
+
+    it("maps a drilldown agent to its group even when it is a live leaf", async () => {
+      // A drilldown link selects a raw agent via the URL (not pinned). Even though it is a live
+      // leaf of "linux-blade" in the loaded list, it must be resolved to its group so the
+      // dropdown (which only shows groups) reflects the selection.
+      const groupLookup = vi.fn<() => Promise<{ json: () => Promise<{ group: string }> }>>(() => Promise.resolve({ json: () => Promise.resolve({ group: "linux-blade" }) }))
+      vi.stubGlobal("fetch", groupLookup)
+
+      machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard)
+      await awaitCallbackTrue(() => machineConfigurator.values.value.length > 0)
+
+      // Simulate the drilldown selection arriving via the URL/persistent state, then re-run the
+      // machine list (as a filter change would) so normalization sees it.
+      machineConfigurator.selected.value = ["intellij-linux-hw-blade-test"]
+      machineConfigurator.updateFilters([])
+      await awaitMockCallsCount(groupLookup, 1)
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0)
+      })
+      expect(machineConfigurator.selected.value).toStrictEqual(["linux-blade"])
+    })
   })
 
   describe("tests with branch and time filters", () => {

@@ -51,6 +51,12 @@ const mainChartsDeclaration: ChartDefinition[] = [
     aliases: ["LLVM", "OpenCV", "cURL", "50k_10k", "Zephyr Bap Broadcast Sink"],
   },
   {
+    labels: ["Resolve All References in CMake project"],
+    measures: ["nova_resolving_references_s"],
+    projects: ["radler/cmakeResolving/measureResolve/cmake"],
+    aliases: ["cmake"],
+  },
+  {
     labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],
     measures: ["firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
     projects: ["radler/fmtlib/typing/simple (4 lines)"],

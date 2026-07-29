@@ -99,7 +99,7 @@ const mainChartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: ["radler/fmtlib/globalInspection"],
+    projects: ["radler/fmtlib/globalInspection", "radler/fmtlib/inspection"],
     aliases: ["{fmt}"],
   },
 ]

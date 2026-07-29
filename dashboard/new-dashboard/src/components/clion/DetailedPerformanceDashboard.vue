@@ -71,77 +71,6 @@
         />
       </div>
     </section>
-    <!--<section class="flex gap-x-6">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Indexing (curl)"
-          :measure="['indexingTimeWithoutPauses']"
-          project="curl/indexing"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Scanning (curl)"
-          :measure="['scanningTimeWithoutPauses']"
-          project="curl/indexing"
-        />
-      </div>
-    </section>-->
-
-    <Divider title="Indexing" />
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index project (LLVM)"
-        project="llvm/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index project (OpenCV)"
-        project="opencv/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index project (curl)"
-        project="curl/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index project (Zephyr Bap Broadcast Sink)"
-        project="zephyr_bap_broadcast_sink/indexing"
-      />
-    </section>
-
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <section>
-          <GroupProjectsChart
-            :label="`[Radler] Index project (50k sources, 10k headers, many symbols)`"
-            :measure="['backendIndexingTimeMs']"
-            :projects="['radler/big_project_50k_10k/indexing', 'radler/big_project_50k_10k_many_symbols/indexing']"
-          />
-        </section>
-      </div>
-    </section>
-
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <section>
-          <GroupProjectsChart
-            :label="`[Radler] Index project (CMake LLVM vs compdb LLVM)`"
-            :measure="['backendIndexingTimeMs']"
-            :projects="['radler/llvm/indexing', 'radler/llvm_compdb/indexing']"
-          />
-        </section>
-      </div>
-    </section>
-
     <Divider title="Inspection" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">
@@ -533,5 +462,4 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
-import CLionVsRadlerIndexingChart from "./CLionVsRadlerIndexingChart.vue"
 </script>

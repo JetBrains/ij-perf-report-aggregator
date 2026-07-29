@@ -75,27 +75,6 @@
     <Divider title="General" />
 
     <section>
-      <CLionVsRadlerIndexingChart
-        label="Index CMake project (LLVM)"
-        project="llvm/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index compdb project (LLVM)"
-        project="llvm_compdb/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
-        label="Index Makefile project (git)"
-        project="git/indexing"
-      />
-    </section>
-
-    <section>
       <CLionVsRadlerGroupProjectsChart
         label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
@@ -167,19 +146,6 @@
         />
       </div>
     </section>
-
-    <Divider title="Embedded" />
-
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <section>
-          <CLionVsRadlerIndexingChart
-            label="Index zephyr project (Zephyr Bap Broadcast Sink)"
-            project="zephyr_bap_broadcast_sink/indexing"
-          />
-        </section>
-      </div>
-    </section>
   </DashboardPage>
 </template>
 
@@ -189,5 +155,4 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
-import CLionVsRadlerIndexingChart from "./CLionVsRadlerIndexingChart.vue"
 </script>

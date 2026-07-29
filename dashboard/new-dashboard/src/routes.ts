@@ -198,6 +198,7 @@ enum ROUTES {
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  ClionIndexingDashboard = `${ROUTE_PREFIX.Clion}/indexingDashboard`,
   ClionFindUsageDashboard = `${ROUTE_PREFIX.Clion}/findUsageDashboard`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
@@ -637,6 +638,7 @@ const CLION: Product = {
         tab(ROUTES.ClionProductMetricsDashboard, PRODUCT_METRICS_LABEL),
         tab(ROUTES.ClionPerfDashboard, "Performance"),
         tab(ROUTES.ClionDetailedPerfDashboard, "Detailed Performance"),
+        tab(ROUTES.ClionIndexingDashboard, "Indexing"),
         tab(ROUTES.ClionFindUsageDashboard, "Find Usages"),
         tab(ROUTES.ClionMemoryDashboard, "Memory"),
         tab(ROUTES.ClionLaggingLatencyDashboard, "Lagging/Latency"),
@@ -1073,6 +1075,7 @@ const clionRoutes = [
   dashboard(ROUTES.ClionDetailedPerfDashboard, () => import("./components/clion/DetailedPerformanceDashboard.vue"), "CLion Detailed Performance dashboard", {
     initialMachine: MACHINES.AWS_LINUX,
   }),
+  dashboard(ROUTES.ClionIndexingDashboard, () => import("./components/clion/CLionIndexingDashboard.vue"), "CLion Indexing dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionFindUsageDashboard, () => import("./components/clion/FindUsageDashboard.vue"), "CLion Find Usages dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionMemoryDashboard, () => import("./components/clion/MemoryDashboard.vue"), "CLion Memory dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionLaggingLatencyDashboard, () => import("./components/clion/CLionLaggingLatencyDashboard.vue"), "CLion Lagging/Latency dashboard"),

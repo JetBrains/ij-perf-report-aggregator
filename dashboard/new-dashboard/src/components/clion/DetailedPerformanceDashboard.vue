@@ -1,158 +1,11 @@
 <template>
   <DashboardPage
-    v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="clion"
     persistent-id="clion_detailed_performance_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :with-installer="false"
   >
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <!--<div class="flex-1 min-w-0">-->
-      <!--  <AggregationChart-->
-      <!--    :configurators="averagesConfigurators"-->
-      <!--    :aggregated-project="'clion/%'"-->
-      <!--    :aggregated-measure="'processingSpeed#%'"-->
-      <!--    :is-like="true"-->
-      <!--    :title="'[CLion] Indexing speed (kB/s)'"-->
-      <!--    :chart-color="'#219653'"-->
-      <!--    :value-unit="'counter'"-->
-      <!--  />-->
-      <!--</div>-->
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'clion/%hot%'"
-          :aggregated-measure="'fus_time_to_show_90p'"
-          :is-like="true"
-          :title="'[CLion] Time to show completion list'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'clion/%/typing/%'"
-          :aggregated-measure="'typing#latency#max'"
-          :is-like="true"
-          :title="'[CLion] Typing latency(max)'"
-          :chart-color="'#F2994A'"
-        />
-      </div>
-    </section>
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <!--<div class="flex-1 min-w-0">-->
-      <!--  <AggregationChart-->
-      <!--    :configurators="averagesConfigurators"-->
-      <!--    :aggregated-project="'radler/%'"-->
-      <!--    :aggregated-measure="'processingSpeed#%'"-->
-      <!--    :is-like="true"-->
-      <!--    :title="'[Radler] Indexing speed (kB/s)'"-->
-      <!--    :chart-color="'#219653'"-->
-      <!--    :value-unit="'counter'"-->
-      <!--  />-->
-      <!--</div>-->
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'radler/%hot%'"
-          :aggregated-measure="'fus_time_to_show_90p'"
-          :is-like="true"
-          :title="'[Radler] Time to show completion list'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'radler/%/typing/%'"
-          :aggregated-measure="'typing#latency#max'"
-          :is-like="true"
-          :title="'[Radler] Typing latency(max)'"
-          :chart-color="'#F2994A'"
-        />
-      </div>
-    </section>
-    <Divider title="Completion" />
-
-    <!-- Completion: std::string (cold) -->
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Time to show completion list, 90th percentile (std::string, cold)"
-          measure="fus_time_to_show_90p"
-          project="fmtlib/completion/std.string (cold)"
-        />
-      </div>
-    </section>
-
-    <!-- Completion: std::string (hot) -->
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Time to show completion list, 90th percentile (std::string, hot)"
-          measure="fus_time_to_show_90p"
-          project="fmtlib/completion/std.string (hot)"
-        />
-      </div>
-    </section>
-
-    <!-- Completion: std::shared_ptr<T> (hot) -->
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Time to show completion list, 90th percentile (std::shared_ptr<T>, hot)"
-          measure="fus_time_to_show_90p"
-          project="fmtlib/completion/std.shared_ptr (dep) (hot)"
-        />
-      </div>
-    </section>
-
-    <!-- Completion: fmt::join<It> -->
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Time to show completion list, 90th percentile (fmt::join<It>, hot)"
-          measure="fus_time_to_show_90p"
-          project="fmtlib/completion/fmt.join_view (dep) (hot)"
-        />
-      </div>
-    </section>
-
-    <!-- Completion: overall -->
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion] Time to show completion list, 90th percentile (all tests)"
-          measure="fus_time_to_show_90p"
-          :projects="[
-            'clion/fmtlib/completion/std.string (cold)',
-            'clion/fmtlib/completion/std.string (hot)',
-            'clion/fmtlib/completion/std.shared_ptr (dep) (hot)',
-            'clion/fmtlib/completion/fmt.join_view (dep) (hot)',
-          ]"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler] Time to show completion list, 90th percentile (all tests)"
-          measure="fus_time_to_show_90p"
-          :projects="[
-            'radler/fmtlib/completion/std.string (cold)',
-            'radler/fmtlib/completion/std.string (hot)',
-            'radler/fmtlib/completion/std.shared_ptr (dep) (hot)',
-            'radler/fmtlib/completion/fmt.join_view (dep) (hot)',
-          ]"
-        />
-      </div>
-    </section>
-    <section>
-      <div>
-        <GroupProjectsChart
-          label="[Radler] Time to show inline completion"
-          measure="callInlineCompletionOnCompletion"
-          :projects="['radler/fmtlib/completion/if(spec)']"
-        />
-      </div>
-    </section>
     <Divider title="Find Usages" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">
@@ -427,23 +280,11 @@
       </div>
     </section>
 
-    <Divider title="Debugger" />
-
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <CLionVsRadlerGroupProjectsChart
-          label="Stepping (fmtlib)"
-          :measure="['debugStep_into#mean_value', 'debugStep_out#mean_value', 'debugStep_over#mean_value']"
-          project="fmtlib/debug/args-test/basic"
-        />
-      </div>
-    </section>
     <!-- END -->
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"

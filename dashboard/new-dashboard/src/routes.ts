@@ -200,6 +200,8 @@ enum ROUTES {
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
   ClionIndexingDashboard = `${ROUTE_PREFIX.Clion}/indexingDashboard`,
   ClionInspectionsDashboard = `${ROUTE_PREFIX.Clion}/inspectionsDashboard`,
+  ClionCompletionDashboard = `${ROUTE_PREFIX.Clion}/completionDashboard`,
+  ClionDebuggerDashboard = `${ROUTE_PREFIX.Clion}/debuggerDashboard`,
   ClionFindUsageDashboard = `${ROUTE_PREFIX.Clion}/findUsageDashboard`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
@@ -641,6 +643,8 @@ const CLION: Product = {
         tab(ROUTES.ClionDetailedPerfDashboard, "Detailed Performance"),
         tab(ROUTES.ClionIndexingDashboard, "Indexing"),
         tab(ROUTES.ClionInspectionsDashboard, "Inspections"),
+        tab(ROUTES.ClionCompletionDashboard, "Completion"),
+        tab(ROUTES.ClionDebuggerDashboard, "Debugger"),
         tab(ROUTES.ClionFindUsageDashboard, "Find Usages"),
         tab(ROUTES.ClionMemoryDashboard, "Memory"),
         tab(ROUTES.ClionLaggingLatencyDashboard, "Lagging/Latency"),
@@ -1079,6 +1083,12 @@ const clionRoutes = [
   }),
   dashboard(ROUTES.ClionIndexingDashboard, () => import("./components/clion/CLionIndexingDashboard.vue"), "CLion Indexing dashboard", { initialMachine: MACHINES.AWS_LINUX }),
   dashboard(ROUTES.ClionInspectionsDashboard, () => import("./components/clion/CLionInspectionsDashboard.vue"), "CLion Inspections dashboard", {
+    initialMachine: MACHINES.AWS_LINUX,
+  }),
+  dashboard(ROUTES.ClionCompletionDashboard, () => import("./components/clion/CLionCompletionDashboard.vue"), "CLion Completion dashboard", {
+    initialMachine: MACHINES.AWS_LINUX,
+  }),
+  dashboard(ROUTES.ClionDebuggerDashboard, () => import("./components/clion/CLionDebuggerDashboard.vue"), "CLion Debugger dashboard", {
     initialMachine: MACHINES.AWS_LINUX,
   }),
   dashboard(ROUTES.ClionFindUsageDashboard, () => import("./components/clion/FindUsageDashboard.vue"), "CLion Find Usages dashboard", { initialMachine: MACHINES.AWS_LINUX }),

@@ -71,20 +71,6 @@
         />
       </div>
     </section>
-    <Divider title="Inspection" />
-
-    <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <section>
-          <GroupProjectsChart
-            :label="`[Radler] Inspect project (not only C/C++) (fmtlib)`"
-            :measure="['globalInspections']"
-            :projects="['radler/fmtlib/globalInspection', 'radler/fmtlib/inspection']"
-          />
-        </section>
-      </div>
-    </section>
-
     <Divider title="Completion" />
 
     <!-- Completion: std::string (cold) -->

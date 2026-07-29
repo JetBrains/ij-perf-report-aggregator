@@ -76,14 +76,6 @@
 
     <section>
       <CLionVsRadlerGroupProjectsChart
-        label="Inspect project (not only C/C++) (fmtlib)"
-        measure="globalInspections"
-        project="fmtlib/globalInspection"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerGroupProjectsChart
         label="Time to show test gutter (luau, Linter.test.cpp)"
         measure="waitFirstTestGutter"
         project="luau/checkLocalTestConfig/Linter.test.cpp.marks"

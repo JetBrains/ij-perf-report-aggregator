@@ -81,7 +81,7 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/measureResolve") {
-		return []string{"nova_total_memory_mb"}
+		return []string{"nova_total_memory_mb", "nova_resolving_references_ms"}
 	}
 	if strings.Contains(test, "/typing") {
 		return []string{"typing#latency#mean_value"}

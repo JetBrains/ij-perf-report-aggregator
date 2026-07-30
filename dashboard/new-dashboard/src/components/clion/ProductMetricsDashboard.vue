@@ -52,7 +52,7 @@ const mainChartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Resolve All References in CMake project"],
-    measures: ["nova_resolving_references_s"],
+    measures: ["nova_resolving_references_ms"],
     projects: ["radler/cmakeResolving/measureResolve/cmake"],
     aliases: ["cmake"],
   },

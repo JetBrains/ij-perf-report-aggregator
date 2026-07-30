@@ -73,7 +73,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 
-const AFTER_GC = "JVM.heapUsageMb/afterIndexing"
+const AFTER_GC = "JVM.heapUsageMb/afterExecution"
 const BEFORE_GC = `${AFTER_GC}/beforeGC`
 
 const indexingProjects = ["Coolify/indexing", "Bagisto/indexing", "Appwrite/indexing"]

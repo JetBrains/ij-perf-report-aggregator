@@ -85,11 +85,11 @@ const inspectionGroups = [
     "b2c-demo-shop/inspection",
     "magento/inspection",
     "wordpress/inspection",
-    "laravel-io/inspection",
+    "laravel-io/inspection"
   ],
   ["mediawiki/inspection", "php-cs-fixer/inspection", "proxyManager/inspection"],
   ["akaunting/inspection", "aggregateStitcher/inspection", "prestaShop/inspection", "kunstmaanBundlesCMS/inspection"],
-  ["Coolify/inspection", "Bagisto/inspection", "Appwrite/inspection"],
+  ["Coolify/inspection", "Bagisto/inspection", "Appwrite/inspection"]
 ]
 
 const allProjects = [...indexingProjects, ...inspectionGroups.flat()]

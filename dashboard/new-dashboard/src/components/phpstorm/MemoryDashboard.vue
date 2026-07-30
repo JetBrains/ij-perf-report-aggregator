@@ -79,17 +79,10 @@ const BEFORE_GC = `${AFTER_GC}/beforeGC`
 const indexingProjects = ["Coolify/indexing", "Bagisto/indexing", "Appwrite/indexing"]
 
 const inspectionGroups = [
-  [
-    "drupal8-master-with-plugin/inspection",
-    "shopware/inspection",
-    "b2c-demo-shop/inspection",
-    "magento/inspection",
-    "wordpress/inspection",
-    "laravel-io/inspection"
-  ],
+  ["drupal8-master-with-plugin/inspection", "shopware/inspection", "b2c-demo-shop/inspection", "magento/inspection", "wordpress/inspection", "laravel-io/inspection"],
   ["mediawiki/inspection", "php-cs-fixer/inspection", "proxyManager/inspection"],
   ["akaunting/inspection", "aggregateStitcher/inspection", "prestaShop/inspection", "kunstmaanBundlesCMS/inspection"],
-  ["Coolify/inspection", "Bagisto/inspection", "Appwrite/inspection"]
+  ["Coolify/inspection", "Bagisto/inspection", "Appwrite/inspection"],
 ]
 
 const allProjects = [...indexingProjects, ...inspectionGroups.flat()]

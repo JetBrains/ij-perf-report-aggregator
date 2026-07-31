@@ -4,7 +4,7 @@
   "dependencies": {
     "@heroicons/vue": "2.2.0",
     "@primevue/core": "^5.0.0",
-    "@vueuse/core": "^14.3.0",
+    "@vueuse/core": "^14.4.0",
     "echarts": "6.1.0",
     "fast-equals": "6.0.2",
     "humanize-duration": "3.34.0",

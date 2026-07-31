@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/AndreyAkinshin/pragmastat/go/v4 v4.0.3
-	github.com/ClickHouse/ch-go v0.73.0
+	github.com/ClickHouse/ch-go v0.74.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.47.0
 	github.com/VictoriaMetrics/fastcache v1.13.3
 	github.com/alitto/pond v1.9.2

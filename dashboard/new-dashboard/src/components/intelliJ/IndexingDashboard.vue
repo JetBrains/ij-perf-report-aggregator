@@ -168,6 +168,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_sources/checkout/243", "intellij_commit/checkout/243"],
   },
   {
+    labels: ["Total typing lag during indexing"],
+    measures: ["lagging_with_threshold_10_during_indexing_total_time"],
+    projects: ["lagging-intellij_commit/lagging_during_typing_with_indexing_only", "lagging-intellij_commit/lagging_during_typing_with_scanning_and_indexing"],
+  },
+  {
     labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: [

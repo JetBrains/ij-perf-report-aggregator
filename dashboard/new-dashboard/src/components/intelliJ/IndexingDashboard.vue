@@ -68,7 +68,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "community/indexingWithHighlighting",
       "indexing-community/indexingWithHighlighting",
       "indexing-intellij_commit/indexingWithHighlighting",
-      "space/indexing",
       "kotlin_coroutines/indexing",
     ],
   },
@@ -85,7 +84,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["First Scanning (big projects)"],
     measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
-    projects: ["community/indexing", "intellij_commit/indexing", "space/indexing", "kotlin_coroutines/indexing"],
+    projects: ["community/indexing", "intellij_commit/indexing", "kotlin_coroutines/indexing"],
   },
   {
     labels: ["First Scanning (middle projects)"],
@@ -100,7 +99,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Second Scanning (big projects)"],
     measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
-    projects: ["community/second-scanning", "intellij_commit/second-scanning", "space/second-scanning", "kotlin_coroutines/second-scanning"],
+    projects: ["community/second-scanning", "intellij_commit/second-scanning", "kotlin_coroutines/second-scanning"],
   },
   {
     labels: ["Second Scanning (middle projects)"],
@@ -125,11 +124,9 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [
       "community/indexing",
       "intellij_commit/indexing",
-      "space/indexing",
       "kotlin_coroutines/indexing",
       "community/second-scanning",
       "intellij_commit/second-scanning",
-      "space/second-scanning",
       "kotlin_coroutines/second-scanning",
     ],
   },

@@ -18,6 +18,7 @@
           <AdjustmentsVerticalIcon class="w-4 h-4" />
         </template>
       </DimensionSelect>
+      <slot name="dimension" />
       <MachineSelect
         v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"

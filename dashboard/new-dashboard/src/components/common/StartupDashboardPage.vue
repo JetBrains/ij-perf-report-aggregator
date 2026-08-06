@@ -8,12 +8,14 @@
       :triggered-by-configurator="triggeredByConfigurator"
       :test-mode-configurator="testModeConfigurator"
     >
-      <template #configurator>
+      <template #dimension>
         <DimensionSelect
           v-if="projectConfigurator != null && projectConfigurator.values.value.length > 1"
           label="Project"
           :dimension="projectConfigurator"
         />
+      </template>
+      <template #configurator>
         <slot name="configurator" />
       </template>
       <template #toolbar>

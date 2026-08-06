@@ -16,7 +16,7 @@
           v-for="chart in group.charts"
           :key="chart.key"
           :label="`${group.prefix}: ${chart.label}`"
-          :measure="chart.measure"
+          :measure="chart.measures"
           :projects="group.projects"
         />
       </section>
@@ -32,7 +32,7 @@ import Divider from "../common/Divider.vue"
 interface ChartDef {
   key: string
   label: string
-  measure: string
+  measures: string[]
 }
 
 interface GroupDef {
@@ -43,12 +43,14 @@ interface GroupDef {
   charts: ChartDef[]
 }
 
-const debugProjects = ["radler/fmtlib/debug/args-test/basic"]
+const debugProjects = ["radler/fmtlib/debug/args-test/basic", "radler/luau/debug/Analyze.cpp", "radler/opencv/debug/test_arithm.cpp"]
 
 const debugCharts: ChartDef[] = [
-  { key: "stepInto", label: "Step Into", measure: "debugStep_into#mean_value" },
-  { key: "stepOut", label: "Step Out", measure: "debugStep_out#mean_value" },
-  { key: "stepOver", label: "Step Over", measure: "debugStep_over#mean_value" },
+  { key: "launch", label: "Launch Debug", measures: ["fus_debug_session_initialized_ms"] },
+  { key: "frame", label: "Frame Variables Computed", measures: ["fus_frame_variables_computed_ms"] },
+  { key: "stepInto", label: "Step Into", measures: ["debugStep_into"] },
+  { key: "stepOut", label: "Step Out", measures: ["debugStep_out"] },
+  { key: "stepOver", label: "Step Over", measures: ["debugStep_over"] },
 ]
 
 const allGroups: GroupDef[] = [{ value: "debugActions", title: "Debug Actions", prefix: "Debug", projects: debugProjects, charts: debugCharts }]

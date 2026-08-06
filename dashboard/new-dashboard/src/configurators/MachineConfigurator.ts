@@ -15,7 +15,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private readonly observable: Observable<unknown>
   readonly state = createComponentState()
   private readonly groupNameToItem = new Map<string, GroupedDimensionValue>()
-  private readonly predefinedMachineNames: ReadonlySet<string>
 
   readonly filters = shallowRef<FilterConfigurator[]>([])
 
@@ -27,7 +26,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     predefinedMachines?: string[]
   ) {
     const name = "machine"
-    this.predefinedMachineNames = new Set(predefinedMachines)
     persistentStateManager?.add(name, this.selected, (it) => toArray(it as never))
     if (predefinedMachines) {
       this.selected.value = predefinedMachines
@@ -81,16 +79,14 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private async normalizeSelectionToGroups(serverConfigurator: ServerConfigurator): Promise<void> {
     const selected = this.selected.value
     const groupNames = new Set(this.values.value.map((group) => group.value))
-    // Keep a pinned agent as-is; map any other raw agent (e.g. from a drilldown) to its group.
-    const leafNames = new Set(this.values.value.flatMap((group) => group.children?.map((child) => child.value) ?? []))
-    const unresolved = selected.filter((value) => !groupNames.has(value) && !(leafNames.has(value) && this.predefinedMachineNames.has(value)))
+    // Map any raw agent to its group — a single agent is never a meaningful comparison unit.
+    const unresolved = selected.filter((value) => !groupNames.has(value))
     if (unresolved.length === 0) {
       return
     }
 
     const resolved = await Promise.all(unresolved.map((value) => fetchMachineGroup(serverConfigurator, value)))
-    // The selection may have changed while the lookup was in flight (user picked another machine,
-    // or a filter change re-ran this). Don't clobber the newer choice with a stale result.
+    // Selection may have changed while the lookup was in flight; don't clobber the newer choice.
     if (!deepEqual(this.selected.value, selected)) {
       return
     }
@@ -98,9 +94,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     const next = [
       ...new Set(
         selected.map((value) => {
-          // The backend answers "Unknown" for anything it can't map — including a selected group
-          // name whose agents merely didn't run in the current filtered window. Never rewrite to
-          // that bucket: the rewrite is persisted and would destroy the real selection.
+          // Skip "Unknown" (the backend's catch-all): rewriting to it would persist and lose the selection.
           const group = rawToGroup.get(value)
           return group != null && group !== "Unknown" && groupNames.has(group) ? group : value
         })

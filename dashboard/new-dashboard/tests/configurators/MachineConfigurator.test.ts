@@ -158,26 +158,22 @@ describe("Machine configurator", () => {
       expect(machineConfigurator.selected.value).toStrictEqual(["linux-blade-hetzner"])
     })
 
-    it("keeps a deliberately selected single agent instead of expanding it to its group", async () => {
-      // "intellij-linux-hw-blade-test" is a live leaf of the "linux-blade" group in the loaded
-      // list — a user-picked single agent. It must not be expanded to the whole group, and the
-      // backend lookup (which would resolve it to "linux-blade") must not even be consulted.
+    it("expands a predefined single agent to its group", async () => {
+      // Even a pinned agent is widened to its hardware class.
       const groupLookup = vi.fn<() => Promise<{ json: () => Promise<{ group: string }> }>>(() => Promise.resolve({ json: () => Promise.resolve({ group: "linux-blade" }) }))
       vi.stubGlobal("fetch", groupLookup)
 
       machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard, [], true, ["intellij-linux-hw-blade-test"])
-      await awaitCallbackTrue(() => machineConfigurator.values.value.length > 0)
+      await awaitMockCallsCount(groupLookup, 1)
       await new Promise((resolve) => {
         setTimeout(resolve, 0)
       })
-      expect(machineConfigurator.selected.value).toStrictEqual(["intellij-linux-hw-blade-test"])
-      expect(groupLookup).not.toHaveBeenCalled()
+      expect(machineConfigurator.selected.value).toStrictEqual(["linux-blade"])
     })
 
     it("maps a drilldown agent to its group even when it is a live leaf", async () => {
-      // A drilldown link selects a raw agent via the URL (not pinned). Even though it is a live
-      // leaf of "linux-blade" in the loaded list, it must be resolved to its group so the
-      // dropdown (which only shows groups) reflects the selection.
+      // A raw agent arriving via the URL must be resolved to its group, so that the dropdown
+      // (which only shows groups) reflects the selection.
       const groupLookup = vi.fn<() => Promise<{ json: () => Promise<{ group: string }> }>>(() => Promise.resolve({ json: () => Promise.resolve({ group: "linux-blade" }) }))
       vi.stubGlobal("fetch", groupLookup)
 

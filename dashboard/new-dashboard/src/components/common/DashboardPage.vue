@@ -52,7 +52,7 @@
 import { computed, provide, ref, useTemplateRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
-import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { dashboardProjectsFilter } from "../../configurators/DashboardProjectsFilter"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
@@ -137,21 +137,25 @@ const persistenceForDashboard = new PersistentStateManager(
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const scenarioConfigurator = charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true)
-if (scenarioConfigurator != null && charts != null) {
-  scenarioConfigurator.selected.value = extractUniqueProjects(charts)
-}
+const compareRegistry = new CompareSectionsRegistry()
+// Most dashboards declare their projects inline on the charts in the slot rather than through the
+// `charts` prop, so take the union of both: every chart registers itself here as it mounts.
+const chartsProjects = charts == null ? [] : extractUniqueProjects(charts)
+const dashboardProjects = computed(() => [...new Set([...chartsProjects, ...compareRegistry.sections.value.flatMap((section) => section.projects)])].toSorted())
 
 const branchConfigurator = branch == null ? null : createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 const filters = []
-filters.push(timeRangeConfigurator)
-if (scenarioConfigurator != null) {
-  filters.push(scenarioConfigurator)
-}
+filters.push(timeRangeConfigurator, dashboardProjectsFilter(dashboardProjects))
 if (branchConfigurator != null) {
   filters.push(branchConfigurator)
 }
-const machineConfigurator = initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, filters)
+const testModeConfigurator =
+  withMode && dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
+
+// The machine list is narrowed by the selected mode as well: a mode can run on a single hardware
+// class (goland's `wsl` only on windows-azure), so the groups differ per mode.
+const machineFilters = testModeConfigurator == null ? filters : [...filters, testModeConfigurator]
+const machineConfigurator = initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, machineFilters)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistenceForDashboard, filters)
 
 const averagesConfigurators = [serverConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
@@ -178,8 +182,6 @@ if (releaseNightlyConfigurator != null) {
   dashboardConfigurators.push(releaseNightlyConfigurator)
 }
 
-const testModeConfigurator =
-  withMode && dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
 if (testModeConfigurator != null) {
   dashboardConfigurators.push(testModeConfigurator)
 }
@@ -192,7 +194,6 @@ const renderModeOptions = [
   { label: "Charts", value: "charts" },
   { label: "Compare with base", value: "compare" },
 ]
-const compareRegistry = new CompareSectionsRegistry()
 provide(renderModeKey, renderMode)
 provide(compareSectionsRegistryKey, compareRegistry)
 

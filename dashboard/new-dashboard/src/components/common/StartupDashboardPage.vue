@@ -39,7 +39,7 @@ import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { startupProjectConfigurator } from "../../configurators/StartupProjectConfigurator"
+import { selectedStartupProjectsFilter, startupProjectConfigurator } from "../../configurators/StartupProjectConfigurator"
 import { nightly, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
@@ -114,9 +114,17 @@ filters.push(timeRangeConfigurator)
 if (branchConfigurator != null) {
   filters.push(branchConfigurator)
 }
-const machineConfigurator = initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, filters)
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistenceForDashboard, filters)
 const projectConfigurator = startupProjectConfigurator(serverConfigurator, persistenceForDashboard, true, filters)
+const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
+
+// Narrowed by the selected projects and mode (hence built after them) — the groups differ per
+// mode. One-way: neither the project nor the mode list may depend on the machine.
+const machineFilters: FilterConfigurator[] = [...filters, selectedStartupProjectsFilter(projectConfigurator)]
+if (testModeConfigurator != null) {
+  machineFilters.push(testModeConfigurator)
+}
+const machineConfigurator = initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, machineFilters)
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistenceForDashboard, filters)
 
 const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, charts, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
@@ -129,7 +137,6 @@ if (branchConfigurator != null) {
   dashboardConfigurators.push(branchConfigurator)
 }
 
-const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
 if (testModeConfigurator != null) {
   dashboardConfigurators.push(testModeConfigurator)
 }

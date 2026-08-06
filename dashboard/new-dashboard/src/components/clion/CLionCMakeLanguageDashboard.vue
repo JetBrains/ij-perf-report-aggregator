@@ -12,7 +12,7 @@
         <GroupProjectsChart
           label="Total Execution Time"
           :measure="['findUsagesInToolWindow']"
-          :projects="['radler/llvm/findUsages/function (add_llvm_component_library)', 'radler/llvm/findUsages/function (set)']"
+          :projects="['radler/llvm/findUsages/function (add_llvm_component_library)', 'radler/llvm/findUsages/function (set)', 'radler/cmake/findUsages/function (include)']"
         />
       </div>
     </section>
@@ -21,7 +21,7 @@
         <GroupProjectsChart
           label="Number of Usages"
           measure="findUsagesInToolWindow#number"
-          :projects="['radler/llvm/findUsages/function (add_llvm_component_library)', 'radler/llvm/findUsages/function (set)']"
+          :projects="['radler/llvm/findUsages/function (add_llvm_component_library)', 'radler/llvm/findUsages/function (set)', 'radler/cmake/findUsages/function (include)']"
         />
       </div>
     </section>

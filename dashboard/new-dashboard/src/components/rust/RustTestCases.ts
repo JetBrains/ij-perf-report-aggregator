@@ -50,7 +50,6 @@ export const rustGlobalInspectionProjects = [
   "crossterm",
   "subspace",
   "salvo",
-  "blank-slate-pdf",
   "prek",
   "uv",
   "yazi",

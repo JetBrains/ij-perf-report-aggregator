@@ -8,7 +8,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   static getDefaultServerUrl(): string {
     const hostname = window.location.hostname
     if (hostname === "ij-perf-api.labs.jb.gg" || hostname === "localhost") {
-      return "https://ij-perf-api.labs.jb.gg"
+      return "http://localhost:9044"
     }
     return "https://ij-perf.labs.jb.gg"
   }

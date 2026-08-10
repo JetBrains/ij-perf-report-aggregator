@@ -39,7 +39,7 @@ const { rows, title } = defineProps<{ rows: EngineCompareRow[]; title: string }>
 
 // Ascending by Δ% so the most negative (best improvement) sits at the bottom and the largest positive
 // (worst regression) at the top — ECharts places category index 0 at the bottom of a horizontal bar.
-const sortedRows = computed<EngineCompareRow[]>(() => rows.filter((row) => Number.isFinite(row.diffPercent)).sort((a, b) => a.diffPercent - b.diffPercent))
+const sortedRows = computed<EngineCompareRow[]>(() => rows.filter((row) => Number.isFinite(row.diffPercent)).toSorted((a, b) => a.diffPercent - b.diffPercent))
 
 const hasData = computed(() => sortedRows.value.length > 0)
 const chartHeight = computed(() => Math.max(120, sortedRows.value.length * 24 + 40))

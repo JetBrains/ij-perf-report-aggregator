@@ -40,7 +40,7 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 							Machine: baseSettings.Machine,
 							Metric:  metric,
 							SlackSettings: detector.SlackSettings{
-								Channel:     "cidr-radler-perf-tests",
+								Channel:     getClionSlackChannel(test),
 								ProductLink: "clion",
 							},
 						},
@@ -51,6 +51,13 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 	}
 
 	return settings
+}
+
+func getClionSlackChannel(test string) string {
+	if strings.HasPrefix(test, "clion/") {
+		return "cidr-clion-perf-test"
+	}
+	return "cidr-radler-perf-tests"
 }
 
 func getClionMetricFromTestName(test string) []string {

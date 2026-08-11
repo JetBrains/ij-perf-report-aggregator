@@ -1,12 +1,12 @@
 import { createPinia, setActivePinia } from "pinia"
 import { expect, beforeAll, afterEach, describe, it, vi } from "vitest"
 import { ref } from "vue"
-import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../src/configurators/accidents/AccidentsConfigurator"
 import { TimeRangeConfigurator } from "../../src/configurators/TimeRangeConfigurator"
 import { AccidentsConfiguratorForStartup } from "../../src/configurators/accidents/AccidentsConfiguratorForStartup"
 import { useUserStore } from "../../src/shared/useUserStore"
+import { withSetup } from "../withSetup"
 
 describe("Branch configurator", () => {
   const serverUrl = "http://localhost:7474"
@@ -16,8 +16,7 @@ describe("Branch configurator", () => {
     setActivePinia(createPinia())
     vi.spyOn(AccidentsConfigurator.prototype, "getAccidentsFromMetaDb").mockResolvedValue(new Map<string, Accident[]>())
     useUserStore()
-    const persistence = new PersistentStateManager("test-dashboard", {}, useRouter())
-    const timeRangeConfigurator = new TimeRangeConfigurator(persistence)
+    const timeRangeConfigurator = withSetup(() => new TimeRangeConfigurator(new PersistentStateManager("test-dashboard", {}, null)))
     configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
   })
 

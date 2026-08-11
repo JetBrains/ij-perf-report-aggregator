@@ -1,11 +1,11 @@
 import { Observable } from "rxjs"
 import { MockInstance, vi } from "vitest"
-import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
 import { ServerConfigurator } from "../../src/components/common/dataQuery"
 import { TimeRangeConfigurator } from "../../src/configurators/TimeRangeConfigurator"
 import * as rxjs from "../../src/configurators/rxjs"
 import { TestServerConfigurator } from "../dummy/TestServerConfigurator"
+import { withSetup } from "../withSetup"
 
 export interface ConfigurationTestData {
   serverConfigurator: ServerConfigurator
@@ -26,16 +26,18 @@ export default {
     )
 
     const serverConfigurator = new TestServerConfigurator("test", "test")
-    const persistenceForDashboard = new PersistentStateManager(
-      "test-dashboard",
-      {
-        machine: "machine",
-        project: [],
-        branch: "b1",
-      },
-      useRouter()
-    )
-    const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+    const { persistenceForDashboard, timeRangeConfigurator } = withSetup(() => {
+      const persistenceForDashboard = new PersistentStateManager(
+        "test-dashboard",
+        {
+          machine: "machine",
+          project: [],
+          branch: "b1",
+        },
+        null
+      )
+      return { persistenceForDashboard, timeRangeConfigurator: new TimeRangeConfigurator(persistenceForDashboard) }
+    })
 
     const serverUrl = `${serverConfigurator.serverUrl}/api/q/`
 

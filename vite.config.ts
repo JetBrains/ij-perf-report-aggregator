@@ -32,7 +32,7 @@ export default defineConfig({
     // visualizer({template: "sunburst"}),
     Components({
       directoryAsNamespace: true,
-      dts: path.resolve(__dirname, "dashboard/new-dashboard/src/components.d.ts"),
+      dts: path.resolve(import.meta.dirname, "dashboard/new-dashboard/src/components.d.ts"),
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),
@@ -58,13 +58,13 @@ export default defineConfig({
       targets: [
         {
           dest: "../../degradation-analyzer/kodata",
-          src: path.resolve(__dirname, "dashboard/new-dashboard/resources/projects"),
+          src: path.resolve(import.meta.dirname, "dashboard/new-dashboard/resources/projects"),
         },
       ],
     }),
   ],
   root: "dashboard/app",
-  publicDir: path.resolve(__dirname, "dashboard/app/public"),
+  publicDir: path.resolve(import.meta.dirname, "dashboard/app/public"),
   server: {
     host: "localhost",
     port: 8080,
@@ -76,7 +76,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    outDir: path.resolve(__dirname, "cmd/frontend/resources"),
+    outDir: path.resolve(import.meta.dirname, "cmd/frontend/resources"),
   },
   css: {
     preprocessorMaxWorkers: true,

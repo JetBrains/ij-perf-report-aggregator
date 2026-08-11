@@ -19,7 +19,7 @@ import "../theme/misc.css"
 import "../theme/select.css"
 import "../theme/select-panel.css"
 import "../theme/toolbar.css"
-import * as echarts from "echarts"
+import { registerTheme } from "echarts/core"
 import { chartTheme } from "../theme/chartTheme"
 
 async function initApp() {
@@ -43,7 +43,7 @@ async function initApp() {
   app.use(pinia)
   app.directive("tooltip", Tooltip)
 
-  echarts.registerTheme("chalk", chartTheme)
+  registerTheme("chalk", chartTheme)
 
   await router.isReady().then(() => app.mount("#app"))
 }

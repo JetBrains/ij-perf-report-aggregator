@@ -158,7 +158,7 @@ import { DimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { branchesSelectLabelFormat } from "../../shared/labels"
 import { usePlaceholder } from "../charts/placeholder"
 import BranchIcon from "./BranchIcon.vue"
-import ToggleSwitch from "primevue/toggleswitch"
+import ToggleSwitch from "openvue/toggleswitch"
 
 interface Props {
   branchConfigurator: DimensionConfigurator | BranchConfigurator

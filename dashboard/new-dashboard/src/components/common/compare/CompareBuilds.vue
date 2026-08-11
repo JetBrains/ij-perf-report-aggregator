@@ -112,8 +112,8 @@
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode, FilterService } from "@primevue/core/api"
-import { ColumnFilterModelType } from "primevue/column"
+import { FilterMatchMode, FilterService } from "@openvue/core/api"
+import { ColumnFilterModelType } from "openvue/column"
 import { combineLatest, Observable } from "rxjs"
 import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"

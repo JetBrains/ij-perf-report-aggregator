@@ -184,7 +184,7 @@
 
 <script setup lang="ts">
 import ChartAccordion from "../charts/ChartAccordion.vue"
-import Chip from "primevue/chip"
+import Chip from "openvue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 

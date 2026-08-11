@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { MenuMethods } from "primevue/menu"
+import { MenuMethods } from "openvue/menu"
 import { computed, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { getNavigationElement, PRODUCTS } from "./routes"

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import Accordion from "primevue/accordion"
+import Accordion from "openvue/accordion"
 
 // Forward fallthrough attrs explicitly so the chart-accordion class is not duplicated on the root.
 defineOptions({ inheritAttrs: false })

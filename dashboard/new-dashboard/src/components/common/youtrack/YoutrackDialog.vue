@@ -150,7 +150,7 @@
 </template>
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import { useToast } from "primevue/usetoast"
+import { useToast } from "openvue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"

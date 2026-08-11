@@ -93,7 +93,7 @@
 </template>
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import { useToast } from "primevue/usetoast"
+import { useToast } from "openvue/usetoast"
 import { computed, ref } from "vue"
 import { AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"

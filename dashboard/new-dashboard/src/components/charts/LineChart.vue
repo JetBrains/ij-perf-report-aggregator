@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
 import { computed, inject, onMounted, onUnmounted, ref, Ref, useTemplateRef, watch } from "vue"
-import { PopoverMethods } from "primevue/popover"
+import { PopoverMethods } from "openvue/popover"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"

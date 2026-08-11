@@ -83,11 +83,11 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast"
-import Button from "primevue/button"
-import InputText from "primevue/inputtext"
-import Select from "primevue/select"
-import SelectButton from "primevue/selectbutton"
+import { useToast } from "openvue/usetoast"
+import Button from "openvue/button"
+import InputText from "openvue/inputtext"
+import Select from "openvue/select"
+import SelectButton from "openvue/selectbutton"
 import { computed, ref } from "vue"
 import { getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { generateDefaultReason, inferKindFromData } from "../sideBar/AccidentUtils"

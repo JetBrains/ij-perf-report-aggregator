@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import Popover from "primevue/popover"
+import Popover from "openvue/popover"
 import { computed, ref, watch } from "vue"
 import { AnalysisFeedback, LlmAnalysisClient } from "./LlmAnalysisClient"
 import { injectOrNull } from "../../../shared/injectionKeys"

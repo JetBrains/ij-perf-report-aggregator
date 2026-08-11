@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import { computed, useTemplateRef } from "vue"
-import { PopoverMethods } from "primevue/popover"
+import { PopoverMethods } from "openvue/popover"
 import { EngineAggregates } from "./engineCompareAggregates"
 import { EngineComparisonMode } from "./useEngineComparison"
 import { bucketLabel, metricTypeLabel, phaseLabel } from "./highlightingMetrics"

@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { useToast } from "primevue/usetoast"
+import { useToast } from "openvue/usetoast"
 import { AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 

@@ -33,7 +33,7 @@ import FadeOnHoverSwitch from "./FadeOnHoverSwitch.vue"
 import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
-import { PopoverMethods } from "primevue/popover"
+import { PopoverMethods } from "openvue/popover"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { FilterConfigurator } from "../../configurators/filter"
 

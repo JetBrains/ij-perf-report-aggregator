@@ -3,16 +3,16 @@
   "private": true,
   "dependencies": {
     "@heroicons/vue": "2.2.0",
-    "@primevue/core": "^5.0.0",
+    "@openvue/core": "0.7.0-beta.0",
     "@vueuse/core": "^14.4.0",
     "echarts": "6.1.0",
     "fast-equals": "6.0.2",
     "humanize-duration": "3.34.0",
     "marked": "^18.0.9",
+    "openvue": "0.7.0-beta.0",
     "p-limit": "^7.3.1",
     "pinia": "^4.0.2",
     "pragmastat": "14.0.1",
-    "primevue": "4.5.5",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.41",
     "vue-router": "5.2.0"

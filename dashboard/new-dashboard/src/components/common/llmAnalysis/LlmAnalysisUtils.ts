@@ -1,4 +1,4 @@
-import type { ToastServiceMethods } from "primevue/toastservice"
+import type { ToastServiceMethods } from "openvue/toastservice"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { InfoData } from "../sideBar/InfoSidebar"
 

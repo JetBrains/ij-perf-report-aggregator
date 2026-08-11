@@ -72,9 +72,9 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import ChartAccordion from "../charts/ChartAccordion.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
-import AccordionPanel from "primevue/accordionpanel"
-import AccordionHeader from "primevue/accordionheader"
-import AccordionContent from "primevue/accordioncontent"
+import AccordionPanel from "openvue/accordionpanel"
+import AccordionHeader from "openvue/accordionheader"
+import AccordionContent from "openvue/accordioncontent"
 
 interface ChartDef {
   key: string

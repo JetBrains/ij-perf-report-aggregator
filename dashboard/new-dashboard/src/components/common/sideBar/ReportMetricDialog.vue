@@ -162,7 +162,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { computed, ref, watch } from "vue"
-import { useToast } from "primevue/usetoast"
+import { useToast } from "openvue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"

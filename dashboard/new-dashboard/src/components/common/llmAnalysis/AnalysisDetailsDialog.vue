@@ -148,7 +148,7 @@
 
 <script setup lang="ts">
 import { Marked } from "marked"
-import Dialog from "primevue/dialog"
+import Dialog from "openvue/dialog"
 import { computed, ref, watch } from "vue"
 import { buildUrl, InfoData } from "../sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"

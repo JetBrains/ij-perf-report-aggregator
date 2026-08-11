@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode } from "@primevue/core/api"
+import { FilterMatchMode } from "@openvue/core/api"
 import { ref } from "vue"
 import { metricsDescription } from "../../shared/metricsDescription"
 import { MAIN_METRICS } from "../../util/mainMetrics"

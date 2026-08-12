@@ -23,7 +23,7 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import { rustCompletionCases, rustGlobalInspectionProjects, rustLocalInspectionCases } from "./RustTestCases"
+import { rustCompletionCases, rustGlobalInspectionProjects, rustLocalInspectionCases, rustSearchEverywhereCases } from "./RustTestCases"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
@@ -44,7 +44,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: ["searchEverywhere/cargo/go-to-all-with-warmup/Display/typingLetterByLetter"],
+    projects: rustSearchEverywhereCases,
   },
   {
     labels: ["TypingCodeAnalysis"],
@@ -57,8 +57,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`),
   },
   {
-    labels: ["Rust-only Inspections"],
-    measures: ["globalInspections"],
+    labels: ["Rust-only Inspections", "UI Lags in Rust-only Inspection Tests"],
+    measures: ["globalInspections", "test#max_awt_delay"],
     projects: rustGlobalInspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`),
   },
 ]

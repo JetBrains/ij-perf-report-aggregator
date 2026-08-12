@@ -67,6 +67,14 @@ export const rustGlobalInspectionProjects = [
   "polkavm",
 ]
 
+export const rustFirstStartupProjects = [...rustGlobalInspectionProjects, "stress-vfs-refresh-macros"]
+
+export const rustSearchEverywhereCases = ["searchEverywhere/cargo/go-to-all-with-warmup/Display/typingLetterByLetter"]
+
+export const rustFindUsagesCases = ["find-usages/yew", "find-usages/wasm"]
+
+export const rustTypingCases = ["typing/nalgebra/typing"]
+
 export const rustCompletionCases = [
   "completion/arrowRs/arrow-cast/src/parse.rs",
   "completion/arrowRs/arrow-cast/src/cast/mod.rs",

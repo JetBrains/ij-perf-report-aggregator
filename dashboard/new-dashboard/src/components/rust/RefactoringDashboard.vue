@@ -36,6 +36,18 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="UI Lags in Rename Tests (metric 'test#max_awt_delay')"
+        measure="test#max_awt_delay"
+        :projects="[
+          ...rustRefactoringTestCases.renameLowUseFn,
+          ...rustRefactoringTestCases.renameHighUseFn,
+          ...rustRefactoringTestCases.renameLowUseStruct,
+          ...rustRefactoringTestCases.renameHighUseStruct,
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Promote src/small/utils.rs to Directory"
         measure="execute_editor_rust.rspromotemoduletodirectoryaction"
         :projects="rustRefactoringTestCases.moveSmallFile"
@@ -46,6 +58,13 @@
         label="Promote src/big/big_file.rs to Directory"
         measure="execute_editor_rust.rspromotemoduletodirectoryaction"
         :projects="rustRefactoringTestCases.moveBigFile"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Promote to Directory Tests (metric 'test#max_awt_delay')"
+        measure="test#max_awt_delay"
+        :projects="[...rustRefactoringTestCases.moveSmallFile, ...rustRefactoringTestCases.moveBigFile]"
       />
     </section>
     <section>
@@ -81,6 +100,19 @@
         label="Optimize Imports in Directory: src/big"
         measure="optimizeImportsOnDirectory"
         :projects="rustRefactoringTestCases.optimizeImportsBigDirectory"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Optimize Imports Tests (metric 'test#max_awt_delay')"
+        measure="test#max_awt_delay"
+        :projects="[
+          ...rustRefactoringTestCases.optimizeImportsSmallFile,
+          ...rustRefactoringTestCases.optimizeImportsBigFile,
+          ...rustRefactoringTestCases.optimizeImportsFileTypeProject,
+          ...rustRefactoringTestCases.optimizeImportsSmallDirectory,
+          ...rustRefactoringTestCases.optimizeImportsBigDirectory,
+        ]"
       />
     </section>
   </DashboardPage>

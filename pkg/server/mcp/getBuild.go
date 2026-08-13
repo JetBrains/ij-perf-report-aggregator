@@ -27,15 +27,17 @@ type buildProject struct {
 }
 
 type getBuildOutput struct {
-	BuildID     int64          `json:"tc_build_id"`
-	Branch      string         `json:"branch"`
-	BuildTime   string         `json:"build_time"`
-	Machine     string         `json:"machine"`
-	TeamCityURL string         `json:"teamcity_url"`
-	FirstCommit string         `json:"first_commit,omitempty" jsonschema:"Oldest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
-	LastCommit  string         `json:"last_commit,omitempty"  jsonschema:"Newest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
-	Projects    []buildProject `json:"projects"               jsonschema:"Distinct (database, table, project) tuples that this build produced data for."`
-	Count       int            `json:"count"                  jsonschema:"Number of project entries"`
+	BuildID          int64          `json:"tc_build_id"`
+	Branch           string         `json:"branch"`
+	BuildTime        string         `json:"build_time"`
+	Machine          string         `json:"machine"`
+	TeamCityURL      string         `json:"teamcity_url"`
+	BuildNumber      string         `json:"build_number,omitempty"          jsonschema:"Marketing build number, e.g. 261.27258.48 — FUS product_build without the product prefix. Empty for Dev Server runs, which ship no installer."`
+	InstallerBuildID uint32         `json:"tc_installer_build_id,omitempty" jsonschema:"TeamCity build id of the installer tested; tc_build_id identifies the perf-test run itself."`
+	FirstCommit      string         `json:"first_commit,omitempty"          jsonschema:"Oldest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
+	LastCommit       string         `json:"last_commit,omitempty"           jsonschema:"Newest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
+	Projects         []buildProject `json:"projects"                        jsonschema:"Distinct (database, table, project) tuples that this build produced data for."`
+	Count            int            `json:"count"                           jsonschema:"Number of project entries"`
 }
 
 func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBuildInput) (*sdk.CallToolResult, getBuildOutput, error) {
@@ -53,6 +55,14 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 		buildTimeExpr := "toString(generated_time) as bld_time"
 		if r.HasBuildTime {
 			buildTimeExpr = "toString(if(toUnixTimestamp(build_time) = 0, generated_time, build_time)) as bld_time"
+		}
+		buildComponentsExpr := absentBuildComponentsSQL
+		if r.HasBuildComponents {
+			buildComponentsExpr = correctedBuildComponentsSQL
+		}
+		installerIDExpr := "toUInt32(0) as inst_id"
+		if r.HasInstallerID {
+			installerIDExpr = "toUInt32(tc_installer_build_id) as inst_id"
 		}
 		// Only tables with tc_installer_build_id can join the per-database `installer`
 		// table. Others get an empty Array(String) so UNION ALL columns line up.
@@ -78,9 +88,10 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 				"toString(project) as project_name, toString(branch) as branch_name, "+
 				"toString(machine) as machine_name, "+
 				"%s, toString(generated_time) as gen_time, "+
+				"%s, %s, "+
 				"%s "+
 				"%s %s",
-			buildTimeExpr, commitsExpr, fromExpr, whereExpr)
+			buildTimeExpr, buildComponentsExpr, installerIDExpr, commitsExpr, fromExpr, whereExpr)
 		return sb.String(), args
 	}
 
@@ -88,7 +99,7 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 	// Order by gen_time desc (still selected internally) so the most recent row "wins"
 	// when picking the root-level branch/build_time/machine/commit values.
 	sql := "select db_name, table_name, project_name, branch_name, machine_name, " +
-		"bld_time, installer_changes " +
+		"bld_time, bc1, bc2, bc3, inst_id, installer_changes " +
 		"from (" + innerSQL + ") as u order by gen_time desc"
 
 	rows, err := s.db.Query(ctx, sql, args...)
@@ -108,11 +119,14 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 
 	for rows.Next() {
 		var dbName, tableName, project, branch, machine, bldTime string
+		var bc1, bc2, bc3 uint16
+		var instID uint32
 		var changes []string
 		if err := rows.Scan(
 			&dbName, &tableName,
 			&project, &branch, &machine,
 			&bldTime,
+			&bc1, &bc2, &bc3, &instID,
 			&changes,
 		); err != nil {
 			return nil, getBuildOutput{}, fmt.Errorf("scan: %w", err)
@@ -123,12 +137,21 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 			out.Branch = branch
 			out.BuildTime = bldTime
 			out.Machine = machine
+			out.BuildNumber = formatBuildNumber(bc1, bc2, bc3)
+			out.InstallerBuildID = instID
 			out.FirstCommit, out.LastCommit = commitRange(changes)
 			rootSet = true
 		} else if out.FirstCommit == "" && len(changes) > 0 {
 			// Some report tables for the same build may not link an installer; pick up
 			// commits from any row that does carry them.
 			out.FirstCommit, out.LastCommit = commitRange(changes)
+		}
+		// Same as the commits above: only some of a build's tables carry build_c*.
+		if out.BuildNumber == "" && bc1 != 0 {
+			out.BuildNumber = formatBuildNumber(bc1, bc2, bc3)
+		}
+		if out.InstallerBuildID == 0 {
+			out.InstallerBuildID = instID
 		}
 
 		key := projectKey{dbName, tableName, project}

@@ -195,9 +195,10 @@ func TestSearchMetricValues_GroupsByDatabaseTable(t *testing.T) {
 	// Rows arrive ordered by gen_time desc; groups are formed in arrival order.
 	db.push(fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", "2026-05-01 10:00:00", uint32(1001), 12.5},
-			{"perfintDev", "ide", "2026-05-01 09:00:00", uint32(1000), 12.0},
-			{"perfintDev", "kotlin", "2026-05-01 08:00:00", uint32(999), 33.1},
+			{"perfintDev", "ide", "2026-05-01 10:00:00", uint32(1001), 12.5, uint16(261), uint16(27258), uint16(48), uint32(777)},
+			{"perfintDev", "ide", "2026-05-01 09:00:00", uint32(1000), 12.0, uint16(261), uint16(27258), uint16(48), uint32(777)},
+			// Dev Server row: no build components.
+			{"perfintDev", "kotlin", "2026-05-01 08:00:00", uint32(999), 33.1, uint16(0), uint16(0), uint16(0), uint32(0)},
 		},
 	})
 
@@ -230,6 +231,12 @@ func TestSearchMetricValues_GroupsByDatabaseTable(t *testing.T) {
 	if out.Project != "kotlin" || out.MetricName != "startup_total" || out.Branch != "master" {
 		t.Errorf("root metadata wrong: %+v", out)
 	}
+	if out.Groups[0].Rows[0].BuildNumber != "261.27258.48" || out.Groups[0].Rows[0].InstallerBuildID != 777 {
+		t.Errorf("installer row lost its build number: %+v", out.Groups[0].Rows[0])
+	}
+	if out.Groups[1].Rows[0].BuildNumber != "" || out.Groups[1].Rows[0].InstallerBuildID != 0 {
+		t.Errorf("dev-server row should carry no build number: %+v", out.Groups[1].Rows[0])
+	}
 }
 
 // --- get_build -----------------------------------------------------------------------
@@ -257,17 +264,18 @@ func TestGetBuild_HappyPath_WithInstallerCommits(t *testing.T) {
 
 	db := &fakeDriver{}
 	// Single row from the union; fields per getBuild SQL:
-	// db_name, table_name, project_name, branch_name, machine_name, bld_time, installer_changes
+	// db_name, table_name, project_name, branch_name, machine_name, bld_time,
+	// bc1, bc2, bc3, inst_id, installer_changes
 	db.push(fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", "kotlin", "master", "linux-hetzner-1", "2026-05-01 10:00:00", []string{newestEnc, oldestEnc}},
+			{"perfintDev", "ide", "kotlin", "master", "linux-hetzner-1", "2026-05-01 10:00:00", uint16(261), uint16(27258), uint16(48), uint32(777), []string{newestEnc, oldestEnc}},
 			// duplicate (db,table,project) — should be deduped.
-			{"perfintDev", "ide", "kotlin", "master", "linux-hetzner-1", "2026-05-01 09:30:00", []string{newestEnc, oldestEnc}},
-			{"perfintDev", "ide", "spring", "master", "linux-hetzner-1", "2026-05-01 09:00:00", []string{}},
+			{"perfintDev", "ide", "kotlin", "master", "linux-hetzner-1", "2026-05-01 09:30:00", uint16(261), uint16(27258), uint16(48), uint32(777), []string{newestEnc, oldestEnc}},
+			{"perfintDev", "ide", "spring", "master", "linux-hetzner-1", "2026-05-01 09:00:00", uint16(261), uint16(27258), uint16(48), uint32(777), []string{}},
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide", HasBuildTime: true, HasInstallerID: true}})
+	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide", HasBuildTime: true, HasInstallerID: true, HasBuildComponents: true}})
 	cs := connectClient(t, svc)
 
 	var out getBuildOutput
@@ -287,6 +295,12 @@ func TestGetBuild_HappyPath_WithInstallerCommits(t *testing.T) {
 	if out.FirstCommit != oldestSHA[:shortCommitLen] || out.LastCommit != newestSHA[:shortCommitLen] {
 		t.Errorf("commits: first=%q last=%q", out.FirstCommit, out.LastCommit)
 	}
+	if out.BuildNumber != "261.27258.48" {
+		t.Errorf("build_number = %q, want 261.27258.48", out.BuildNumber)
+	}
+	if out.InstallerBuildID != 777 {
+		t.Errorf("tc_installer_build_id = %d, want 777", out.InstallerBuildID)
+	}
 	if out.Count != 2 {
 		t.Errorf("count = %d, want 2 (kotlin + spring, dedup of duplicate kotlin row)", out.Count)
 	}
@@ -305,7 +319,7 @@ func TestGetBuild_InstallerFallback(t *testing.T) {
 	// First call: union query returns one row but with no installer_changes (table has no installer column).
 	db.push(fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", []string{}},
+			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
 		},
 	})
 	// Second call: the fallback `select ... from perfintDev.installer where id = ?` lookup.
@@ -324,6 +338,10 @@ func TestGetBuild_InstallerFallback(t *testing.T) {
 	}
 	if out.FirstCommit != fallbackSHA[:shortCommitLen] || out.LastCommit != fallbackSHA[:shortCommitLen] {
 		t.Errorf("fallback commits not applied: first=%q last=%q", out.FirstCommit, out.LastCommit)
+	}
+	// Dev Server builds must report no build number rather than a bogus "0".
+	if out.BuildNumber != "" || out.InstallerBuildID != 0 {
+		t.Errorf("dev-server build should have no build number: %q / %d", out.BuildNumber, out.InstallerBuildID)
 	}
 }
 
@@ -358,8 +376,8 @@ func TestListTables_RefreshesAfterTTL(t *testing.T) {
 	db := &fakeDriver{}
 	db.push(fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", true, true},
-			{"perfintDev", "kotlin", false, false},
+			{"perfintDev", "ide", true, true, true},
+			{"perfintDev", "kotlin", false, false, false},
 		},
 	})
 
@@ -372,7 +390,7 @@ func TestListTables_RefreshesAfterTTL(t *testing.T) {
 	if err != nil {
 		t.Fatalf("listTables: %v", err)
 	}
-	if len(got) != 2 || got[0].Table != "ide" || !got[0].HasInstallerID {
+	if len(got) != 2 || got[0].Table != "ide" || !got[0].HasInstallerID || !got[0].HasBuildComponents {
 		t.Errorf("refreshed result wrong: %+v", got)
 	}
 	if len(db.calls) != 1 {

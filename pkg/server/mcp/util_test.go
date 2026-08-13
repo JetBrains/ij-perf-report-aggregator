@@ -134,3 +134,22 @@ func TestCommitRange(t *testing.T) {
 		t.Errorf("empty entry: first=%q last=%q", f, l)
 	}
 }
+
+func TestFormatBuildNumber(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name       string
+		c1, c2, c3 uint16
+		want       string
+	}{
+		{"three components", 261, 27258, 48, "261.27258.48"},
+		{"two components", 253, 35116, 0, "253.35116"},
+		{"one component", 262, 0, 0, "262"},
+		{"no build number", 0, 0, 0, ""},
+	}
+	for _, c := range cases {
+		if got := formatBuildNumber(c.c1, c.c2, c.c3); got != c.want {
+			t.Errorf("%s: formatBuildNumber(%d,%d,%d) = %q, want %q", c.name, c.c1, c.c2, c.c3, got, c.want)
+		}
+	}
+}

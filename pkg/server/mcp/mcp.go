@@ -9,12 +9,14 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -78,10 +80,11 @@ type service struct {
 const tablesTTL = 10 * time.Minute
 
 type tableRef struct {
-	Database       string `json:"database"`
-	Table          string `json:"table"`
-	HasBuildTime   bool   `json:"-"`
-	HasInstallerID bool   `json:"-"`
+	Database           string `json:"database"`
+	Table              string `json:"table"`
+	HasBuildTime       bool   `json:"-"`
+	HasInstallerID     bool   `json:"-"`
+	HasBuildComponents bool   `json:"-"`
 }
 
 func newService(db chConn) *service {
@@ -122,9 +125,10 @@ func (s *service) buildServer() *sdk.Server {
 	sdk.AddTool(server, &sdk.Tool{
 		Name: "get_build",
 		Description: "Look up a TeamCity build by its tc_build_id. Returns build-level metadata at the response root " +
-			"(branch, build_time, machine, teamcity_url, first_commit, last_commit) and the list of distinct " +
-			"(database, table, project) tuples this build produced data for. Use search_metric_values afterwards " +
-			"to fetch actual measurements for any project of interest.",
+			"(branch, build_time, machine, teamcity_url, first_commit, last_commit, build_number, " +
+			"tc_installer_build_id) and the list of distinct (database, table, project) tuples this build produced " +
+			"data for. build_number matches FUS product_build and is empty for Dev Server runs. " +
+			"Use search_metric_values afterwards to fetch actual measurements for any project of interest.",
 	}, s.getBuild)
 
 	return server
@@ -157,9 +161,11 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	rows, err := s.db.Query(ctx, `
 		select database, table,
 		       sum(name = 'build_time') > 0 as has_build_time,
-		       sum(name = 'tc_installer_build_id') > 0 as has_installer_id
+		       sum(name = 'tc_installer_build_id') > 0 as has_installer_id,
+		       sum(name in ('build_c1', 'build_c2', 'build_c3')) = 3 as has_build_components
 		from system.columns
-		where name in ('measures.name', 'project', 'build_time', 'tc_installer_build_id')
+		where name in ('measures.name', 'project', 'build_time', 'tc_installer_build_id',
+		               'build_c1', 'build_c2', 'build_c3')
 		group by database, table
 		having sum(name = 'measures.name') > 0 and sum(name = 'project') > 0
 		order by database, table
@@ -172,7 +178,7 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	out := make([]tableRef, 0, 64)
 	for rows.Next() {
 		var r tableRef
-		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID); err != nil {
+		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID, &r.HasBuildComponents); err != nil {
 			return nil, fmt.Errorf("scan: %w", err)
 		}
 		// Tools interpolate r.Database/r.Table directly into SQL. Drop anything that
@@ -279,6 +285,30 @@ func appendBranchMachine(sb *strings.Builder, args []any, branch, machine string
 }
 
 const defaultBranch = "master"
+
+const correctedBuildComponentsSQL = "toUInt16" + dataQuery.CorrectedBuildC1 + " as bc1, " +
+	"toUInt16(build_c2) as bc2, toUInt16(build_c3) as bc3"
+
+// Keeps UNION ALL columns aligned for tables without build_c* (all of perfintDev).
+const absentBuildComponentsSQL = "toUInt16(0) as bc1, toUInt16(0) as bc2, toUInt16(0) as bc3"
+
+// formatBuildNumber renders e.g. 261.27258.48, matching FUS product_build. Trailing zero
+// components are dropped: the collector pads two-component build numbers with a zero third,
+// so 253.35116.0 was written upstream as "253.35116".
+func formatBuildNumber(c1, c2, c3 uint16) string {
+	if c1 == 0 {
+		return ""
+	}
+	s := strconv.FormatUint(uint64(c1), 10)
+	if c2 == 0 && c3 == 0 {
+		return s
+	}
+	s += "." + strconv.FormatUint(uint64(c2), 10)
+	if c3 == 0 {
+		return s
+	}
+	return s + "." + strconv.FormatUint(uint64(c3), 10)
+}
 
 func validateIdentifier(field, value string) error {
 	if value == "" {

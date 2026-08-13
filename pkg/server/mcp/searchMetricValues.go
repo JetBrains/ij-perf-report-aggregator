@@ -22,9 +22,11 @@ type searchMetricValuesInput struct {
 }
 
 type metricValueRow struct {
-	GeneratedTime string  `json:"generated_time"`
-	BuildID       uint32  `json:"tc_build_id"`
-	Value         float64 `json:"value"`
+	GeneratedTime    string  `json:"generated_time"`
+	BuildID          uint32  `json:"tc_build_id"`
+	Value            float64 `json:"value"`
+	BuildNumber      string  `json:"build_number,omitempty"          jsonschema:"Marketing build number, e.g. 261.27258.48 — FUS product_build without the product prefix. Absent for Dev Server runs."`
+	InstallerBuildID uint32  `json:"tc_installer_build_id,omitempty" jsonschema:"TeamCity build id of the installer tested; tc_build_id identifies the perf-test run itself."`
 }
 
 type metricValueGroup struct {
@@ -59,22 +61,32 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	limit := min(max(cmp.Or(in.Limit, 200), 1), 5000)
 
 	perTable := func(r tableRef) (string, []any) {
+		buildComponentsExpr := absentBuildComponentsSQL
+		if r.HasBuildComponents {
+			buildComponentsExpr = correctedBuildComponentsSQL
+		}
+		installerIDExpr := "toUInt32(0) as inst_id"
+		if r.HasInstallerID {
+			installerIDExpr = "toUInt32(tc_installer_build_id) as inst_id"
+		}
 		var sb strings.Builder
 		fmt.Fprintf(&sb,
 			"select ? as db_name, ? as table_name, "+
 				"generated_time as gen_time, tc_build_id as build_id, "+
-				"toFloat64(`measures.value`[idx]) as value "+
+				"toFloat64(`measures.value`[idx]) as value, "+
+				"%s, %s "+
 				"from %s.%s array join arrayEnumerate(`measures.name`) as idx "+
 				"where project = ? and `measures.name`[idx] = ? "+
 				"and generated_time > subtractDays(now(), ?)",
-			r.Database, r.Table)
+			buildComponentsExpr, installerIDExpr, r.Database, r.Table)
 		args := []any{r.Database, r.Table, in.Project, in.MetricName, days}
 		args = appendBranchMachine(&sb, args, in.Branch, in.Machine)
 		return sb.String(), args
 	}
 
 	innerSQL, args := buildUnion(tables, perTable)
-	sql := "select db_name, table_name, toString(gen_time) as gen_time, build_id, value from (" +
+	sql := "select db_name, table_name, toString(gen_time) as gen_time, build_id, value, " +
+		"bc1, bc2, bc3, inst_id from (" +
 		innerSQL + ") as u order by gen_time desc limit ?"
 	args = append(args, limit)
 
@@ -90,9 +102,12 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	for rows.Next() {
 		var key groupKey
 		var r metricValueRow
-		if err := rows.Scan(&key.database, &key.table, &r.GeneratedTime, &r.BuildID, &r.Value); err != nil {
+		var bc1, bc2, bc3 uint16
+		if err := rows.Scan(&key.database, &key.table, &r.GeneratedTime, &r.BuildID, &r.Value,
+			&bc1, &bc2, &bc3, &r.InstallerBuildID); err != nil {
 			return nil, searchMetricValuesOutput{}, fmt.Errorf("scan: %w", err)
 		}
+		r.BuildNumber = formatBuildNumber(bc1, bc2, bc3)
 		idx, ok := groupIndex[key]
 		if !ok {
 			idx = len(out.Groups)

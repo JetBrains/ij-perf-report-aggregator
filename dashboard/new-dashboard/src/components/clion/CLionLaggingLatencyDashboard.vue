@@ -148,7 +148,8 @@ import Divider from "../common/Divider.vue"
 
 function createLaggingCharts(label: string, projects: string[], aliases: string[]): ChartDefinition[] {
   return [
-    { labels: [`${label} - average, max`], measures: [["ui.lagging#average", "ui.lagging#max"]], projects, aliases },
+    { labels: [`${label} - average`], measures: [["ui.lagging#average"]], projects, aliases },
+    { labels: [`${label} - max`], measures: ["ui.lagging#max"], projects, aliases },
     { labels: [`${label} - sum`], measures: ["ui.lagging#sum"], projects, aliases },
     { labels: [`${label} - count`], measures: ["ui.lagging#count"], projects, aliases },
     { labels: [`${label} - percentage share`], measures: [["ui.lagging#percentage_share"]], projects, aliases },

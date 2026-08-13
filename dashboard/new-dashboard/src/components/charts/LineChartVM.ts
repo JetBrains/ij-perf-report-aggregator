@@ -20,6 +20,7 @@ import { useDarkModeStore } from "../../shared/useDarkModeStore"
 import { resolveMeasureUnitForDb } from "../../shared/dbTypes"
 import { HoverFadeController } from "./hoverFade"
 import { exportChartMetricsAsYaml } from "./chartExport"
+import { getMinYAxisTop } from "./yAxisRange"
 
 class ClickedValue {
   constructor(
@@ -260,6 +261,7 @@ export class LineChartVM {
       measures.length > 0
         ? reduceToAxisUnit(measures.map((measure) => resolveMeasureUnit(measure, { valueUnit, scaling: this.settings.scaling })))
         : resolveMeasureUnit("", { valueUnit, scaling: this.settings.scaling })
+    const minYAxisTop = getMinYAxisTop(measures)
     this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
@@ -376,6 +378,14 @@ export class LineChartVM {
         },
         min(value) {
           return useSettingsStore().flexibleYZero ? value.min * 0.9 : 0
+        },
+        max(value) {
+          // While scaling, the values are baseline ratios rather than the metric's own unit, so the floor
+          // does not apply and null leaves the axis autoscaled.
+          if (minYAxisTop == null || useSettingsStore().scaling) {
+            return null
+          }
+          return Math.max(minYAxisTop, value.max)
         },
         type: "value",
         splitLine: {

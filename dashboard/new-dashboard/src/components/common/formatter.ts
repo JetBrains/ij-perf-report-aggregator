@@ -110,12 +110,14 @@ export type MeasureUnit = "nanoseconds" | "milliseconds" | "counter" | "bytes" |
 // Units carrying a physical quantity (a size or a rate). While scaling these become a baseline ratio.
 const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", "kilobytesPerSecond"])
 
-// Resolves how a value should be rendered. A unit declared in metricsDescription is authoritative;
-// otherwise an explicit value-unit wins. Then the metric name is authoritative over the stored type:
-// the perf pipeline stores sizes and plain counts as "d"/"c" indiscriminately, so a name that is
-// clearly a size or a count ("...Count", "...number", memory suffixes) must win over a mis-typed
-// stored "d" duration. Only names that are not obviously a size/count defer to the stored type,
-// falling back to a duration by default.
+// Resolves how a value should be rendered. A unit declared in metricsDescription is authoritative.
+// Then the metric name is authoritative over both the chart value-unit and the stored type: "ms" is
+// the tests-page default passed to every chart, not a statement about a particular measure, and the
+// perf pipeline stores sizes and plain counts as "d"/"c" indiscriminately — so a name that is clearly
+// a size or a count ("...Count", "...number", memory suffixes) must win over both. An explicit
+// "counter" value-unit is a deliberate per-chart choice and still wins over the name. Names that are
+// not obviously a size/count take the "ns" request first (those pages genuinely store nanoseconds),
+// then defer to the stored type, falling back to a duration by default.
 // While scaling, a physical unit is a baseline ratio and renders as a counter.
 export function resolveMeasureUnit(measureName: string, opts: { storedType?: string; valueUnit?: ValueUnit; scaling?: boolean } = {}): MeasureUnit {
   const { storedType, valueUnit = "auto", scaling = false } = opts
@@ -125,12 +127,10 @@ export function resolveMeasureUnit(measureName: string, opts: { storedType?: str
   }
   if (declared !== undefined) return declared
   if (valueUnit === "counter") return "counter"
-  if (valueUnit === "ns") return "nanoseconds"
-  if (valueUnit === "ms") return "milliseconds"
   if (isMemoryMeasure(measureName)) return isKilobyteMeasure(measureName) ? "kibibytes" : "mebibytes"
   if (!isDurationFormatterApplicable(measureName)) return "counter"
-  if (storedType === "d" || storedType === "duration") return "milliseconds"
-  if (storedType === "c" || storedType === "counter") return "counter"
+  if (valueUnit === "ns") return "nanoseconds"
+  if (storedType === "c") return "counter"
   return "milliseconds"
 }
 

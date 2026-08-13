@@ -17,12 +17,12 @@ import {
   toMutableArray,
 } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
-import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
-import { dbTypeStore } from "../shared/dbTypes"
+import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
@@ -577,7 +577,7 @@ async function configureChart(
       const seriesName = mergeResults.getSeriesName(dataIndex)
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
-      const seriesUnit = resolveMeasureUnit(measureName, { storedType, valueUnit })
+      const seriesUnit = resolveMeasureUnitForDb(measureName, { storedType, valueUnit })
       measureUnits.push(seriesUnit)
       const xAxisName = seriesUnit === "milliseconds" || seriesUnit === "nanoseconds" ? "time" : "count"
       series.push({

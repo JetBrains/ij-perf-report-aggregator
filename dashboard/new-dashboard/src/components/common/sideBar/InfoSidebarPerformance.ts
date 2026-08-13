@@ -4,7 +4,7 @@ import type { OptionDataValue } from "../../../shared/echarts-types"
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
-import { dbTypeStore } from "../../../shared/dbTypes"
+import { dbTypeStore, resolveMeasureUnitForDb } from "../../../shared/dbTypes"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
@@ -158,9 +158,6 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
-    if (dataSeries[3] == "c") {
-      type = "counter"
-    }
     machineName = dataSeries[4] as string
     projectName = dataSeries[6] as string
     branch = dataSeries[8] as string
@@ -293,7 +290,7 @@ export function getInfoDataFrom(
   const metricName = info.metricName ?? ""
   const dataSeries = params.value as OptionDataValue[]
   const scaling = useSettingsStore().scaling
-  const unit = resolveMeasureUnit(metricName, { storedType: dataSeries[3] as string, valueUnit, scaling })
+  const unit = resolveMeasureUnitForDb(metricName, { storedType: dataSeries[3] as string, valueUnit, scaling })
   const value: number = scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
   const showValue: string = formatMeasureValue(value, unit)
   const delta = findDeltaInData(dataSeries)

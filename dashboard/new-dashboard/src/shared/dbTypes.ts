@@ -1,5 +1,7 @@
 import { defineStore } from "pinia"
 import { ref, Ref } from "vue"
+import type { ValueUnit } from "../components/common/chart"
+import { MeasureUnit, resolveMeasureUnit } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 
 export const dbTypeStore = defineStore("dbTypeStore", () => {
@@ -64,3 +66,13 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
 
   return { dbType, setDbType, isStartup, isIJStartup, isModeSupported }
 })
+
+// resolveMeasureUnit for a stored type taken straight from a query row: ignores it for databases
+// where it is meaningless — the jbr analyzer hardcodes "c" for every measure, durations included
+// (pkg/analyzer/jbrReport.go). Chart and sidebar code must resolve units through this wrapper,
+// not resolveMeasureUnit directly, whenever it has a row's stored type at hand.
+// TODO: fix the analyzer to write real types, then scope this to pre-fix data (or drop it once old rows age out).
+export function resolveMeasureUnitForDb(measureName: string, opts: { storedType?: string; valueUnit?: ValueUnit; scaling?: boolean } = {}): MeasureUnit {
+  const storedType = dbTypeStore().dbType == DBType.JBR ? undefined : opts.storedType
+  return resolveMeasureUnit(measureName, { ...opts, storedType })
+}

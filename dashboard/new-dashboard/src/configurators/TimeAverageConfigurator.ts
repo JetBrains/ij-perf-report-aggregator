@@ -3,7 +3,8 @@ import { DatasetOption } from "echarts/types/dist/shared"
 import { ChartConfigurator } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { LineChartOptions } from "../components/common/echarts"
-import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
+import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components/common/formatter"
+import { resolveMeasureUnitForDb } from "../shared/dbTypes"
 
 export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConfigurator {
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -69,7 +70,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         ],
       })
 
-      measureUnits.push(resolveMeasureUnit(measureName, { storedType }))
+      measureUnits.push(resolveMeasureUnitForDb(measureName, { storedType }))
 
       dataset.push({
         source: seriesData,

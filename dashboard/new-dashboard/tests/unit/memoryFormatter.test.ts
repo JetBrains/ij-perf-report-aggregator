@@ -40,8 +40,18 @@ describe("measure unit resolution", () => {
 
   it("lets an explicit value-unit override an undeclared metric", () => {
     expect(resolveMeasureUnit("undeclaredAction", { valueUnit: "counter" })).toBe("counter")
-    expect(resolveMeasureUnit("fileCount", { valueUnit: "ms" })).toBe("milliseconds")
+    expect(resolveMeasureUnit("undeclaredAction", { valueUnit: "ms" })).toBe("milliseconds")
     expect(resolveMeasureUnit("anything", { valueUnit: "ns" })).toBe("nanoseconds")
+  })
+
+  // "ms" is the tests-page default passed to every chart, so it must not override a name that is
+  // clearly a count, nor a valid stored "c" type (e.g. the diogen pipeline stores every metric with
+  // a correct type, but its tests page requests the default "ms").
+  it("lets a count name and a stored counter type win over the default ms value-unit", () => {
+    expect(resolveMeasureUnit("fileCount", { valueUnit: "ms" })).toBe("counter")
+    expect(resolveMeasureUnit("count-broken", { valueUnit: "ms", storedType: "c" })).toBe("counter")
+    expect(resolveMeasureUnit("percent-covered", { valueUnit: "ms", storedType: "c" })).toBe("counter")
+    expect(resolveMeasureUnit("millis-index", { valueUnit: "ms", storedType: "d" })).toBe("milliseconds")
   })
 
   it("renders a physical quantity as a counter while scaling", () => {

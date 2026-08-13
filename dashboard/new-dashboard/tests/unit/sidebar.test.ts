@@ -231,8 +231,9 @@ describe("InfoSideBar Test", () => {
       seriesName: "test",
       machineName: "default-linux-aws-large-disk-A-i-007485cabc9cfacef",
       buildId: 429902567,
+      // the metric is a memory size stored as "c", so it must render as a plain number, not a duration
       deltaNext: "0 (0.0%)",
-      deltaPrevious: "+14 ms (+6.5%)",
+      deltaPrevious: "+14 (+6.5%)",
       date: timeFormatWithoutSeconds.format(1705108226000),
       projectName: "Synthetic 20000 project",
     })

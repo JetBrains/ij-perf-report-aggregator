@@ -17,6 +17,7 @@ import { consumeMatchedSelectedPoints } from "../../shared/selectedPointStore"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
+import { resolveMeasureUnitForDb } from "../../shared/dbTypes"
 import { HoverFadeController } from "./hoverFade"
 import { exportChartMetricsAsYaml } from "./chartExport"
 
@@ -183,7 +184,7 @@ export class LineChartVM {
   }
 
   private resolveUnit(data: (OptionDataValue | Delta)[]): MeasureUnit {
-    return resolveMeasureUnit(data[2] as string, { storedType: data[3] as string, valueUnit: this.valueUnit, scaling: this.settings.scaling })
+    return resolveMeasureUnitForDb(data[2] as string, { storedType: data[3] as string, valueUnit: this.valueUnit, scaling: this.settings.scaling })
   }
 
   private getElementForSingleSerie(params: CallbackDataParams) {

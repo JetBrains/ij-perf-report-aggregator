@@ -6,6 +6,7 @@ import { dbTypeStore } from "../../../shared/dbTypes"
 import { Router } from "vue-router"
 import { calculateChanges } from "../../../util/changes"
 import { pointParamName } from "../../../shared/selectedPointStore"
+import { ValueUnit, valueUnitParamName } from "../chart"
 
 export const tcUrl = "https://buildserver.labs.intellij.net/"
 export const buildUrl = (id: number) => `${tcUrl}viewLog.html?buildId=${id}`
@@ -37,7 +38,7 @@ export interface InfoData {
   formattedPreviousValue: string | undefined
   previousValue: number | undefined
   nextValue: number | undefined
-  metricType: string | undefined
+  metricType: ValueUnit | undefined
   seriesValues: number[] | undefined
   pointIndex: number | undefined
 }
@@ -128,14 +129,22 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const mode = data?.mode ?? ""
   const testURL = parts.join("/")
 
-  const queryParams: string = new URLSearchParams({
+  const params = new URLSearchParams({
     ...currentRoute.query,
     ...(data?.buildId != undefined ? { [pointParamName]: data.buildId.toString() } : {}),
     project: data?.projectName ?? "",
     branch: majorBranch,
     machine: data?.machineName ?? "",
     mode: mode !== "" ? mode : "default",
-  }).toString()
+  })
+
+  const metricType = data?.metricType
+  if (metricType != undefined && metricType !== "auto") {
+    params.set(valueUnitParamName, metricType)
+  } else {
+    params.delete(valueUnitParamName)
+  }
+  const queryParams: string = params.toString()
 
   const measures =
     data?.series

@@ -46,6 +46,7 @@
             :measure="measureConfigurator.selected.value"
             :projects="[scenario]"
             :label="scenario"
+            :value-unit="unitFromUrl ?? 'auto'"
             :can-be-closed="true"
             @chart-closed="onChartClosed"
           />
@@ -94,6 +95,7 @@ import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
 import { DataQuery, DataQueryConfigurator } from "./dataQuery"
+import { valueUnitFromUrl, valueUnitParamName } from "./chart"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
@@ -132,6 +134,7 @@ provideReportUrlProvider(withInstaller)
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
+const unitFromUrl = valueUnitFromUrl(router.currentRoute.value.query[valueUnitParamName])
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

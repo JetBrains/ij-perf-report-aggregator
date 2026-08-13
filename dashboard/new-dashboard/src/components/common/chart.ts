@@ -36,6 +36,13 @@ export const chartDefaultStyle: ChartStyle = {
 // are explicit overrides that win over the stored type (some counts/durations are mis-typed).
 export type ValueUnit = "ms" | "ns" | "counter" | "auto"
 
+export const valueUnitParamName = "valueUnit"
+
+export function valueUnitFromUrl(value: unknown): ValueUnit | null {
+  const single = Array.isArray(value) ? (value[0] as unknown) : value
+  return single === "ms" || single === "ns" || single === "counter" ? single : null
+}
+
 export type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
 
 export interface ChartStyle {

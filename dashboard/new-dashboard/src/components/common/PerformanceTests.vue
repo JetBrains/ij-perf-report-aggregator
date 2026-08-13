@@ -118,8 +118,8 @@
                 :measures="[measure]"
                 :configurators="[...configurators, scenarioConfigurator]"
                 :skip-zero-values="false"
-                :value-unit="unit"
-                :chart-type="unit == 'ns' ? 'scatter' : 'line'"
+                :value-unit="effectiveUnit"
+                :chart-type="effectiveUnit == 'ns' ? 'scatter' : 'line'"
                 :legend-formatter="(name: string) => name"
                 :can-be-closed="true"
                 @chart-closed="onTestChartClosed"
@@ -148,6 +148,7 @@
                   :measure="measureConfigurator.selected.value"
                   :projects="[scenario]"
                   :label="scenario"
+                  :value-unit="unitFromUrl ?? 'auto'"
                   :can-be-closed="true"
                   @chart-closed="onMeasureChartClosed"
                 />
@@ -207,6 +208,7 @@ import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
 import { DataQueryConfigurator, toArray } from "./dataQuery"
+import { ValueUnit, valueUnitFromUrl, valueUnitParamName } from "./chart"
 import CompareTable from "../charts/CompareTable.vue"
 import { CompareSectionsRegistry, RenderMode } from "../charts/compareMode"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
@@ -240,6 +242,8 @@ enum TestMetricSwitcher {
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
+const unitFromUrl = valueUnitFromUrl(router.currentRoute.value.query[valueUnitParamName])
+const effectiveUnit: ValueUnit = unitFromUrl ?? unit
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
@@ -391,7 +395,7 @@ function syncTestsRegistry(): void {
       projects: [test],
       aliases: null,
       machines: null,
-      valueUnit: unit,
+      valueUnit: effectiveUnit,
     })
   }
 }

@@ -121,7 +121,7 @@ func (s FleetStartupSettings) query() dataQuery.Query {
 		filters = append(filters, dataQuery.QueryFilter{Field: "measures.name", Value: metricName})
 		fields = append(fields, dataQuery.QueryDimension{Name: "measures", SubName: "end", Sql: "(measures.start+measures.value)"})
 	}
-	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
+	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString" + dataQuery.CorrectedBuildC1 + ",'.',toString(build_c2),'.',toString(build_c3))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
 		Database: "fleet",
@@ -174,7 +174,7 @@ func (s PerformanceSettings) query() dataQuery.Query {
 		{Name: "measures", SubName: "value"},
 	}
 	if s.Db == "perfint" {
-		fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+		fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString" + dataQuery.CorrectedBuildC1 + ",'.',toString(build_c2))"})
 	} else {
 		fields = append(fields, dataQuery.QueryDimension{Name: "tc_build_id"})
 	}

@@ -19,7 +19,10 @@ export class BuildConfigurator extends DimensionConfigurator {
 
 function loadBuilds(serverConfigurator: ServerWithCompressConfigurator, filters: FilterConfigurator[], state: ComponentState) {
   const query = new DataQuery()
-  query.addField({ n: "build", sql: "distinct concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))" })
+  // build_c1 is UInt8, so 261+ is stored wrapped mod 256 and the 256 has to be added back.
+  // Keep in sync with CorrectedBuildC1 in pkg/data-query/dataQuery.go, which explains why.
+  const buildC1 = "(build_c1 + if(build_c1 between 1 and 199 and greaterOrEquals(generated_time, toDate('2025-10-01')), 256, 0))"
+  query.addField({ n: "build", sql: `distinct concat(toString${buildC1},'.',toString(build_c2),'.',toString(build_c3))` })
   query.order = "build"
   query.flat = true
 

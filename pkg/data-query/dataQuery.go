@@ -17,6 +17,17 @@ import (
 	"github.com/valyala/quicktemplate"
 )
 
+// CorrectedBuildC1 un-wraps build_c1: it is UInt8, so branch numbers from 261 on are stored
+// wrapped mod 256 (261→5). It is a sorting-key column, which ClickHouse refuses to widen or
+// update, so readers add the 256 back. The date guard is required: sub-200 values before
+// Oct 2025 are genuine (ij.report 193 from 2019, fleet.report 1.x until mid-2025), while
+// wrapping only began 2025-10-14. Requires generated_time in scope.
+//
+// Uses greaterOrEquals() and toDate() rather than `>=` and a timestamp literal because
+// reAggregator rejects dimension SQL containing '=' or ':'.
+const CorrectedBuildC1 = "(build_c1 + if(build_c1 between 1 and 199 and " +
+	"greaterOrEquals(generated_time, toDate('2025-10-01')), 256, 0))"
+
 type Query struct {
 	Database string           `json:"db"`
 	Table    string           `json:"table"`

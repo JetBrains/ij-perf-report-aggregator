@@ -251,6 +251,8 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 		if strings.HasPrefix(row.Machine, "intellij-linux-hw-compile-hp-blade-") {
 			return nil
 		}
+		// build_c1 is UInt8, so 261+ truncates here. Widening is impossible (sorting-key column);
+		// readers add the 256 back — see mcp.correctedBuildComponentsSQL.
 		args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3))
 	}
 	if t.config.HasBuildNumber {

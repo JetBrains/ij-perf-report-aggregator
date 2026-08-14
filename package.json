@@ -12,22 +12,22 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@openvue/auto-import-resolver": "0.7.0-beta.0",
+    "@openvue/auto-import-resolver": "1.0.0-rc.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^6.0.8",
-    "happy-dom": "^20.11.2",
-    "knip": "^6.32.0",
-    "oxfmt": "^0.62.0",
-    "oxlint": "^1.77.0",
+    "happy-dom": "^20.11.6",
+    "knip": "^6.32.2",
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.79.0",
     "oxlint-tsgolint": "^7.0.2001",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "unplugin-vue-components": "^32.1.0",
-    "vite": "^8.2.1",
+    "vite": "^8.2.2",
     "vite-plugin-static-copy": "^4.1.1",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "vue": "^3.5.41",
-    "vue-tsc": "3.3.9"
+    "vue-tsc": "3.3.10"
   },
   "engines": {
     "pnpm": ">=10"

@@ -51,7 +51,7 @@ const debugCharts: ChartDef[] = [
   { key: "stepInto", label: "Step Into", measures: ["debugStep_into"] },
   { key: "stepOut", label: "Step Out", measures: ["debugStep_out"] },
   { key: "stepOver", label: "Step Over", measures: ["debugStep_over"] },
-  { key: "evaluate", label: "Evaluate Expression", measures: ["evaluateExpression"] },
+  { key: "evaluate", label: "Evaluate Expression Mean", measures: ["evaluateExpression#mean_value"] },
 ]
 
 const allGroups: GroupDef[] = [{ value: "debugActions", title: "Debug Actions", prefix: "Debug", projects: debugProjects, charts: debugCharts }]

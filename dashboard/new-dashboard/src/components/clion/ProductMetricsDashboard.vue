@@ -97,12 +97,6 @@ const mainChartsDeclaration: ChartDefinition[] = [
     aliases: ["Type_Boolean"],
   },
   {
-    labels: ["SearchEverywhere (Inserting Whole Word) - Wait Until Full or Done", "SearchEverywhere (Inserting Whole Word) - First Elements Added"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/insertingTheWholeWord"],
-    aliases: ["Type_Boolean"],
-  },
-  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
     projects: ["radler/fmtlib/globalInspection", "radler/fmtlib/inspection"],

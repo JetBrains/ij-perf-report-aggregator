@@ -138,8 +138,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 }
 
 func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
-	var httpError *http_error.HttpError
-	if errors.As(err, &httpError) {
+	if httpError, ok := errors.AsType[*http_error.HttpError](err); ok {
 		w.WriteHeader(httpError.Code)
 		writehttpError(w, httpError)
 	} else {

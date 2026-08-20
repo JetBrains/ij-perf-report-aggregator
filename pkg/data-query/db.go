@@ -73,8 +73,7 @@ func isNetError(err error) bool {
 		if errors.Is(err, io.ErrUnexpectedEOF) {
 			return true
 		}
-		var netError net.Error
-		if errors.As(err, &netError) {
+		if _, ok := errors.AsType[net.Error](err); ok {
 			return true
 		}
 	}

@@ -249,7 +249,7 @@ func createYoutrackIssueCommon(ctx context.Context, request *http.Request, param
 
 	if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
 		latestAffectedVersion := getVersionFieldValue(ctx, params.ProjectId, "Affected versions", nil, exceptions)
-		baseVersion := strings.SplitN(latestAffectedVersion, " ", 2)[0]
+		baseVersion, _, _ := strings.Cut(latestAffectedVersion, " ")
 		setVersionField(ctx, params.ProjectId, "Affected versions", baseVersion, &issueInfo, exceptions)
 		setVersionField(ctx, params.ProjectId, "Planned for", baseVersion, &issueInfo, exceptions)
 	}

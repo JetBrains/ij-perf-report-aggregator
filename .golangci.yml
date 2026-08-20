@@ -10,6 +10,7 @@ linters:
     - varnamelen
     - cyclop
     - exhaustruct
+    - exhaustruct_v5
     - gochecknoglobals
     - mnd
     - nlreturn

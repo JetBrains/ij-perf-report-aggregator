@@ -19,7 +19,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.12.2
+          version: v2.13.1
       - name: Check for dead code
         run: |
           # Whole-program reachability from every main(). Generated code (quicktemplate .qtpl,

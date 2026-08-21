@@ -59,7 +59,7 @@ const mainChartsDeclaration: ChartDefinition[] = [
   {
     labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],
     measures: ["firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
-    projects: ["radler/fmtlib/typing/simple (4 lines)"],
+    projects: ["radler/fmtlib/typing/simple (4 lines)", "radler/fmtlib/typing/simple (4 lines), Grazie disabled"],
     aliases: ["{fmt}"],
   },
   {

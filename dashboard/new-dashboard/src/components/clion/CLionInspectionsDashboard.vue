@@ -14,7 +14,7 @@
           <GroupProjectsChart
             :label="`First Code Analysis (fmt)`"
             :measure="['firstCodeAnalysis']"
-            :projects="['radler/fmtlib/typing/simple (4 lines)']"
+            :projects="['radler/fmtlib/typing/simple (4 lines)', 'radler/fmtlib/typing/simple (4 lines), Grazie disabled']"
           />
         </section>
       </div>

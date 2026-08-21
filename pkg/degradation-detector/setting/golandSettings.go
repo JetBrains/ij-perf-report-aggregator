@@ -13,10 +13,8 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 		Db:      "perfintDev",
 		Table:   "goland",
 		Product: "GO",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-hw-de-unit-%",
-		},
+		Branch:  "master",
+		Machine: "intellij-linux-hw-de-unit-%",
 	}
 	slackSettings := detector.SlackSettings{
 		Channel:     "goland-qa-duty",
@@ -42,19 +40,15 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 		for _, project := range projects {
 			for _, metric := range metrics {
 				settings = append(settings, detector.StartupSettings{
-					Db:      mainSettings.Db,
-					Table:   mainSettings.Table,
-					Product: mainSettings.Product,
-					Project: project,
-					BaseSettings: detector.BaseSettings{
-						Branch:  mainSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						AnalysisSettings: detector.AnalysisSettings{
-							MinimumSegmentLength: 12,
-						},
-						SlackSettings: slackSettings,
-					},
+					Db:                   mainSettings.Db,
+					Table:                mainSettings.Table,
+					Product:              mainSettings.Product,
+					Project:              project,
+					Branch:               mainSettings.Branch,
+					Machine:              machine,
+					Metric:               metric,
+					MinimumSegmentLength: 12,
+					SlackSettings:        slackSettings,
 				})
 			}
 		}
@@ -64,12 +58,10 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 
 func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "goland",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-performance-aws-%",
-		},
+		Db:      "perfintDev",
+		Table:   "goland",
+		Branch:  "master",
+		Machine: "intellij-linux-performance-aws-%",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -81,18 +73,14 @@ func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detect
 		metrics := getMetricFromTestName(test)
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      baseSettings.Db,
-				Table:   baseSettings.Table,
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Branch:  baseSettings.Branch,
-					Machine: baseSettings.Machine,
-					Metric:  metric,
-					SlackSettings: detector.SlackSettings{
-						Channel:     "goland-qa-duty",
-						ProductLink: "goland",
-					},
-				},
+				Db:          baseSettings.Db,
+				Table:       baseSettings.Table,
+				Project:     test,
+				Branch:      baseSettings.Branch,
+				Machine:     baseSettings.Machine,
+				Metric:      metric,
+				Channel:     "goland-qa-duty",
+				ProductLink: "goland",
 			})
 		}
 	}

@@ -67,22 +67,16 @@ func generateGradleSettingsOnFastInstaller() []detector.PerformanceSettings {
 	for _, test := range tests {
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfintDev",
-				Table:   "idea",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "gradle-perf-tests-notifications",
-						ProductLink: "intellij",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						MinimumSegmentLength: 10,
-						ReportType:           detector.DegradationEvent,
-					},
-				},
+				Db:                   "perfintDev",
+				Table:                "idea",
+				Project:              test,
+				Machine:              "intellij-linux-hw-hetzner%",
+				Metric:               metric,
+				Branch:               "master",
+				Channel:              "gradle-perf-tests-notifications",
+				ProductLink:          "intellij",
+				MinimumSegmentLength: 10,
+				ReportType:           detector.DegradationEvent,
 			})
 		}
 	}

@@ -20,12 +20,10 @@ func generateJavaDevAnalysisSettings(backendUrl string, client *http.Client) []d
 	}
 
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "idea",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-performance-aws-%",
-		},
+		Db:      "perfintDev",
+		Table:   "idea",
+		Branch:  "master",
+		Machine: "intellij-linux-performance-aws-%",
 	}
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	testsWithoutIndexingScanning := filterIndexingScanningTests(testsExpanded)
@@ -38,20 +36,16 @@ func generateJavaDevAnalysisSettings(backendUrl string, client *http.Client) []d
 				metrics := getJavaMetricsFromTestsNames(test)
 				for _, metric := range metrics {
 					settings = append(settings, detector.PerformanceSettings{
-						Db:      baseSettings.Db,
-						Table:   baseSettings.Table,
-						Project: test,
-						Mode:    mode,
-						BaseSettings: detector.BaseSettings{
-							Branch:  baseSettings.Branch,
-							Machine: machine,
-							Metric:  metric,
-							SlackSettings: detector.SlackSettings{
-								Channel:     "idea-java-alerts",
-								ProductLink: "intellij",
-							},
-							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-						},
+						Db:                   baseSettings.Db,
+						Table:                baseSettings.Table,
+						Project:              test,
+						Mode:                 mode,
+						Branch:               baseSettings.Branch,
+						Machine:              machine,
+						Metric:               metric,
+						Channel:              "idea-java-alerts",
+						ProductLink:          "intellij",
+						MinimumSegmentLength: 8,
 					})
 				}
 			}

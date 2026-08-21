@@ -9,12 +9,10 @@ import (
 
 func GenerateKotlinBuildToolsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "kotlinBuildTools",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-hw-hetzner%",
-		},
+		Db:      "perfintDev",
+		Table:   "kotlinBuildTools",
+		Branch:  "master",
+		Machine: "intellij-linux-hw-hetzner%",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -26,18 +24,14 @@ func GenerateKotlinBuildToolsSettings(backendUrl string, client *http.Client) []
 		metrics := []string{"ExternalSystemSyncProjectTask"}
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      baseSettings.Db,
-				Table:   baseSettings.Table,
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Branch:  baseSettings.Branch,
-					Machine: baseSettings.Machine,
-					Metric:  metric,
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kotlin-build-tools-build-notifications",
-						ProductLink: "kotlinBuildTools",
-					},
-				},
+				Db:          baseSettings.Db,
+				Table:       baseSettings.Table,
+				Project:     test,
+				Branch:      baseSettings.Branch,
+				Machine:     baseSettings.Machine,
+				Metric:      metric,
+				Channel:     "kotlin-build-tools-build-notifications",
+				ProductLink: "kotlinBuildTools",
 			})
 		}
 	}

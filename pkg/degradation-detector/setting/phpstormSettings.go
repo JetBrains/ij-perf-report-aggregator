@@ -13,10 +13,8 @@ func GenerateStartupSettingsForPhpStorm(backendUrl string, client *http.Client) 
 		Db:      "perfintDev",
 		Table:   "phpstorm",
 		Product: "PS",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-hw-de-unit-%",
-		},
+		Branch:  "master",
+		Machine: "intellij-linux-hw-de-unit-%",
 	}
 	slackSettings := detector.SlackSettings{
 		Channel:     "phpstorm-performance-degradations",
@@ -40,19 +38,15 @@ func GenerateStartupSettingsForPhpStorm(backendUrl string, client *http.Client) 
 		for _, project := range projects {
 			for _, metric := range metrics {
 				settings = append(settings, detector.StartupSettings{
-					Db:      mainSettings.Db,
-					Table:   mainSettings.Table,
-					Product: mainSettings.Product,
-					Project: project,
-					BaseSettings: detector.BaseSettings{
-						Branch:  mainSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						AnalysisSettings: detector.AnalysisSettings{
-							MinimumSegmentLength: 12,
-						},
-						SlackSettings: slackSettings,
-					},
+					Db:                   mainSettings.Db,
+					Table:                mainSettings.Table,
+					Product:              mainSettings.Product,
+					Project:              project,
+					Branch:               mainSettings.Branch,
+					Machine:              machine,
+					Metric:               metric,
+					MinimumSegmentLength: 12,
+					SlackSettings:        slackSettings,
 				})
 			}
 		}
@@ -62,12 +56,10 @@ func GenerateStartupSettingsForPhpStorm(backendUrl string, client *http.Client) 
 
 func GeneratePhpStormSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "phpstorm",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-hw-hetzner%",
-		},
+		Db:      "perfintDev",
+		Table:   "phpstorm",
+		Branch:  "master",
+		Machine: "intellij-linux-hw-hetzner%",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -81,19 +73,15 @@ func GeneratePhpStormSettings(backendUrl string, client *http.Client) []detector
 			metrics := getMetricFromTestName(test)
 			for _, metric := range metrics {
 				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					Mode:    mode,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: baseSettings.Machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "phpstorm-performance-degradations",
-							ProductLink: "phpstorm",
-						},
-					},
+					Db:          baseSettings.Db,
+					Table:       baseSettings.Table,
+					Project:     test,
+					Mode:        mode,
+					Branch:      baseSettings.Branch,
+					Machine:     baseSettings.Machine,
+					Metric:      metric,
+					Channel:     "phpstorm-performance-degradations",
+					ProductLink: "phpstorm",
 				})
 			}
 		}

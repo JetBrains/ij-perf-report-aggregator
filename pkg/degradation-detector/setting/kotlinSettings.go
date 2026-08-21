@@ -84,23 +84,17 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
-				Db:          "perfintDev",
-				Table:       "kotlin",
-				Project:     test,
-				MetricAlias: alias,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kotlin-plugin-perf-tests",
-						ProductLink: "kotlin",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType:         detector.DegradationEvent,
-						DaysToCheckMissing: daysToCheck,
-					},
-				},
+				Db:                 "perfintDev",
+				Table:              "kotlin",
+				Project:            test,
+				MetricAlias:        alias,
+				Machine:            "intellij-linux-hw-hetzner%",
+				Metric:             metric,
+				Branch:             "master",
+				Channel:            "kotlin-plugin-perf-tests",
+				ProductLink:        "kotlin",
+				ReportType:         detector.DegradationEvent,
+				DaysToCheckMissing: daysToCheck,
 			})
 		}
 	}
@@ -112,18 +106,12 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 				Table:       "kotlin",
 				Project:     test,
 				MetricAlias: alias,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "kt-master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kotlin-plugin-perf-tests-kt-master",
-						ProductLink: "kotlin",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType: detector.DegradationEvent,
-					},
-				},
+				Machine:     "intellij-linux-hw-hetzner%",
+				Metric:      metric,
+				Branch:      "kt-master",
+				Channel:     "kotlin-plugin-perf-tests-kt-master",
+				ProductLink: "kotlin",
+				ReportType:  detector.DegradationEvent,
 			})
 		}
 	}

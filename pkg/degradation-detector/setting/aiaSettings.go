@@ -19,21 +19,15 @@ func GenerateAIASettings() []detector.PerformanceSettings {
 	for test, metrics := range metrics {
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfintDev",
-				Table:   "ml",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-performance-aws-%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "ai-assistant-autotest-notifications-all",
-						ProductLink: "ml/dev",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType: detector.AllEvent,
-					},
-				},
+				Db:          "perfintDev",
+				Table:       "ml",
+				Project:     test,
+				Machine:     "intellij-linux-performance-aws-%",
+				Metric:      metric,
+				Branch:      "master",
+				Channel:     "ai-assistant-autotest-notifications-all",
+				ProductLink: "ml/dev",
+				ReportType:  detector.AllEvent,
 			})
 		}
 	}

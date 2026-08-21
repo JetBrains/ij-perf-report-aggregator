@@ -9,12 +9,10 @@ import (
 
 func GenerateKotlinMultiplatformToolingSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "kmt",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "cidr.performance.appcode.osx%",
-		},
+		Db:      "perfintDev",
+		Table:   "kmt",
+		Branch:  "master",
+		Machine: "cidr.performance.appcode.osx%",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 300)
@@ -37,19 +35,15 @@ func GenerateKotlinMultiplatformToolingSettings(backendUrl string, client *http.
 		}
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      baseSettings.Db,
-				Table:   baseSettings.Table,
-				Project: test,
-				Mode:    "intellij-idea",
-				BaseSettings: detector.BaseSettings{
-					Branch:  baseSettings.Branch,
-					Machine: baseSettings.Machine,
-					Metric:  metric,
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kmt-infrastructure-alerts",
-						ProductLink: "kmt",
-					},
-				},
+				Db:          baseSettings.Db,
+				Table:       baseSettings.Table,
+				Project:     test,
+				Mode:        "intellij-idea",
+				Branch:      baseSettings.Branch,
+				Machine:     baseSettings.Machine,
+				Metric:      metric,
+				Channel:     "kmt-infrastructure-alerts",
+				ProductLink: "kmt",
 			})
 		}
 	}

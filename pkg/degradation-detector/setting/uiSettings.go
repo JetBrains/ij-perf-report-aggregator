@@ -245,18 +245,14 @@ func GenerateUISettings() []detector.PerformanceSettings {
 							Table:   "idea",
 							Project: test,
 							Mode:    mode,
-							BaseSettings: detector.BaseSettings{
-								Machine: machine,
-								Metric:  metric,
-								Branch:  "master",
-								// SlackSettings: detector.SlackSettings{
-								// 	Channel:     "ij-ui-performance-alerts",
-								// 	ProductLink: "intellij",
-								// },
-								AnalysisSettings: detector.AnalysisSettings{
-									MinimumSegmentLength: 8,
-								},
-							},
+							Machine: machine,
+							Metric:  metric,
+							Branch:  "master",
+							// SlackSettings: detector.SlackSettings{
+							// 	Channel:     "ij-ui-performance-alerts",
+							// 	ProductLink: "intellij",
+							// },
+							MinimumSegmentLength: 8,
 						})
 					}
 				}

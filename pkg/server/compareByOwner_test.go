@@ -9,8 +9,8 @@ import (
 
 func ownerResult(branch, project, metric, machine string, values []int) ownerQueryResult {
 	return ownerQueryResult{
-		measureQueryResult: measureQueryResult{Branch: branch, Project: project, MeasureName: metric, MeasureValues: values},
-		Machine:            machine,
+		Branch: branch, Project: project, MeasureName: metric, MeasureValues: values,
+		Machine: machine,
 	}
 }
 

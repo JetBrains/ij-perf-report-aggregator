@@ -17,12 +17,10 @@ func GenerateKotlinIdeaSettings(backendUrl string, client *http.Client) []detect
 	}
 
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "idea",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-performance-aws-%",
-		},
+		Db:      "perfintDev",
+		Table:   "idea",
+		Branch:  "master",
+		Machine: "intellij-linux-performance-aws-%",
 	}
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	testsWithoutIndexingScanning := filterIndexingScanningTests(testsExpanded)
@@ -36,20 +34,16 @@ func GenerateKotlinIdeaSettings(backendUrl string, client *http.Client) []detect
 				metrics := getKotlinMetricsFromTestName(test)
 				for _, metric := range metrics {
 					settings = append(settings, detector.PerformanceSettings{
-						Db:      baseSettings.Db,
-						Table:   baseSettings.Table,
-						Project: test,
-						Mode:    mode,
-						BaseSettings: detector.BaseSettings{
-							Branch:  baseSettings.Branch,
-							Machine: machine,
-							Metric:  metric,
-							SlackSettings: detector.SlackSettings{
-								Channel:     "kotlin-plugin-perf-tests",
-								ProductLink: "intellij",
-							},
-							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-						},
+						Db:                   baseSettings.Db,
+						Table:                baseSettings.Table,
+						Project:              test,
+						Mode:                 mode,
+						Branch:               baseSettings.Branch,
+						Machine:              machine,
+						Metric:               metric,
+						Channel:              "kotlin-plugin-perf-tests",
+						ProductLink:          "intellij",
+						MinimumSegmentLength: 8,
 					})
 				}
 			}

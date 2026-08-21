@@ -13,10 +13,8 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		Db:      "perfintDev",
 		Table:   "idea",
 		Product: "IU",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-hw-de-unit-%",
-		},
+		Branch:  "master",
+		Machine: "intellij-linux-hw-de-unit-%",
 	}
 	slackSettings := detector.SlackSettings{
 		Channel:     "ij-u-team-performance-issues-check",
@@ -41,19 +39,15 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		for _, project := range projects {
 			for _, metric := range metrics {
 				settings = append(settings, detector.StartupSettings{
-					Db:      mainSettings.Db,
-					Table:   mainSettings.Table,
-					Product: mainSettings.Product,
-					Project: project,
-					BaseSettings: detector.BaseSettings{
-						Branch:  mainSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						AnalysisSettings: detector.AnalysisSettings{
-							MinimumSegmentLength: 12,
-						},
-						SlackSettings: slackSettings,
-					},
+					Db:                   mainSettings.Db,
+					Table:                mainSettings.Table,
+					Product:              mainSettings.Product,
+					Project:              project,
+					Branch:               mainSettings.Branch,
+					Machine:              machine,
+					Metric:               metric,
+					MinimumSegmentLength: 12,
+					SlackSettings:        slackSettings,
 				})
 			}
 		}

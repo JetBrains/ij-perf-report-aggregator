@@ -11,11 +11,9 @@ import (
 func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	machines := []string{"intellij-linux-performance-aws-%"}
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "ruby",
-		BaseSettings: detector.BaseSettings{
-			Branch: "master",
-		},
+		Db:     "perfintDev",
+		Table:  "ruby",
+		Branch: "master",
 	}
 	branches := []string{"master", "253"}
 	modes := []string{"", "split"}
@@ -39,24 +37,18 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 							medianThreshold = 10
 						}
 						settings = append(settings, detector.PerformanceSettings{
-							Db:      baseSettings.Db,
-							Table:   baseSettings.Table,
-							Project: test,
-							Mode:    mode,
-							BaseSettings: detector.BaseSettings{
-								Branch:  branch,
-								Machine: machine,
-								Metric:  metric,
-								AnalysisSettings: detector.AnalysisSettings{
-									MinimumSegmentLength:      14,
-									MedianDifferenceThreshold: medianThreshold,
-									ReportType:                detector.DegradationEvent,
-								},
-								SlackSettings: detector.SlackSettings{
-									Channel:     "rubymine-performance-alerts",
-									ProductLink: "rubymine",
-								},
-							},
+							Db:                        baseSettings.Db,
+							Table:                     baseSettings.Table,
+							Project:                   test,
+							Mode:                      mode,
+							Branch:                    branch,
+							Machine:                   machine,
+							Metric:                    metric,
+							MinimumSegmentLength:      14,
+							MedianDifferenceThreshold: medianThreshold,
+							ReportType:                detector.DegradationEvent,
+							Channel:                   "rubymine-performance-alerts",
+							ProductLink:               "rubymine",
 						})
 					}
 				}

@@ -13,24 +13,18 @@ func GenerateAIATestTokenSettings() []detector.PerformanceSettings {
 	for test, metrics := range metrics {
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfintDev",
-				Table:   "ml",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-%-aws-%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "ai-assistant-autotest-notifications",
-						ProductLink: "ml/dev",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType:     detector.AllEvent,
-						AnalysisKind:   detector.ThresholdAnalysis,
-						ThresholdMode:  detector.ThresholdGreaterThan,
-						ThresholdValue: 95,
-					},
-				},
+				Db:             "perfintDev",
+				Table:          "ml",
+				Project:        test,
+				Machine:        "intellij-linux-%-aws-%",
+				Metric:         metric,
+				Branch:         "master",
+				Channel:        "ai-assistant-autotest-notifications",
+				ProductLink:    "ml/dev",
+				ReportType:     detector.AllEvent,
+				AnalysisKind:   detector.ThresholdAnalysis,
+				ThresholdMode:  detector.ThresholdGreaterThan,
+				ThresholdValue: 95,
 			})
 		}
 	}

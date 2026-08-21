@@ -9,18 +9,14 @@ func GenerateWorkspaceSettings() []detector.PerformanceSettings {
 	for _, test := range tests {
 		for _, metric := range metrics {
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfint",
-				Table:   "idea",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Branch:  "master",
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					SlackSettings: detector.SlackSettings{
-						Channel:     "ij-workspace-model-perf-tests",
-						ProductLink: "intellij",
-					},
-				},
+				Db:          "perfint",
+				Table:       "idea",
+				Project:     test,
+				Branch:      "master",
+				Machine:     "intellij-linux-hw-hetzner%",
+				Metric:      metric,
+				Channel:     "ij-workspace-model-perf-tests",
+				ProductLink: "intellij",
 			})
 		}
 	}

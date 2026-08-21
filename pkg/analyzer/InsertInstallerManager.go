@@ -23,9 +23,7 @@ func NewInstallerInsertManager(insertContext context.Context, db driver.Conn) (*
 	insertManager := sql_util.NewBatchInsertManager(insertContext, db, "insert into installer", 1, slog.With("type", "installer"))
 
 	manager := &InsertInstallerManager{
-		InsertDataManager: sql_util.InsertDataManager{
-			InsertManager: insertManager,
-		},
+		InsertManager: insertManager,
 
 		insertedIds: intsets.Sparse{},
 	}

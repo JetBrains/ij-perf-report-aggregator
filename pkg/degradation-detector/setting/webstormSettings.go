@@ -9,12 +9,10 @@ import (
 
 func GenerateWebStormSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "webstorm",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-performance-aws%",
-		},
+		Db:      "perfintDev",
+		Table:   "webstorm",
+		Branch:  "master",
+		Machine: "intellij-linux-performance-aws%",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -28,19 +26,15 @@ func GenerateWebStormSettings(backendUrl string, client *http.Client) []detector
 			metrics := getMetricFromTestName(test)
 			for _, metric := range metrics {
 				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					Mode:    mode,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: baseSettings.Machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "webstorm-test-degradations",
-							ProductLink: "webstorm",
-						},
-					},
+					Db:          baseSettings.Db,
+					Table:       baseSettings.Table,
+					Project:     test,
+					Mode:        mode,
+					Branch:      baseSettings.Branch,
+					Machine:     baseSettings.Machine,
+					Metric:      metric,
+					Channel:     "webstorm-test-degradations",
+					ProductLink: "webstorm",
 				})
 			}
 		}

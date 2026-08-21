@@ -131,9 +131,7 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 		nonMetricFieldCount: len(metaFields),
 		config:              config,
 		TableName:           tableName,
-		InsertDataManager: sql_util.InsertDataManager{
-			InsertManager: insertManager,
-		},
+		InsertManager:       insertManager,
 
 		context:                ctx,
 		insertInstallerManager: installerManager,

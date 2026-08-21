@@ -10,12 +10,10 @@ import (
 
 func GenerateClionSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "clion",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-performance-aws-%",
-		},
+		Db:      "perfintDev",
+		Table:   "clion",
+		Branch:  "master",
+		Machine: "intellij-linux-performance-aws-%",
 	}
 	branches := []string{"253", "261", "262", "master"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
@@ -31,19 +29,15 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 				metrics := getClionMetricFromTestName(test)
 				for _, metric := range metrics {
 					settings = append(settings, detector.PerformanceSettings{
-						Db:      baseSettings.Db,
-						Table:   baseSettings.Table,
-						Project: test,
-						Mode:    mode,
-						BaseSettings: detector.BaseSettings{
-							Branch:  branch,
-							Machine: baseSettings.Machine,
-							Metric:  metric,
-							SlackSettings: detector.SlackSettings{
-								Channel:     getClionSlackChannel(test),
-								ProductLink: "clion",
-							},
-						},
+						Db:          baseSettings.Db,
+						Table:       baseSettings.Table,
+						Project:     test,
+						Mode:        mode,
+						Branch:      branch,
+						Machine:     baseSettings.Machine,
+						Metric:      metric,
+						Channel:     getClionSlackChannel(test),
+						ProductLink: "clion",
 					})
 				}
 			}

@@ -11,11 +11,9 @@ import (
 func GenerateRustPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfintDev",
-		Table: "rust",
-		BaseSettings: detector.BaseSettings{
-			Branch: "master",
-		},
+		Db:     "perfintDev",
+		Table:  "rust",
+		Branch: "master",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -28,18 +26,14 @@ func GenerateRustPerfSettings(backendUrl string, client *http.Client) []detector
 			metrics := getRustMetricFromTestName(test)
 			for _, metric := range metrics {
 				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "rust-perf-alerts",
-							ProductLink: "rust",
-						},
-					},
+					Db:          baseSettings.Db,
+					Table:       baseSettings.Table,
+					Project:     test,
+					Branch:      baseSettings.Branch,
+					Machine:     machine,
+					Metric:      metric,
+					Channel:     "rust-perf-alerts",
+					ProductLink: "rust",
 				})
 			}
 		}

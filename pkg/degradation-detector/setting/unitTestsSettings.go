@@ -145,13 +145,11 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 
 	mainSettings := detector.PerformanceSettings{
-		Db:    "perfUnitTests",
-		Table: "report",
-		BaseSettings: detector.BaseSettings{
-			Branch:  "master",
-			Machine: "intellij-linux-%-hetzner-%",
-			Metric:  "attempt.mean.ms",
-		},
+		Db:      "perfUnitTests",
+		Table:   "report",
+		Branch:  "master",
+		Machine: "intellij-linux-%-hetzner-%",
+		Metric:  "attempt.mean.ms",
 	}
 
 	tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)
@@ -182,13 +180,11 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 				Project: test,
 				Db:      mainSettings.Db,
 				Table:   mainSettings.Table,
-				BaseSettings: detector.BaseSettings{
-					Branch:           mainSettings.Branch,
-					Machine:          mainSettings.Machine,
-					Metric:           metric,
-					SlackSettings:    detector.SlackSettings{Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention},
-					AnalysisSettings: route.analysisSettings,
-				},
+				Branch:  mainSettings.Branch,
+				Machine: mainSettings.Machine,
+				Metric:  metric,
+				Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention,
+				AnalysisSettings: route.analysisSettings,
 			})
 		}
 	}

@@ -53,6 +53,7 @@ enum ROUTE_PREFIX {
   Toolbox = "/toolbox",
   LSP = "/lsp",
   KotlinNotebooks = "/kotlinNotebooks",
+  IntelliJLspClient = IntelliJ + "/lspClient",
 }
 
 const TEST_ROUTE = "tests"
@@ -97,6 +98,7 @@ enum ROUTES {
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
+  IntelliJLspClientLua = `${ROUTE_PREFIX.IntelliJLspClient}/lua`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormIndexingDashboard = `${ROUTE_PREFIX.PhpStorm}/indexingDashboard`,
@@ -400,6 +402,11 @@ const IDEA: Product = {
       url: ROUTE_PREFIX.EmbeddingSearch,
       label: "Embedding Search",
       tabs: [tab(ROUTES.IntelliJEmbeddingSearchDashboard, "Embedding Search")],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJLspClient,
+      label: "LSP Client",
+      tabs: [tab(ROUTES.IntelliJLspClientLua, "Lua")],
     },
   ],
 }
@@ -899,6 +906,7 @@ const intellijRoutes = [
   dashboard(ROUTES.IntelliJPackageCheckerDashboard, () => import("./components/intelliJ/PackageCheckerDashboard.vue"), "Package Checker"),
   dashboard(ROUTES.IntelliJSharedIndicesDashboard, () => import("./components/intelliJ/SharedIndexesDashboard.vue"), "Shared Indexes Performance Dashboard"),
   dashboard(ROUTES.IntelliJEmbeddingSearchDashboard, () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"), "IntelliJ performance tests for embedding search"),
+  dashboard(ROUTES.IntelliJLspClientLua, () => import("./components/intelliJ/LspClientLuaDashboard.vue"), "IDEA LSP Client - Lua"),
   {
     path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
     component: COMPONENTS.perfTests,

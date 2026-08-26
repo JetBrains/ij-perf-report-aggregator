@@ -225,7 +225,7 @@ func getMachineGroup(pattern string) string {
 		"intellij-linux-%-hetzner-%":       "linux-blade-hetzner",
 		"intellij-linux-hw-munit-%":        "Linux Munich i7-3770, 32 Gb",
 		"intellij-windows-hw-munit-%":      "Windows Munich i7-3770, 32 Gb",
-		"intellij-macos-perf-eqx-%":        "Mac Mini M2 Pro (10 vCPU, 32 GB)",
+		"intellij-macos-perf-eqx-%":        "Apple M4 Pro (13 vCPU, 64 GB)",
 		"intellij-macos-hw-munit-%":        "macMini M1, 16 Gb",
 	}
 	return machineGroupMap[pattern]

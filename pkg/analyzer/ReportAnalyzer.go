@@ -275,10 +275,8 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 	}
 	if projectId == "qodana" {
 		qodanaImage := string(props.GetStringBytes("image"))
-		lastSlash := strings.LastIndex(qodanaImage, "/")
-
-		if lastSlash >= 0 {
-			return qodanaImage[lastSlash+1:], nil
+		if _, imageName, found := strings.CutLast(qodanaImage, "/"); found {
+			return imageName, nil
 		}
 		logger.Warn("No slash found in string")
 	}

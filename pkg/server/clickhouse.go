@@ -207,11 +207,8 @@ func removeLastPart(s string) string {
 		return s[:awsIndex+3]
 	}
 
-	lastIndex := strings.LastIndex(s, "-")
-	if lastIndex == -1 {
-		return s
-	}
-	return s[:lastIndex]
+	before, _, _ := strings.CutLast(s, "-")
+	return before
 }
 
 func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {

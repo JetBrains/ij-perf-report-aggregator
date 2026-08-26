@@ -122,9 +122,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   }
 
   private getIcons(groupName: string): string {
-    if (groupName.toLowerCase().startsWith("linux")) {
+    const name = groupName.toLowerCase()
+    if (name.startsWith("linux")) {
       return "pi icon-linux"
-    } else if (groupName.toLowerCase().startsWith("mac")) {
+    } else if (name.startsWith("mac") || name.startsWith("apple")) {
       return "pi pi-apple"
     }
     return "pi pi-microsoft"

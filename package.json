@@ -17,8 +17,8 @@
     "@vitejs/plugin-vue": "^6.0.8",
     "happy-dom": "^20.11.6",
     "knip": "^6.32.2",
-    "oxfmt": "^0.64.0",
-    "oxlint": "^1.79.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
     "oxlint-tsgolint": "^7.0.2001",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
@@ -27,12 +27,12 @@
     "vite-plugin-static-copy": "^4.1.1",
     "vitest": "^4.1.11",
     "vue": "^3.5.41",
-    "vue-tsc": "3.3.10"
+    "vue-tsc": "3.3.11"
   },
   "engines": {
     "pnpm": ">=10"
   },
-  "packageManager": "pnpm@11.18.0",
+  "packageManager": "pnpm@11.24.0",
   "ignorePatterns": [
     "**/node_modules/**/*.*"
   ]

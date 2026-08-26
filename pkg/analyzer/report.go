@@ -44,8 +44,6 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
 	if err != nil {
 		return nil
 	}
-
-	runResult.RawReport = report.MarshalTo(nil)
 	return nil
 }
 

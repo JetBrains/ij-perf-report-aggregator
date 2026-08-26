@@ -9,10 +9,13 @@ import {
   ToolboxComponent,
   TooltipComponent,
 } from "echarts/components"
-import { EChartsType, init as initChart, throttle, use } from "echarts/core"
+import { EChartsType, init as initChart, registerTheme, throttle, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ECBasicOption } from "echarts/types/dist/shared"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
+import { chartTheme } from "./chartTheme"
+
+registerTheme("chalk", chartTheme)
 
 use([
   DatasetComponent,

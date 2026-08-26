@@ -68,9 +68,6 @@ importers:
       '@openvue/themes':
         specifier: 1.0.0-rc.0
         version: 1.0.0-rc.0
-      echarts:
-        specifier: 6.1.0
-        version: 6.1.0
       new-dashboard:
         specifier: workspace:*
         version: link:../new-dashboard

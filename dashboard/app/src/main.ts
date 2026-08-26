@@ -19,8 +19,6 @@ import "../theme/misc.css"
 import "../theme/select.css"
 import "../theme/select-panel.css"
 import "../theme/toolbar.css"
-import { registerTheme } from "echarts/core"
-import { chartTheme } from "../theme/chartTheme"
 
 async function initApp() {
   const app = createApp(App)
@@ -42,8 +40,6 @@ async function initApp() {
   app.use(ToastService)
   app.use(pinia)
   app.directive("tooltip", Tooltip)
-
-  registerTheme("chalk", chartTheme)
 
   await router.isReady().then(() => app.mount("#app"))
 }

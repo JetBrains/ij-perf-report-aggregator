@@ -5,7 +5,6 @@
     "@fontsource/inter": "5.3.0",
     "@fontsource/jetbrains-mono": "5.3.0",
     "@openvue/themes": "1.0.0-rc.0",
-    "echarts": "6.1.0",
     "new-dashboard": "workspace:*",
     "openvue": "1.0.0-rc.0",
     "pinia": "^4.0.3",

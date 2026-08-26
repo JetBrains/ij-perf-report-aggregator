@@ -2,14 +2,10 @@
 import vue from "@vitejs/plugin-vue"
 // @ts-ignore
 import path from "path"
-// @ts-ignore
-import { ComponentResolver } from "unplugin-vue-components"
 import Components from "unplugin-vue-components/vite"
-import { defineConfig, PluginOption } from "vite"
-// import visualizer from "rollup-plugin-visualizer"
+import { defineConfig, PluginOption, Rollup } from "vite"
 import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
-import { OutputAsset, OutputChunk } from "rollup"
 import { configDefaults } from "vitest/config"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import { PrimeVueResolver } from "@openvue/auto-import-resolver"
@@ -74,6 +70,16 @@ export default defineConfig({
     reportCompressedSize: false,
     emptyOutDir: true,
     chunkSizeWarningLimit: 600,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: "zrender", test: /node_modules[\\/]zrender[\\/]/, priority: 20 },
+            { name: "echarts", test: /node_modules[\\/]echarts[\\/]/, priority: 10 },
+          ],
+        },
+      },
+    },
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     outDir: path.resolve(import.meta.dirname, "cmd/frontend/resources"),
@@ -94,14 +100,14 @@ function brotli(): PluginOption {
   }
 }
 
-async function brotliCompressFile(asset: OutputAsset | OutputChunk, outDir: string): Promise<void> {
+async function brotliCompressFile(asset: Rollup.OutputAsset | Rollup.OutputChunk, outDir: string): Promise<void> {
   const file = path.join(outDir, asset.fileName)
   // woff2 is based on the Brotli compression algorithm - no need to compress
   if (file.endsWith(".png") || file.endsWith(".woff2")) {
     return
   }
 
-  const data = Buffer.from("code" in asset ? asset.code : (asset as OutputAsset).source)
+  const data = Buffer.from("code" in asset ? asset.code : (asset as Rollup.OutputAsset).source)
   // https://github.com/google/ngx_brotli#brotli_min_length default is 20, so, we will compress any asset regardless of size
   if (data.length < 20) {
     throw new Error("Asset size is suspiciously small")

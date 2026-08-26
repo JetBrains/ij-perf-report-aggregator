@@ -72,7 +72,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	}
 	text := s.mentionPrefix() + fmt.Sprintf(
 		"%sTest(s): %s\n"+
-			"Metric: %s\n"+
+			"Metric: `%s`\n"+
 			"Mode: %s\n"+
 			"Build: %s\n"+
 			"Branch: %s\n"+
@@ -94,7 +94,7 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 
 	text := fmt.Sprintf(
 		"%sProject(s): %s\n"+
-			"Metric: %s\n"+
+			"Metric: `%s`\n"+
 			"Build: %s\n"+
 			"Branch: %s\n"+
 			"Date: %s\n"+
@@ -113,7 +113,7 @@ func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	link := s.ChartLink(d)
 
 	text := fmt.Sprintf(
-		"%sMetric: %s\n"+
+		"%sMetric: `%s`\n"+
 			"Build: %s\n"+
 			"Branch: %s\n"+
 			"Date: %s\n"+

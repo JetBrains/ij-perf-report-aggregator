@@ -30,7 +30,7 @@ func TestGenerateMissingDataMessages(t *testing.T) {
 		// Verify message content
 		assert.Contains(t, message, "Data is missing for more than 3 days")
 		assert.Contains(t, message, "*Projects:* project1")
-		assert.Contains(t, message, "Metrics: metric1")
+		assert.Contains(t, message, "Metrics: `metric1`")
 		assert.Contains(t, message, "Last Recorded: 15-05-2023")
 		assert.Contains(t, message, "<https://buildserver.labs.intellij.net/buildConfiguration/build_type1|TC Configuration>")
 		assert.Contains(t, message, "<https://ij-perf.labs.jb.gg/product/tests?mode=default&machine=&branch=&project=&measure=metric1&timeRange=custom&customRange=")
@@ -52,7 +52,7 @@ func TestGenerateMissingDataMessages(t *testing.T) {
 		message := messages["channel1"]
 
 		assert.Contains(t, message, "*Projects:* project1, project2")
-		assert.Contains(t, message, "Metrics: metric1")
+		assert.Contains(t, message, "Metrics: `metric1`")
 	})
 
 	// Test case 3: Multiple projects with different metrics
@@ -72,8 +72,8 @@ func TestGenerateMissingDataMessages(t *testing.T) {
 
 		assert.Contains(t, message, "*Projects:* project1")
 		assert.Contains(t, message, "*Projects:* project2")
-		assert.Contains(t, message, "Metrics: metric1")
-		assert.Contains(t, message, "Metrics: metric2")
+		assert.Contains(t, message, "Metrics: `metric1`")
+		assert.Contains(t, message, "Metrics: `metric2`")
 	})
 
 	// Test case 4: Multiple build types

@@ -197,8 +197,9 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 
 				message.WriteString("*Projects:* ")
 				message.WriteString(strings.Join(projects, ", "))
-				message.WriteString("\nMetrics: ")
+				message.WriteString("\nMetrics: `")
 				message.WriteString(key.Metrics)
+				message.WriteString("`")
 				message.WriteString("\nLast Recorded: ")
 				message.WriteString(readableDate)
 

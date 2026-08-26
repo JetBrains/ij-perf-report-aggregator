@@ -37,7 +37,7 @@ func TestMergeDegradations(t *testing.T) {
 		sM := r.Settings.CreateSlackMessage(r.Details)
 		eM := SlackMessage{
 			Text: ":chart_with_upwards_trend:Test(s): a\nb\n" +
-				"Metric: metric\n" +
+				"Metric: `metric`\n" +
 				"Mode: default\n" +
 				"Build: 123\n" +
 				"Branch: \n" +
@@ -125,7 +125,7 @@ func TestMetricAlias(t *testing.T) {
 		sM := r.Settings.CreateSlackMessage(r.Details)
 		eM := SlackMessage{
 			Text: ":chart_with_upwards_trend:Test(s): a\nb\n" +
-				"Metric: metricBetta,metricAlpha\n" +
+				"Metric: `metricBetta,metricAlpha`\n" +
 				"Mode: default\n" +
 				"Build: 123\n" +
 				"Branch: \n" +

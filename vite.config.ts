@@ -103,7 +103,8 @@ function brotli(): PluginOption {
 async function brotliCompressFile(asset: Rollup.OutputAsset | Rollup.OutputChunk, outDir: string): Promise<void> {
   const file = path.join(outDir, asset.fileName)
   // woff2 is based on the Brotli compression algorithm - no need to compress
-  if (file.endsWith(".png") || file.endsWith(".woff2")) {
+  // woff is zlib-compressed internally - brotli saves <1% and costs ~30ms per file
+  if (file.endsWith(".png") || file.endsWith(".woff2") || file.endsWith(".woff")) {
     return
   }
 

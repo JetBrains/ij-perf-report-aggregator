@@ -43,6 +43,7 @@
           <slot
             :averages-configurators="averagesConfigurators"
             :machine-configurator="machineConfigurator"
+            :branch-configurator="branchConfigurator"
           />
         </div>
       </div>

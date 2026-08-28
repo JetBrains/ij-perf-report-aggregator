@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ machineConfigurator }"
+    v-slot="{ machineConfigurator, branchConfigurator }"
     db-name="perfintDev"
     table="clion"
     persistent-id="clion_debugger_dashboard"
@@ -8,7 +8,7 @@
     :with-installer="false"
   >
     <template
-      v-for="group in visibleGroups(machineConfigurator)"
+      v-for="group in visibleGroups(machineConfigurator, branchConfigurator)"
       :key="group.value"
     >
       <Divider :label="group.title" />
@@ -26,6 +26,8 @@
 </template>
 
 <script lang="ts" setup>
+import { BranchConfigurator } from "../../configurators/BranchConfigurator"
+import { selectedToArray } from "../../configurators/DimensionConfigurator"
 import { isMacMachine, MachineConfigurator } from "../../configurators/MachineConfigurator"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
@@ -43,6 +45,7 @@ interface GroupDef {
   prefix: string
   projects: string[]
   charts: ChartDef[]
+  perDebugger: boolean
   availableOnMac: boolean // Mac agents ship LLDB only
 }
 
@@ -63,13 +66,23 @@ const debugCharts: ChartDef[] = [
 ]
 
 const allGroups: GroupDef[] = [
-  { value: "gdb", title: "Debug Actions (GDB)", prefix: "GDB", projects: projectsFor("gdb"), charts: debugCharts, availableOnMac: false },
-  { value: "lldb", title: "Debug Actions (LLDB)", prefix: "LLDB", projects: projectsFor("lldb"), charts: debugCharts, availableOnMac: true },
+  { value: "gdb", title: "Debug Actions (GDB)", prefix: "GDB", projects: projectsFor("gdb"), charts: debugCharts, perDebugger: true, availableOnMac: false },
+  { value: "lldb", title: "Debug Actions (LLDB)", prefix: "LLDB", projects: projectsFor("lldb"), charts: debugCharts, perDebugger: true, availableOnMac: true },
+  { value: "combined", title: "Debug Actions (Default)", prefix: "Debug", projects: debugScenarios, charts: debugCharts, perDebugger: false, availableOnMac: true },
 ]
 
-function visibleGroups(machineConfigurator: MachineConfigurator | undefined): GroupDef[] {
+function isOldBranch(branch: string): boolean {
+  return /^26[21]/.test(branch)
+}
+
+function visibleGroups(machineConfigurator: MachineConfigurator | undefined, branchConfigurator: BranchConfigurator | null): GroupDef[] {
   const selectedMachines = machineConfigurator?.selected.value ?? []
   const macOnly = selectedMachines.length > 0 && selectedMachines.every((machine) => isMacMachine(machine))
-  return macOnly ? allGroups.filter((group) => group.availableOnMac) : allGroups
+
+  const selectedBranches = selectedToArray(branchConfigurator?.selected.value)
+  const hasSplitBranch = selectedBranches.length === 0 || selectedBranches.some((branch) => !isOldBranch(branch))
+  const hasReleaseBranch = selectedBranches.some((branch) => isOldBranch(branch))
+
+  return allGroups.filter((group) => (group.perDebugger ? hasSplitBranch : hasReleaseBranch) && (group.availableOnMac || !macOnly))
 }
 </script>

@@ -66,9 +66,9 @@ const debugCharts: ChartDef[] = [
 ]
 
 const allGroups: GroupDef[] = [
+  { value: "default", title: "Debug Actions (Default)", prefix: "Debug", projects: debugScenarios, charts: debugCharts, perDebugger: false, availableOnMac: true },
   { value: "gdb", title: "Debug Actions (GDB)", prefix: "GDB", projects: projectsFor("gdb"), charts: debugCharts, perDebugger: true, availableOnMac: false },
   { value: "lldb", title: "Debug Actions (LLDB)", prefix: "LLDB", projects: projectsFor("lldb"), charts: debugCharts, perDebugger: true, availableOnMac: true },
-  { value: "combined", title: "Debug Actions (Default)", prefix: "Debug", projects: debugScenarios, charts: debugCharts, perDebugger: false, availableOnMac: true },
 ]
 
 function isOldBranch(branch: string): boolean {
@@ -79,10 +79,10 @@ function visibleGroups(machineConfigurator: MachineConfigurator | undefined, bra
   const selectedMachines = machineConfigurator?.selected.value ?? []
   const macOnly = selectedMachines.length > 0 && selectedMachines.every((machine) => isMacMachine(machine))
 
+  // Only master has the per-debugger tests; old branches report the default project alone.
   const selectedBranches = selectedToArray(branchConfigurator?.selected.value)
   const hasSplitBranch = selectedBranches.length === 0 || selectedBranches.some((branch) => !isOldBranch(branch))
-  const hasReleaseBranch = selectedBranches.some((branch) => isOldBranch(branch))
 
-  return allGroups.filter((group) => (group.perDebugger ? hasSplitBranch : hasReleaseBranch) && (group.availableOnMac || !macOnly))
+  return allGroups.filter((group) => (!group.perDebugger || hasSplitBranch) && (group.availableOnMac || !macOnly))
 }
 </script>

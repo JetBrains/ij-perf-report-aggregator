@@ -88,12 +88,39 @@ func TestResolveRoute(t *testing.T) {
 			wantAnalysis:  defaultUnitTestAnalysisSettings,
 		},
 		{
-			name:          "owner without a channel mapping keeps the package channel",
+			// The package team doesn't own this test (the owner does), so the alert must not go to
+			// the package team's channel; with no channel for the owner it goes to the catch-all.
+			name:          "owner without a channel mapping routes to the catch-all, not the package channel",
 			test:          plainTest,
 			projectOwners: map[string]string{plainTest: "unmapped-owner"},
 			ownerChannels: map[string]string{},
-			wantChannel:   "alpha-channel",
+			wantChannel:   catchAllUnitTestsChannel,
 			wantAnalysis:  defaultUnitTestAnalysisSettings,
+		},
+		{
+			name:          "owner without a channel mapping and no package match routes to the catch-all",
+			test:          unknownTest,
+			projectOwners: map[string]string{unknownTest: "unmapped-owner"},
+			ownerChannels: map[string]string{},
+			wantChannel:   catchAllUnitTestsChannel,
+			wantAnalysis:  defaultUnitTestAnalysisSettings,
+		},
+		{
+			name:          "custom analysis settings are kept when an unrouted owner sends the alert to the catch-all",
+			test:          degradedTest,
+			projectOwners: map[string]string{degradedTest: "unmapped-owner"},
+			ownerChannels: map[string]string{},
+			wantChannel:   catchAllUnitTestsChannel,
+			wantAnalysis:  *degradationOnlyAnalysisSettings(),
+		},
+		{
+			name:          "mention is dropped when an unrouted owner sends the alert to the catch-all",
+			test:          mentionedTest,
+			projectOwners: map[string]string{mentionedTest: "unmapped-owner"},
+			ownerChannels: map[string]string{},
+			wantChannel:   catchAllUnitTestsChannel,
+			wantAnalysis:  defaultUnitTestAnalysisSettings,
+			wantMention:   "",
 		},
 		{
 			name:          "empty owner string is ignored and keeps the package channel",

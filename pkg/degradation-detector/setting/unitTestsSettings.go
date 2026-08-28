@@ -170,6 +170,9 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 	if err != nil {
 		slog.Error("error while fetching code-owner channels; falling back to package-based routing", "error", err)
 		ownerChannels = map[string]string{}
+		// Without the channel map every owned test would look "owned but unrouted" and be sent to
+		// the catch-all; dropping the owners keeps package-based routing working on this error path.
+		projectOwners = map[string]string{}
 	}
 
 	for _, test := range tests {
@@ -204,6 +207,10 @@ type resolvedRoute struct {
 //
 // Channel precedence: the test's code owner resolved via the CodeOwners service (primary) ->
 // the first package-prefix match in teamConfigs (fallback) -> the catch-all channel.
+// The package fallback applies only to tests with no owner attribution at all: a test whose
+// owner is known but has no channel configured in CodeOwners goes to the catch-all channel,
+// not to the package team's channel — package prefixes are too coarse (one package can hold
+// tests of several owners), so routing such a test by package would ping the wrong team.
 //
 // Analysis settings and additional metrics always come from the matching package teamConfig
 // (so e.g. RubyMine/PhpStorm degradation-only analysis and debugger packet metrics are kept
@@ -225,10 +232,14 @@ func resolveRoute(test string, projectOwners, ownerChannels map[string]string, c
 		route.mention = teamCfg.Mention
 	}
 
-	// Owner-based channel takes precedence over the package fallback.
+	// Owner-based channel takes precedence over the package fallback. An owned test whose
+	// owner has no configured channel goes to the catch-all rather than the package team's
+	// channel, so it doesn't land with a team that doesn't own it.
 	if owner := projectOwners[test]; owner != "" {
 		if channel := ownerChannels[owner]; channel != "" {
 			route.channel = channel
+		} else {
+			route.channel = catchAllUnitTestsChannel
 		}
 	}
 

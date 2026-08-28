@@ -40,7 +40,10 @@
           v-show="renderMode === 'charts'"
           class="flex flex-col gap-6"
         >
-          <slot :averages-configurators="averagesConfigurators" />
+          <slot
+            :averages-configurators="averagesConfigurators"
+            :machine-configurator="machineConfigurator"
+          />
         </div>
       </div>
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />

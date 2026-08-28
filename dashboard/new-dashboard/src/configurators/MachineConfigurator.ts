@@ -125,7 +125,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     const name = groupName.toLowerCase()
     if (name.startsWith("linux")) {
       return "pi icon-linux"
-    } else if (name.startsWith("mac") || name.startsWith("apple")) {
+    } else if (isMacMachine(groupName)) {
       return "pi pi-apple"
     }
     return "pi pi-microsoft"
@@ -242,6 +242,14 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     }
     return values
   }
+}
+
+// Whether a machine belongs to a Mac hardware class. Matches the group name the backend renders
+// ("Mac Cidr Performance", "Apple M4 Pro (13 vCPU, 64 GB)", "macMini 2018") and also a raw agent
+// name ("intellij-macos-perf-eqx-147911"), which a drilldown link may still carry in the selection.
+export function isMacMachine(name: string): boolean {
+  const lower = name.toLowerCase()
+  return lower.startsWith("mac") || lower.startsWith("apple") || lower.includes("macos")
 }
 
 export interface GroupedDimensionValue {

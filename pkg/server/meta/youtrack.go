@@ -32,6 +32,7 @@ type YoutrackCreateIssueRequest struct {
 	PreviousValue  string        `json:"previousValue"`
 	TestMethodName *string       `json:"testMethodName"`
 	TestType       string        `json:"testType"`
+	Product        string        `json:"product"`
 }
 
 type GenerateDescriptionData struct {
@@ -71,8 +72,8 @@ type VersionResponse struct {
 }
 
 const (
-	IJPL  = "22-22"
-	IDEA  = "22-619"
+	IDEA  = "22-22"
+	IJPL  = "22-619"
 	KTIJ  = "22-414"
 	WEB   = "22-96"
 	WI    = "22-19"
@@ -162,6 +163,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			ProjectId:   params.ProjectId,
 			Summary:     params.TicketLabel,
 			Description: generateDescription(descriptionData),
+			Product:     params.Product,
 		}, &response.Exceptions)
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)
@@ -190,6 +192,7 @@ type CommonIssueParams struct {
 	Summary     string
 	Description string
 	ExtraTags   []Tag
+	Product     string
 }
 
 func createYoutrackIssueCommon(ctx context.Context, request *http.Request, params CommonIssueParams, exceptions *[]string) (*YoutrackIssue, error) {
@@ -255,9 +258,37 @@ func createYoutrackIssueCommon(ctx context.Context, request *http.Request, param
 	}
 
 	setPriority(params.ProjectId, &issueInfo)
-	issueInfo.Tags = buildTags(params.ProjectId, params.ExtraTags)
+	tags, productTag := buildTags(params.ProjectId, params.Product, params.ExtraTags)
+	issueInfo.Tags = tags
 
-	return youtrackClient.CreateIssue(ctx, issueInfo)
+	issue, err := youtrackClient.CreateIssue(ctx, issueInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	applyProductBlockingTag(ctx, youtrackClient, issue.ID, params.ProjectId, productTag, exceptions)
+
+	return issue, nil
+}
+
+func applyProductBlockingTag(ctx context.Context, client *YoutrackClient, issueID string, projectId string, productTag *Tag, exceptions *[]string) {
+	if productTag == nil {
+		return
+	}
+
+	err := client.AddTag(ctx, issueID, *productTag)
+	if err == nil {
+		return
+	}
+	logError(fmt.Sprintf("cannot add the %s tag — check that the ij-perf service account is allowed to use it; applying the default blocking tag instead", productTag.Name), err, exceptions)
+
+	defaultTag := defaultBlockingTag(projectId)
+	if defaultTag == nil {
+		return
+	}
+	if err := client.AddTag(ctx, issueID, *defaultTag); err != nil {
+		logError("cannot add the "+defaultTag.Name+" tag", err, exceptions)
+	}
 }
 
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
@@ -454,23 +485,32 @@ func setPriority(projectId string, issueInfo *CreateIssueInfo) {
 	issueInfo.CustomFields = append(issueInfo.CustomFields, priorityField)
 }
 
-// buildTags returns the tags for a created issue: the project's default tags, the
-// created-by-ij-perf marker, then any extraTags (e.g. analysed-by-ij-perf for the
-// LLM-analysis flow).
-func buildTags(projectId string, extraTags []Tag) []Tag {
-	var tags []Tag
+var (
+	kotlinRegressionTag    = Tag{Name: "kotlin-regression", ID: "68-78861", Type: "Tag"}
+	blockingReleaseIdeaTag = Tag{Name: "blocking-release-idea", ID: "68-297083", Type: "Tag"}
+	regressionTag          = Tag{Name: "Regression", ID: "68-3044", Type: "Tag"}
+	blockingReleaseTag     = Tag{Name: "blocking-release", ID: "68-158967", Type: "Tag"}
+	createdByIjPerfTag     = Tag{Name: "created-by-ij-perf", ID: "68-523929", Type: "Tag"}
+)
 
+var blockingReleasePhpstormTag = Tag{Name: "blocking-release-phpstorm", ID: "68-543911", Type: "Tag"}
+
+var productBlockingTags = map[string]Tag{
+	"idea":                blockingReleaseIdeaTag,
+	"phpstorm":            blockingReleasePhpstormTag,
+	"phpstormWithPlugins": blockingReleasePhpstormTag,
+	"pycharm":             {Name: "blocking-release-pycharm", ID: "68-474076", Type: "Tag"},
+	"webstorm":            {Name: "blocking-release-webstorm", ID: "68-543913", Type: "Tag"},
+	"clion":               {Name: "blocking-release-clion", ID: "68-506280", Type: "Tag"},
+	"goland":              {Name: "blocking-release-goland", ID: "68-543912", Type: "Tag"},
+	"ruby":                {Name: "blocking-release-rubymine", ID: "68-478849", Type: "Tag"},
+	// datagrip, rust: no blocking-release tag in YouTrack yet.
+}
+
+func defaultBlockingTag(projectId string) *Tag {
 	switch projectId {
 	case KT, KTIJ:
-		tags = append(tags, Tag{
-			Name: "kotlin-regression",
-			ID:   "68-78861",
-			Type: "Tag",
-		}, Tag{
-			Name: "blocking-release-idea",
-			ID:   "68-297083",
-			Type: "Tag",
-		})
+		return &blockingReleaseIdeaTag
 	case
 		IJPL,
 		IDEA,
@@ -478,26 +518,39 @@ func buildTags(projectId string, extraTags []Tag) []Tag {
 		WEB,
 		WI,
 		GO:
-		tags = append(tags, Tag{
-			Name: "Regression",
-			ID:   "68-3044",
-			Type: "Tag",
-		}, Tag{
-			Name: "blocking-release",
-			ID:   "68-158967",
-			Type: "Tag",
-		})
+		return &blockingReleaseTag
+	}
+	return nil
+}
+
+func buildTags(projectId string, product string, extraTags []Tag) ([]Tag, *Tag) {
+	var tags []Tag
+
+	switch projectId {
+	case KT, KTIJ:
+		tags = append(tags, kotlinRegressionTag)
+	case
+		IJPL,
+		IDEA,
+		// RUBY,
+		WEB,
+		WI,
+		GO:
+		tags = append(tags, regressionTag)
 	}
 
-	tags = append(tags, Tag{
-		Name: "created-by-ij-perf",
-		ID:   "68-523929",
-		Type: "Tag",
-	})
+	var productTag *Tag
+	if tag, ok := productBlockingTags[product]; ok {
+		productTag = &tag
+	} else if defaultTag := defaultBlockingTag(projectId); defaultTag != nil {
+		tags = append(tags, *defaultTag)
+	}
+
+	tags = append(tags, createdByIjPerfTag)
 
 	tags = append(tags, extraTags...)
 
-	return tags
+	return tags, productTag
 }
 
 func getFieldIdByName(ctx context.Context, projectId, fieldName string, exceptions *[]string) string {

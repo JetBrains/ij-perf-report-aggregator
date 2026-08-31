@@ -269,6 +269,7 @@ async function createTicket() {
     currentValue: data.formattedCurrentValue ?? "",
     previousValue: data.formattedPreviousValue ?? "",
     testType: dbTypeStore().dbType,
+    product: youtrackClient.productId ?? undefined,
   }
 
   let issueResponse: IssueResponse

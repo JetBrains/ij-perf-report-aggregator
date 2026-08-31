@@ -46,8 +46,10 @@ export class YoutrackClient {
   private static readonly PROJECT_MAP: Record<string, Project[]> = {
     webstorm: [{ name: "WebStorm", id: "22-96" }],
     phpstorm: [{ name: "PhpStorm", id: "22-19" }],
+    phpstormWithPlugins: [{ name: "PhpStorm", id: "22-19" }],
     pycharm: [{ name: "PyCharm", id: "22-36" }],
     clion: [{ name: "CLion", id: "22-139" }],
+    datagrip: [{ name: "DataGrip", id: "22-146" }],
     goland: [{ name: "GoLand", id: "22-211" }],
     ruby: [{ name: "RubyMine", id: "22-25" }],
     rust: [{ name: "RustRover", id: "22-725" }],
@@ -79,10 +81,23 @@ export class YoutrackClient {
     return this.serverConfigurator.db === "perfint" || this.serverConfigurator.db === "perfintDev" ? this.serverConfigurator.table : this.serverConfigurator.db
   }
 
+  get productId(): string | null {
+    return this.getConfiguratorId() || null
+  }
+
   getProjects(): Project[] {
-    const id = this.getConfiguratorId()
-    const relatedProjects = YoutrackClient.PROJECT_MAP[id] ?? []
-    return [...relatedProjects, ...this.commonProjects]
+    const relatedProjects = YoutrackClient.PROJECT_MAP[this.getConfiguratorId()] ?? []
+    const projects = [...relatedProjects, ...this.commonProjects]
+    const seen = new Set(projects.map((project) => project.id))
+    for (const otherProjects of Object.values(YoutrackClient.PROJECT_MAP)) {
+      for (const project of otherProjects) {
+        if (!seen.has(project.id)) {
+          seen.add(project.id)
+          projects.push(project)
+        }
+      }
+    }
+    return projects
   }
 }
 
@@ -109,6 +124,7 @@ export interface CreateIssueRequest {
   previousValue: string
   testMethodName: string | undefined
   testType: string
+  product?: string
 }
 
 export interface CreateIssueByAnalysisRequest {

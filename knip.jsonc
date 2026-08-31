@@ -11,7 +11,5 @@
   "ignoreDependencies": [
     // Tailwind v4, pulled in via `@import "tailwindcss"` in dashboard/app CSS (knip can't see CSS imports).
     "tailwindcss",
-    // Type-only import in vite.config.ts (OutputAsset/OutputChunk); provided transitively by vite.
-    "rollup",
   ],
 }

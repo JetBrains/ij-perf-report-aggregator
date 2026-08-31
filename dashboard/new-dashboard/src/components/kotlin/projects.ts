@@ -84,12 +84,12 @@ const MEASURES = {
   ],
 }
 
-export const MACHINES = {
+const MACHINES = {
   linux: "linux-blade-hetzner",
   mac: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
 }
 
-export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
+const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   kotlinEmpty: buildCategory("Kotlin empty", "kotlin_empty/"),
   intelliJ: buildCategory("IntelliJ", "intellij_commit/"),
   // Same intelliJ. Need to avoid lot of lines on chart
@@ -129,7 +129,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   qaRefactorMove: buildCategory("QA Refactor / Move", "refactor-move/"),
 }
 
-export const KOTLIN_PROJECTS = kotlinProjects
+const KOTLIN_PROJECTS = kotlinProjects
 
 function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }

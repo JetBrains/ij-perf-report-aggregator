@@ -93,18 +93,18 @@ export function computeBaseStats(values: number[]): BaseStats {
 }
 
 // A |Δ%| at or above this is a practically-relevant change; below it is treated as flat.
-export const DIFF_PERCENT_WARN = 5
+const DIFF_PERCENT_WARN = 5
 // A |Δ%| at or above this is a severe change (drives the darker heatmap/cell tint).
-export const DIFF_PERCENT_SEVERE = 20
+const DIFF_PERCENT_SEVERE = 20
 
-export interface ImpactSeverity {
+interface ImpactSeverity {
   direction: "degradation" | "improvement"
   severity: "severe" | "warn"
 }
 
 // Classifies a Δ% into a tint bucket (direction + severity) or null when it is missing, zero, or
 // below the warn threshold. Shared by CompareTable's cell tints and the engine-comparison heatmap.
-export function diffPercentSeverity(diffPercent: number | undefined): ImpactSeverity | null {
+function diffPercentSeverity(diffPercent: number | undefined): ImpactSeverity | null {
   if (diffPercent == null || !Number.isFinite(diffPercent) || diffPercent === 0) return null
   const abs = Math.abs(diffPercent)
   if (abs < DIFF_PERCENT_WARN) return null
@@ -160,4 +160,4 @@ export function computeBranchStats(base: BaseStats, values: number[]): BranchSta
   return { count: values.length, center: branchCenter, diffPercent, disparity }
 }
 
-export const DISPARITY_SIGNIFICANT_THRESHOLD = 2
+const DISPARITY_SIGNIFICANT_THRESHOLD = 2

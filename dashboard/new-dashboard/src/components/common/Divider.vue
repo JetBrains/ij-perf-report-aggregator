@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-export interface Props {
+interface Props {
   title?: string
   label?: string
   description?: string

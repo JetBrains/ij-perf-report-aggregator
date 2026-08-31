@@ -59,7 +59,7 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
   return buildId
 }
 
-export function getAccidentBuild(params: CallbackDataParams): string | undefined {
+function getAccidentBuild(params: CallbackDataParams): string | undefined {
   const dbType = dbTypeStore().dbType
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN || dbType == DBType.TOOLBOX) {
     return getBuildId(params.value as number[])?.toString()

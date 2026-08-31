@@ -69,7 +69,7 @@ export class BranchConfigurator extends DimensionConfigurator {
 const GROUPED_MAJOR_BRANCH = /^\d{3}$/
 
 // Mutates `filter` in place to match `branch` under the current grouping mode.
-export function applyBranchFilter(filter: DataQueryFilter, branch: string, groupBranches: boolean): void {
+function applyBranchFilter(filter: DataQueryFilter, branch: string, groupBranches: boolean): void {
   if (groupBranches && GROUPED_MAJOR_BRANCH.test(branch)) {
     filter.v = branch + "%"
     filter.o = "like"

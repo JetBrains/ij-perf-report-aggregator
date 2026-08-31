@@ -1,4 +1,4 @@
-export const METRICS_MAPPING: Record<string, string> = {
+const METRICS_MAPPING: Record<string, string> = {
   "processingTime#": "",
   "processingSpeedAvg#": "",
   "lexingSpeed#": "",

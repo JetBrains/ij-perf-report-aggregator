@@ -127,7 +127,7 @@ interface ResolvedSeriesKey {
   fellBack: boolean
 }
 
-export function resolveSeriesKey(seriesName: string, measureName: string, dims: Dimensions): ResolvedSeriesKey {
+function resolveSeriesKey(seriesName: string, measureName: string, dims: Dimensions): ResolvedSeriesKey {
   // A dimension whose configurator has size 1 omits its part from the series name, so seed
   // those positions directly. Only the >1-size dimensions need to be matched against the parts.
   const singleBranch = dims.branches.length === 1

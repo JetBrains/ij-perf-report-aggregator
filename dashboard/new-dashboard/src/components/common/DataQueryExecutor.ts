@@ -83,7 +83,7 @@ function computeCartesian<T>(input: T[][]): T[][] {
   })
 }
 
-export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): DataQuery[] {
+function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): DataQuery[] {
   let producers = configuration.queryProducers
   if (producers.length === 0) {
     producers = [

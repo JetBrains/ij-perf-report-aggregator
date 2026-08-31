@@ -1,4 +1,4 @@
-export interface Definition {
+interface Definition {
   label: string
   measure: string | string[]
   description?: string

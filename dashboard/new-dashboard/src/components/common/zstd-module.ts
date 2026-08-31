@@ -8,7 +8,7 @@ function abort(what: string): void {
 const UTF8Decoder = new TextDecoder()
 
 export let HEAPU8: Uint8Array
-export let buffer: ArrayBuffer
+let buffer: ArrayBuffer
 
 function UTF8ToString(ptr: number, maxBytesToRead: number = 0) {
   if (!ptr) {

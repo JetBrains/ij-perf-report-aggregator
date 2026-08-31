@@ -20,7 +20,7 @@ export enum ChangePointClassification {
 export type BetterDirection = "lower" | "higher" | "stable" | "none"
 
 /** Direction a metric value moved at a change point; drives the trend-arrow orientation. */
-export type ChangeDirection = "up" | "down"
+type ChangeDirection = "up" | "down"
 
 /** A detected change point: how the value moved, and whether that move is good or bad. */
 export interface DetectedChange {

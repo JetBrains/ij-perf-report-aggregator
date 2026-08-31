@@ -4,7 +4,7 @@ import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter } from "../c
 import { DimensionConfigurator } from "./DimensionConfigurator"
 
 export const nightly = "Nightly"
-export const eap = "EAP / Release"
+const eap = "EAP / Release"
 
 export type ReleaseType = typeof eap | typeof nightly
 

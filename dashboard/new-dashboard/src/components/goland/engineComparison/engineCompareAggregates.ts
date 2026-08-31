@@ -21,14 +21,14 @@ export interface EngineComparePoint {
 }
 
 // Geomean of the ratios in one group (fast/medium/slow bucket, or cold/warm/typing phase).
-export interface GeomeanGroup {
+interface GeomeanGroup {
   key: string
   geomean: number
   count: number
 }
 
 // A single worst/best cell, surfaced in the verdict.
-export interface EngineExtreme {
+interface EngineExtreme {
   base: string
   title: string
   metricType: string

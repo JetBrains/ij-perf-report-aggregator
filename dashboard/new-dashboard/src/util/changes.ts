@@ -7,7 +7,7 @@ import { refToObservable } from "../configurators/rxjs"
 
 const MAX_CHANGES_PER_URL = 150
 
-export function base64ToHex(base64: string): string {
+function base64ToHex(base64: string): string {
   const decodedArray = new Uint8Array(Array.from(atob(base64), (c) => c.codePointAt(0) ?? 0))
   let hex = ""
   for (const byte of decodedArray) {

@@ -13,11 +13,11 @@ const nameSuggestTests = [
 ]
 const testGenerationTests = ["test_generation_add_tests: default", "test_generation_new_tests: default"]
 
-export function toSeparateCharts(tests: string[]): ComputedRef<ChartDefinition[]> {
+function toSeparateCharts(tests: string[]): ComputedRef<ChartDefinition[]> {
   return computed(() => tests.map((value) => toChartDefinition(value)))
 }
 
-export function toOneCharts(label: string, tests: string[], metric: string): ComputedRef<ChartDefinition[]> {
+function toOneCharts(label: string, tests: string[], metric: string): ComputedRef<ChartDefinition[]> {
   return computed(() => [toCombineChartDefinition(label, tests, metric)])
 }
 

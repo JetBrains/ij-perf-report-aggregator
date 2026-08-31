@@ -262,7 +262,7 @@ export interface Tab {
   label: string
 }
 
-export interface SubProject {
+interface SubProject {
   url: ROUTE_PREFIX
   label: string
   tabs: Tab[]

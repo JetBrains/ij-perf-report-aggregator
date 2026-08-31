@@ -3,7 +3,7 @@ import { selectedToArray } from "../../configurators/DimensionConfigurator"
 import { TestModeConfigurator } from "../../configurators/TestModeConfigurator"
 import { branchConfiguratorKey, dashboardConfiguratorsKey } from "../../shared/keys"
 
-export const SE_MEASURES = new Set(["searchEverywhere", "searchEverywhere_first_elements_added"])
+const SE_MEASURES = new Set(["searchEverywhere", "searchEverywhere_first_elements_added"])
 
 const SPLIT_MODE = "split"
 

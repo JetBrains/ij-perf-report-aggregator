@@ -26,7 +26,7 @@ export function emptyAnalysesFilterState(): AnalysesFilterState {
   }
 }
 
-export function matchesCommit(commits: string[] | undefined, hash: string): boolean {
+function matchesCommit(commits: string[] | undefined, hash: string): boolean {
   const needle = hash.trim().toLowerCase()
   if (needle === "") return true
   if (commits == null) return false
@@ -65,7 +65,7 @@ function isBeforeOrEqualTo(createdAt: number, to: Date | null): boolean {
   return createdAt <= end
 }
 
-export function matchesAnalysisFilter(item: LlmAnalysisListItem, filter: AnalysesFilterState): boolean {
+function matchesAnalysisFilter(item: LlmAnalysisListItem, filter: AnalysesFilterState): boolean {
   if (!matchesSearch(item, filter.search)) return false
   if (filter.states.length > 0 && !filter.states.includes(item.state)) return false
 

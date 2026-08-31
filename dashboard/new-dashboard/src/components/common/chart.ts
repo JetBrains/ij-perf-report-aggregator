@@ -43,7 +43,7 @@ export function valueUnitFromUrl(value: unknown): ValueUnit | null {
   return single === "ms" || single === "ns" || single === "counter" ? single : null
 }
 
-export type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
+type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
 
 export interface ChartStyle {
   barSeriesLabelPosition:

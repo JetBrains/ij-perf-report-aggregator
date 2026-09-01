@@ -38,7 +38,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: ["axios/completion/functions", "eslint-plugin-jest/completion/types", "pancake-frontend/completion/component", "vue3-admin-vite/completion/component"],
+    projects: ["axios/completion/functions", "eslint-plugin-jest/completion/types", "pancake-frontend/completion/component", "npmx-dev/completion/AppFooter/component/"],
   },
   {
     labels: ["SearchEverywhere"],

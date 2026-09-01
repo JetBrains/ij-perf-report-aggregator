@@ -139,6 +139,7 @@ const groups = [
       "toh-pt6/typing/toh-pt6",
       "react-todo-js/typing/react-todo",
       "vue3-realworld-example-app/typing/Profile",
+      "npmx-dev/typing/AppFooter",
     ],
   },
   {

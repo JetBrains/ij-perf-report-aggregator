@@ -47,7 +47,7 @@ func GenerateEditorSettings() []detector.PerformanceSettings {
 						Machine:                   machine,
 						Metric:                    metric,
 						Branch:                    "master",
-						Channel:                   "ij-highlighting-wg",
+						Channel:                   "ij-editor-tests-alerts",
 						ProductLink:               "intellij",
 						MinimumSegmentLength:      7,
 						MedianDifferenceThreshold: 10,

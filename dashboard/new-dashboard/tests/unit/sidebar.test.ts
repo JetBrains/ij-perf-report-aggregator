@@ -5,6 +5,12 @@ import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebar
 import { dbTypeStore } from "../../src/shared/dbTypes"
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 
+const devPoint = (project: string, value: number, prev: number) =>
+  ({
+    seriesName: project,
+    value: [1755000000000, value, "completion", "d", "Windows EC2 C6id.4xlarge", 1046874041, project, "master", { prev, next: null }],
+  }) as unknown as CallbackDataParams
+
 describe("InfoSideBar Test", () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -308,6 +314,40 @@ describe("InfoSideBar Test", () => {
       deltaPrevious: "0 (0.0%)",
       date: timeFormatWithoutSeconds.format(1709480472000),
       projectName: "com.intellij.codeInsight.JavaCommentByLineTest.testUncommentLargeFilePerformance - Uncommenting large file",
+    })
+  })
+
+  // A tests page draws one chart per measure with a series per project, so the series label is the
+  // project name. Selecting a point that exists in several of those series (a `point` URL parameter
+  // from a degradation notification) must still report the measure as the metric - bisect, accident
+  // reports and drilldown links are launched from it.
+  it("keeps the metric name when several project series are selected at once", () => {
+    dbTypeStore().setDbType("perfintDev", "ruby")
+    const result = getInfoDataFrom(
+      [
+        devPoint("keycloak_release_20/completion/QuarkusRuntimePomXml", 1200, 1000),
+        devPoint("keycloak_release_20/completion/RootPomXml", 900, 800),
+        devPoint("keycloak_release_20/completion/CorePomXml", 700, 600),
+      ],
+      "ms",
+      null,
+      ""
+    )
+
+    expect(result.series.map((series) => series.metricName)).toStrictEqual(["completion", "completion", "completion"])
+    expect(result.series.map((series) => series.label)).toStrictEqual([
+      "keycloak_release_20/completion/QuarkusRuntimePomXml",
+      "keycloak_release_20/completion/RootPomXml",
+      "keycloak_release_20/completion/CorePomXml",
+    ])
+    // Everything outside `series` describes the first selected point, so the sidebar actions get a
+    // consistent project/metric pair and see the change that triggered the notification.
+    expect(result).toMatchObject({
+      projectName: "keycloak_release_20/completion/QuarkusRuntimePomXml",
+      buildId: 1046874041,
+      deltaPrevious: "-200 ms (-16.7%)",
+      previousValue: 1000,
+      formattedCurrentValue: "1 s, 200 ms",
     })
   })
 

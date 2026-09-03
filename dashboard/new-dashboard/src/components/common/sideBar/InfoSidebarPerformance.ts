@@ -8,7 +8,7 @@ import { dbTypeStore, resolveMeasureUnitForDb } from "../../../shared/dbTypes"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
-import { formatMeasureValue, resolveMeasureUnit, timeFormatWithoutSeconds } from "../formatter"
+import { formatMeasureValue, timeFormatWithoutSeconds } from "../formatter"
 import { encodeRison } from "../rison"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
@@ -247,6 +247,17 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   return getInfoWithAccidentsAndDescription(params, valueUnit, accidents)
 }
 
+function toDataSeries(params: CallbackDataParams, valueUnit: ValueUnit, scaling: boolean): DataSeries {
+  const dataSeries = params.value as OptionDataValue[]
+  // Take the metric from the data, not from the series label: a chart drawing one measure for
+  // several projects labels its series by project, and consumers of `metricName` (bisect, accident
+  // reports, drilldown links) would then get a project name as the metric.
+  const metricName = getBasicInfo(params, valueUnit).metricName
+  const unit = resolveMeasureUnitForDb(metricName ?? "", { storedType: dataSeries[3] as string, valueUnit, scaling })
+  const rawValue = (scaling ? dataSeries.at(-1) : dataSeries[1]) as number
+  return { metricName, label: params.seriesName ?? metricName ?? "", value: formatMeasureValue(rawValue, unit), color: params.color as string, rawValue }
+}
+
 export function getInfoDataFrom(
   params: CallbackDataParams | CallbackDataParams[],
   valueUnit: ValueUnit,
@@ -255,45 +266,20 @@ export function getInfoDataFrom(
   seriesContext?: { seriesValues: number[] | undefined; pointIndex: number | undefined }
 ): InfoData {
   const accidents = accidentsConfigurator?.value
-  if (Array.isArray(params) && params.length > 1) {
-    const filteredParams = filterUniqueByName(params)
-    const info = getInfo(params[0], valueUnit, accidents)
-    const series: DataSeries[] = []
-    for (const param of filteredParams) {
-      const currentSeriesData = param.value as OptionDataValue[]
-      const value = currentSeriesData[1] as number
-      const showValue = formatMeasureValue(value, resolveMeasureUnit(param.seriesName as string))
-      series.push({ metricName: param.seriesName, value: showValue, color: param.color as string, rawValue: value })
-    }
-
-    return {
-      ...info,
-      series,
-      deltaPrevious: undefined,
-      deltaNext: undefined,
-      chartDataUrl,
-      buildIdPrevious: undefined,
-      buildIdNext: undefined,
-      formattedCurrentValue: undefined,
-      formattedPreviousValue: undefined,
-      previousValue: undefined,
-      nextValue: undefined,
-      metricType: info.type,
-      seriesValues: seriesContext?.seriesValues,
-      pointIndex: seriesContext?.pointIndex,
-    }
-  }
-  if (Array.isArray(params)) {
-    params = params[0]
-  }
-  const info = getInfo(params, valueUnit, accidents)
-  const metricName = info.metricName ?? ""
-  const dataSeries = params.value as OptionDataValue[]
+  const paramsList = Array.isArray(params) ? params : [params]
+  // Several points can be selected at once - all series of a chart at the hovered x, or every
+  // series matching the `point` URL parameter. They are listed in `series`, while everything else
+  // below (project, build, deltas) describes the first one, which is what the sidebar actions
+  // (bisect, accident report, analysis) are launched for.
+  const mainParams = paramsList[0]
   const scaling = useSettingsStore().scaling
-  const unit = resolveMeasureUnitForDb(metricName, { storedType: dataSeries[3] as string, valueUnit, scaling })
-  const value: number = scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
-  const showValue: string = formatMeasureValue(value, unit)
-  const delta = findDeltaInData(dataSeries)
+  const info = getInfo(mainParams, valueUnit, accidents)
+  const series = filterUniqueByName(paramsList).map((param) => toDataSeries(param, valueUnit, scaling))
+
+  const mainSeriesData = mainParams.value as OptionDataValue[]
+  const unit = resolveMeasureUnitForDb(info.metricName ?? "", { storedType: mainSeriesData[3] as string, valueUnit, scaling })
+  const value = series[0].rawValue
+  const delta = findDeltaInData(mainSeriesData)
   let deltaPrevious: string | undefined
   let deltaNext: string | undefined
   let buildIdPrevious: number | undefined
@@ -318,11 +304,11 @@ export function getInfoDataFrom(
     ...info,
     deltaNext,
     deltaPrevious,
-    series: [{ metricName: info.metricName, value: showValue, color: params.color as string, rawValue: value }],
+    series,
     chartDataUrl,
     buildIdPrevious,
     buildIdNext,
-    formattedCurrentValue: showValue,
+    formattedCurrentValue: series[0].value,
     formattedPreviousValue,
     previousValue,
     nextValue,

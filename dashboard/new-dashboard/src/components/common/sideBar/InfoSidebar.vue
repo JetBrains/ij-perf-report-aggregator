@@ -104,20 +104,34 @@
             </span>
           </span>
         </div>
-        <div v-else>
+        <div
+          v-else
+          class="flex flex-col gap-2"
+        >
+          <span
+            v-if="sharedMetricName"
+            class="flex gap-1.5 items-center"
+          >
+            <BeakerIcon class="w-4 h-4" />
+            <span
+              v-tooltip.left="getTooltipForMetric(sharedMetricName)"
+              :class="metricDescription != null ? getURLStyle() : ''"
+              >{{ sharedMetricName }}</span
+            >
+          </span>
           <div class="grid grid-cols-[repeat(3,max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose">
             <template
               v-for="item in data?.series"
-              :key="item.metricName"
+              :key="item.label"
             >
               <span
-                v-if="item.metricName"
+                v-if="item.label"
                 class="rounded-lg w-2.5 h-2.5"
                 :style="{ 'background-color': item.color }"
               />
-              <span v-if="item.metricName">{{ item.metricName }}</span>
+              <span v-if="item.label">{{ item.label }}</span>
               <span
-                v-if="item.metricName"
+                v-if="item.label"
                 v-tooltip.right="{
                   value: getRawValueIfDifferent(item),
                   autoHide: false,
@@ -139,7 +153,7 @@
         </span>
 
         <span
-          v-if="data?.deltaPrevious"
+          v-if="data?.series.length == 1 && data.deltaPrevious"
           class="flex gap-1.5 items-center"
         >
           <ArrowLeftIcon class="w-4 h-4 flex-none" />
@@ -154,7 +168,7 @@
           >
         </span>
         <span
-          v-if="data?.deltaNext"
+          v-if="data?.series.length == 1 && data.deltaNext"
           class="flex gap-1.5 items-center"
         >
           <ArrowRightIcon class="w-4 h-4 flex-none" />
@@ -475,6 +489,12 @@ const description = computed(() => vm.data.value?.description.value?.description
 const owner = computed(() => vm.data.value?.owner.value ?? null)
 
 const metricDescription = computed(() => getMetricDescription(data.value?.series[0].metricName))
+// Several selected series share a chart, so on tests pages they share the measure too; the per-series
+// rows show project labels, and this puts the metric they all belong to above them.
+const sharedMetricName = computed(() => {
+  const names = new Set(data.value?.series.map((s) => s.metricName))
+  return names.size == 1 ? [...names][0] : undefined
+})
 
 function getTooltipForMetric(metricName: string | undefined) {
   const metricInfo = getMetricDescription(metricName)

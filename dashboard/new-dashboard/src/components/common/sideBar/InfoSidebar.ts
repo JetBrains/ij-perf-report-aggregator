@@ -56,6 +56,8 @@ class Description {
 export interface DataSeries {
   value: string
   metricName: string | undefined
+  // what the chart calls the series - the project on tests pages; display only, unlike metricName
+  label: string
   color: string
   rawValue: number
 }
@@ -146,14 +148,12 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   }
   const queryParams: string = params.toString()
 
-  const measures =
-    data?.series
-      .map((s) => s.metricName)
-      .filter((m): m is string => m != undefined)
-      .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
-      .map((m) => encodeURIComponent(m))
-      .map((m) => "&measure=" + m)
-      .join("") ?? ""
+  const measures = [...new Set(data?.series.map((s) => s.metricName))]
+    .filter((m): m is string => m != undefined)
+    .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
+    .map((m) => encodeURIComponent(m))
+    .map((m) => "&measure=" + m)
+    .join("")
 
   return router.resolve(testURL + "?" + queryParams + measures).href
 }

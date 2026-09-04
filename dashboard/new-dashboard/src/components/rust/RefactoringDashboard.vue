@@ -90,6 +90,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Optimize Imports inside macro calls: tokio-rt-common/src/lib.rs"
+        measure="execute_editor_optimizeimports"
+        :projects="rustRefactoringTestCases.optimizeImportsUseInsideMacro"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Optimize Imports in Directory: src/small"
         measure="optimizeImportsOnDirectory"
         :projects="rustRefactoringTestCases.optimizeImportsSmallDirectory"
@@ -110,6 +117,7 @@
           ...rustRefactoringTestCases.optimizeImportsSmallFile,
           ...rustRefactoringTestCases.optimizeImportsBigFile,
           ...rustRefactoringTestCases.optimizeImportsFileTypeProject,
+          ...rustRefactoringTestCases.optimizeImportsUseInsideMacro,
           ...rustRefactoringTestCases.optimizeImportsSmallDirectory,
           ...rustRefactoringTestCases.optimizeImportsBigDirectory,
         ]"

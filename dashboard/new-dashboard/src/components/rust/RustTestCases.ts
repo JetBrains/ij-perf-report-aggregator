@@ -216,6 +216,7 @@ export const rustRefactoringTestCases = {
   optimizeImportsSmallDirectory: ["OptImpSmallDir/optimizeImportsOnDirectory/OptImpSmallDir"],
   optimizeImportsBigDirectory: ["OptImpBigDir/optimizeImportsOnDirectory/OptImpBigDir"],
   optimizeImportsFileTypeProject: ["refactoring/optimizeImportsFileType/optimizeImports/optimizeImportsBig"],
+  optimizeImportsUseInsideMacro: ["refactoring/optimizeImportsTokioRtCommon/optimizeImports/optimizeImportsTokioRtCommon"],
 }
 export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
   {

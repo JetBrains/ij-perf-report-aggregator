@@ -9,7 +9,6 @@ http-client.env.json
 
 node_modules/
 cmd/frontend/resources/
-cmd/degradation-analyzer/kodata/
 values-resolved.yaml
 
 .eslintcache

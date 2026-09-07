@@ -7,7 +7,6 @@ import { defineConfig, PluginOption, Rollup } from "vite"
 import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
 import { configDefaults } from "vitest/config"
-import { viteStaticCopy } from "vite-plugin-static-copy"
 import { PrimeVueResolver } from "@openvue/auto-import-resolver"
 import tailwindcss from "@tailwindcss/vite"
 
@@ -50,14 +49,6 @@ export default defineConfig({
       ],
     }),
     brotli(),
-    viteStaticCopy({
-      targets: [
-        {
-          dest: "../../degradation-analyzer/kodata",
-          src: path.resolve(import.meta.dirname, "dashboard/new-dashboard/resources/projects"),
-        },
-      ],
-    }),
   ],
   root: "dashboard/app",
   publicDir: path.resolve(import.meta.dirname, "dashboard/app/public"),

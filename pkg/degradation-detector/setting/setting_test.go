@@ -11,6 +11,7 @@ func TestKotlinSetting(t *testing.T) {
 	t.Parallel()
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 	settings = append(settings, GenerateKotlinSettings()...)
+	assert.NotEmpty(t, settings)
 	for _, setting := range settings {
 		assert.True(t, setting.AnalysisSettings.ReportType == detector.ImprovementEvent || setting.AnalysisSettings.ReportType == detector.DegradationEvent)
 	}

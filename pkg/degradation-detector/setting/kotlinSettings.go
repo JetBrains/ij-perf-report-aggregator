@@ -2,8 +2,11 @@ package setting
 
 import (
 	"encoding/json"
+	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
@@ -25,26 +28,38 @@ func extractStrings(data any) []string {
 	return result
 }
 
+func koDataPath() string {
+	if env := os.Getenv("KO_DATA_PATH"); env != "" {
+		return env
+	}
+	_, thisFile, _, _ := runtime.Caller(0)
+	repoRoot := filepath.Join(filepath.Dir(thisFile), "..", "..", "..")
+	return filepath.Join(repoRoot, "cmd", "degradation-analyzer", "kodata")
+}
+
 func getKotlinProjects() ([]string, error) {
 	var result any
-	env := os.Getenv("KO_DATA_PATH")
-	projectsFile := "projects/kotlin_projects.json"
-	var kotlinProjectsFilePath string
-	if env == "" {
-		kotlinProjectsFilePath = filepath.Join("..", "..", "..", "cmd", "degradation-analyzer", "kodata", projectsFile)
-	} else {
-		kotlinProjectsFilePath = filepath.Join(env, projectsFile)
-	}
+	kotlinProjectsFilePath := filepath.Join(koDataPath(), "projects", "kotlin_projects.json")
 	content, err := os.ReadFile(kotlinProjectsFilePath)
 	if err != nil {
 		return nil, err
 	}
-	_ = json.Unmarshal(content, &result)
-	return extractStrings(result), nil
+	if err = json.Unmarshal(content, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse %s: %w", kotlinProjectsFilePath, err)
+	}
+	names := extractStrings(result)
+	if len(names) == 0 {
+		return nil, fmt.Errorf("no project found in %s", kotlinProjectsFilePath)
+	}
+	return names, nil
 }
 
 func GenerateKotlinSettings() []detector.PerformanceSettings {
-	testNames, _ := getKotlinProjects()
+	testNames, err := getKotlinProjects()
+	if err != nil {
+		slog.Error("cannot load kotlin projects, no kotlin test will be analyzed", "error", err)
+		return nil
+	}
 	tests := generateKotlinTests(testNames)
 	metrics := []string{
 		"completion#mean_value", "findUsages#mean_value",

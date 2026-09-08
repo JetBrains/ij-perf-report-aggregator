@@ -9,6 +9,8 @@ ingressBackend:
 collector:
   teamcityUrl: "http://buildserver.labs.intellij.net"
   buildConfigurations: []
+degradationDetector:
+  healthSlackChannel: ""
 images:
   backend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/backend
   frontend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend

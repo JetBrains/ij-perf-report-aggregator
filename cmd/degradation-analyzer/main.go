@@ -1,10 +1,11 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
-	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -18,16 +19,7 @@ func main() {
 	backendUrl := getBackendUrl()
 	client := createHttpClient()
 	slog.Info("started")
-	analysisSettings := make([]detector.Settings, 0, 25000)
-	for _, s := range generatePerformanceSettings(backendUrl, client) {
-		analysisSettings = append(analysisSettings, s)
-	}
-	for _, s := range generateStartupSettings(backendUrl, client) {
-		analysisSettings = append(analysisSettings, s)
-	}
-	for _, s := range generateFleetStartupSettings() {
-		analysisSettings = append(analysisSettings, s)
-	}
+	analysisSettings := collectSettings(backendUrl, client)
 	metrics := detector.FetchMetricsFromClickhouse(analysisSettings, client, backendUrl)
 	metricsForDegradation := make(chan detector.QueryResultWithSettings, 5)
 	metricsForMissingMetrics := make(chan detector.QueryResultWithSettings, 5)
@@ -73,44 +65,38 @@ func createHttpClient() *http.Client {
 	}
 }
 
-func generateStartupSettings(backendUrl string, client *http.Client) []detector.StartupSettings {
-	return slices.Concat(
-		setting.GenerateStartupSettingsForIDEA(backendUrl, client),
-		setting.GenerateStartupSettingsForGoland(backendUrl, client),
-		setting.GenerateStartupSettingsForPhpStorm(backendUrl, client),
-	)
+func collectSettings(backendUrl string, client *http.Client) []detector.Settings {
+	analysisSettings := make([]detector.Settings, 0, 25000)
+	empty := make([]string, 0)
+	for _, g := range setting.Generators() {
+		settings := g.Generate(backendUrl, client)
+		slog.Info("settings generated", "generator", g.Name, "count", len(settings))
+		if len(settings) == 0 {
+			empty = append(empty, g.Name)
+		}
+		analysisSettings = append(analysisSettings, settings...)
+	}
+	if len(empty) > 0 {
+		reportEmptyGenerators(client, empty)
+	}
+	return analysisSettings
 }
 
-func generateFleetStartupSettings() []detector.FleetStartupSettings {
-	return slices.Concat(
-		setting.GenerateFleetStartupSettings(),
-	)
-}
-
-func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	return slices.Concat(
-		setting.GenerateWorkspaceSettings(),
-		setting.GenerateKotlinSettings(),
-		setting.GenerateKotlinIdeaSettings(backendUrl, client),
-		setting.GenerateMavenSettings(),
-		setting.GenerateGradleSettings(),
-		setting.GenerateVCSSettings(),
-		setting.GeneratePhpStormSettings(backendUrl, client),
-		setting.GenerateClionSettings(backendUrl, client),
-		setting.GenerateAllUnitTestsSettings(backendUrl, client),
-		setting.GenerateGolandPerfSettings(backendUrl, client),
-		setting.GenerateRustPerfSettings(backendUrl, client),
-		setting.GenerateFleetPerformanceSettings(backendUrl, client),
-		setting.GenerateRubyPerfSettings(backendUrl, client),
-		setting.GenerateJavaSettings(backendUrl, client),
-		setting.GenerateUltimateSettings(backendUrl, client),
-		setting.GenerateAIASettings(),
-		setting.GenerateAIATestTokenSettings(),
-		setting.GenerateKotlinBuildToolsSettings(backendUrl, client),
-		setting.GenerateKotlinMultiplatformToolingSettings(backendUrl, client),
-		setting.GenerateUISettings(),
-		setting.GenerateEditorSettings(),
-		setting.GenerateWebStormSettings(backendUrl, client),
-		setting.GenerateCloudSettings(backendUrl, client),
-	)
+func reportEmptyGenerators(client *http.Client, names []string) {
+	slog.Error("no settings generated, the corresponding products get no degradation or missing-data alerts", "generators", names)
+	channel := os.Getenv("HEALTH_SLACK_CHANNEL")
+	if channel == "" {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	err := detector.SendSlackMessage(ctx, client, detector.SlackMessage{
+		Channel: channel,
+		Text: ":rotating_light: degradation-analyzer generated no settings for: `" + strings.Join(names, "`, `") + "`\n" +
+			"Those products get no degradation and no missing-data alerts until this is fixed. " +
+			"Check the CronJob logs or the settings generator for a config or backend error.",
+	})
+	if err != nil {
+		slog.Error("failed to send health message to slack", "error", err, "channel", channel)
+	}
 }

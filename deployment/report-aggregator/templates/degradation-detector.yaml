@@ -38,5 +38,9 @@ spec:
                       key: token
                 - name: BACKEND_URL
                   value: "http://backend:80"
+                {{- with .Values.degradationDetector.healthSlackChannel }}
+                - name: HEALTH_SLACK_CHANNEL
+                  value: {{ . | quote }}
+                {{- end }}
           imagePullSecrets:
             - name: ghcr

@@ -7,11 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStaticGeneratorsProduceSettings(t *testing.T) {
+	t.Parallel()
+	for _, g := range Generators() {
+		if !g.Static {
+			continue
+		}
+		t.Run(g.Name, func(t *testing.T) {
+			t.Parallel()
+			assert.NotEmpty(t, g.Generate("", nil), "generator %s produced no settings", g.Name)
+		})
+	}
+}
+
 func TestKotlinSetting(t *testing.T) {
 	t.Parallel()
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 	settings = append(settings, GenerateKotlinSettings()...)
-	assert.NotEmpty(t, settings)
 	for _, setting := range settings {
 		assert.True(t, setting.AnalysisSettings.ReportType == detector.ImprovementEvent || setting.AnalysisSettings.ReportType == detector.DegradationEvent)
 	}

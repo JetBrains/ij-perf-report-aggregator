@@ -41,6 +41,11 @@ func Generators() []Generator {
 		withBackend("startupGoland", GenerateStartupSettingsForGoland),
 		withBackend("startupPhpStorm", GenerateStartupSettingsForPhpStorm),
 		static("fleetStartup", GenerateFleetStartupSettings),
+		// AT-5154 TEMPORARY: end-to-end drill of the empty-generator alert.
+		// Deliberately produces nothing so the next scheduled run posts to HEALTH_SLACK_CHANNEL.
+		// Revert this commit once the message has been seen in the channel.
+		// Static is false on purpose so TestStaticGeneratorsProduceSettings does not flag it.
+		{Name: "selftestAlwaysEmpty", Generate: func(string, *http.Client) []detector.Settings { return nil }},
 	}
 }
 

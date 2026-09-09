@@ -616,6 +616,35 @@ func TestSearchMetricValues_UntruncatedAnswerStillReportsItsSpan(t *testing.T) {
 // aggregate=daily must return day buckets, aggregate over DISTINCT builds (a build can appear
 // twice and would otherwise double-weight the median), and span the window instead of the
 // most recent rows.
+// The window filter straddles a partial day at each end, so a full answer can span days+1 dates.
+// It must not report "61 of 60 requested days" — a field callers are told to trust cannot print
+// something that reads as a bug.
+func TestSearchMetricValues_FullWindowIsNotReportedAsOverflow(t *testing.T) {
+	t.Parallel()
+	db := &fakeDriver{}
+	db.push(fakeQueryResult{
+		rows: [][]any{
+			{"perfintDev", "ide", "2026-09-09", uint32(5), 378.0, 121.0, 483.0},
+			{"perfintDev", "ide", "2026-07-11", uint32(9), 221.0, 215.0, 543.0},
+		},
+	})
+
+	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	cs := connectClient(t, svc)
+
+	var out searchMetricValuesOutput
+	callTool(t, cs, "search_metric_values", map[string]any{
+		"project":     "spring_boot/showIntentions",
+		"metric_name": "test#max_awt_delay",
+		"days":        60,
+		"aggregate":   "daily",
+	}, &out)
+
+	if want := "2026-07-11..2026-09-09 (full 60-day window)"; out.Covered != want {
+		t.Errorf("covered = %q, want %q", out.Covered, want)
+	}
+}
+
 func TestSearchMetricValues_DailyAggregate(t *testing.T) {
 	t.Parallel()
 	db := &fakeDriver{}

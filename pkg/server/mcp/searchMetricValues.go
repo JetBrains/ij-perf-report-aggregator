@@ -199,8 +199,14 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 }
 
 // coveredSpan renders the span the answer actually covers, e.g.
-// "2026-09-03..2026-09-09 (7 of 90 requested days)". The row list alone cannot show this: an
-// answer cut short by `limit` looks complete, just shorter.
+// "2026-09-03..2026-09-09 (7 of 90 requested days)" when `limit` cut it short, or
+// "2026-07-11..2026-09-09 (full 60-day window)" when it did not. The row list alone cannot show
+// this: an answer cut short by `limit` looks complete, just shorter.
+//
+// The window filter is `generated_time > now() - days`, which straddles a partial day at each end,
+// so an untruncated answer can span days+1 calendar dates. Reporting that as "61 of 60 requested
+// days" reads as a bug and costs the field the trust it exists to earn, so a span that reaches the
+// requested window is named as full rather than counted.
 func coveredSpan(oldest, newest string, days int) string {
 	if oldest == "" || newest == "" {
 		return ""
@@ -212,7 +218,10 @@ func coveredSpan(oldest, newest string, days int) string {
 	if errO != nil || errN != nil {
 		return span
 	}
-	return fmt.Sprintf("%s (%d of %d requested days)", span, int(n.Sub(o).Hours()/24)+1, days)
+	if covered := int(n.Sub(o).Hours()/24) + 1; covered < days {
+		return fmt.Sprintf("%s (%d of %d requested days)", span, covered, days)
+	}
+	return fmt.Sprintf("%s (full %d-day window)", span, days)
 }
 
 func dayOf(stamp string) string {
@@ -232,11 +241,11 @@ func narrowedWindowNote(rows, limit, days int, covered string, daily bool) strin
 	if rows < limit {
 		return ""
 	}
-	unit, escape := "row", `re-ask with aggregate="daily" to get the whole window as one row per day, or raise limit`
+	unit, escape := "row", `Re-ask with aggregate="daily" to get the whole window as one row per day, or raise limit`
 	if daily {
-		unit, escape = "day", "raise limit to cover the whole window"
+		unit, escape = "day", "Raise limit to cover the whole window"
 	}
-	return fmt.Sprintf("TRUNCATED at limit=%d %ss, newest-first: this answer covers %s of the %d requested — older data exists and is NOT included. "+
+	return fmt.Sprintf("TRUNCATED at limit=%d %ss, newest-first: this answer covers only %s — older data exists and is NOT included. "+
 		"Do not read it as the full history, and do not compute a baseline or call a change noise from it: the window may lie entirely on one side of the change you are investigating. %s.",
-		limit, unit, cmp.Or(covered, "an unknown span"), days, escape)
+		limit, unit, cmp.Or(covered, fmt.Sprintf("an unknown part of the %d requested days", days)), escape)
 }

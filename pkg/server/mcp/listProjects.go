@@ -28,6 +28,7 @@ type projectRow struct {
 type listProjectsOutput struct {
 	Rows  []projectRow `json:"rows"`
 	Count int          `json:"count"`
+	Notes []string     `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }
 
 func (s *service) listProjects(ctx context.Context, _ *sdk.CallToolRequest, in listProjectsInput) (*sdk.CallToolResult, listProjectsOutput, error) {
@@ -76,5 +77,18 @@ func (s *service) listProjects(ctx context.Context, _ *sdk.CallToolRequest, in l
 		return nil, listProjectsOutput{}, fmt.Errorf("rows: %w", err)
 	}
 	out.Count = len(out.Rows)
+	if out.Count == 0 {
+		filters := []string{fmt.Sprintf("branch=%q", in.Branch), fmt.Sprintf("last %dd", days)}
+		if in.ProjectPattern != "" {
+			filters = append(filters, fmt.Sprintf("project_pattern=%q", in.ProjectPattern))
+		}
+		if in.Machine != "" {
+			filters = append(filters, fmt.Sprintf("machine=%q", in.Machine))
+		}
+		out.Notes = append(out.Notes, noRowsNote("project", filters, tables))
+	}
+	if note := truncatedNote(out.Count, limit); note != "" {
+		out.Notes = append(out.Notes, note)
+	}
 	return nil, out, nil
 }

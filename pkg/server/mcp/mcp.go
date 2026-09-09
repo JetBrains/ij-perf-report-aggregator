@@ -243,6 +243,7 @@ func (s *service) resolveTables(ctx context.Context, db, table string) ([]tableR
 type listTablesOutput struct {
 	Tables []tableRef `json:"tables" jsonschema:"All (database, table) pairs that store performance measurements"`
 	Count  int        `json:"count"`
+	Notes  []string   `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }
 
 func (s *service) listTablesTool(ctx context.Context, _ *sdk.CallToolRequest, _ struct{}) (*sdk.CallToolResult, listTablesOutput, error) {
@@ -250,7 +251,11 @@ func (s *service) listTablesTool(ctx context.Context, _ *sdk.CallToolRequest, _ 
 	if err != nil {
 		return nil, listTablesOutput{}, err
 	}
-	return nil, listTablesOutput{Tables: all, Count: len(all)}, nil
+	out := listTablesOutput{Tables: all, Count: len(all)}
+	if out.Count == 0 {
+		out.Notes = append(out.Notes, "the server discovered no measurement tables at all — this is a server-side problem, not an answer about the data")
+	}
+	return nil, out, nil
 }
 
 func buildUnion(tables []tableRef, perTable func(tableRef) (string, []any)) (string, []any) {
@@ -308,6 +313,33 @@ func formatBuildNumber(c1, c2, c3 uint16) string {
 		return s
 	}
 	return s + "." + strconv.FormatUint(uint64(c3), 10)
+}
+
+// scannedTables renders the (database, table) pairs a tool queried, so an empty answer can say where
+// it looked.
+func scannedTables(tables []tableRef) string {
+	names := make([]string, 0, len(tables))
+	for _, r := range tables {
+		names = append(names, r.Database+"."+r.Table)
+	}
+	return strings.Join(names, ", ")
+}
+
+// noRowsNote explains an empty answer: what was asked for, and where it was looked for. Without it an
+// empty list reads as "this does not exist" rather than "nothing matched these filters", and a caller
+// (an LLM above all) concludes around the gap instead of reporting it.
+func noRowsNote(what string, filters []string, tables []tableRef) string {
+	return fmt.Sprintf("no %s matched %s; scanned %d table(s): %s",
+		what, strings.Join(filters, ", "), len(tables), scannedTables(tables))
+}
+
+// truncatedNote warns that a `limit`-sized answer is probably partial, which no field of the result
+// itself can show.
+func truncatedNote(rows, limit int) string {
+	if rows < limit {
+		return ""
+	}
+	return fmt.Sprintf("exactly %d row(s) returned — the limit; more data likely exists, re-ask with a higher limit or narrower filters", limit)
 }
 
 func validateIdentifier(field, value string) error {

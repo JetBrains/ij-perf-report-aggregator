@@ -41,6 +41,7 @@ type searchMetricValuesOutput struct {
 	Branch     string             `json:"branch"`
 	Groups     []metricValueGroup `json:"groups"      jsonschema:"Results grouped by source (database, table). Empty if no data found."`
 	Count      int                `json:"count"       jsonschema:"Total number of measurement rows across all groups"`
+	Notes      []string           `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }
 
 func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest, in searchMetricValuesInput) (*sdk.CallToolResult, searchMetricValuesOutput, error) {
@@ -119,6 +120,22 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	}
 	if err := rows.Err(); err != nil {
 		return nil, searchMetricValuesOutput{}, fmt.Errorf("rows: %w", err)
+	}
+	if out.Count == 0 {
+		filters := []string{
+			fmt.Sprintf("project=%q", in.Project),
+			fmt.Sprintf("metric_name=%q", in.MetricName),
+			fmt.Sprintf("branch=%q", in.Branch),
+			fmt.Sprintf("last %dd", days),
+		}
+		if in.Machine != "" {
+			filters = append(filters, fmt.Sprintf("machine=%q", in.Machine))
+		}
+		out.Notes = append(out.Notes, noRowsNote("measurement", filters, tables),
+			"metric_name and project must match exactly — list the real ones with search_metric_names / list_projects before concluding the metric has no data")
+	}
+	if note := truncatedNote(out.Count, limit); note != "" {
+		out.Notes = append(out.Notes, note)
 	}
 	return nil, out, nil
 }

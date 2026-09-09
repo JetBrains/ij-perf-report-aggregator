@@ -34,10 +34,11 @@ type getBuildOutput struct {
 	TeamCityURL      string         `json:"teamcity_url"`
 	BuildNumber      string         `json:"build_number,omitempty"          jsonschema:"Marketing build number, e.g. 261.27258.48 — FUS product_build without the product prefix. Empty for Dev Server runs, which ship no installer."`
 	InstallerBuildID uint32         `json:"tc_installer_build_id,omitempty" jsonschema:"TeamCity build id of the installer tested; tc_build_id identifies the perf-test run itself."`
-	FirstCommit      string         `json:"first_commit,omitempty"          jsonschema:"Oldest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
-	LastCommit       string         `json:"last_commit,omitempty"           jsonschema:"Newest git commit covered by this build's installer (short hex SHA). Empty if no source table is linked to an installer."`
+	FirstCommit      string         `json:"first_commit,omitempty"          jsonschema:"Oldest git commit covered by this build's installer (short hex SHA). Empty if no commit range is available; see notes for the reason."`
+	LastCommit       string         `json:"last_commit,omitempty"           jsonschema:"Newest git commit covered by this build's installer (short hex SHA). Empty if no commit range is available; see notes for the reason."`
 	Projects         []buildProject `json:"projects"                        jsonschema:"Distinct (database, table, project) tuples that this build produced data for."`
 	Count            int            `json:"count"                           jsonschema:"Number of project entries"`
+	Notes            []string       `json:"notes,omitempty"                 jsonschema:"Read these before drawing conclusions: they say which fields above are unknown rather than genuinely absent (a failed lookup, an unlinked installer). Missing when everything was resolved."`
 }
 
 func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBuildInput) (*sdk.CallToolResult, getBuildOutput, error) {
@@ -169,20 +170,45 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 		return nil, getBuildOutput{}, fmt.Errorf("rows: %w", err)
 	}
 
+	// An unknown build id would otherwise answer with a fully shaped object — the id, a working
+	// teamcity_url, empty branch/build_time/machine — which no caller can tell apart from a build
+	// whose metadata is genuinely blank.
+	if !rootSet {
+		return nil, getBuildOutput{}, fmt.Errorf("no data for tc_build_id=%d in any of %d table(s): %s",
+			in.BuildID, len(tables), scannedTables(tables))
+	}
+
 	// Some report tables don't have a tc_installer_build_id column at all (e.g.
 	// perfintDev.kotlin). For those builds the commits are still stored — under the
 	// build's own id — in the per-database installer table. Fall back to a direct
 	// lookup by tc_build_id across the databases we saw.
 	if out.FirstCommit == "" {
+		var lookupFailures []string
 		seenDB := map[string]struct{}{}
 		for _, p := range out.Projects {
 			seenDB[p.Database] = struct{}{}
 		}
 		for db := range seenDB {
-			if changes := s.fetchInstallerChanges(ctx, db, in.BuildID); len(changes) > 0 {
+			changes, err := s.fetchInstallerChanges(ctx, db, in.BuildID)
+			if err != nil {
+				lookupFailures = append(lookupFailures,
+					fmt.Sprintf("commit lookup in %s.installer failed (%v): first_commit/last_commit are unknown, not absent", db, err))
+				continue
+			}
+			if len(changes) > 0 {
 				out.FirstCommit, out.LastCommit = commitRange(changes)
 				break
 			}
+		}
+		if out.FirstCommit == "" {
+			out.Notes = append(out.Notes, lookupFailures...)
+		}
+	}
+	if out.FirstCommit == "" && len(out.Notes) == 0 {
+		if out.InstallerBuildID == 0 {
+			out.Notes = append(out.Notes, "no commit range available: this build links no installer and the fallback lookups returned no commits")
+		} else {
+			out.Notes = append(out.Notes, fmt.Sprintf("no commit range available: this build links installer %d, but neither its changes nor the fallback lookups returned commits", out.InstallerBuildID))
 		}
 	}
 
@@ -190,13 +216,12 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 	return nil, out, nil
 }
 
-// fetchInstallerChanges looks up the installer.changes array for the given build id
-// in <db>.installer. Returns nil on any error (table missing, no row, etc.) — the
-// caller treats absent commits as "this build doesn't expose them".
-func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID int64) []string {
+// fetchInstallerChanges looks up the installer.changes array for the given build id in <db>.installer.
+// (nil, nil) means the build has no row there; an error means the question went unanswered, which the
+// caller must report rather than fold into "this build doesn't expose commits".
+func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID int64) ([]string, error) {
 	if err := validateIdentifier("database", db); err != nil {
-		slog.Warn("mcp: skipping installer fallback, invalid database identifier", "db", db, "err", err)
-		return nil
+		return nil, err
 	}
 	sql := fmt.Sprintf(
 		"select arrayMap(c -> toString(c), changes) from %s.installer where id = ? limit 1",
@@ -204,18 +229,18 @@ func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID 
 	rows, err := s.db.Query(ctx, sql, buildID)
 	if err != nil {
 		slog.Warn("mcp: installer fallback query failed", "db", db, "build_id", buildID, "err", err)
-		return nil
+		return nil, fmt.Errorf("query %s.installer: %w", db, err)
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		return nil
+		return nil, rows.Err()
 	}
 	var changes []string
 	if err := rows.Scan(&changes); err != nil {
 		slog.Warn("mcp: installer fallback scan failed", "db", db, "build_id", buildID, "err", err)
-		return nil
+		return nil, fmt.Errorf("scan %s.installer: %w", db, err)
 	}
-	return changes
+	return changes, nil
 }
 
 // shortCommitLen matches git's default short SHA length — long enough to be

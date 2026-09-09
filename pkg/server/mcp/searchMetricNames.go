@@ -30,6 +30,7 @@ type metricNameRow struct {
 type searchMetricNamesOutput struct {
 	Rows  []metricNameRow `json:"rows"  jsonschema:"Distinct (database, table, metric name) tuples matching the filters"`
 	Count int             `json:"count"`
+	Notes []string        `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }
 
 func (s *service) searchMetricNames(ctx context.Context, _ *sdk.CallToolRequest, in searchMetricNamesInput) (*sdk.CallToolResult, searchMetricNamesOutput, error) {
@@ -82,5 +83,19 @@ func (s *service) searchMetricNames(ctx context.Context, _ *sdk.CallToolRequest,
 		return nil, searchMetricNamesOutput{}, fmt.Errorf("rows: %w", err)
 	}
 	out.Count = len(out.Rows)
+	if out.Count == 0 {
+		filters := []string{fmt.Sprintf("project=%q", in.Project), fmt.Sprintf("branch=%q", in.Branch), fmt.Sprintf("last %dd", days)}
+		if in.NamePattern != "" {
+			filters = append(filters, fmt.Sprintf("name_pattern=%q", in.NamePattern))
+		}
+		if in.Machine != "" {
+			filters = append(filters, fmt.Sprintf("machine=%q", in.Machine))
+		}
+		out.Notes = append(out.Notes, noRowsNote("metric name", filters, tables),
+			"the project name must match exactly — check it with list_projects before concluding the project records nothing")
+	}
+	if note := truncatedNote(out.Count, limit); note != "" {
+		out.Notes = append(out.Notes, note)
+	}
 	return nil, out, nil
 }

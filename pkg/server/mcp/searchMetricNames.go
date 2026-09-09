@@ -28,7 +28,7 @@ type metricNameRow struct {
 }
 
 type searchMetricNamesOutput struct {
-	Rows  []metricNameRow `json:"rows"  jsonschema:"Distinct (database, table, metric name) tuples matching the filters"`
+	Rows  []metricNameRow `json:"rows"            jsonschema:"Distinct (database, table, metric name) tuples matching the filters"`
 	Count int             `json:"count"`
 	Notes []string        `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }

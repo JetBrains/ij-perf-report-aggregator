@@ -39,8 +39,8 @@ type searchMetricValuesOutput struct {
 	Project    string             `json:"project"`
 	MetricName string             `json:"metric_name"`
 	Branch     string             `json:"branch"`
-	Groups     []metricValueGroup `json:"groups"      jsonschema:"Results grouped by source (database, table). Empty if no data found."`
-	Count      int                `json:"count"       jsonschema:"Total number of measurement rows across all groups"`
+	Groups     []metricValueGroup `json:"groups"          jsonschema:"Results grouped by source (database, table). Empty if no data found."`
+	Count      int                `json:"count"           jsonschema:"Total number of measurement rows across all groups"`
 	Notes      []string           `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }
 

@@ -241,7 +241,7 @@ func (s *service) resolveTables(ctx context.Context, db, table string) ([]tableR
 }
 
 type listTablesOutput struct {
-	Tables []tableRef `json:"tables" jsonschema:"All (database, table) pairs that store performance measurements"`
+	Tables []tableRef `json:"tables"          jsonschema:"All (database, table) pairs that store performance measurements"`
 	Count  int        `json:"count"`
 	Notes  []string   `json:"notes,omitempty" jsonschema:"Read these before drawing conclusions: they say why the result is empty or partial. Missing when the answer is complete."`
 }

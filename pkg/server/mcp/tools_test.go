@@ -543,8 +543,142 @@ func TestSearchMetricValues_LimitHitIsNoted(t *testing.T) {
 		"metric_name": "startup_total",
 		"limit":       1,
 	}, &out)
-	if !strings.Contains(strings.Join(out.Notes, " | "), "the limit") {
+	if !strings.Contains(strings.Join(out.Notes, " | "), "TRUNCATED at limit=1") {
 		t.Errorf("a limit-sized answer must warn it is partial, got notes %v", out.Notes)
+	}
+}
+
+// A limit smaller than the window discards the OLD end, so the answer can cover days when the
+// caller asked for months while still looking complete. Without this the caller computes a
+// "long-run baseline" from a window that may lie entirely after the change under investigation.
+func TestSearchMetricValues_TruncatedWindowNamesWhatIsMissing(t *testing.T) {
+	t.Parallel()
+	db := &fakeDriver{}
+	db.push(fakeQueryResult{
+		rows: [][]any{
+			{"perfintDev", "ide", "2026-09-09 03:50:53", uint32(1002), 121.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+			{"perfintDev", "ide", "2026-09-07 10:00:00", uint32(1001), 378.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+			{"perfintDev", "ide", "2026-09-03 20:44:26", uint32(1000), 96.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+		},
+	})
+
+	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	cs := connectClient(t, svc)
+
+	var out searchMetricValuesOutput
+	callTool(t, cs, "search_metric_values", map[string]any{
+		"project":     "spring_boot/showIntentions",
+		"metric_name": "test#max_awt_delay",
+		"days":        90,
+		"limit":       3,
+	}, &out)
+
+	if want := "2026-09-03..2026-09-09 (7 of 90 requested days)"; out.Covered != want {
+		t.Errorf("covered = %q, want %q", out.Covered, want)
+	}
+	notes := strings.Join(out.Notes, " | ")
+	for _, want := range []string{"TRUNCATED at limit=3", "2026-09-03..2026-09-09", "older data exists", `aggregate="daily"`} {
+		if !strings.Contains(notes, want) {
+			t.Errorf("truncation note missing %q, got %v", want, out.Notes)
+		}
+	}
+}
+
+func TestSearchMetricValues_UntruncatedAnswerStillReportsItsSpan(t *testing.T) {
+	t.Parallel()
+	db := &fakeDriver{}
+	db.push(fakeQueryResult{
+		rows: [][]any{
+			{"perfintDev", "ide", "2026-09-09 03:50:53", uint32(1001), 121.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+			{"perfintDev", "ide", "2026-09-08 03:50:53", uint32(1000), 378.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+		},
+	})
+
+	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	cs := connectClient(t, svc)
+
+	var out searchMetricValuesOutput
+	callTool(t, cs, "search_metric_values", map[string]any{
+		"project":     "kotlin",
+		"metric_name": "startup_total",
+		"days":        30,
+		"limit":       10,
+	}, &out)
+
+	if want := "2026-09-08..2026-09-09 (2 of 30 requested days)"; out.Covered != want {
+		t.Errorf("covered = %q, want %q", out.Covered, want)
+	}
+	if strings.Contains(strings.Join(out.Notes, " | "), "TRUNCATED") {
+		t.Errorf("a complete answer must not claim truncation, got notes %v", out.Notes)
+	}
+}
+
+// aggregate=daily must return day buckets, aggregate over DISTINCT builds (a build can appear
+// twice and would otherwise double-weight the median), and span the window instead of the
+// most recent rows.
+func TestSearchMetricValues_DailyAggregate(t *testing.T) {
+	t.Parallel()
+	db := &fakeDriver{}
+	db.push(fakeQueryResult{
+		verify: func(sql string, _ []any) error {
+			for _, want := range []string{"toDate(gen_time)", "quantileExact(0.5)(value)", "select distinct", "group by db_name, table_name, day"} {
+				if !strings.Contains(sql, want) {
+					return fmt.Errorf("daily sql missing %q: %s", want, sql)
+				}
+			}
+			return nil
+		},
+		rows: [][]any{
+			{"perfintDev", "ide", "2026-08-28", uint32(19), 418.0, 72.0, 631.0},
+			{"perfintDev", "ide", "2026-08-27", uint32(19), 351.0, 99.0, 704.0},
+			{"perfintDev", "ide", "2026-08-26", uint32(19), 116.0, 91.0, 725.0},
+		},
+	})
+
+	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	cs := connectClient(t, svc)
+
+	var out searchMetricValuesOutput
+	res := callTool(t, cs, "search_metric_values", map[string]any{
+		"project":     "spring_boot/showIntentions",
+		"metric_name": "test#max_awt_delay",
+		"days":        60,
+		"aggregate":   "daily",
+	}, &out)
+	if res.IsError {
+		t.Fatalf("unexpected error: %s", errorText(t, res))
+	}
+	if out.Count != 3 || len(out.Groups) != 1 {
+		t.Fatalf("count/groups = %d/%d, want 3/1", out.Count, len(out.Groups))
+	}
+	g := out.Groups[0]
+	if len(g.Rows) != 0 {
+		t.Errorf("daily answer must not carry per-build rows, got %d", len(g.Rows))
+	}
+	if len(g.Daily) != 3 {
+		t.Fatalf("daily buckets = %d, want 3", len(g.Daily))
+	}
+	// The step this whole feature exists to make visible: median triples, floor does not move.
+	if g.Daily[1].Date != "2026-08-27" || g.Daily[1].Median != 351 || g.Daily[1].Min != 99 || g.Daily[1].Builds != 19 {
+		t.Errorf("bucket lost its shape: %+v", g.Daily[1])
+	}
+	if want := "2026-08-26..2026-08-28 (3 of 60 requested days)"; out.Covered != want {
+		t.Errorf("covered = %q, want %q", out.Covered, want)
+	}
+}
+
+func TestSearchMetricValues_RejectsUnknownAggregate(t *testing.T) {
+	t.Parallel()
+	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	cs := connectClient(t, svc)
+
+	res := callTool(t, cs, "search_metric_values", map[string]any{
+		"project":     "kotlin",
+		"metric_name": "startup_total",
+		"aggregate":   "weekly",
+	}, nil)
+	if got := errorText(t, res); !strings.Contains(got, `aggregate must be "daily"`) {
+		t.Errorf("unknown aggregate must be rejected by name, got %q", got)
 	}
 }
 

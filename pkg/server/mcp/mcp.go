@@ -106,9 +106,13 @@ func (s *service) buildServer() *sdk.Server {
 
 	sdk.AddTool(server, &sdk.Tool{
 		Name: "search_metric_values",
-		Description: "Fetch the most recent metric values for a given project and metric_name. " +
+		Description: "Fetch metric values for a given project and metric_name, newest first. " +
 			"database/table are optional — when omitted the server scans every table tagged with measures " +
-			"and returns rows from whichever ones contain the data. Each row is tagged with its source.",
+			"and returns rows from whichever ones contain the data. Each row is tagged with its source. " +
+			"Rows are capped by limit and ordered newest-first, so on a busy project a large days window " +
+			"collapses to the most recent few days: check the covered field, and pass aggregate=\"daily\" " +
+			"(one row per day with build count, median, min, max) whenever you need a trend, a baseline, " +
+			"or to tell a real level shift from noise.",
 	}, s.searchMetricValues)
 
 	sdk.AddTool(server, &sdk.Tool{

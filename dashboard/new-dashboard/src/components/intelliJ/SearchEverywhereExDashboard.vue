@@ -26,12 +26,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 function seProjects(tab: string, patterns: string[]): string[] {
   return [
-    ...patterns.map((pattern) => `community/${tab}/${pattern}/typingLetterByLetter`),
-    `community/${tab}-finished-embeddings/Runtime/typingLetterByLetter`,
-    `java/${tab}/Runtime/typingLetterByLetter`,
-
-    ...patterns.map((pattern) => `intellij_commit/${tab}/${pattern}/typingLetterByLetter`),
-    `intellij_commit/${tab}-finished-embeddings/Runtime/typingLetterByLetter`,
+    `intellij_commit/new-se-${tab}-finished-embeddings/Runtime/typingLetterByLetter`,
 
     ...patterns.map((pattern) => `intellij_commit/new-se-${tab}/${pattern}/typingLetterByLetter`),
   ]
@@ -84,13 +79,6 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Warm Search Everywhere Insert", "Warm SE First Element Insert"],
     measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
     projects: [
-      "intellij_commit/go-to-all-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
-      "intellij_commit/go-to-file-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
-      "intellij_commit/go-to-class-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
-      "intellij_commit/go-to-symbol-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
-      "intellij_commit/go-to-action-with-warmup/CollectLogsAndDiagnosticData/insertingTheWholeWord",
-      "intellij_commit/go-to-text-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
-
       "intellij_commit/new-se-go-to-all-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
       "intellij_commit/new-se-go-to-file-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
       "intellij_commit/new-se-go-to-class-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",

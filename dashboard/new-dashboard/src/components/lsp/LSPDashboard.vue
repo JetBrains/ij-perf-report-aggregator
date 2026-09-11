@@ -61,9 +61,14 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["references"],
-    measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.references", "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.references"],
+    labels: ["typing - diagnostics"],
+    measures: ["typing.diagnostics.mean.ms"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.typing", "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.typing"],
+  },
+  {
+    labels: ["typing - code actions"],
+    measures: ["typing.codeActions.mean.ms"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.Log4j2PerformanceTest.typing", "com.jetbrains.ls.lsp.performanceTest.DetektPerformanceTest.typing"],
   },
 ]
 

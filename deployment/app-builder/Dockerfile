@@ -1,7 +1,7 @@
 FROM buildpack-deps:curl
 
 ENV NODE_VERSION 26.7.1
-ENV GOLANG_VERSION 1.27.0
+ENV GOLANG_VERSION 1.27.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*
 

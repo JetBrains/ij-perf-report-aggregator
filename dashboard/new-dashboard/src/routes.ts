@@ -2,6 +2,7 @@
 
 import { RouteRecordRaw } from "vue-router"
 import { ParentRouteRecord, TypedRouteRecord } from "./components/common/route"
+import { CLION_MAIN_METRICS } from "./components/clion/clionMetrics"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 import type { PerformanceTestsProps } from "./components/common/PerformanceTests.props"
 import type { PerformanceUnitTestsProps } from "./components/common/PerformanceUnitTests.vue"
@@ -1100,7 +1101,7 @@ const clionRoutes = [
   dashboard(ROUTES.ClionCMakeLanguageDashboard, () => import("./components/clion/CLionCMakeLanguageDashboard.vue"), "CLion CMake Language dashboard"),
   dashboard(ROUTES.ClionMemoryDashboard, () => import("./components/clion/MemoryDashboard.vue"), "CLion Memory dashboard"),
   dashboard(ROUTES.ClionLaggingLatencyDashboard, () => import("./components/clion/CLionLaggingLatencyDashboard.vue"), "CLion Lagging/Latency dashboard"),
-  compareBranches(ROUTES.ClionCompareBranches, { dbName: "perfintDev", table: "clion" }),
+  compareBranches(ROUTES.ClionCompareBranches, { dbName: "perfintDev", table: "clion", metricsNames: CLION_MAIN_METRICS }),
 ]
 
 const vcsRoutes = [

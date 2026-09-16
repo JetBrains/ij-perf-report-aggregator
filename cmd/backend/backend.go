@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	util.LoadDotEnv()
 	err := server.Serve(util.GetEnv("CLICKHOUSE", server.DefaultDbUrl), util.GetEnv("NATS", ""))
 	if err != nil {
 		slog.Error("error on starting backend", "error", err)

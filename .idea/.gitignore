@@ -4,3 +4,6 @@
 /httpRequests/
 # GitHub Copilot persisted chat sessions
 /copilot/chatSessions
+# Database tool per-user state
+/db-forest-config.xml
+/data_source_mapping.xml

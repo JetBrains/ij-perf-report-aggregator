@@ -20,6 +20,7 @@ import (
 2. change `migrate/report.sql` as needed and execute.
 */
 func main() {
+	util.LoadDotEnv()
 	db := util.GetEnv("DB", "")
 	table := util.GetEnv("TABLE", "")
 	split := strings.Split(db, "_")

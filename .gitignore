@@ -20,3 +20,6 @@ jb
 /backend
 benchmark/results/
 /clickhouse
+
+# local development secrets
+.env

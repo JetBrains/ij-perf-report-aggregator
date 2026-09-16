@@ -19,6 +19,7 @@ import (
 // 2. You also need to provide TC_TOKEN env variable which can be generated at: https://buildserver.labs.intellij.net/profile.html?item=accessTokens#
 // 3. Clickhouse DB should be up and running (see readme.md "Adding a New Database" section)
 func main() {
+	util.LoadDotEnv()
 	err := configureCollectFromTeamCity()
 	if err != nil {
 		slog.Error("cannot collect", "err", err)

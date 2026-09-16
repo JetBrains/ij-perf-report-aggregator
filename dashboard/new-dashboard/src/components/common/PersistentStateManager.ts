@@ -1,4 +1,5 @@
-import { debounceTime, Subject } from "rxjs"
+import { Subject } from "rxjs"
+import { debounce } from "rxjs/debounce"
 import { Ref, watch } from "vue"
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
 import { analysisParamName, pointParamName } from "../../shared/selectedPointStore"
@@ -52,13 +53,13 @@ export class PersistentStateManager {
       }
     }
 
-    this.saveSubject.pipe(debounceTime(300)).subscribe(() => {
+    this.saveSubject[debounce](300).subscribe(() => {
       localStorage.setItem(this.getKey(), JSON.stringify(this.filterStateByKnownKeys(this.state)))
 
       this.updateUrlQuery()
     })
 
-    this.updateUrlSubject.pipe(debounceTime(300)).subscribe(() => {
+    this.updateUrlSubject[debounce](300).subscribe(() => {
       this.updateUrlQuery()
     })
   }

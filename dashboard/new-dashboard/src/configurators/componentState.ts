@@ -1,4 +1,4 @@
-import { MonoTypeOperatorFunction, tap } from "rxjs"
+import { tap } from "rxjs/tap"
 import { shallowReactive } from "vue"
 
 export class ComponentState {
@@ -11,8 +11,8 @@ export function createComponentState(): ComponentState {
   return shallowReactive(new ComponentState())
 }
 
-export function updateComponentState<T>(status: ComponentState): MonoTypeOperatorFunction<T> {
-  return tap<T>({
+export function updateComponentState<T>(source: Observable<T>, status: ComponentState): Observable<T> {
+  return source[tap]({
     next(value) {
       status.disabled = value === null
       status.loading = false

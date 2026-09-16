@@ -1,4 +1,4 @@
-import { Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { beforeEach, describe, expect, it } from "vitest"
 import { MachineConfigurator } from "../../src/configurators/MachineConfigurator"
 import { selectedStartupProjectsFilter, startupProjectConfigurator } from "../../src/configurators/StartupProjectConfigurator"
@@ -20,7 +20,7 @@ describe("Startup project configurator", () => {
   function serveGroups(groups: unknown[]) {
     data.fetchMock.mockImplementation(
       (url: string) =>
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next(url.startsWith(machineGroupsUrl) ? groups : projects)
         })
     )

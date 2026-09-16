@@ -1,4 +1,5 @@
-import { Observable, switchMap } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { switchMap } from "rxjs/switch-map"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { FilterConfigurator, createFilterObservable } from "./filter"
@@ -16,7 +17,7 @@ class ProjectLikeFilter implements FilterConfigurator {
   }
 
   createObservable(): Observable<unknown> {
-    return new Observable((subscriber) => {
+    return new ColdObservable((subscriber) => {
       subscriber.next(null)
       subscriber.complete()
     })
@@ -67,31 +68,29 @@ export function startupProjectConfigurator(
 
   const configurator = new DimensionConfigurator("project", multiple, aliases)
   persistentStateManager?.add("project", configurator.selected)
-  createFilterObservable(serverConfigurator, allFilters)
-    .pipe(
-      switchMap(() => loadDimension("project", serverConfigurator, allFilters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
+  updateComponentState(
+    createFilterObservable(serverConfigurator, allFilters)[switchMap](() => loadDimension("project", serverConfigurator, allFilters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
 
-      const mergedProjects = new Set<string>()
-      for (const project of data) {
-        const suffix = startupSuffixes.find((it) => project.includes(it))
-        mergedProjects.add(suffix == null ? project : project.slice(0, project.indexOf(suffix)))
-      }
+    const mergedProjects = new Set<string>()
+    for (const project of data) {
+      const suffix = startupSuffixes.find((it) => project.includes(it))
+      mergedProjects.add(suffix == null ? project : project.slice(0, project.indexOf(suffix)))
+    }
 
-      const mergedData = [...mergedProjects]
+    const mergedData = [...mergedProjects]
 
-      if (customValueSort != null) {
-        mergedData.sort(customValueSort)
-      }
-      configurator.values.value = mergedData
+    if (customValueSort != null) {
+      mergedData.sort(customValueSort)
+    }
+    configurator.values.value = mergedData
 
-      filterSelected(configurator, mergedData)
-    })
+    filterSelected(configurator, mergedData)
+  })
 
   return configurator
 }

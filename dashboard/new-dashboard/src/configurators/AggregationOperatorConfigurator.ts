@@ -1,8 +1,8 @@
-import { combineLatest, Observable, shareReplay } from "rxjs"
+import { shareReplay } from "rxjs/share-replay"
 import { computed, ref } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
-import { refToObservable } from "./rxjs"
+import { combineLatest, refToObservable } from "./rxjs"
 
 export class AggregationOperatorConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_OPERATOR = "median"
@@ -17,7 +17,7 @@ export class AggregationOperatorConfigurator implements DataQueryConfigurator {
       "aggregationOperator",
       computed(() => ({ operator: this.operator.value, quantile: this.quantile.value }))
     )
-    this.observable = combineLatest([refToObservable(this.operator), refToObservable(this.quantile)]).pipe(shareReplay(1))
+    this.observable = combineLatest([refToObservable(this.operator), refToObservable(this.quantile)])[shareReplay](1)
   }
 
   createObservable(): Observable<unknown> {

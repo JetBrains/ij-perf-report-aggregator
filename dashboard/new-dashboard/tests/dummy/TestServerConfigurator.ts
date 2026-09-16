@@ -1,4 +1,6 @@
-import { map, Observable, shareReplay } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { map } from "rxjs/map"
+import { shareReplay } from "rxjs/share-replay"
 import { DataQuery, DataQueryExecutorConfiguration, serializeQuery, ServerConfigurator } from "../../src/components/common/dataQuery"
 
 export class TestServerConfigurator implements ServerConfigurator {
@@ -11,15 +13,14 @@ export class TestServerConfigurator implements ServerConfigurator {
     readonly db: string,
     readonly table: string
   ) {
-    this.observable = new Observable<string>((subscriber) => {
+    this.observable = new ColdObservable<string>((subscriber) => {
       subscriber.next(TestServerConfigurator.DEFAULT_SERVER_URL)
-    }).pipe(
-      map((url) => {
+    })
+      [map]((url) => {
         this._serverUrl = url
         return null
-      }),
-      shareReplay(1)
-    )
+      })
+      [shareReplay](1)
   }
 
   get serverUrl(): string {

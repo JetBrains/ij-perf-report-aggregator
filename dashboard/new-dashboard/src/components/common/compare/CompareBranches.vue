@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { combineLatest, filter, Observable } from "rxjs"
+import { filter } from "rxjs/filter"
 import { provide, ref, watch, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
@@ -116,7 +116,7 @@ import { privateBuildConfigurator } from "../../../configurators/PrivateBuildCon
 import { ReleaseNightlyConfigurator } from "../../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
-import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
+import { combineLatest, fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS } from "../../../util/mainMetrics"
 import { openTestDrilldown } from "../../../util/testDrilldown"
@@ -213,13 +213,11 @@ combineLatest([
   machineConfigurator.createObservable(),
   testModeConfigurator.createObservable(),
 ])
-  .pipe(
-    filter(() => {
-      const branch1SelectedValue = branchConfigurator1.selected.value
-      const branch2SelectedValue = branchConfigurator2.selected.value
-      return branch1SelectedValue !== null && branch2SelectedValue !== null
-    })
-  )
+  [filter](() => {
+    const branch1SelectedValue = branchConfigurator1.selected.value
+    const branch2SelectedValue = branchConfigurator2.selected.value
+    return branch1SelectedValue !== null && branch2SelectedValue !== null
+  })
   .subscribe(() => {
     const branch1SelectedValue = branchConfigurator1.selected.value
     const branch2SelectedValue = branchConfigurator2.selected.value

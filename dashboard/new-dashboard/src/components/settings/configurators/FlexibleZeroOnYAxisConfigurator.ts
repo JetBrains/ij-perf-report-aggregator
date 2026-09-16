@@ -1,4 +1,3 @@
-import { Observable } from "rxjs"
 import { ref, watch } from "vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 import { useSettingsStore } from "../settingsStore"

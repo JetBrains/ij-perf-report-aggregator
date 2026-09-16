@@ -1,4 +1,3 @@
-import { Observable } from "rxjs"
 import { Ref, shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { refToObservable } from "./rxjs"

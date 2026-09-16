@@ -1,11 +1,11 @@
-import { Observable, of } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../src/components/common/dataQuery"
 
 export class TestMeasureConfigurator implements DataQueryConfigurator {
   constructor(private readonly measures: string[] = ["testMeasure"]) {}
 
   createObservable(): Observable<unknown> {
-    return of(null)
+    return ColdObservable.from([null])
   }
 
   configureQuery(_query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {

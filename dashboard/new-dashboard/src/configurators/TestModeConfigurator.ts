@@ -1,4 +1,4 @@
-import { switchMap } from "rxjs"
+import { switchMap } from "rxjs/switch-map"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
 import { DimensionConfigurator, filterSelected, loadDimension } from "./DimensionConfigurator"
@@ -67,20 +67,18 @@ export function createTestModeConfigurator(
   const name = "mode"
   persistentStateManager?.add(persistentName, configurator.selected)
 
-  createFilterObservable(serverConfigurator, filters)
-    .pipe(
-      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
+  updateComponentState(
+    createFilterObservable(serverConfigurator, filters)[switchMap](() => loadDimension(name, serverConfigurator, filters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
 
-      const fetchedValues = data.filter((value, _n, _a) => value != "")
-      const defaultModeArray = Array.isArray(defaultMode) ? defaultMode : [defaultMode]
-      configurator.values.value = [...new Set([...defaultModeArray, ...fetchedValues])]
-      filterSelected(configurator, [...data, ...defaultModeArray])
-    })
+    const fetchedValues = data.filter((value, _n, _a) => value != "")
+    const defaultModeArray = Array.isArray(defaultMode) ? defaultMode : [defaultMode]
+    configurator.values.value = [...new Set([...defaultModeArray, ...fetchedValues])]
+    filterSelected(configurator, [...data, ...defaultModeArray])
+  })
   return configurator
 }

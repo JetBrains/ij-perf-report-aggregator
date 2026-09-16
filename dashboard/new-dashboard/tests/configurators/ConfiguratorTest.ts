@@ -1,4 +1,4 @@
-import { Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { MockInstance, vi } from "vitest"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
 import { ServerConfigurator } from "../../src/components/common/dataQuery"
@@ -20,7 +20,7 @@ export default {
     const fetchMock: MockInstance = vi.spyOn(rxjs, "fromFetchWithRetryAndErrorHandling").mockClear().mockReset()
 
     fetchMock.mockReturnValue(
-      new Observable((sub) => {
+      new ColdObservable((sub) => {
         sub.next(mockValue)
       })
     )

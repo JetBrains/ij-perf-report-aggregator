@@ -1,4 +1,6 @@
-import { Observable, of, shareReplay, switchMap } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { shareReplay } from "rxjs/share-replay"
+import { switchMap } from "rxjs/switch-map"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
@@ -25,7 +27,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
     readonly multiple: boolean,
     public aliases: Map<string, string> | null = null
   ) {
-    this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
+    this.observable = refToObservable(this.selected, true)[shareReplay](1)
   }
 
   createObservable(): Observable<string | string[] | null> {
@@ -77,7 +79,7 @@ export function loadDimension<T = string[]>(
 
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration) || !configureQueryFilters(query, filters)) {
-    return of(null)
+    return ColdObservable.from([null])
   }
 
   state.loading = true
@@ -96,23 +98,21 @@ export function dimensionConfigurator(
   const configurator = new DimensionConfigurator(name, multiple, aliases)
   persistentStateManager?.add(name, configurator.selected)
 
-  createFilterObservable(serverConfigurator, filters)
-    .pipe(
-      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
+  updateComponentState(
+    createFilterObservable(serverConfigurator, filters)[switchMap](() => loadDimension(name, serverConfigurator, filters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
 
-      if (customValueSort != null) {
-        data.sort(customValueSort)
-      }
-      configurator.values.value = data
+    if (customValueSort != null) {
+      data.sort(customValueSort)
+    }
+    configurator.values.value = data
 
-      filterSelected(configurator, data)
-    })
+    filterSelected(configurator, data)
+  })
   return configurator
 }
 

@@ -1,4 +1,6 @@
-import { from, map, shareReplay } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { map } from "rxjs/map"
+import { shareReplay } from "rxjs/share-replay"
 import zstdWasmUrl from "./zstd.wasm?url"
 
 function abort(what: string): void {
@@ -66,8 +68,20 @@ export let ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: nu
 // let stackRestore
 // let stackAlloc
 export function zstdReady() {
-  return from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
-    map((output) => {
+  // not `ColdObservable.from(promise)`: in rxjs 9.0.0-beta.0 its rejection path fails inside the polyfill
+  // and the subscriber never sees the error, so a failed WASM load would hang initialization forever
+  return new ColdObservable<WebAssembly.WebAssemblyInstantiatedSource>((subscriber) => {
+    WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports).then(
+      (output) => {
+        subscriber.next(output)
+        subscriber.complete()
+      },
+      (error: unknown) => {
+        subscriber.error(error)
+      }
+    )
+  })
+    [map]((output) => {
       const asm = output.instance.exports as Record<string, never>
       malloc = asm["f"]
       free = asm["g"]
@@ -87,7 +101,6 @@ export function zstdReady() {
       HEAPU8 = new Uint8Array(buffer)
       initRuntime(asm)
       return null
-    }),
-    shareReplay(1)
-  )
+    })
+    [shareReplay](1)
 }

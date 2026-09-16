@@ -1,7 +1,7 @@
 import { Chart } from "../../components/charts/DashboardCharts"
+import { combineLatest } from "../rxjs"
 import { TimeRangeConfigurator } from "../TimeRangeConfigurator"
 import { dbTypeStore } from "../../shared/dbTypes"
-import { combineLatest } from "rxjs"
 import { AccidentsConfigurator } from "./AccidentsConfigurator"
 
 export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {

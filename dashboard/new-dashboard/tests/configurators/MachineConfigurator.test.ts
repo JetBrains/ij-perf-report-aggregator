@@ -1,4 +1,4 @@
-import { Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { expect, beforeEach, afterEach, describe, it, vi } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
@@ -34,7 +34,7 @@ describe("Machine configurator", () => {
     // (chart data queries) keeps returning the plain list — its response is unused by assertions.
     data.fetchMock.mockImplementation(
       (url: string) =>
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next(url.includes("/api/machineGroups/") ? machineGroupsResponse : [])
         })
     )
@@ -101,7 +101,7 @@ describe("Machine configurator", () => {
     it("serializes a group without a predicate (the Unknown bucket) by its member list", async () => {
       // Serve the group list for every URL — chart-query responses are unused by assertions.
       data.fetchMock.mockReturnValue(
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next([...machineGroupsResponse, { group: "Unknown", machines: ["zeta-agent-1", "alpha-agent-2"] }])
         })
       )
@@ -120,7 +120,7 @@ describe("Machine configurator", () => {
       const hetznerPredicate = "like 'intellij-linux-hw-hetzner%' or machine like 'intellij-linux-agg-hw-hetzner-agent%'"
       // Serve the group list for every URL — chart-query responses are unused by assertions.
       data.fetchMock.mockReturnValue(
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next([{ group: "linux-blade-hetzner", machines: ["intellij-linux-agg-hw-hetzner-agent-1", "intellij-linux-hw-hetzner-agent-2"], predicate: hetznerPredicate }])
         })
       )
@@ -142,7 +142,7 @@ describe("Machine configurator", () => {
       // list carries an "Unknown" bucket, and the lookup resolves the group's display name to
       // "Unknown" (it matches no raw-agent rule). The selection must survive untouched.
       data.fetchMock.mockReturnValue(
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next([...machineGroupsResponse, { group: "Unknown", machines: ["some-new-agent-1"] }])
         })
       )
@@ -196,7 +196,7 @@ describe("Machine configurator", () => {
     let branchConfigurator: BranchConfigurator
     beforeEach(() => {
       data.fetchMock.mockReturnValueOnce(
-        new Observable((sub) => {
+        new ColdObservable((sub) => {
           sub.next(["branch1", "branch2"])
         })
       )

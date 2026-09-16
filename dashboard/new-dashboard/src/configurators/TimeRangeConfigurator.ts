@@ -1,12 +1,11 @@
 import { ECBasicOption } from "echarts/types/dist/shared"
-import { combineLatest, Observable } from "rxjs"
 import { provide, Ref, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { timeRangeKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
-import { refToObservable } from "./rxjs"
+import { combineLatest, refToObservable } from "./rxjs"
 
 export declare type TimeRange = "1w" | "2w" | "1M" | "3M" | "1y" | "all" | "custom"
 
@@ -51,8 +50,8 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
   }
 
-  createObservable(): Observable<[TimeRange, string]> {
-    return combineLatest([refToObservable(this.value), refToObservable(this.customRange)]).pipe()
+  createObservable(): Observable<readonly [TimeRange, string]> {
+    return combineLatest([refToObservable(this.value), refToObservable(this.customRange)])
   }
 
   configureFilter(query: DataQuery): boolean {

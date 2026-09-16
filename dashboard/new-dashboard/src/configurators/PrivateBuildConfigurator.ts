@@ -1,4 +1,4 @@
-import { switchMap } from "rxjs"
+import { switchMap } from "rxjs/switch-map"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
 import { configureQueryProducer, DimensionConfigurator, filterSelected, loadDimension } from "./DimensionConfigurator"
@@ -47,19 +47,17 @@ export function privateBuildConfigurator(
   const name = "triggeredBy"
   persistentStateManager?.add(name, configurator.selected)
 
-  createFilterObservable(serverConfigurator, filters)
-    .pipe(
-      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
+  updateComponentState(
+    createFilterObservable(serverConfigurator, filters)[switchMap](() => loadDimension(name, serverConfigurator, filters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
 
-      configurator.values.value = data.filter((value, _n, _a) => value != "")
+    configurator.values.value = data.filter((value, _n, _a) => value != "")
 
-      filterSelected(configurator, data)
-    })
+    filterSelected(configurator, data)
+  })
   return configurator
 }

@@ -1,4 +1,3 @@
-import { Observable } from "rxjs"
 import { inject, InjectionKey, Ref } from "vue"
 import { ChartStyle } from "../components/common/chart"
 import { DataQueryConfigurator } from "../components/common/dataQuery"

@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { computed, provide, useTemplateRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -122,7 +122,7 @@ class ProjectLikeFilter implements FilterConfigurator {
   }
 
   createObservable(): Observable<unknown> {
-    return new Observable((subscriber) => {
+    return new ColdObservable((subscriber) => {
       subscriber.next(null)
       subscriber.complete()
     })

@@ -1,12 +1,14 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap } from "rxjs"
+import { distinctUntilChanged } from "rxjs/distinct-until-changed"
+import { shareReplay } from "rxjs/share-replay"
+import { switchMap } from "rxjs/switch-map"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator, toArray } from "../components/common/dataQuery"
 import { createComponentState, updateComponentState } from "./componentState"
 import { loadDimension } from "./DimensionConfigurator"
 import { createFilterObservable, FilterConfigurator } from "./filter"
-import { refToObservable } from "./rxjs"
+import { combineLatest, refToObservable } from "./rxjs"
 
 export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly selected = shallowRef<string[]>([])
@@ -32,23 +34,21 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     }
 
     this.filters.value = initialFilters
-    const filterObservable = refToObservable(this.filters).pipe(
-      switchMap((currentFilters) => {
+    const filterObservable = refToObservable(this.filters)
+      [switchMap]((currentFilters) => {
         return createFilterObservable(serverConfigurator, currentFilters)
-      }),
-      shareReplay(1)
-    )
+      })
+      [shareReplay](1)
 
-    const listObservable = filterObservable.pipe(
-      switchMap(() => {
+    const listObservable = updateComponentState(
+      filterObservable[switchMap](() => {
         // The same distinct-machine query as any dimension, but answered by /api/machineGroups/
         // with the agents already bucketed into hardware-class groups by the backend (the sole
         // owner of the grouping — see pkg/machine).
         return loadDimension<MachineGroupResponseItem[]>(name, serverConfigurator, this.filters.value, this.state, "/api/machineGroups/")
       }),
-      updateComponentState(this.state),
-      shareReplay(1)
-    )
+      this.state
+    )[shareReplay](1)
 
     listObservable.subscribe((data) => {
       if (data == null) {
@@ -61,7 +61,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update
-    this.observable = combineLatest([refToObservable(this.selected, true), listObservable]).pipe(distinctUntilChanged(deepEqual))
+    this.observable = combineLatest([refToObservable(this.selected, true), listObservable])[distinctUntilChanged](deepEqual)
   }
 
   updateFilters(newFilters: FilterConfigurator[]) {

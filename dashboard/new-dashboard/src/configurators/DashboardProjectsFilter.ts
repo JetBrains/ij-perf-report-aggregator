@@ -1,4 +1,4 @@
-import { debounceTime, Observable } from "rxjs"
+import { debounce } from "rxjs/debounce"
 import { Ref } from "vue"
 import { DataQuery } from "../components/common/dataQuery"
 import { FilterConfigurator } from "./filter"
@@ -23,7 +23,7 @@ class DashboardProjectsFilter implements FilterConfigurator {
   }
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.projects, true).pipe(debounceTime(settleMs))
+    return refToObservable(this.projects, true)[debounce](settleMs)
   }
 }
 

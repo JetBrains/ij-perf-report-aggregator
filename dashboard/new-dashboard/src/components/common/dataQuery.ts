@@ -1,4 +1,3 @@
-import { Observable } from "rxjs"
 import { ChartConfigurator } from "./chart"
 
 export function serializeQuery(query: DataQuery): string {

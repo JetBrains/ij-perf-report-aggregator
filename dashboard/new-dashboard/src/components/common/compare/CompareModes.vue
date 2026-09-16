@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { combineLatest, filter, Observable } from "rxjs"
+import { filter } from "rxjs/filter"
 import { provide, ref, watch, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
@@ -114,7 +114,7 @@ import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
-import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
+import { combineLatest, fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS } from "../../../util/mainMetrics"
 import MeasureSelect from "../../charts/MeasureSelect.vue"
@@ -195,13 +195,11 @@ const mode2 = ref<string | null>(null)
 const tableData = ref<TableRow[]>()
 const fetchedData = ref<TableRow[]>()
 combineLatest([testModeConfigurator1.createObservable(), testModeConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable()])
-  .pipe(
-    filter(() => {
-      const mode1SelectedValue = testModeConfigurator1.selected.value
-      const mode2SelectedValue = testModeConfigurator2.selected.value
-      return mode1SelectedValue !== null && mode2SelectedValue !== null
-    })
-  )
+  [filter](() => {
+    const mode1SelectedValue = testModeConfigurator1.selected.value
+    const mode2SelectedValue = testModeConfigurator2.selected.value
+    return mode1SelectedValue !== null && mode2SelectedValue !== null
+  })
   .subscribe(() => {
     const mode1SelectedValue = testModeConfigurator1.selected.value
     const mode2SelectedValue = testModeConfigurator2.selected.value

@@ -34,3 +34,13 @@ Object.defineProperty(globalThis, "localStorage", {
 })
 
 globalThis.fetch = () => Promise.resolve(new Response("", { status: 200 }))
+
+// happy-dom exposes AbortController as a per-window subclass, so `abort` lives on the parent prototype.
+// @rxjs/observable-polyfill refuses to initialize unless it is an own property of AbortController.prototype.
+if (Object.getOwnPropertyDescriptor(AbortController.prototype, "abort") == null) {
+  const inherited = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(AbortController.prototype) as object, "abort")
+  if (inherited == null) {
+    throw new Error("AbortController.prototype.abort not found on the prototype chain")
+  }
+  Object.defineProperty(AbortController.prototype, "abort", inherited)
+}

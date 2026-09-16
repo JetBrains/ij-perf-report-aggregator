@@ -1,4 +1,4 @@
-import { Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { computed } from "vue"
 import { beforeEach, describe, expect, it } from "vitest"
 import { CompareSectionsRegistry } from "../../src/components/charts/compareMode"
@@ -35,7 +35,7 @@ describe("Dashboard projects filter", () => {
     data = ConfiguratorTest.setupPreconditions([])
     machineGroupsUrl = data.serverUrl.replace("/api/q/", "/api/machineGroups/")
     data.fetchMock.mockReturnValue(
-      new Observable((sub) => {
+      new ColdObservable((sub) => {
         sub.next(groups)
       })
     )

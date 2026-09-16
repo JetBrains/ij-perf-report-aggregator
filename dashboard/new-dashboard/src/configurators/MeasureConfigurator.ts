@@ -2,7 +2,12 @@ import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { deepEqual } from "fast-equals"
-import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { debounce } from "rxjs/debounce"
+import { distinctUntilChanged } from "rxjs/distinct-until-changed"
+import { forkJoin } from "rxjs/fork-join"
+import { map } from "rxjs/map"
+import { switchMap } from "rxjs/switch-map"
 import { ref, Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
@@ -32,7 +37,7 @@ import { scaleToMedian } from "../components/settings/configurators/ScalingConfi
 import { exponentialSmoothingWithAlphaInference } from "../components/settings/configurators/SmoothingConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
-import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { combineLatest, fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
 import { getBasicInfo, getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
 import { useDarkModeStore } from "../shared/useDarkModeStore"
@@ -81,84 +86,81 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     const isIj = dbTypeStore().isIJStartup()
 
-    combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(this.showAllMetrics)])
-      .pipe(
-        debounceTime(100),
-        distinctUntilChanged(deepEqual),
-        switchMap(() => {
+    updateComponentState(
+      combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(this.showAllMetrics)])
+        [debounce](100)
+        [distinctUntilChanged](deepEqual)
+        [switchMap](() => {
           const loadMeasureListUrl = getLoadMeasureListUrl(serverConfigurator, filters)
           if (loadMeasureListUrl == null) {
-            return of(null)
+            return ColdObservable.from([null])
           }
 
           const loadMetricsUrl = getLoadMetricsListUrl(serverConfigurator, filters)
           if (loadMetricsUrl == null) {
-            return of(null)
+            return ColdObservable.from([null])
           }
 
           this.state.loading = true
           return isIj
-            ? forkJoin([
+            ? ColdObservable[forkJoin]([
                 fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
                 fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
                 fromFetchWithRetryAndErrorHandling<string[]>(loadMetricsUrl),
-              ]).pipe(
-                map((data) => {
-                  data[2] = data[2].map((it) => "metrics." + it)
-                  return data.flat(1)
-                })
-              )
+              ])[map]((data) => {
+                data[2] = data[2].map((it) => "metrics." + it)
+                return data.flat(1)
+              })
             : fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
         }),
-        updateComponentState(this.state)
-      )
-      .subscribe((data) => {
-        if (data == null) {
-          return
-        }
+      this.state
+    ).subscribe((data) => {
+      if (data == null) {
+        return
+      }
 
-        if (isIj) {
-          data = data.filter(
-            (it) =>
-              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it) &&
-              !/^c\.i\.ide\.[A-Za-z]\.$/.test(it) &&
-              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it) &&
-              !/^ProjectImpl@\d+ container$/.test(it)
-          )
-          data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
-        }
-
-        if (dbTypeStore().dbType == DBType.FLEET) {
-          data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
-          data = data.map((it) => it + ".end")
-        }
-
-        let filtered = data.filter(
+      if (isIj) {
+        data = data.filter(
           (it) =>
-            //filter for editor menu
-            !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
-            //filter out _23 metrics, we need them in DB but not in UI
-            (!/.*_\d+(#.*)?$/.test(it) || this.showAllMetrics.value)
+            !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it) &&
+            !/^c\.i\.ide\.[A-Za-z]\.$/.test(it) &&
+            !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it) &&
+            !/^ProjectImpl@\d+ container$/.test(it)
         )
+        data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
+      }
 
-        filtered = customSort(filtered, MAIN_METRICS)
+      if (dbTypeStore().dbType == DBType.FLEET) {
+        data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
+        data = data.map((it) => it + ".end")
+      }
 
-        const selectedRef = this.selected
+      let filtered = data.filter(
+        (it) =>
+          //filter for editor menu
+          !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
+          //filter out _23 metrics, we need them in DB but not in UI
+          (!/.*_\d+(#.*)?$/.test(it) || this.showAllMetrics.value)
+      )
 
-        const selected = selectedRef.value
-        if (selected != null && selected.length > 0) {
-          const selectedInData = selected.filter((it) => data.includes(it))
-          if (selectedInData.length > 0) {
-            filtered = [...new Set([...filtered, ...selectedInData])]
-          }
+      filtered = customSort(filtered, MAIN_METRICS)
 
-          if (selectedInData.length !== selected.length) {
-            selectedRef.value = selectedInData
-          }
+      const selectedRef = this.selected
+
+      const selected = selectedRef.value
+      if (selected != null && selected.length > 0) {
+        const selectedInData = selected.filter((it) => data.includes(it))
+        if (selectedInData.length > 0) {
+          filtered = [...new Set([...filtered, ...selectedInData])]
         }
-        this.data.value = filtered
-        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...filtered.filter((value) => MAIN_METRICS_SET.has(value))])]
-      })
+
+        if (selectedInData.length !== selected.length) {
+          selectedRef.value = selectedInData
+        }
+      }
+      this.data.value = filtered
+      selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...filtered.filter((value) => MAIN_METRICS_SET.has(value))])]
+    })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {

@@ -37,16 +37,16 @@ import { PersistentStateManager } from "new-dashboard/src/components/common/Pers
 import { ServerWithCompressConfigurator } from "new-dashboard/src/configurators/ServerWithCompressConfigurator"
 import { limit, refToObservable } from "new-dashboard/src/configurators/rxjs"
 import { serverUrlObservableKey } from "new-dashboard/src/shared/injectionKeys"
-import { filter, shareReplay } from "rxjs"
+import { filter } from "rxjs/filter"
+import { shareReplay } from "rxjs/share-replay"
 import { provide, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
 
 const serverUrl = shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
-const serverUrlObservable = refToObservable(serverUrl).pipe(
-  filter((it: string | null): it is string => it !== null && it.length > 0),
-  shareReplay(1)
-)
+const serverUrlObservable = refToObservable(serverUrl)
+  [filter]((it: string | null): it is string => it !== null && it.length > 0)
+  [shareReplay](1)
 provide(serverUrlObservableKey, serverUrlObservable)
 
 const activePath = shallowRef("")

@@ -1,4 +1,6 @@
-import { combineLatest, map, Observable, shareReplay } from "rxjs"
+import { map } from "rxjs/map"
+import { shareReplay } from "rxjs/share-replay"
+import { combineLatest } from "./rxjs"
 import { DataQuery, DataQueryExecutorConfiguration, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { getCompressor, getZstdObservable } from "../components/common/zstd"
 import { dbTypeStore } from "../shared/dbTypes"
@@ -25,13 +27,12 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   ) {
     dbTypeStore().setDbType(db, table)
     serverUrlObservable ??= injectOrError(serverUrlObservableKey)
-    this.observable = combineLatest([serverUrlObservable, getZstdObservable()]).pipe(
-      map(([url, _]) => {
+    this.observable = combineLatest([serverUrlObservable, getZstdObservable()])
+      [map](([url, _]) => {
         this._serverUrl = url
         return null
-      }),
-      shareReplay(1)
-    )
+      })
+      [shareReplay](1)
   }
 
   get serverUrl(): string {

@@ -1,4 +1,5 @@
-import { of, switchMap } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { switchMap } from "rxjs/switch-map"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -28,7 +29,7 @@ function loadBuilds(serverConfigurator: ServerWithCompressConfigurator, filters:
 
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration) || !configureQueryFilters(query, filters)) {
-    return of(null)
+    return ColdObservable.from([null])
   }
 
   state.loading = true
@@ -44,25 +45,23 @@ export function buildConfigurator(
   const configurator = new BuildConfigurator(name)
   persistentStateManager?.add(name, configurator.selected)
 
-  createFilterObservable(serverConfigurator, filters)
-    .pipe(
-      switchMap(() => loadBuilds(serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
+  updateComponentState(
+    createFilterObservable(serverConfigurator, filters)[switchMap](() => loadBuilds(serverConfigurator, filters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
 
-      configurator.values.value = data
-        .filter((value) => value != "")
-        .filter((value) => value.split(".").length == 3)
-        .map((value) => {
-          const buildParts = value.split(".")
-          return buildParts[2] == "0" ? buildParts[0] + "." + buildParts[1] : value
-        })
-        .toSorted(compareBuilds)
-    })
+    configurator.values.value = data
+      .filter((value) => value != "")
+      .filter((value) => value.split(".").length == 3)
+      .map((value) => {
+        const buildParts = value.split(".")
+        return buildParts[2] == "0" ? buildParts[0] + "." + buildParts[1] : value
+      })
+      .toSorted(compareBuilds)
+  })
   return configurator
 }
 

@@ -1,5 +1,8 @@
 import { getActivePinia } from "pinia"
-import { map, merge, switchMap } from "rxjs"
+import { ColdObservable } from "rxjs"
+import { map } from "rxjs/map"
+import { merge } from "rxjs/merge"
+import { switchMap } from "rxjs/switch-map"
 import { ref, Ref, toRef, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
@@ -18,7 +21,7 @@ export class BranchConfigurator extends DimensionConfigurator {
   }
 
   createObservable() {
-    return merge(super.createObservable(), refToObservable(this.groupBranches).pipe(map(() => null)))
+    return ColdObservable[merge]([super.createObservable(), refToObservable(this.groupBranches)[map](() => null)])
   }
 
   configureFilter(query: DataQuery): boolean {
@@ -110,18 +113,16 @@ export function createBranchConfigurator(
     filterSelected(configurator, configurator.values.value as string[])
   }
 
-  createFilterObservable(serverConfigurator, filters)
-    .pipe(
-      switchMap(() => loadDimension("branch", serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state)
-    )
-    .subscribe((data) => {
-      if (data == null) {
-        return
-      }
-      rawData = data
-      processData(data)
-    })
+  updateComponentState(
+    createFilterObservable(serverConfigurator, filters)[switchMap](() => loadDimension("branch", serverConfigurator, filters, configurator.state)),
+    configurator.state
+  ).subscribe((data) => {
+    if (data == null) {
+      return
+    }
+    rawData = data
+    processData(data)
+  })
 
   if (settingsStore != null) {
     watch(

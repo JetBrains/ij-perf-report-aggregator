@@ -1,4 +1,3 @@
-import { Observable } from "rxjs"
 import { shallowRef } from "vue"
 import { DataQueryExecutor } from "../components/common/DataQueryExecutor"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "../components/common/dataQuery"

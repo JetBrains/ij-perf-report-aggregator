@@ -1,5 +1,12 @@
-import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
-import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
+import { ColdObservable } from "rxjs"
+import { concat } from "rxjs/concat"
+import { debounce } from "rxjs/debounce"
+import { filter } from "rxjs/filter"
+import { forkJoin } from "rxjs/fork-join"
+import { map } from "rxjs/map"
+import { shareReplay } from "rxjs/share-replay"
+import { switchMap } from "rxjs/switch-map"
+import { combineLatest, defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
@@ -26,50 +33,49 @@ export class DataQueryExecutor {
     this.observable = combineLatest(
       configurators.map((configurator) => {
         // combineLatest will not emit an initial value until each observable emits at least one value, so, null observer simply emits one null value
-        return (configurator.createObservable() ?? of(null)).pipe(map(() => configurator))
+        return (configurator.createObservable() ?? ColdObservable.from([null]))[map](() => configurator)
       })
-    ).pipe(
-      debounceTime(100),
-      switchMap((configurators) => {
+    )
+      [debounce](100)
+      [switchMap]((configurators) => {
         abortController.abort()
         const configuration = new DataQueryExecutorConfiguration()
         const query = new DataQuery()
 
         for (const configurator of configurators) {
           if (!configurator.configureQuery(query, configuration)) {
-            return of(null)
+            return ColdObservable.from([null])
           }
         }
 
         const queries = generateQueries(query, configuration)
         const mergedQueries = mergeQueries(queries, configuration)
 
-        const loadingResults = of({ query, configuration, data: null, isLoading: true })
+        const loadingResult: Result = { query, configuration, data: null, isLoading: true }
         abortController = new AbortController()
-        return concat(
-          loadingResults,
-          forkJoin(
-            mergedQueries.map((it) => {
-              const stringQuery = JSON.stringify(it)
-              return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`), defaultBodyConsumer, abortController)
-            })
-          ).pipe(
-            // pass context along with data and flatten result
-            map((data): Result => ({ query, configuration, data: data.flat(1), isLoading: false }))
-          )
+        const results = ColdObservable[forkJoin](
+          mergedQueries.map((it) => {
+            const stringQuery = JSON.stringify(it)
+            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`), defaultBodyConsumer, abortController)
+          })
         )
-      }),
-      filter((it: Result | null): it is Result => it !== null),
-      shareReplay(1)
-    )
+        // pass context along with data and flatten result
+        return ColdObservable.from([loadingResult])[concat]([results[map]((data): Result => ({ query, configuration, data: data.flat(1), isLoading: false }))])
+      })
+      [filter]((it): it is Result => it !== null)
+      [shareReplay](1)
   }
 
   subscribe(listener: DataQueryConsumer): () => void {
-    const subscription = this.observable.subscribe(({ configuration, data, isLoading }) => {
-      listener(data, configuration, isLoading)
-    })
+    const controller = new AbortController()
+    this.observable.subscribe(
+      ({ configuration, data, isLoading }) => {
+        listener(data, configuration, isLoading)
+      },
+      { signal: controller.signal }
+    )
     return () => {
-      subscription.unsubscribe()
+      controller.abort()
     }
   }
 }

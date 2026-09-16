@@ -114,7 +114,7 @@
 <script setup lang="ts">
 import { FilterMatchMode, FilterService } from "@openvue/core/api"
 import { ColumnFilterModelType } from "openvue/column"
-import { combineLatest, Observable } from "rxjs"
+import { ColdObservable } from "rxjs"
 import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
@@ -123,7 +123,7 @@ import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
-import { refToObservable } from "../../../configurators/rxjs"
+import { combineLatest, refToObservable } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS_SET } from "../../../util/mainMetrics"
 import DimensionSelect from "../../charts/DimensionSelect.vue"
@@ -242,7 +242,7 @@ function getColorForBuild(build1: number, build2: number) {
 }
 
 function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string | null): Observable<Result[]> {
-  return new Observable<Result[]>((subscriber) => {
+  return new ColdObservable<Result[]>((subscriber) => {
     new DataQueryExecutor([
       serverConfigurator,
       new (class implements DataQueryConfigurator {

@@ -61,6 +61,8 @@
     "no-ternary": "off",
     "no-underscore-dangle": "off",
     "no-unassigned-import": "off",
+    // oxfmt breaks rxjs 9 Symbol-operator chains as `source\n  [map](...)`, which this rule reads as an ASI hazard (same conflict eslint-config-prettier resolves by disabling it)
+    "no-unexpected-multiline": "off",
     "no-unnecessary-array-flat-depth": "off",
     "no-unsafe-enum-comparison": "off",
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_", "destructuredArrayIgnorePattern": "^_" }],

@@ -1,8 +1,7 @@
 import { Ref } from "vue"
 import { TimeRangeConfigurator } from "../TimeRangeConfigurator"
 import { dbTypeStore } from "../../shared/dbTypes"
-import { combineLatest } from "rxjs"
-import { refToObservable } from "../rxjs"
+import { combineLatest, refToObservable } from "../rxjs"
 import { AccidentsConfigurator } from "./AccidentsConfigurator"
 
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {

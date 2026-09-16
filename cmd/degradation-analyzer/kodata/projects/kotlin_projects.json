@@ -1,10 +1,7 @@
 {
   "linux": {
     "completion": {
-      "kotlinEmpty": [
-        "kotlin_empty/completion/Main_empty_place_with_library_cache",
-        "kotlin_empty/completion/Main_empty_place_typing_with_library_cache"
-      ],
+      "kotlinEmpty": ["kotlin_empty/completion/Main_empty_place_with_library_cache", "kotlin_empty/completion/Main_empty_place_typing_with_library_cache"],
       "intelliJ": [
         "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_with_library_cache",
         "intellij_commit/completion/DexInlineCallStackComparisonTest_after_parameter_with_library_cache",
@@ -50,25 +47,17 @@
         "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_7_typing_with_library_cache",
         "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_10_typing_with_library_cache"
       ],
-      "arrow": [
-        "arrow/completion/build.gradle_completion_kts_with_library_cache"
-      ],
-      "kotlinEmptyScript": [
-        "kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache"
-      ],
+      "arrow": ["arrow/completion/build.gradle_completion_kts_with_library_cache"],
+      "kotlinEmptyScript": ["kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache"],
       "kotlinScript": [
         "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
         "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
         "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache"
       ],
-      "jooq": [
-        "jooq-k2/completion/Main_chainedDSL_typing_with_library_cache"
-      ]
+      "jooq": ["jooq-k2/completion/Main_chainedDSL_typing_with_library_cache"]
     },
     "highlighting": {
-      "kotlinEmpty": [
-        "kotlin_empty/highlight/Main_with_library_cache"
-      ],
+      "kotlinEmpty": ["kotlin_empty/highlight/Main_with_library_cache"],
       "intelliJ": [
         "intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache",
         "intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache",
@@ -87,10 +76,7 @@
         "intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache",
         "kotlin_lang/highlight/LazyJVM_with_library_cache"
       ],
-      "intelliJ3": [
-        "intellij_commit/highlight/GHGQLDataTest_with_library_cache",
-        "intellij_commit/highlight/MsIntrospector_with_library_cache"
-      ],
+      "intelliJ3": ["intellij_commit/highlight/GHGQLDataTest_with_library_cache", "intellij_commit/highlight/MsIntrospector_with_library_cache"],
       "kotlinLang": [
         "kotlin_lang/highlight/CommonParser_with_library_cache",
         "kotlin_lang/highlight/FirErrors_with_library_cache",
@@ -149,12 +135,8 @@
         "anki-android/highlight/TokenizerTest_with_library_cache",
         "anki-android/highlight/UniqueArrayListTest_with_library_cache"
       ],
-      "arrow": [
-        "arrow/highlight/build.gradle_with_library_cache"
-      ],
-      "kotlinEmptyScript": [
-        "kotlin_empty_kts/highlight/build.gradle_with_library_cache"
-      ],
+      "arrow": ["arrow/highlight/build.gradle_with_library_cache"],
+      "kotlinEmptyScript": ["kotlin_empty_kts/highlight/build.gradle_with_library_cache"],
       "kotlinScript": [
         "kotlin_lang/highlight/atomicfu_atomicfu-compiler/build.gradle_with_library_cache",
         "kotlin_lang/highlight/build.gradle_with_library_cache",
@@ -206,22 +188,14 @@
       ]
     },
     "moveDeclarations": {
-      "qaRefactorMove" : ["refactor-move/moveDeclarations_from_Referred.kt_to_Target.kt"]
+      "qaRefactorMove": ["refactor-move/moveDeclarations_from_Referred.kt_to_Target.kt"]
     },
     "refactoringRename": {
-      "intelliJ": [
-        "intellij_commit/rename/SqlBlock_SqlBlockRenamed",
-        "intellij_commit/rename/MavenCoordinates_versionRenamed"
-      ],
-      "kotlinLanguageServer": [
-        "kotlin_language_server/rename/Compiler_createKtFileTest"
-      ]
+      "intelliJ": ["intellij_commit/rename/SqlBlock_SqlBlockRenamed", "intellij_commit/rename/MavenCoordinates_versionRenamed"],
+      "kotlinLanguageServer": ["kotlin_language_server/rename/Compiler_createKtFileTest"]
     },
     "refactoringInsertCode": {
-      "kotlinLanguageServer": [
-        "kotlin_language_server/insertCode/Rename_renameSymbol",
-        "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k"
-      ]
+      "kotlinLanguageServer": ["kotlin_language_server/insertCode/Rename_renameSymbol", "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k"]
     },
     "codeTyping": {
       "kotlinEmpty": [
@@ -268,9 +242,7 @@
         "kotlin_lang/findUsages/Flag_with_library_cache",
         "kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache"
       ],
-      "kotlinLang_slow": [
-        "kotlin_lang/findUsages/FirErrors_with_library_cache"
-      ],
+      "kotlinLang_slow": ["kotlin_lang/findUsages/FirErrors_with_library_cache"],
       "tbe": [
         "toolbox_enterprise/findUsages/ErrorReport_with_library_cache",
         "toolbox_enterprise/findUsages/genUuid_with_library_cache",
@@ -319,17 +291,11 @@
         "kotlin_language_server/evaluate-expression/Debouncer_with_library_cache",
         "kotlin_language_server/evaluate-expression/KotlinTextDocumentService_with_library_cache"
       ],
-      "petClinic": [
-        "kotlin_petclinic/evaluate-expression/CacheConfig/sleep-1000_with_library_cache"
-      ],
-      "intelliJ": [
-        "intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"
-      ]
+      "petClinic": ["kotlin_petclinic/evaluate-expression/CacheConfig/sleep-1000_with_library_cache"],
+      "intelliJ": ["intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"]
     },
     "completionInEvaluateExpression": {
-      "intelliJ": [
-        "intellij_commit/completion/evaluate-expression_with_library_cache"
-      ],
+      "intelliJ": ["intellij_commit/completion/evaluate-expression_with_library_cache"],
       "petClinic": [
         "kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache",
         "kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache"
@@ -353,35 +319,22 @@
       ]
     },
     "sequenceHighlighting": {
-      "intelliJSources": [
-        "intellij_sources/sequence_highlighting_start_from_FirCompletionContributorBase.kt"
-      ],
-      "kotlinLang": [
-        "kotlin_lang/sequence_highlighting_start_from_LLFirDesignatedExpectActualMatcherTransformer.kt"
-      ]
+      "intelliJSources": ["intellij_sources/sequence_highlighting_start_from_FirCompletionContributorBase.kt"],
+      "kotlinLang": ["kotlin_lang/sequence_highlighting_start_from_LLFirDesignatedExpectActualMatcherTransformer.kt"]
     },
     "deleteAllImports": {
-      "arrow": [
-        "arrow/user_scenario/remove_all_imports/Either.kt"
-      ]
+      "arrow": ["arrow/user_scenario/remove_all_imports/Either.kt"]
     },
     "completionCausingModification": {
-      "intelliJ": [
-        "intellij_commit/out_of_block_completion_days_in_file_Utils.kt",
-        "intellij_commit/in_block_completion_name_in_file_JdkList.kt"
-      ],
+      "intelliJ": ["intellij_commit/out_of_block_completion_days_in_file_Utils.kt", "intellij_commit/in_block_completion_name_in_file_JdkList.kt"],
       "kotlinLanguageServer": [
         "kotlin_language_server/out_of_block_completion_toMutableList_in_file_SourceFiles.kt",
         "kotlin_language_server/in_block_completion_original_in_file_SymbolIndex.kt"
       ]
     },
     "renameAndCompletion": {
-      "intelliJ": [
-        "intellij_commit/rename_symbol_in_JdkList.kt_completion_in_JdkRequirement.kt"
-      ],
-      "kotlinLanguageServer": [
-        "kotlin_language_server/rename_symbol_in_CompilerClassPath.kt_completion_in_KotlinProtocolExtensionService.kt"
-      ]
+      "intelliJ": ["intellij_commit/rename_symbol_in_JdkList.kt_completion_in_JdkRequirement.kt"],
+      "kotlinLanguageServer": ["kotlin_language_server/rename_symbol_in_CompilerClassPath.kt_completion_in_KotlinProtocolExtensionService.kt"]
     },
     "errorCodeModification": {
       "intelliJ": [
@@ -398,44 +351,28 @@
       ]
     },
     "intelliJFindUsagesAndHighlighting": {
-      "intelliJSources": [
-        "intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"
-      ]
+      "intelliJSources": ["intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"]
     },
     "kotlinFindUsagesAndHighlighting": {
-      "kotlinLang": [
-        "kotlin_lang/usage_of_Flag_highlight_RawFirBuilder.kt"
-      ]
+      "kotlinLang": ["kotlin_lang/usage_of_Flag_highlight_RawFirBuilder.kt"]
     },
     "intelliJFindUsagesAndHighlightingNoFindUsages": {
-      "intelliJSources": [
-        "intellij_sources/highlight_IdeResourcesUtil.kt"
-      ]
+      "intelliJSources": ["intellij_sources/highlight_IdeResourcesUtil.kt"]
     },
     "kotlinFindUsagesAndHighlightingKotlinNoFindUsages": {
-      "kotlinLang": [
-        "kotlin_lang/highlight_RawFirBuilder.kt"
-      ]
+      "kotlinLang": ["kotlin_lang/highlight_RawFirBuilder.kt"]
     },
     "intelliJFindUsagesAndGotoImplementation": {
-      "intelliJSources": [
-        "intellij_sources/usage_of_setUp_goto_implementation_ReadActionCache.kt"
-      ]
+      "intelliJSources": ["intellij_sources/usage_of_setUp_goto_implementation_ReadActionCache.kt"]
     },
     "intelliJFindUsagesAndGotoImplementationNoUsages": {
-      "intelliJSources": [
-        "intellij_sources/goto_implementation_ReadActionCache.kt"
-      ]
+      "intelliJSources": ["intellij_sources/goto_implementation_ReadActionCache.kt"]
     },
     "kotlinFindUsagesAndGotoImplementation": {
-      "kotlinLang": [
-        "kotlin_lang/usage_of_Flag_goto_implementation_KaptExtensionConfig.kt"
-      ]
+      "kotlinLang": ["kotlin_lang/usage_of_Flag_goto_implementation_KaptExtensionConfig.kt"]
     },
     "kotlinFindUsagesAndGotoImplementationNoUsages": {
-      "kotlinLang": [
-        "kotlin_lang/goto_implementation_KaptExtensionConfig.kt"
-      ]
+      "kotlinLang": ["kotlin_lang/goto_implementation_KaptExtensionConfig.kt"]
     }
   },
   "mac": {
@@ -451,16 +388,9 @@
         "kotlin_coroutines_qg/completion/WorkerTest_test_WorkerTest_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/CoroutineScheduler_in_constructor_typing_with_library_cache"
       ],
-      "kotlinCoroutinesQG_slow": [
-        "kotlin_coroutines_qg/completion/Dispatchers_dispatch_async_Dispatchers_typing_with_library_cache"
-      ],
-      "sqliter": [
-        "SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache",
-        "SQLiter/completion/Types_Types_typing_with_library_cache"
-      ],
-      "sqliter_slow": [
-        "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache"
-      ],
+      "kotlinCoroutinesQG_slow": ["kotlin_coroutines_qg/completion/Dispatchers_dispatch_async_Dispatchers_typing_with_library_cache"],
+      "sqliter": ["SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache", "SQLiter/completion/Types_Types_typing_with_library_cache"],
+      "sqliter_slow": ["SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache"],
       "ktor": [
         "ktor_before_add_wasm_client/completion/CharsetLinux_encodeImpl_typing_with_library_cache",
         "ktor_before_add_wasm_client/completion/CharsetMingw_findCharset_with_library_cache",
@@ -520,10 +450,7 @@
         "ktor_before_add_wasm_client/findUsages/CharsetNative_with_library_cache",
         "ktor_before_add_wasm_client/findUsages/Memory_with_library_cache"
       ],
-      "sqliter": [
-        "SQLiter/findUsages/sqlite3_column_type_with_library_cache",
-        "SQLiter/findUsages/SQLITE_OK_with_library_cache"
-      ],
+      "sqliter": ["SQLiter/findUsages/sqlite3_column_type_with_library_cache", "SQLiter/findUsages/SQLITE_OK_with_library_cache"],
       "kotlinCoroutinesQG": [
         "kotlin_coroutines_qg/findUsages/createMainDispatcher_with_library_cache",
         "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",

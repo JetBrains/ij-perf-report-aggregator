@@ -9,10 +9,6 @@
     </option>
     <option name="LINE_SEPARATOR" />
     <option name="RIGHT_MARGIN" value="180" />
-    <GoCodeStyleSettings>
-      <option name="RUN_GO_FMT_ON_REFORMAT" value="false" />
-      <option name="LOCAL_PACKAGE_PREFIXES" />
-    </GoCodeStyleSettings>
     <HTMLCodeStyleSettings>
       <option name="HTML_SPACE_INSIDE_EMPTY_TAG" value="true" />
       <option name="HTML_ENFORCE_QUOTES" value="true" />

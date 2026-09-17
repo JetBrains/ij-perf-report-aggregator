@@ -108,6 +108,11 @@ const chartsIncomingDeclaration: ChartDefinition[] = [
     projects: DOMAINS,
   },
   {
+    labels: ["Reports With Owner"],
+    measures: ["count-reports-with-owner"],
+    projects: DOMAINS,
+  },
+  {
     labels: ["Number of Distinct Groups"],
     measures: ["count-distinct-groups"],
     projects: DOMAINS,

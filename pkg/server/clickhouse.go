@@ -21,7 +21,8 @@ func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
 	return clickhouse.Open(&clickhouse.Options{
 		Addr: []string{t.dbUrl},
 		Auth: clickhouse.Auth{
-			Database: "ij",
+			// every query through this connection names its own database, so this only has to exist
+			Database: "perfintDev",
 		},
 		Settings: map[string]any{
 			"readonly":         1,

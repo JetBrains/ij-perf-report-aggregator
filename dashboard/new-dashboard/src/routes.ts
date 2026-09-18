@@ -21,7 +21,6 @@ const MACHINES = {
 }
 
 enum ROUTE_PREFIX {
-  Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
   IntelliJSharedIndexes = "/intellij/sharedIndexes",
@@ -67,13 +66,6 @@ const COMPARE_BRANCHES_ROUTE = "compareBranches"
 const COMPARE_MODES_ROUTE = "compareModes"
 
 enum ROUTES {
-  StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
-  StartupPulseInstaller = `${ROUTE_PREFIX.Startup}/pulseInstaller`,
-  StartupProgress = `${ROUTE_PREFIX.Startup}/progressOverTime`,
-  StartupModuleLoading = `${ROUTE_PREFIX.Startup}/moduleLoading`,
-  StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
-  StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
-  StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
@@ -319,25 +311,6 @@ function compareModes(path: ROUTES, props: { dbName: string; table: string }, pa
   return { path, component: COMPONENTS.compareModes, props, meta: { pageTitle } }
 }
 
-const IJ_STARTUP: Product = {
-  url: ROUTE_PREFIX.Startup,
-  label: "IntelliJ Startup (deprecated)",
-  children: [
-    {
-      url: ROUTE_PREFIX.Startup,
-      label: "",
-      tabs: [
-        tab(ROUTES.StartupPulse, "Pulse"),
-        tab(ROUTES.StartupPulseInstaller, "Pulse (Installer)"),
-        tab(ROUTES.StartupModuleLoading, "Module Loading"),
-        tab(ROUTES.StartupGcAndMemory, "GC and Memory"),
-        tab(ROUTES.StartupProgress, "Progress Over Time"),
-        tab(ROUTES.StartupExplore, "Explore"),
-        tab(ROUTES.StartupExploreInstaller, "Explore (Installer)"),
-      ],
-    },
-  ],
-}
 const IDEA: Product = {
   url: ROUTE_PREFIX.IntelliJ,
   label: "IDEA",
@@ -834,7 +807,6 @@ export const PRODUCTS = [
   GOLAND,
   IDEA,
   IJENT,
-  IJ_STARTUP,
   JBR,
   KMT,
   KOTLIN,
@@ -857,16 +829,6 @@ export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
   return PRODUCTS.find((PRODUCTS) => prefix == PRODUCTS.url) ?? PRODUCTS[0]
 }
-
-const startupRoutes = [
-  dashboard(ROUTES.StartupPulse, () => import("./components/startup/IntelliJPulse.vue"), "Pulse"),
-  dashboard(ROUTES.StartupPulseInstaller, () => import("./components/startup/IntelliJPulse.vue"), "Pulse", { withInstaller: true }),
-  dashboard(ROUTES.StartupModuleLoading, () => import("./components/startup/IntelliJModuleLoading.vue"), "Module Loading"),
-  dashboard(ROUTES.StartupGcAndMemory, () => import("./components/startup/GcAndMemory.vue"), "GC and Memory"),
-  dashboard(ROUTES.StartupProgress, () => import("./components/startup/IntelliJProgressOverTime.vue"), "Progress Over Time"),
-  dashboard(ROUTES.StartupExplore, () => import("./components/startup/IntelliJExplore.vue"), "Explore", { withInstaller: false }),
-  dashboard(ROUTES.StartupExploreInstaller, () => import("./components/startup/IntelliJExplore.vue"), "Explore (Installer)", { withInstaller: true }),
-]
 
 const intellijRoutes = [
   startupDashboard(ROUTES.IntelliJStartupDashboard, { table: "idea", defaultProject: "idea" }, "IDEA Startup dashboard"),
@@ -1237,7 +1199,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
       children: [
-        ...startupRoutes,
         ...intellijRoutes,
         ...phpstormRoutes,
         ...golandRoutes,

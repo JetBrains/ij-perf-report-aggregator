@@ -1,4 +1,4 @@
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 
 export class SeriesNameConfigurator implements DataQueryConfigurator {
   constructor(private readonly measureName: string) {}

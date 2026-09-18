@@ -119,9 +119,7 @@ export async function getArtifactsUrl(data: InfoData | null, serverConfigurator:
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
-  if (parts.at(1) == "ij") {
-    parts = ["", "ij", "explore"]
-  } else if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
+  if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
     parts = ["", "fleet", "startupExplore"]
   } else {
     parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"

@@ -1,7 +1,3 @@
-ALTER TABLE ij.report MODIFY SETTING storage_policy='s3';
-ALTER TABLE ij.installer MODIFY SETTING storage_policy='s3';
-ALTER TABLE ij.collector_state MODIFY SETTING storage_policy='s3';
-
 ALTER TABLE fleet.report MODIFY SETTING storage_policy='s3';
 ALTER TABLE fleet.collector_state MODIFY SETTING storage_policy='s3';
 ALTER TABLE fleet.measure MODIFY SETTING storage_policy='s3';

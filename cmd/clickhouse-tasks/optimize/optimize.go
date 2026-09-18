@@ -43,9 +43,6 @@ func execute(taskContext context.Context) error {
 	group, ctx := errgroup.WithContext(taskContext)
 	group.SetLimit(4)
 	for index, item := range result {
-		// if item.Table == "report" && item.Database == "ij" {
-		//   continue
-		// }
 		// if item.Database != "perfint" || item.Table == "collector_state" || item.Table == "installer" {
 		//   continue
 		// }

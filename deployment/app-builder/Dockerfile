@@ -1,5 +1,6 @@
 FROM buildpack-deps:curl
 
+# Keep in sync with devEngines.runtime in package.json (deployment/check-node-version.sh)
 ENV NODE_VERSION 26.8.2
 ENV GOLANG_VERSION 1.27.1
 

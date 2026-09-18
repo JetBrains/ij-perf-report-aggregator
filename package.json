@@ -28,6 +28,13 @@
     "vue": "^3.5.43",
     "vue-tsc": "^3.3.11"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^26.8.2",
+      "onFail": "error"
+    }
+  },
   "engines": {
     "pnpm": ">=12"
   },

@@ -19,15 +19,6 @@ export class ChartManagerHelper {
     this.resizeObserver.observe(resizeContainer)
   }
 
-  enableZoomTool(): void {
-    // https://github.com/apache/echarts/issues/10274
-    this.chart.dispatchAction({
-      type: "takeGlobalCursor",
-      key: "dataZoomSelect",
-      dataZoomSelectActive: true,
-    })
-  }
-
   replaceDataSetAndSeries(options: ECBasicOption): void {
     this.chart.setOption(options, { replaceMerge: ["dataset", "series"] })
   }

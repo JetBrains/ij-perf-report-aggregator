@@ -1,0 +1,9 @@
+/*
+ * While the interval-selection tool is active, echarts' BrushController rewrites `cursor: crosshair` inline on the
+ * canvas on every mousemove (see its `resetCursor`), which overrides the pointer cursor the series would set. Only an
+ * `!important` rule outranks that inline style, so the class toggled by `setSeriesHoverCursor` restores the
+ * "this point is clickable" affordance.
+ */
+.interval-selection-hovering-series canvas {
+  cursor: pointer !important;
+}

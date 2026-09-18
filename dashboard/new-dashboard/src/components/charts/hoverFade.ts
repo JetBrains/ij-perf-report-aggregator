@@ -3,6 +3,7 @@ import { watch } from "vue"
 import { SMOOTHED_SERIES_SUFFIX } from "../../configurators/MeasureConfigurator"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
+import { setSeriesHoverCursor } from "./intervalSelection"
 
 const FADED_SERIES_OPACITY = 0.2
 const VISIBLE_SERIES_OPACITY = 1
@@ -39,6 +40,7 @@ export class HoverFadeController {
     chart.off("mouseover", this.onMouseOver)
     chart.off("mouseout", this.onMouseOut)
     chart.off("globalout", this.onGlobalOut)
+    setSeriesHoverCursor(this.chartManager, false)
   }
 
   private get activeGroupId(): string | null {
@@ -60,6 +62,7 @@ export class HoverFadeController {
   private setHoveredGroup(groupId: string | null) {
     this.clearPendingReset()
     this.hoveredGroupId = groupId
+    setSeriesHoverCursor(this.chartManager, groupId != null)
     if (this.settings.fadeOnHover) {
       this.apply(groupId)
     }

@@ -19,6 +19,7 @@ import { ChartManager } from "./ChartManager"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
 import { resolveMeasureUnitForDb } from "../../shared/dbTypes"
 import { HoverFadeController } from "./hoverFade"
+import { activateIntervalSelection } from "./intervalSelection"
 import { exportChartMetricsAsYaml } from "./chartExport"
 import { getMinYAxisTop } from "./yAxisRange"
 
@@ -481,7 +482,7 @@ export class LineChartVM {
       }
     )
 
-    for (const configurator of configuration.getChartConfigurators()) {
+    const updates = configuration.getChartConfigurators().map((configurator) =>
       configurator
         .configureChart(data, configuration)
         .then((options) => {
@@ -492,7 +493,12 @@ export class LineChartVM {
         .catch((error: unknown) => {
           console.error(error)
         })
-    }
+    )
+
+    // Every update above rebuilds the toolbox and drops the global cursor, so re-arm the zoom tool once all of them are applied.
+    void Promise.all(updates).then(() => {
+      activateIntervalSelection(this.eChart)
+    })
   }
 
   dispose(): void {

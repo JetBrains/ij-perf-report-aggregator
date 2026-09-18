@@ -32,12 +32,6 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     if (dbName == "perfUnitTests") {
       dbType.value = DBType.PERF_UNIT_TESTS
     }
-    if (dbName == "ij") {
-      dbType.value = DBType.STARTUP_TESTS
-    }
-    if (dbName == "ijDev") {
-      dbType.value = DBType.STARTUP_TESTS_DEV
-    }
     if (dbName == "diogen") {
       dbType.value = DBType.DIOGEN
     }
@@ -47,11 +41,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
   }
 
   function isStartup(): boolean {
-    return isIJStartup() || dbType.value == DBType.FLEET
-  }
-
-  function isIJStartup(): boolean {
-    return dbType.value == DBType.STARTUP_TESTS || dbType.value == DBType.STARTUP_TESTS_DEV
+    return dbType.value == DBType.FLEET
   }
 
   function isModeSupported(): boolean {
@@ -64,7 +54,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     )
   }
 
-  return { dbType, setDbType, isStartup, isIJStartup, isModeSupported }
+  return { dbType, setDbType, isStartup, isModeSupported }
 })
 
 // resolveMeasureUnit for a stored type taken straight from a query row: ignores it for databases

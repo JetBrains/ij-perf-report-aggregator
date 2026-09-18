@@ -7,7 +7,6 @@ import { ChartConfigurator, ChartStyle } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { BarChartOptions } from "../components/common/echarts"
 import { formatMeasureValue, MeasureUnit, reduceToAxisUnit, resolveMeasureUnit } from "../components/common/formatter"
-import { dbTypeStore } from "../shared/dbTypes"
 import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
@@ -40,25 +39,16 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     // do not sort - bar chart shows series exactly in the same order as provided measure name list
     // reverse because echarts layout from bottom to top, but we need to put first measures to top
     const measureNames = this.measures.toReversed()
-    if (dbTypeStore().isIJStartup()) {
-      for (const measureName of measureNames) {
-        query.addField(measureName)
-      }
-    } else {
-      if (measureNames.length > 1) {
-        throw new Error("multiple measures are not supported")
-      }
+    if (measureNames.length > 1) {
+      throw new Error("multiple measures are not supported")
+    }
 
-      if (query.table === "measure") {
-        query.addField({ n: "value" })
-        query.addFilter({ f: "name", v: measureNames[0] })
-      } else {
-        query.addField({ n: "measures", subName: "value" })
-        query.addFilter({ f: "measures.name", v: measureNames })
-        if (measureNames.length > 1) {
-          throw new Error("multiple measures are not supported")
-        }
-      }
+    if (query.table === "measure") {
+      query.addField({ n: "value" })
+      query.addFilter({ f: "name", v: measureNames[0] })
+    } else {
+      query.addField({ n: "measures", subName: "value" })
+      query.addFilter({ f: "measures.name", v: measureNames })
     }
 
     query.order = "t"

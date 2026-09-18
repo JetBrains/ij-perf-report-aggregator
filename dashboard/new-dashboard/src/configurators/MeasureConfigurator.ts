@@ -5,8 +5,6 @@ import { deepEqual } from "fast-equals"
 import { ColdObservable } from "rxjs"
 import { debounce } from "rxjs/debounce"
 import { distinctUntilChanged } from "rxjs/distinct-until-changed"
-import { forkJoin } from "rxjs/fork-join"
-import { map } from "rxjs/map"
 import { switchMap } from "rxjs/switch-map"
 import { ref, Ref, shallowRef, toRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
@@ -85,8 +83,6 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   ) {
     persistentStateManager.add("measure", this._selected)
 
-    const isIj = dbTypeStore().isIJStartup()
-
     updateComponentState(
       combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(this.showAllMetrics)])
         [debounce](100)
@@ -97,38 +93,13 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             return ColdObservable.from([null])
           }
 
-          const loadMetricsUrl = getLoadMetricsListUrl(serverConfigurator, filters)
-          if (loadMetricsUrl == null) {
-            return ColdObservable.from([null])
-          }
-
           this.state.loading = true
-          return isIj
-            ? ColdObservable[forkJoin]([
-                fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
-                fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
-                fromFetchWithRetryAndErrorHandling<string[]>(loadMetricsUrl),
-              ])[map]((data) => {
-                data[2] = data[2].map((it) => "metrics." + it)
-                return data.flat(1)
-              })
-            : fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
+          return fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
         }),
       this.state
     ).subscribe((data) => {
       if (data == null) {
         return
-      }
-
-      if (isIj) {
-        data = data.filter(
-          (it) =>
-            !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it) &&
-            !/^c\.i\.ide\.[A-Za-z]\.$/.test(it) &&
-            !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it) &&
-            !/^ProjectImpl@\d+ container$/.test(it)
-        )
-        data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
       }
 
       if (dbTypeStore().dbType == DBType.FLEET) {
@@ -219,33 +190,8 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
     return null
   }
 
-  let fieldPrefix: string
-  if (dbTypeStore().isIJStartup()) {
-    fieldPrefix = "measure"
-  } else {
-    fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
-  }
+  const fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
 
-  // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
-  query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
-  query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
-  query.table = serverConfigurator.table
-  query.flat = true
-  return serverConfigurator.computeQueryUrl(query)
-}
-
-function getLoadMetricsListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {
-  const query = new DataQuery()
-  const configuration = new DataQueryExecutorConfiguration()
-  if (!serverConfigurator.configureQuery(query, configuration)) {
-    return null
-  }
-
-  if (!configureQueryFilters(query, filters)) {
-    return null
-  }
-
-  const fieldPrefix = "metrics"
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
   query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
   query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
@@ -320,13 +266,10 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  const isIj = dbTypeStore().isIJStartup()
-  const structureName = isIj ? "measure" : "measures"
-  const valueName = isIj ? "duration" : "value"
   const field: DataQueryDimension = { n: "" }
   query.insertField(field, 1)
 
-  if (query.db !== "ij" && query.db !== "ijDev" && !(query.db === "fleet" && query.table === "report")) {
+  if (!(query.db === "fleet" && query.table === "report")) {
     query.addField({ n: "measures", subName: "name" })
     query.addField({ n: "measures", subName: "type" })
   }
@@ -376,25 +319,17 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         field.resultKey = measure.replaceAll(".", "_")
         addFilter({ f: "name", v: measure })
         valueFieldName = "value"
-      } else if (isIj && measure.includes("metrics.")) {
-        field.n = "metrics"
-        field.subName = "value"
-        addFilter({ f: "metrics.name", v: measure.split("metrics.", 2)[1] })
-        valueFieldName = "metrics.value"
-      } else if (isIj && !measure.includes(" ") && measure != "elementTypeCount") {
-        field.n = measure
-        valueFieldName = measure
       } else {
-        field.n = structureName
+        field.n = "measures"
         if (measure.endsWith(".end")) {
           field.subName = "end"
-          field.sql = `(${structureName}.start+${structureName}.${valueName})`
+          field.sql = "(measures.start+measures.value)"
         } else {
-          field.subName = valueName
+          field.subName = "value"
         }
 
-        addFilter({ f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure })
-        valueFieldName = `${structureName}.${valueName}`
+        addFilter({ f: "measures.name", v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure })
+        valueFieldName = "measures.value"
       }
 
       // Keep zero deviations: dropping one could shift the pairing of repeated measurements.

@@ -154,11 +154,6 @@ export abstract class AccidentsConfigurator {
         key = `${value[5]}_${build}`
         keyWithMetric = `${value[5]}/${value[2]}_${build}`
       }
-      if (this.dbType == DBType.STARTUP_TESTS) {
-        build = `${value[7]}.${value[8]}`
-        key = `${value[5]}_${build}`
-        keyWithMetric = `${value[5]}/${value[2]}_${build}`
-      }
       if (this.dbType == DBType.INTELLIJ) {
         build = value[10] == 0 ? `${value[8]}.${value[9]}` : `${value[8]}.${value[9]}.${value[10]}`
         key = `${value[6]}_${build}`
@@ -174,11 +169,6 @@ export abstract class AccidentsConfigurator {
         build = `${value[5]}`
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`
-      }
-      if (this.dbType == DBType.STARTUP_TESTS_DEV) {
-        build = `${value[4]}`
-        key = `${value[5]}_${build}`
-        keyWithMetric = `${value[5]}/${value[2]}_${build}`
       }
       const buildAccident = accidents.get(`_${build}`) ?? []
       const testAccident = accidents.get(key) ?? []

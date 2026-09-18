@@ -71,8 +71,6 @@ export enum DBType {
   QODANA = "qodana",
   BAZEL = "bazel",
   PERF_UNIT_TESTS = "perfUnitTests",
-  STARTUP_TESTS = "startupTests",
-  STARTUP_TESTS_DEV = "startupTests_dev",
   DIOGEN = "diogen",
   TOOLBOX = "toolbox",
   UNKNOWN = "unknown",
@@ -148,7 +146,6 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
 
   const measures = [...new Set(data?.series.map((s) => s.metricName))]
     .filter((m): m is string => m != undefined)
-    .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
     .map((m) => encodeURIComponent(m))
     .map((m) => "&measure=" + m)
     .join("")

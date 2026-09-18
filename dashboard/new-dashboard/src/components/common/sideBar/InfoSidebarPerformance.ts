@@ -38,10 +38,7 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
   ) {
     buildId = dataSeries[5] as number
   }
-  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
-    buildId = dataSeries[4] as number
-  }
-  if (dbType == DBType.STARTUP_TESTS_DEV) {
+  if (dbType == DBType.FLEET) {
     buildId = dataSeries[4] as number
   }
   if (dbType == DBType.JBR) {
@@ -64,11 +61,8 @@ function getAccidentBuild(params: CallbackDataParams): string | undefined {
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN || dbType == DBType.TOOLBOX) {
     return getBuildId(params.value as number[])?.toString()
   }
-  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+  if (dbType == DBType.FLEET) {
     return getFullBuildId(params)
-  }
-  if (dbType == DBType.STARTUP_TESTS_DEV) {
-    return getBuildId(params.value as number[])?.toString()
   }
   if (dbType == DBType.INTELLIJ) {
     return getFullBuildId(params)
@@ -91,7 +85,7 @@ export function getFullBuildId(params: CallbackDataParams): string | undefined {
   let buildNum2: number | undefined
   let buildNumber: string | undefined
 
-  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+  if (dbType == DBType.FLEET) {
     buildVersion = dataSeries[7] as number
     buildNum1 = dataSeries[8] as number
     buildNum2 = dataSeries[9] as number
@@ -143,18 +137,12 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
       mode = dataSeries[8] as string
     }
   }
-  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+  if (dbType == DBType.FLEET) {
     metricName = dataSeries[2] as string
     machineName = dataSeries[3] as string
     projectName = dataSeries[5] as string
     installerId = dataSeries[6] as number
     branch = dataSeries[10] as string
-  }
-  if (dbType == DBType.STARTUP_TESTS_DEV) {
-    metricName = dataSeries[2] as string
-    machineName = dataSeries[3] as string
-    projectName = dataSeries[5] as string
-    branch = dataSeries[6] as string
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string

@@ -30,52 +30,6 @@ type DatabaseConfiguration struct {
 
 func GetAnalyzer(id string) DatabaseConfiguration {
 	switch {
-	case id == "ij":
-		fieldNames := []string{
-			"classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
-			"resourceLoadingTime", "resourceLoadingCount",
-			"measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",
-		}
-		return DatabaseConfiguration{
-			DbName:            id,
-			HasProductField:   true,
-			HasInstallerField: true,
-			extraFieldCount:   len(IjMetricDescriptors) + len(fieldNames),
-			ReportReader:      analyzeIjReport,
-			insertStatementWriter: func(sb *strings.Builder) {
-				for _, metric := range IjMetricDescriptors {
-					sb.WriteByte(',')
-					sb.WriteString(metric.Name)
-				}
-				for _, fieldName := range fieldNames {
-					sb.WriteByte(',')
-					sb.WriteString(fieldName)
-				}
-			},
-		}
-	case id == "ijDev":
-		fieldNames := []string{
-			"classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
-			"resourceLoadingTime", "resourceLoadingCount",
-			"measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",
-		}
-		return DatabaseConfiguration{
-			DbName:                      id,
-			HasProductField:             true,
-			HasNoInstallerButHasChanges: true,
-			extraFieldCount:             len(IjMetricDescriptors) + len(fieldNames),
-			ReportReader:                analyzeIjReport,
-			insertStatementWriter: func(sb *strings.Builder) {
-				for _, metric := range IjMetricDescriptors {
-					sb.WriteByte(',')
-					sb.WriteString(metric.Name)
-				}
-				for _, fieldName := range fieldNames {
-					sb.WriteByte(',')
-					sb.WriteString(fieldName)
-				}
-			},
-		}
 	case strings.HasPrefix(id, "perfintDev"):
 		dbName, tableName := splitId(id)
 		return DatabaseConfiguration{

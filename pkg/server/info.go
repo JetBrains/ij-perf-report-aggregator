@@ -17,16 +17,11 @@ func (t *StatsServer) handleMetaMeasureRequest(_ *http.Request) (*bytebufferpool
 		}
 	}()
 
-	measureNames := make([]string, len(analyzer.IjMetricDescriptors))
-	for index, descriptor := range analyzer.IjMetricDescriptors {
-		measureNames[index] = descriptor.Name
-	}
-
 	templateWriter := quicktemplate.AcquireWriter(buffer)
 	defer quicktemplate.ReleaseWriter(templateWriter)
 	jsonWriter := templateWriter.N()
 	jsonWriter.S("[")
-	for index, name := range measureNames {
+	for index, name := range analyzer.IjMetricNames {
 		if index != 0 {
 			jsonWriter.S(",")
 		}

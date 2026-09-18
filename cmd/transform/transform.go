@@ -240,7 +240,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 			runResult.TcBuildType = row.TcBuildType
 		}
 
-		err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, slog.Default())
+		err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project)
 		if err != nil {
 			return err
 		}

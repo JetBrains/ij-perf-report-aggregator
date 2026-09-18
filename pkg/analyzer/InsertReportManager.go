@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -18,8 +17,6 @@ import (
 
 // use `select distinct cast(machine, 'Uint16') as id, machine as name FROM report order by id` to get current enum values
 // for now machine enum should be updated manually if a new machine will be added
-
-var ErrMetricsCannotBeComputed = errors.New("metrics cannot be computed")
 
 type RunResult struct {
 	Product string
@@ -177,12 +174,8 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
 		}
 	}
 
-	err := t.WriteMetrics(runResult.Product, runResult, runResult.branch, runResult.Report.Project, logger)
+	err := t.WriteMetrics(runResult.Product, runResult, runResult.branch, runResult.Report.Project)
 	if err != nil {
-		if errors.Is(err, ErrMetricsCannotBeComputed) {
-			logger.Warn(err.Error())
-			return nil
-		}
 		return err
 	}
 
@@ -214,7 +207,7 @@ var projectIdToName = map[string]string{
 	"/q9N7EHxr8F1NHjbNQnpqb0Q0fs": "restoring editors",
 }
 
-func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *slog.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string) error {
 	batch, err := t.InsertManager.PrepareForAppend() //nolint:clickhouselint // batch is owned by InsertManager and reused across appends until flushed; closing here would discard buffered rows
 	if err != nil {
 		return err
@@ -257,13 +250,6 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 		args = append(args, row.BuildNumber)
 	}
 	args = append(args, row.TriggeredBy)
-
-	if t.config.DbName == "ij" || t.config.DbName == "ijDev" {
-		err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
-		if err != nil {
-			return err
-		}
-	}
 
 	args = append(args, row.ExtraFieldData...)
 

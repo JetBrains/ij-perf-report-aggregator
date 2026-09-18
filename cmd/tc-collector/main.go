@@ -27,15 +27,6 @@ func main() {
 	}
 }
 
-func hasOSSuffix(osList []string, configuration string) bool {
-	for _, osName := range osList {
-		if strings.HasSuffix(configuration, osName) {
-			return true
-		}
-	}
-	return false
-}
-
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
 func configureCollectFromTeamCity() error {
@@ -89,31 +80,17 @@ func configureCollectFromTeamCity() error {
 		}
 
 		var buildConfigurationIds []string
-		switch {
-		case chunk.Database == "ij":
-			osList := []string{"Linux", "Windows", "MacM2"}
-			for _, configuration := range chunk.Configurations {
-				if hasOSSuffix(osList, configuration) {
-					buildConfigurationIds = append(buildConfigurationIds, configuration)
-				} else {
-					for _, osName := range osList {
-						buildConfigurationIds = append(buildConfigurationIds, configuration+osName)
-					}
-				}
+		for _, configuration := range chunk.Configurations {
+			collector := &Collector{
+				serverUrl:  config.TeamcityUrl + "/app/rest",
+				httpClient: httpClient,
 			}
-		default:
-			for _, configuration := range chunk.Configurations {
-				collector := &Collector{
-					serverUrl:  config.TeamcityUrl + "/app/rest",
-					httpClient: httpClient,
-				}
-				configurations, err := collector.getSnapshots(taskContext, configuration)
-				slog.Info("get snapshots", "configurations", configurations)
-				if err != nil {
-					slog.Warn("cannot get snapshots", "err", err)
-				}
-				buildConfigurationIds = append(buildConfigurationIds, configurations...)
+			configurations, err := collector.getSnapshots(taskContext, configuration)
+			slog.Info("get snapshots", "configurations", configurations)
+			if err != nil {
+				slog.Warn("cannot get snapshots", "err", err)
 			}
+			buildConfigurationIds = append(buildConfigurationIds, configurations...)
 		}
 
 		err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, since, httpClient)

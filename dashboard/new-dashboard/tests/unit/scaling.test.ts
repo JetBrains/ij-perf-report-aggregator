@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { scaleToMedian } from "../../src/components/settings/configurators/ScalingConfigurator"
+import { scaleToMedian } from "../../src/components/settings/transforms/scaling"
 
 describe("median scaling", () => {
   it("scaling of empty array", () => {

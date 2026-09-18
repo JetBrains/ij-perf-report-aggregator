@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../../src/components/charts/staleSeries"
-import { removeOutliers } from "../../src/components/settings/configurators/RemoveOutliersConfigurator"
+import { removeOutliers } from "../../src/components/settings/transforms/outliers"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const START = Date.UTC(2026, 0, 1)

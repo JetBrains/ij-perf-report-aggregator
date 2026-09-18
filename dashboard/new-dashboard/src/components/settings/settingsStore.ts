@@ -5,13 +5,8 @@ import { computed } from "vue"
 export const useSettingsStore = defineStore("settingsStore", () => {
   const storedScaling = useStorage("scalingEnabled", false)
   const storedSmoothing = useStorage("smoothingEnabled", false)
-  const storedDetectChanges = useStorage("detectChangesEnabled", false)
-  const storedFlexibleYZero = useStorage("floatingNull", false)
-  const storedRemoveOutliers = useStorage("removeOutliers", false)
-  const storedGroupBranches = useStorage("groupBranches", true)
-  const storedFadeOnHover = useStorage("fadeOnHover", false)
-  const stdDevInterval = useStorage("stdDevInterval", true)
 
+  // scaling and smoothing are mutually exclusive, the rest of the settings are plain flags
   const scaling = computed({
     get: () => storedScaling.value,
     set(value) {
@@ -28,40 +23,14 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  const detectChanges = computed({
-    get: () => storedDetectChanges.value,
-    set(value) {
-      storedDetectChanges.value = value
-    },
-  })
-
-  const flexibleYZero = computed({
-    get: () => storedFlexibleYZero.value,
-    set(value) {
-      storedFlexibleYZero.value = value
-    },
-  })
-
-  const removeOutliers = computed({
-    get: () => storedRemoveOutliers.value,
-    set(value) {
-      storedRemoveOutliers.value = value
-    },
-  })
-
-  const groupBranches = computed({
-    get: () => storedGroupBranches.value,
-    set(value) {
-      storedGroupBranches.value = value
-    },
-  })
-
-  const fadeOnHover = computed({
-    get: () => storedFadeOnHover.value,
-    set(value) {
-      storedFadeOnHover.value = value
-    },
-  })
-
-  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, groupBranches, fadeOnHover, stdDevInterval }
+  return {
+    scaling,
+    smoothing,
+    detectChanges: useStorage("detectChangesEnabled", false),
+    flexibleYZero: useStorage("floatingNull", false),
+    removeOutliers: useStorage("removeOutliers", false),
+    groupBranches: useStorage("groupBranches", true),
+    fadeOnHover: useStorage("fadeOnHover", false),
+    stdDevInterval: useStorage("stdDevInterval", true),
+  }
 })

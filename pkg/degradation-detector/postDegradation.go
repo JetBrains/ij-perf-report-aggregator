@@ -42,10 +42,6 @@ func (s PerformanceSettings) DBTestName() string {
 	return s.Project + "/" + s.Metric
 }
 
-func (s StartupSettings) DBTestName() string {
-	return s.Product + "/" + s.Project + "/" + s.Metric
-}
-
 func (s FleetStartupSettings) DBTestName() string {
 	return "fleet" + "/" + s.Metric
 }

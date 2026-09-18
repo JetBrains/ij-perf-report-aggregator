@@ -86,27 +86,6 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	}
 }
 
-func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
-	reason := getMessageBasedOnMedianChange(d.medianValues)
-	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
-	link := s.ChartLink(d)
-	tests := strings.ReplaceAll(s.Project, ",", "\n")
-
-	text := fmt.Sprintf(
-		"%sProject(s): %s\n"+
-			"Metric: `%s`\n"+
-			"Build: %s\n"+
-			"Branch: %s\n"+
-			"Date: %s\n"+
-			"Reason: %s\n"+
-			"%s\n"+
-			"%s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
-	return SlackMessage{
-		Text:    text,
-		Channel: s.Channel,
-	}
-}
-
 func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	reason := getMessageBasedOnMedianChange(d.medianValues)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
@@ -181,12 +160,6 @@ func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
 	measure := strings.Join(escapedMeasurements, "&measure=")
 	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?mode=%s&machine=%s&branch=%s&project=%s&measure=%s&%s&point=%s|See charts>",
 		s.ProductLink, testPage, mode, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomRange(d.GetRangeStartTime(), time.Now()), build)
-}
-
-func (s StartupSettings) ChartLink(d TimeRangeProvider) string {
-	machineGroup := getMachineGroup(s.Machine)
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&%s|See charts>",
-		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project), getCustomRange(d.GetRangeStartTime(), time.Now()))
 }
 
 func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, client *http.Client) {

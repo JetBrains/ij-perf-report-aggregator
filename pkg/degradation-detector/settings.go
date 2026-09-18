@@ -28,15 +28,6 @@ type PerformanceSettings struct {
 	Mode        string
 }
 
-type StartupSettings struct {
-	BaseSettings
-
-	Db      string
-	Table   string
-	Product string
-	Project string
-}
-
 type FleetStartupSettings struct {
 	BaseSettings
 }

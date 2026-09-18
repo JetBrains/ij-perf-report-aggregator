@@ -69,9 +69,6 @@ func mergeMetricsHelper(settings Settings, newSettings Settings) Settings {
 	case PerformanceSettings:
 		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
 		return s
-	case StartupSettings:
-		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
-		return s
 	default:
 		return settings
 	}
@@ -85,11 +82,6 @@ func (s PerformanceSettings) MergeMetrics(settings Settings) Settings {
 	return mergeMetricsHelper(s, settings)
 }
 
-func (s StartupSettings) MergeMetrics(settings Settings) Settings {
-	return mergeMetricsHelper(s, settings)
-}
-
-// MissingDataMerged is a map: slack channel => tc_build_type => project => missingData
 type MissingDataMerged map[string]map[string]map[string]MissingData
 
 func MergeMissingData(missingData <-chan MissingData) MissingDataMerged {

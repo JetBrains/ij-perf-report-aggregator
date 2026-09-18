@@ -133,41 +133,6 @@ func (s FleetStartupSettings) query() dataQuery.Query {
 	return query
 }
 
-func (s StartupSettings) query() dataQuery.Query {
-	fields := []dataQuery.QueryDimension{
-		{Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
-	}
-	filters := []dataQuery.QueryFilter{
-		{Field: "branch", Value: s.Branch},
-		{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-		{Field: "project", Value: s.Project},
-		{Field: "machine", Value: s.Machine, Operator: "like"},
-		{Field: "triggeredBy", Value: ""},
-	}
-	if strings.Contains(s.Metric, "/") {
-		filters = append(filters, dataQuery.QueryFilter{Field: "metrics.name", Value: s.Metric})
-		fields = append(fields, dataQuery.QueryDimension{Name: "metrics", SubName: "value"})
-	}
-	if strings.HasSuffix(s.Metric, ".end") {
-		metricName, _ := strings.CutSuffix(s.Metric, ".end")
-		filters = append(filters, dataQuery.QueryFilter{Field: "measure.name", Value: metricName})
-		fields = append(fields, dataQuery.QueryDimension{Name: "measure", SubName: "end", Sql: "(measure.start+measure.duration)"})
-	}
-	if !strings.HasSuffix(s.Metric, ".end") && !strings.Contains(s.Metric, "/") {
-		fields = append(fields, dataQuery.QueryDimension{Name: s.Metric})
-	}
-	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
-
-	query := dataQuery.Query{
-		Database: s.Db,
-		Table:    s.Table,
-		Fields:   fields,
-		Filters:  filters,
-		Order:    []string{"t"},
-	}
-	return query
-}
-
 func (s PerformanceSettings) query() dataQuery.Query {
 	fields := []dataQuery.QueryDimension{
 		{Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},

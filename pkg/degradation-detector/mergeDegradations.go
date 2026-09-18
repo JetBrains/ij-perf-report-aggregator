@@ -47,15 +47,6 @@ func (s PerformanceSettings) GetProject() string {
 	return s.Project
 }
 
-func (s StartupSettings) GetProject() string {
-	return s.Project
-}
-
-func (s StartupSettings) MergeAnother(settings Settings) Settings {
-	s.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
-	return s
-}
-
 func (s FleetStartupSettings) GetProject() string {
 	return "fleet"
 }

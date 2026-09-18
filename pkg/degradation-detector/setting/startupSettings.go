@@ -7,12 +7,11 @@ import (
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
-func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.StartupSettings {
-	settings := make([]detector.StartupSettings, 0, 100)
-	mainSettings := detector.StartupSettings{
+func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+	settings := make([]detector.PerformanceSettings, 0, 100)
+	mainSettings := detector.PerformanceSettings{
 		Db:      "perfintDev",
 		Table:   "idea",
-		Product: "IU",
 		Branch:  "master",
 		Machine: "intellij-linux-hw-de-unit-%",
 	}
@@ -20,7 +19,7 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		Channel:     "ij-u-team-performance-issues-check",
 		ProductLink: "intellij",
 	}
-	projects, err := detector.FetchAllProjects(backendUrl, client, mainSettings)
+	projects, err := fetchStartupProjects(backendUrl, client, mainSettings)
 	if err != nil {
 		slog.Error("error while getting projects", "error", err)
 		return settings
@@ -38,10 +37,9 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 	for _, machine := range machines {
 		for _, project := range projects {
 			for _, metric := range metrics {
-				settings = append(settings, detector.StartupSettings{
+				settings = append(settings, detector.PerformanceSettings{
 					Db:                   mainSettings.Db,
 					Table:                mainSettings.Table,
-					Product:              mainSettings.Product,
 					Project:              project,
 					Branch:               mainSettings.Branch,
 					Machine:              machine,

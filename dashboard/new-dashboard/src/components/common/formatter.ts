@@ -45,11 +45,6 @@ export const timeFormatWithoutSeconds = new Intl.DateTimeFormat("en-US", {
   minute: "numeric",
 })
 
-export const durationFormatterInOneWord: (valueInMs: number) => string = humanizeDuration.humanizer({
-  ...durationFormatOptions,
-  largest: 1,
-})
-
 // Binary (IEC) units for memory sizes, as the JVM and GCViewer report them (base 1024).
 const binaryUnits = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
 // Decimal (SI) units for file sizes and throughput, matching IntelliJ's formatFileSize (base 1000).

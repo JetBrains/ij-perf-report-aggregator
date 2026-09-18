@@ -9,9 +9,3 @@ export type ScaleDataValue = string | number | Date
 export type OptionDataItem = OptionDataValue | Record<string, OptionDataValue> | OptionDataValue[]
 
 export type OptionSourceData = OptionDataItem[] | Record<string, OptionDataValue[]> | OptionDataValue[][]
-
-export interface DimensionDefinition {
-  name?: string
-  type?: "number" | "ordinal" | "float" | "int" | "time"
-  displayName?: string
-}

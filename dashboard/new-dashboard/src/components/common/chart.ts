@@ -27,11 +27,6 @@ export const timeFormat = new Intl.DateTimeFormat(undefined, {
   second: "numeric",
 })
 
-export const chartDefaultStyle: ChartStyle = {
-  barSeriesLabelPosition: "insideRight",
-  valueUnit: "ms",
-}
-
 // "auto" (the default) infers the unit from each series' stored metric type; "ms"/"ns"/"counter"
 // are explicit overrides that win over the stored type (some counts/durations are mis-typed).
 export type ValueUnit = "ms" | "ns" | "counter" | "auto"
@@ -44,22 +39,3 @@ export function valueUnitFromUrl(value: unknown): ValueUnit | null {
 }
 
 type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
-
-export interface ChartStyle {
-  barSeriesLabelPosition:
-    | "left"
-    | "right"
-    | "top"
-    | "bottom"
-    | "inside"
-    | "insideLeft"
-    | "insideRight"
-    | "insideTop"
-    | "insideBottom"
-    | "insideTopLeft"
-    | "insideTopRight"
-    | "insideBottomLeft"
-    | "insideBottomRight"
-
-  valueUnit: ValueUnit
-}

@@ -159,13 +159,11 @@ func Serve(dbUrl string, natsUrl string) error {
 
 		r.Route("/api/", func(r chi.Router) {
 			r.Route("/v1", func(r chi.Router) {
-				r.Handle("/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
 				r.Handle("/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
 			})
 			r.Handle("/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
 			r.Handle("/machineGroups/*", cacheManager.CreateHandler(statsServer.handleMachineGroups))
 			r.Get("/machineGroup", statsServer.handleMachineGroupLookup)
-			r.Handle("/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
 			r.Handle("/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
 			r.Handle("/compareModes*", cacheManager.CreateHandler(statsServer.getModeComparison))
 			r.Handle("/zstd-dictionary/*", &CachingHandler{

@@ -173,34 +173,6 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 	return buffer, true, err
 }
 
-func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-	db, err := t.openDatabaseConnection()
-	if err != nil {
-		return nil, false, err
-	}
-	defer func(db driver.Conn) {
-		_ = db.Close()
-	}(db)
-
-	var queryResult []struct {
-		PassName string
-	}
-
-	sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from report where generated_time >subtractMonths(now(),12)"
-	err = db.Select(request.Context(), &queryResult, sql)
-	if err != nil {
-		return nil, false, err
-	}
-
-	passes := make([]string, len(queryResult))
-	for i, v := range queryResult {
-		passes[i] = v.PassName
-	}
-
-	buffer, err := toJSONBuffer(passes)
-	return buffer, true, err
-}
-
 func removeLastPart(s string) string {
 	awsIndex := strings.LastIndex(s, "aws")
 	if awsIndex != -1 {

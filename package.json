@@ -29,9 +29,9 @@
     "vue-tsc": "^3.3.11"
   },
   "engines": {
-    "pnpm": ">=10"
+    "pnpm": ">=12"
   },
-  "packageManager": "pnpm@11.27.0",
+  "packageManager": "pnpm@12.4.2",
   "ignorePatterns": [
     "**/node_modules/**/*.*"
   ]

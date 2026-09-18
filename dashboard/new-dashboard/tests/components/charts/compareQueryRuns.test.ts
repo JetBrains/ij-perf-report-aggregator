@@ -3,9 +3,14 @@ import { indexSeriesRuns, seriesKey } from "../../../src/components/charts/compa
 import { DataQueryResult } from "../../../src/components/common/DataQueryExecutor"
 import { DataQueryExecutorConfiguration } from "../../../src/components/common/dataQuery"
 
-// indexSeriesRuns only reads seriesNames/measureNames off the configuration, so a plain object suffices.
+// indexSeriesRuns reads the series/measure names and asks the configuration which of them are companions, so
+// it gets a real one. No measure here is a companion: every one is its own owner.
 function configOf(seriesNames: string[], measureNames: string[]): DataQueryExecutorConfiguration {
-  return { seriesNames, measureNames } as unknown as DataQueryExecutorConfiguration
+  const configuration = new DataQueryExecutorConfiguration()
+  configuration.seriesNames = seriesNames
+  configuration.measureNames.push(...measureNames)
+  configuration.ownerMeasureNames.push(...measureNames)
+  return configuration
 }
 
 describe("index series runs", () => {

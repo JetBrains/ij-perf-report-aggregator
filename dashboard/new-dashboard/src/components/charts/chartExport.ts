@@ -1,8 +1,8 @@
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import type { EChartsType } from "echarts/core"
 import type { OptionDataValue } from "../../shared/echarts-types"
-import { SMOOTHED_SERIES_SUFFIX } from "../../configurators/MeasureConfigurator"
 import { measureNameToLabel } from "../../shared/metricsMapping"
+import { parseSeriesId } from "./seriesId"
 import { ValueUnit } from "../common/chart"
 import { getBasicInfo } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
@@ -40,8 +40,9 @@ export function exportChartMetricsAsYaml(chart: EChartsType, chartTitle: string,
   const metrics: Record<string, MetricPoint[]> = {}
 
   for (const series of option.series ?? []) {
-    // skip the helper series that renders the smoothed line - it duplicates an existing series
-    if (typeof series.id === "string" && series.id.endsWith(SMOOTHED_SERIES_SUFFIX)) {
+    // skip the helper series that render the smoothed line and the standard deviation band - they duplicate,
+    // or are derived from, an existing series
+    if (typeof series.id === "string" && parseSeriesId(series.id).role != null) {
       continue
     }
     const seriesName = series.name ?? ""

@@ -89,7 +89,7 @@ function computeCartesian<T>(input: T[][]): T[][] {
   })
 }
 
-function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): DataQuery[] {
+export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): DataQuery[] {
   let producers = configuration.queryProducers
   if (producers.length === 0) {
     producers = [
@@ -130,14 +130,14 @@ function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfi
     // each row it is a combination
     // each column value it is an index of producer value
     let seriesName = ""
-    let measureName = ""
+    const measureNameParts: string[] = []
+    const ownerMeasureNameParts: string[] = []
     for (const [i, index] of item.entries()) {
       const producer = producers[i]
       producer.mutate(index)
-      if (i !== 0) {
-        measureName += SERIES_NAME_SEPARATOR
-      }
-      measureName += producer.getMeasureName(index)
+      const measureNamePart = producer.getMeasureName(index)
+      measureNameParts.push(measureNamePart)
+      ownerMeasureNameParts.push(producer.getOwnerMeasureName?.(index) ?? measureNamePart)
 
       const title = producer.getSeriesName(index)
       if (title.length > 0) {
@@ -168,8 +168,10 @@ function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfi
       }
     }
 
+    const measureName = measureNameParts.join(SERIES_NAME_SEPARATOR)
     configuration.seriesNames.push(seriesName)
     configuration.measureNames.push(measureName)
+    configuration.ownerMeasureNames.push(ownerMeasureNameParts.join(SERIES_NAME_SEPARATOR))
   }
 
   if (serializedQuery.length > 0) {
@@ -224,7 +226,7 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter,
 export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecutorConfiguration | null): DataQuery[] {
   if (queries.length === 1) return queries
   const resultQueries: DataQuery[] = structuredClone(queries)
-  const mergedNames = configuration?.seriesNames.map((name) => [name])
+  const mergedIndexes = configuration == null ? null : queries.map((_, index) => [index])
 
   let currentFilterField: string | null = null
   for (let i = 0; i < resultQueries.length; i++) {
@@ -234,10 +236,10 @@ export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecu
         currentFilterField = matchingFilterField
         resultQueries[i].filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters, resultQueries[i].fields)
         resultQueries.splice(j, 1) // remove the merged query
-        //we need to merge the names of the queries as well to provide correct series names
-        if (mergedNames) {
-          mergedNames[i] = [...mergedNames[i], ...mergedNames[j]]
-          mergedNames.splice(j, 1)
+        // Track the order in which the backend will return the split results.
+        if (mergedIndexes) {
+          mergedIndexes[i] = [...mergedIndexes[i], ...mergedIndexes[j]]
+          mergedIndexes.splice(j, 1)
         }
         // Reset indices to re-evaluate with new list
         i = -1
@@ -246,8 +248,14 @@ export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecu
     }
   }
 
-  if (configuration != null && mergedNames != null) {
-    configuration.seriesNames = mergedNames.flat(2)
+  if (configuration != null && mergedIndexes != null) {
+    const order = mergedIndexes.flat()
+    // Every name array describes the same result positions. Reorder them together so that a mean
+    // cannot inherit its companion's identity when queries merge across branches or projects.
+    for (const names of [configuration.seriesNames, configuration.measureNames, configuration.ownerMeasureNames]) {
+      const reordered = order.map((index) => names[index])
+      names.splice(0, names.length, ...reordered)
+    }
   }
   return resultQueries
 }

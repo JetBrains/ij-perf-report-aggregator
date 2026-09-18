@@ -1,9 +1,10 @@
 import { ECElementEvent } from "echarts/core"
 import { watch } from "vue"
-import { SMOOTHED_SERIES_SUFFIX } from "../../configurators/MeasureConfigurator"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 import { setSeriesHoverCursor } from "./intervalSelection"
+import { parseSeriesId } from "./seriesId"
+import { STD_DEV_BAND_OPACITY } from "./stdDevInterval"
 
 const FADED_SERIES_OPACITY = 0.2
 const VISIBLE_SERIES_OPACITY = 1
@@ -81,7 +82,21 @@ export class HoverFadeController {
 
     const series = option.series.map((s) => {
       const opacity = groupId == null || HoverFadeController.groupId(s.id) === groupId ? VISIBLE_SERIES_OPACITY : FADED_SERIES_OPACITY
-      return { id: s.id, lineStyle: { opacity }, itemStyle: { opacity } }
+      switch (s.id == undefined ? null : parseSeriesId(s.id).role) {
+        case "stdDevBandFill": {
+          // A band has no stroke of its own, so fading it means fading its fill.
+          return { id: s.id, areaStyle: { opacity: STD_DEV_BAND_OPACITY * opacity } }
+        }
+        case "stdDevBandLowerEdge": {
+          // The lower edge is already invisible and has nothing to fade - and an areaStyle it was never given
+          // would fill it from the axis up, so it is left exactly as it is. It still has to be patched, or the
+          // series below it shift into its slot.
+          return { id: s.id }
+        }
+        default: {
+          return { id: s.id, lineStyle: { opacity }, itemStyle: { opacity } }
+        }
+      }
     })
     this.chartManager.chart.setOption({ series })
     this.appliedGroupId = groupId
@@ -91,7 +106,7 @@ export class HoverFadeController {
     if (seriesId == null || seriesId.length === 0) {
       return null
     }
-    return seriesId.endsWith(SMOOTHED_SERIES_SUFFIX) ? seriesId.slice(0, -SMOOTHED_SERIES_SUFFIX.length) : seriesId
+    return parseSeriesId(seriesId).ownerSeriesId
   }
 
   private clearPendingReset() {

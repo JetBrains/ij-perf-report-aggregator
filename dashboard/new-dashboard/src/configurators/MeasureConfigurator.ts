@@ -8,7 +8,7 @@ import { distinctUntilChanged } from "rxjs/distinct-until-changed"
 import { forkJoin } from "rxjs/fork-join"
 import { map } from "rxjs/map"
 import { switchMap } from "rxjs/switch-map"
-import { ref, Ref, shallowRef } from "vue"
+import { ref, Ref, shallowRef, toRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
@@ -26,6 +26,8 @@ import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../components/charts/staleSeries"
+import { getSeriesId } from "../components/charts/seriesId"
+import { buildStdDevBand, getStdDevBandSeries, getStdDevMeasureName } from "../components/charts/stdDevInterval"
 import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
@@ -34,7 +36,7 @@ import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS, MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./accidents/AccidentsConfigurator"
-import { scaleToMedian } from "../components/settings/configurators/ScalingConfigurator"
+import { getMedianScale, scaleToMedian } from "../components/settings/configurators/ScalingConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "../components/settings/configurators/SmoothingConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -43,8 +45,6 @@ import { removeOutliers } from "../components/settings/configurators/RemoveOutli
 import { getBasicInfo, getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
 import { useDarkModeStore } from "../shared/useDarkModeStore"
 import { captureMatchedSelectedPoint, useSelectedPointStore } from "../shared/selectedPointStore"
-
-export const SMOOTHED_SERIES_SUFFIX = "smoothed"
 
 export type TooltipTrigger = "item" | "axis" | "none"
 
@@ -56,7 +56,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   readonly showAllMetrics = ref(false)
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.selected, true)
+    return combineLatest([refToObservable(this.selected, true), refToObservable(toRef(useSettingsStore(), "stdDevInterval"))])
   }
 
   setSelected(value: string[] | string | null) {
@@ -170,7 +170,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       return false
     }
 
-    configureQuery(measureNames, query, configuration, this.skipZeroValues)
+    configureQuery(measureNames, query, configuration, this.skipZeroValues, true)
     configuration.measures = measureNames
     configuration.addChartConfigurator(this)
     return true
@@ -263,18 +263,24 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     readonly symbolOptions: SymbolOptions = {},
     readonly accidentsConfigurator: AccidentsConfigurator | null = null,
     readonly toolTipTrigger: TooltipTrigger,
-    private readonly betterDirection: BetterDirection = "lower"
+    private readonly betterDirection: BetterDirection = "lower",
+    // Comparison consumers do not need deviation data.
+    private readonly withStdDevInterval: boolean = false
   ) {}
 
   createObservable(): Observable<unknown> {
-    return combineLatest([refToObservable(this.skipZeroValues), refToObservable(this.measures)])
+    const inputs = [refToObservable(this.skipZeroValues), refToObservable(this.measures)]
+    if (this.withStdDevInterval) {
+      inputs.push(refToObservable(toRef(useSettingsStore(), "stdDevInterval")))
+    }
+    return combineLatest(inputs)
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     if (this.measures.value.length === 0) {
       return false
     }
-    configureQuery(this.measures.value, query, configuration, this.skipZeroValues.value)
+    configureQuery(this.measures.value, query, configuration, this.skipZeroValues.value, this.withStdDevInterval)
     configuration.addChartConfigurator(this)
     configuration.measures = this.measures.value
     return true
@@ -285,9 +291,25 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 }
 
-function configureQuery(measureNames: string[], query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
+// Only fetch implicit companions; explicitly selected deviations remain ordinary lines.
+function getStdDevCompanions(measureNames: readonly string[], withStdDevInterval: boolean): Map<string, string> {
+  const companions = new Map<string, string>()
+  if (withStdDevInterval && useSettingsStore().stdDevInterval) {
+    for (const measure of measureNames) {
+      const companion = getStdDevMeasureName(measure)
+      if (companion != null && !measureNames.includes(companion)) companions.set(companion, measure)
+    }
+  }
+  return companions
+}
+
+function configureQuery(measureNames: string[], query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean, withStdDevInterval: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
+
+  const stdDevCompanions = getStdDevCompanions(measureNames, withStdDevInterval)
+  const queriedMeasureNames = [...measureNames, ...stdDevCompanions.keys()]
+  const ownerMeasureNames = queriedMeasureNames.map((it) => stdDevCompanions.get(it) ?? it)
 
   query.insertField(
     {
@@ -323,10 +345,10 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
 
   configuration.queryProducers.push({
     size(): number {
-      return measureNames.length
+      return queriedMeasureNames.length
     },
     mutate(index: number): void {
-      const measure = measureNames[index]
+      const measure = queriedMeasureNames[index]
 
       delete field.sql
       delete field.subName
@@ -375,15 +397,20 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         valueFieldName = `${structureName}.${valueName}`
       }
 
-      if (skipZeroValues) {
+      // Keep zero deviations: dropping one could shift the pairing of repeated measurements.
+      if (skipZeroValues && !stdDevCompanions.has(measure)) {
         addFilter({ f: valueFieldName, o: "!=", v: 0 })
       }
     },
     getSeriesName(index: number): string {
-      return measureNames.length > 1 ? measureNames[index] : ""
+      // Companions share the mean's name without changing single-measure chart labels.
+      return measureNames.length > 1 ? ownerMeasureNames[index] : ""
     },
     getMeasureName(index: number): string {
-      return measureNames[index]
+      return queriedMeasureNames[index]
+    },
+    getOwnerMeasureName(index: number): string {
+      return ownerMeasureNames[index]
     },
   })
 
@@ -443,7 +470,8 @@ class MergeResults {
   constructor(
     readonly data: DataQueryResult,
     private readonly idToSeriesName: Map<number, string>,
-    private readonly idToMeasureName: Map<number, string>
+    private readonly idToMeasureName: Map<number, string>,
+    private readonly idToOwnerMeasureName: Map<number, string>
   ) {}
 
   getSeriesName(index: number): string {
@@ -452,6 +480,16 @@ class MergeResults {
 
   getMeasureName(index: number): string {
     return this.idToMeasureName.get(index) as string
+  }
+
+  /** The measure the series was fetched for - the same as {@link getMeasureName} unless it is a companion. */
+  getOwnerMeasureName(index: number): string {
+    return this.idToOwnerMeasureName.get(index) as string
+  }
+
+  /** Whether the series was fetched on another measure's behalf rather than as a measurement of its own. */
+  isCompanion(index: number): boolean {
+    return this.getOwnerMeasureName(index) !== this.getMeasureName(index)
   }
 }
 
@@ -473,6 +511,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
   const seriesIdToMeasureName = new Map<number, string>()
+  const seriesIdToOwnerMeasureName = new Map<number, string>()
   for (const [dataIndex, seriesData] of dataList.entries()) {
     if (seriesData[1]?.length === 0) {
       console.log("Serie is empty and will be hidden: " + configuration.seriesNames[dataIndex])
@@ -488,7 +527,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
       seriesName = seriesData[6][0] as string
     }
     seriesName = measureNameToLabel(seriesName)
-    const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+    const id = getSeriesId(measureName, seriesName)
     if (seriesIdsToIndex.has(id)) {
       const seriesIndex = seriesIdsToIndex.get(id) as number
       const values = mergedDataList[seriesIndex]
@@ -500,12 +539,56 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
       seriesIdsToIndex.set(id, newId)
       seriesIdToSeriesName.set(newId, seriesName)
       seriesIdToMeasureName.set(newId, measureName)
+      seriesIdToOwnerMeasureName.set(newId, configuration.ownerMeasureNames[dataIndex] ?? measureName)
     }
   }
   for (const [index, seriesData] of mergedDataList.entries()) {
     mergedDataList[index] = sortColumnsByTime(seriesData)
   }
-  return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName)
+  return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName, seriesIdToOwnerMeasureName)
+}
+
+type PointKey = string | number
+
+// Several builds can report in the same second. Some databases have no build column.
+function getPointKeys(seriesData: (string | number)[][]): PointKey[] {
+  const timestamps = (seriesData[0] ?? []) as number[]
+  const buildIds = getBuildId(seriesData)
+  return buildIds == undefined ? timestamps : timestamps.map((timestamp, index) => `${buildIds[index]}@${timestamp}`)
+}
+
+function collectStdDevCompanions(mergeResults: MergeResults): Map<string, (string | number)[][]> {
+  const companions = new Map<string, (string | number)[][]>()
+  for (const [index, data] of mergeResults.data.entries()) {
+    if (mergeResults.isCompanion(index)) {
+      companions.set(getSeriesId(mergeResults.getOwnerMeasureName(index), mergeResults.getSeriesName(index)), data)
+    }
+  }
+  return companions
+}
+
+// Pair before removing outliers. Repeated build/timestamp keys must have equal counts on both sides,
+// otherwise a skipped mean could receive a different measurement's deviation.
+function resolveStdDevsPerPoint(seriesData: (string | number)[][], companion: (string | number)[][] | undefined): number[] | undefined {
+  if (companion == undefined) return undefined
+  const deviations = new Map<PointKey, number[]>()
+  for (const [index, key] of getPointKeys(companion).entries()) {
+    const value = companion[1]?.[index]
+    if (typeof value !== "number" || !Number.isFinite(value)) continue
+    const values = deviations.get(key) ?? []
+    values.push(value)
+    deviations.set(key, values)
+  }
+  const keys = getPointKeys(seriesData)
+  const counts = new Map<PointKey, number>()
+  for (const key of keys) counts.set(key, (counts.get(key) ?? 0) + 1)
+  const positions = new Map<PointKey, number>()
+  return keys.map((key) => {
+    const position = positions.get(key) ?? 0
+    positions.set(key, position + 1)
+    const values = deviations.get(key)
+    return values != undefined && values.length === counts.get(key) ? values[position] : 0
+  })
 }
 
 function getSelectedPointColor() {
@@ -530,15 +613,19 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
-  const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.map((seriesData) => (seriesData[0] ?? []) as number[]))
+  // Only measured values determine staleness.
+  const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.filter((_, index) => !mergeResults.isCompanion(index)).map((seriesData) => (seriesData[0] ?? []) as number[]))
   const measureUnits: MeasureUnit[] = []
+  const stdDevByOwnerSeriesId = collectStdDevCompanions(mergeResults)
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
+    // A companion is drawn as a band around its mean rather than as a line.
+    const isCompanion = mergeResults.isCompanion(dataIndex)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (seriesData[1] == undefined) {
+    if (isCompanion || seriesData[1] == undefined) {
       //we need to push even empty dataset otherwise it will be out of sync with series and plot will be empty
       dataset.push({
-        source: seriesData,
+        source: isCompanion ? [] : seriesData,
         sourceHeader: false,
       })
       continue
@@ -552,8 +639,15 @@ async function configureChart(
     // from the unfiltered data too, so the two stay on the same footing.
     const reportedTimestamps = seriesData[0] as number[]
 
+    const measureName = mergeResults.getMeasureName(dataIndex)
+    const seriesName = mergeResults.getSeriesName(dataIndex)
+    const seriesId = getSeriesId(measureName, seriesName)
+    let stdDevs = resolveStdDevsPerPoint(seriesData, stdDevByOwnerSeriesId.get(seriesId))
+
     if (settings.removeOutliers) {
-      seriesData = removeOutliers(seriesData)
+      // Filter the deviations as one more column, then remove it before adding tooltip columns.
+      seriesData = removeOutliers(stdDevs == undefined ? seriesData : [...seriesData, stdDevs])
+      if (stdDevs != undefined) stdDevs = seriesData.pop() as number[]
     }
 
     if (settings.smoothing) {
@@ -566,9 +660,12 @@ async function configureChart(
     //@ts-expect-error
     seriesData.push(deltaValues)
 
+    // What the band has to be multiplied by to end up on the same scale as the line it wraps.
+    let valueScale = 1
     if (settings.scaling) {
       seriesData.push(seriesData[1])
-      seriesData[1] = scaleToMedian(seriesData[1] as number[])
+      valueScale = getMedianScale(seriesData[1] as number[])
+      seriesData[1] = scaleToMedian(seriesData[1] as number[], valueScale)
     }
 
     let detectedChanges = new Map<string, DetectedChange>()
@@ -581,9 +678,6 @@ async function configureChart(
       isNotEmpty ||= data.length > 0
     }
     if (isNotEmpty) {
-      // noinspection SuspiciousTypeOfGuard
-      const measureName = mergeResults.getMeasureName(dataIndex)
-      const seriesName = mergeResults.getSeriesName(dataIndex)
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
       const seriesUnit = resolveMeasureUnitForDb(measureName, { storedType, valueUnit })
@@ -597,7 +691,7 @@ async function configureChart(
           },
         },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-        id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
+        id: seriesId,
         name: seriesName,
         type: settings.smoothing ? "scatter" : chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
@@ -645,7 +739,7 @@ async function configureChart(
       if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-          id: (measureName === seriesName ? seriesName : `${measureName}@${seriesName}`) + SMOOTHED_SERIES_SUFFIX,
+          id: seriesId + "smoothed",
           name: seriesName,
           type: "line",
           symbol: "none",
@@ -659,6 +753,18 @@ async function configureChart(
           itemStyle: getItemStyleForSeries(accidentsConfigurator),
         })
       }
+
+      if (stdDevs != undefined) {
+        const band = buildStdDevBand({
+          timestamps: seriesData[0] as number[],
+          values: seriesData[1] as number[],
+          stdDevs,
+          valueScale,
+        })
+        if (band != null) {
+          series.push(...getStdDevBandSeries(band, seriesId, seriesName))
+        }
+      }
     }
 
     dataset.push({
@@ -666,6 +772,7 @@ async function configureChart(
       sourceHeader: false,
     })
   }
+
   // While scaling, axis values are baseline ratios, so they render as plain numbers.
   const axisUnit: MeasureUnit = settings.scaling ? "counter" : reduceToAxisUnit(measureUnits)
   const formatter: (value: number) => string = (value) => formatMeasureValue(value, axisUnit)
@@ -692,7 +799,8 @@ async function configureChart(
         showDataShadow: false,
         width: 10,
         yAxisIndex: 0,
-        filterMode: "filter",
+        // Clip instead of filtering on the band's width, which is not its y position.
+        filterMode: "none",
         brushSelect: false,
         show: true,
         fillerColor: useDarkModeStore().darkMode ? "rgba(90,90,90,0.25)" : "rgba(106,114,128,0.1)",

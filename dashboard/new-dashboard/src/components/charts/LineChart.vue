@@ -224,7 +224,8 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   },
   accidentsConfigurator,
   tooltipTrigger,
-  resolvedBetterDirection.value
+  resolvedBetterDirection.value,
+  true
 )
 
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]

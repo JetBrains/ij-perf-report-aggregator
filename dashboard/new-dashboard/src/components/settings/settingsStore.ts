@@ -10,6 +10,7 @@ export const useSettingsStore = defineStore("settingsStore", () => {
   const storedRemoveOutliers = useStorage("removeOutliers", false)
   const storedGroupBranches = useStorage("groupBranches", true)
   const storedFadeOnHover = useStorage("fadeOnHover", false)
+  const stdDevInterval = useStorage("stdDevInterval", true)
 
   const scaling = computed({
     get: () => storedScaling.value,
@@ -62,5 +63,5 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, groupBranches, fadeOnHover }
+  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, groupBranches, fadeOnHover, stdDevInterval }
 })

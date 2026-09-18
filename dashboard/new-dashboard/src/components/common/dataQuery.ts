@@ -133,6 +133,9 @@ export interface QueryProducer {
   getSeriesName(index: number): string
 
   getMeasureName(index: number): string
+
+  /** The selected measure this result supplements; defaults to getMeasureName. */
+  getOwnerMeasureName?(index: number): string
 }
 
 export class SimpleQueryProducer implements QueryProducer {
@@ -155,6 +158,14 @@ export class SimpleQueryProducer implements QueryProducer {
 export class DataQueryExecutorConfiguration {
   public seriesNames: string[] = []
   readonly measureNames: string[] = []
+
+  /** Selected measure for each result, including results fetched only for a deviation band. */
+  readonly ownerMeasureNames: string[] = []
+
+  /** Whether the series at `index` was fetched on another measure's behalf rather than as a measurement of its own. */
+  isCompanion(index: number): boolean {
+    return this.ownerMeasureNames[index] !== this.measureNames[index]
+  }
 
   readonly queryProducers: QueryProducer[] = []
 

@@ -43,7 +43,9 @@ export function indexSeries(
   const dims = makeDimensions(branches, projects, measures)
   for (let i = 0; i < data.length; i++) {
     const seriesData = data[i]
-    if (seriesData == null || seriesData[1] == null) continue
+    // A deviation fetched to draw a chart's band is not a measurement of the metric it belongs to, and it
+    // resolves to the same key as its mean - counting it would pull the spread into the compared values.
+    if (seriesData == null || seriesData[1] == null || configuration.isCompanion(i)) continue
     const values = (seriesData[1] as unknown[]).filter((v): v is number => typeof v === "number" && Number.isFinite(v))
     if (values.length === 0) continue
     const seriesName = configuration.seriesNames[i] ?? ""
@@ -89,7 +91,7 @@ export function indexSeriesRuns(
   for (let i = 0; i < data.length; i++) {
     const seriesData = data[i]
     // Column 0 is the timestamp array, column 1 the value array (MeasureConfigurator forces this order).
-    if (seriesData == null || seriesData[0] == null || seriesData[1] == null) continue
+    if (seriesData == null || seriesData[0] == null || seriesData[1] == null || configuration.isCompanion(i)) continue
     const timestamps = seriesData[0] as unknown[]
     const values = seriesData[1] as unknown[]
     const seriesName = configuration.seriesNames[i] ?? ""

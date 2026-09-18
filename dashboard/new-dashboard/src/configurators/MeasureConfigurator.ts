@@ -25,6 +25,7 @@ import { LineChartOptions, ScatterChartOptions } from "../components/common/echa
 import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components/common/formatter"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
+import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../components/charts/staleSeries"
 import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
@@ -529,6 +530,7 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
+  const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.map((seriesData) => (seriesData[0] ?? []) as number[]))
   const measureUnits: MeasureUnit[] = []
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
@@ -544,6 +546,11 @@ async function configureChart(
 
     // we take only the last type of the metric since it is not clear how to show different types
     const storedType = seriesData.length > 3 ? (seriesData[3].at(-1) as string) : undefined
+
+    // Staleness is judged on what the series reported, not on what is left after filtering: dropping a
+    // trailing outlier would otherwise end the line early and fake a stop. `chartLastTimestamp` comes
+    // from the unfiltered data too, so the two stay on the same footing.
+    const reportedTimestamps = seriesData[0] as number[]
 
     if (settings.removeOutliers) {
       seriesData = removeOutliers(seriesData)
@@ -633,6 +640,7 @@ async function configureChart(
           { name: seriesName, type: "int" },
         ],
         itemStyle: getItemStyleForSeries(accidentsConfigurator, detectedChanges),
+        markLine: getStaleSeriesMarkLine(reportedTimestamps, chartLastTimestamp),
       })
       if (settings.smoothing) {
         series.push({

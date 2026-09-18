@@ -5,6 +5,7 @@ import {
   DataZoomSliderComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   TitleComponent,
   ToolboxComponent,
   TooltipComponent,
@@ -29,6 +30,7 @@ use([
   DataZoomInsideComponent,
   DataZoomSliderComponent,
   TitleComponent,
+  MarkLineComponent,
 ])
 
 export class ChartManager {

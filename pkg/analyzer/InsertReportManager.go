@@ -19,8 +19,6 @@ import (
 // for now machine enum should be updated manually if a new machine will be added
 
 type RunResult struct {
-	Product string
-
 	Machine string
 
 	BuildTime     time.Time
@@ -70,9 +68,6 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 
 	metaFields := make([]string, 0, 16)
 	metaFields = append(metaFields, "machine", "generated_time", "project", "tc_build_id", "branch", "tc_build_type")
-	if config.HasProductField {
-		metaFields = append(metaFields, "product")
-	}
 	if config.HasInstallerField {
 		metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3")
 	}
@@ -144,9 +139,6 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 // Insert checks that entries are not duplicated and warn if metrics cannot be computed
 func (t *InsertReportManager) Insert(runResult *RunResult) error {
 	logger := slog.Default()
-	if t.config.HasProductField {
-		logger = logger.With("product", runResult.Product)
-	}
 	logger = logger.With(
 		"db", t.config.DbName,
 		"table", t.config.TableName,
@@ -156,9 +148,6 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
 	// tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
 	if t.IsCheckThatNotAlreadyAddedNeeded && !runResult.GeneratedTime.After(t.MaxGeneratedTime) {
 		selectStatement := "select 1 from " + t.config.TableName + " where "
-		if t.config.HasProductField {
-			selectStatement = "product = '" + sql_util.StringEscaper.Replace(runResult.Product) + "' and "
-		}
 		selectStatement += "machine = '" + sql_util.StringEscaper.Replace(runResult.Machine) +
 			"' and project = '" + sql_util.StringEscaper.Replace(runResult.Report.Project) +
 			"' and generated_time = " + strconv.FormatInt(runResult.GeneratedTime.Unix(), 10)
@@ -174,7 +163,7 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
 		}
 	}
 
-	err := t.WriteMetrics(runResult.Product, runResult, runResult.branch, runResult.Report.Project)
+	err := t.WriteMetrics(runResult, runResult.branch, runResult.Report.Project)
 	if err != nil {
 		return err
 	}
@@ -207,7 +196,7 @@ var projectIdToName = map[string]string{
 	"/q9N7EHxr8F1NHjbNQnpqb0Q0fs": "restoring editors",
 }
 
-func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string) error {
+func (t *InsertReportManager) WriteMetrics(row *RunResult, branch string, providedProject string) error {
 	batch, err := t.InsertManager.PrepareForAppend() //nolint:clickhouselint // batch is owned by InsertManager and reused across appends until flushed; closing here would discard buffered rows
 	if err != nil {
 		return err
@@ -226,9 +215,6 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 	args := make([]any, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
 	args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch, row.TcBuildType)
 
-	if t.config.HasProductField {
-		args = append(args, product)
-	}
 	if t.config.HasInstallerField {
 		buildTimeUnix, err := getBuildTimeFromReport(row.Report)
 		if err != nil {

@@ -18,7 +18,6 @@ type DatabaseConfiguration struct {
 	ReportReader          CustomReportAnalyzer
 	insertStatementWriter InsertStatementWriter
 
-	HasProductField             bool
 	HasInstallerField           bool
 	HasBuildTypeField           bool
 	HasRawReport                bool

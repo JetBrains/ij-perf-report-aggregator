@@ -38,7 +38,6 @@ func main() {
 }
 
 type ReportRow struct {
-	Product string `ch:"product"`
 	Machine string `ch:"machine"`
 	Branch  string `ch:"branch"`
 
@@ -163,33 +162,21 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 
 	var err error
 	var rows driver.Rows
-	if config.HasProductField {
-		rows, err = db.Query(taskContext, `
-      select product, machine, branch,
-             generated_time, build_time, raw_report,
-             tc_build_id, tc_installer_build_id,
-             build_c1, build_c2, build_c3, project
-      from report
-      where generated_time >= $1 and generated_time < $2
-      order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
-    `, startTime, endTime)
-	} else {
-		buildFields := ""
-		if config.HasInstallerField {
-			buildFields = "build_c1, build_c2, build_c3,"
-		}
-		installerFields := ""
-		if config.HasInstallerField {
-			installerFields = "tc_installer_build_id, " + buildFields
-		}
-		rows, err = db.Query(taskContext, `
+	buildFields := ""
+	if config.HasInstallerField {
+		buildFields = "build_c1, build_c2, build_c3,"
+	}
+	installerFields := ""
+	if config.HasInstallerField {
+		installerFields = "tc_installer_build_id, " + buildFields
+	}
+	rows, err = db.Query(taskContext, `
       select machine, branch,
              generated_time, build_time, tc_build_id,`+installerFields+` project, measures.name, measures.value, measures.type, triggeredBy
       from `+tableName+`
       where generated_time >= $1 and generated_time < $2
       order by machine, branch, project, `+buildFields+` build_time, generated_time
     `, startTime, endTime)
-	}
 	if err != nil {
 		return fmt.Errorf("cannot query: %w", err)
 	}
@@ -240,7 +227,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 			runResult.TcBuildType = row.TcBuildType
 		}
 
-		err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project)
+		err = insertReportManager.WriteMetrics(runResult, row.Branch, row.Project)
 		if err != nil {
 			return err
 		}

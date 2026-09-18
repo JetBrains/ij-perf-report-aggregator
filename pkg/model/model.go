@@ -16,8 +16,6 @@ type Report struct {
 	Build     string `json:"build"`
 	BuildDate string `json:"buildDate"`
 
-	ProductCode string `json:"productCode"`
-
 	// not used yet
 	TraceEvents []TraceEvent `json:"traceEvents"`
 
@@ -31,7 +29,6 @@ type ExtraData struct {
 	LastGeneratedTime time.Time
 	BuildTime         time.Time
 
-	ProductCode string
 	BuildNumber string
 
 	Machine string

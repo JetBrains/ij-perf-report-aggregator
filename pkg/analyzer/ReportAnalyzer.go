@@ -154,9 +154,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		runResult.Report.Owner = ownerFromBuildProperties(extraData)
 	}
 
-	if extraData.ProductCode == "" {
-		extraData.ProductCode = runResult.Report.ProductCode
-	}
 	if extraData.BuildNumber == "" {
 		extraData.BuildNumber = runResult.Report.Build
 	}
@@ -165,7 +162,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		return errors.New("machine is not specified")
 	}
 
-	runResult.Product = extraData.ProductCode
 	runResult.Machine = extraData.Machine
 
 	if runResult.GeneratedTime.IsZero() {

@@ -3,8 +3,6 @@ package model
 import "time"
 
 type Report struct {
-	Version string `json:"version"`
-
 	Generated          string `json:"generated"`
 	Project            string `json:"project"`
 	ProjectURL         string `json:"projectURL"`
@@ -15,14 +13,6 @@ type Report struct {
 
 	Build     string `json:"build"`
 	BuildDate string `json:"buildDate"`
-
-	// not used yet
-	TraceEvents []TraceEvent `json:"traceEvents"`
-
-	Activities               []Activity
-	PrepareAppInitActivities []Activity
-
-	TotalDuration int
 }
 
 type ExtraData struct {
@@ -45,24 +35,4 @@ type ExtraData struct {
 
 	// for logging only
 	ReportFile string
-}
-
-type TraceEvent struct {
-	Name  string `json:"name"`
-	Phase string `json:"ph"`
-	// in microseconds
-	Timestamp int `json:"ts"`
-
-	// in old reports (v10) can be int instead of string
-	Category string `json:"cat"`
-}
-
-type Activity struct {
-	Name   string `json:"name"`
-	Thread string `json:"thread"`
-
-	// in milliseconds
-	Start    int `json:"start"`
-	End      int `json:"end"`
-	Duration int `json:"duration"`
 }

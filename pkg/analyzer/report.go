@@ -24,7 +24,6 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
 	}
 
 	runResult.Report = &model.Report{
-		Version:            string(report.GetStringBytes("version")),
 		Generated:          string(report.GetStringBytes("generated")),
 		Project:            string(report.GetStringBytes("project")),
 		ProjectURL:         string(report.GetStringBytes("projectURL")),

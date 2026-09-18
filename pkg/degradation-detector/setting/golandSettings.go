@@ -46,6 +46,7 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 					Machine:              machine,
 					Metric:               metric,
 					MinimumSegmentLength: 12,
+					ReportType:           detector.DegradationEvent,
 					SlackSettings:        slackSettings,
 				})
 			}

@@ -33,10 +33,6 @@
       "description": "Description of the project to be shown on hover",
       "type": "string"
     },
-    "productCode": {
-      "description": "Not used yet, product code. Example, IJ, PS.",
-      "type": "string"
-    },
     "methodName": {
       "description": "Used to provide code navigation to the test method.",
       "type": "string"

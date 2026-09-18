@@ -18,6 +18,9 @@ export default defineConfig({
     include: [...configDefaults.include, "**/*.{test,spec}.ts"],
     globals: true,
     environment: "happy-dom",
+    // happy-dom setup costs ~300ms per environment; isolate: false creates it once per worker
+    // instead of once per file. Tests must not leak module-level state between files.
+    isolate: false,
     setupFiles: ["tests/setup.ts"],
     testTimeout: 10000,
   },

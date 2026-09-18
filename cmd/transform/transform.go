@@ -46,8 +46,6 @@ type ReportRow struct {
 	GeneratedTime time.Time `ch:"generated_time"`
 	BuildTime     time.Time `ch:"build_time"`
 
-	RawReport string `ch:"raw_report"`
-
 	TcBuildId          uint32 `ch:"tc_build_id"`
 	TcInstallerBuildId uint32 `ch:"tc_installer_build_id"`
 	TcBuildType        string `ch:"tc_build_type"`
@@ -204,18 +202,6 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 			runResult.BuildC2 = int(row.BuildC2)
 			runResult.BuildC3 = int(row.BuildC3)
 		}
-		if config.HasRawReport {
-			err = analyzer.ReadReport(runResult, config)
-			if err != nil {
-				return err
-			}
-
-			if runResult.Report == nil {
-				// ignore report
-				continue
-			}
-		}
-
 		if config.DbName == "perfint" || config.DbName == "perfintDev" {
 			runResult.Report = &model.Report{
 				Project:   row.Project,

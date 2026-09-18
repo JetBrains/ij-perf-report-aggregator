@@ -19,8 +19,6 @@ type DatabaseConfiguration struct {
 	insertStatementWriter InsertStatementWriter
 
 	HasInstallerField           bool
-	HasBuildTypeField           bool
-	HasRawReport                bool
 	HasBuildNumber              bool
 	HasNoInstallerButHasChanges bool
 	HasMetaDB                   bool

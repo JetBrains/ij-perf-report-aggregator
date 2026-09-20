@@ -10,7 +10,7 @@
     "humanize-duration": "^3.35.0",
     "marked": "^18.0.13",
     "openvue": "^1.0.0",
-    "p-limit": "^7.3.2",
+    "p-limit": "^7.3.3",
     "pinia": "^4.0.3",
     "pragmastat": "^14.0.1",
     "rxjs": "9.0.0-beta.0",

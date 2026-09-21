@@ -1,7 +1,10 @@
 package meta
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
+	"log/slog"
 	"net/http"
 )
 
@@ -20,6 +23,7 @@ type BisectRequest struct {
 	ExcludedCommits string `json:"excludedCommits"`
 	JpsCompilation  string `json:"jpsCompilation"`
 	DashboardLink   string `json:"dashboardLink"`
+	YtIssueId       string `json:"ytIssueId"`
 }
 
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
@@ -57,6 +61,15 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 		"target.is.bisect.run":                  "true",
 		"target.commits.to.exclude":             bisectReq.ExcludedCommits,
 		"target.jps.compile":                    bisectReq.JpsCompilation,
+	}
+}
+
+// The bisect build sends its result notification to this issue on top of its usual notification.
+const youtrackIssueBuildParam = "target.youtrack.issue"
+
+func addYoutrackIssueParam(buildParams map[string]string, bisectReq BisectRequest) {
+	if bisectReq.YtIssueId != "" {
+		buildParams[youtrackIssueBuildParam] = bisectReq.YtIssueId
 	}
 }
 
@@ -217,6 +230,7 @@ func CreatePostStartBisect() http.HandlerFunc {
 		} else {
 			buildParams = generateParamsForPerfRun(bisectReq)
 		}
+		addYoutrackIssueParam(buildParams, bisectReq)
 
 		buildResp, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangesetOnSpace", buildParams)
 		if err != nil {
@@ -225,6 +239,7 @@ func CreatePostStartBisect() http.HandlerFunc {
 		}
 
 		if buildResp != nil && buildResp.WebURL != "" {
+			commentStartedBisectOnYoutrackIssue(request.Context(), bisectReq.YtIssueId, buildResp.WebURL)
 			_, err = writer.Write([]byte(buildResp.WebURL))
 			if err != nil {
 				http.Error(writer, "Failed to write response: "+err.Error(), http.StatusInternalServerError)
@@ -234,4 +249,29 @@ func CreatePostStartBisect() http.HandlerFunc {
 			http.Error(writer, "TC response doesn't have weburl", http.StatusInternalServerError)
 		}
 	}
+}
+
+// commentStartedBisectOnYoutrackIssue records the started bisect on the linked issue, so the ticket
+// carries the link to the run before the bisect itself reports the result there.
+//
+// Runs detached from the request: the bisect is already started, so its response must not wait for
+// YouTrack, and the issue is usually created seconds earlier and may not be readable yet.
+// Best-effort: all failures are logged and swallowed.
+func commentStartedBisectOnYoutrackIssue(ctx context.Context, issueID string, buildURL string) {
+	if issueID == "" {
+		return
+	}
+	ctx = context.WithoutCancel(ctx)
+	go func() {
+		if err := youtrackClient.waitIssueIsCreated(ctx, issueID); err != nil {
+			slog.Warn("linked YouTrack issue is not readable, skipping the started-bisect comment",
+				"issueId", issueID, "buildUrl", buildURL, "error", err)
+			return
+		}
+		comment := fmt.Sprintf("Bisect started from IJ Perf: %s\n\nThe result will be posted here once the bisect finishes.", buildURL)
+		if err := youtrackClient.AddComment(ctx, issueID, comment); err != nil {
+			slog.Warn("cannot comment the started bisect on the linked YouTrack issue",
+				"issueId", issueID, "buildUrl", buildURL, "error", err)
+		}
+	}()
 }

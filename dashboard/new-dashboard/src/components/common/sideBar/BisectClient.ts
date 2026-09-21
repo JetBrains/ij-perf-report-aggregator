@@ -10,6 +10,7 @@ interface BisectRequest {
   excludedCommits: string
   jpsCompilation: string
   dashboardLink?: string
+  ytIssueId?: string
 }
 
 interface PerformanceBisectRequest extends BisectRequest {

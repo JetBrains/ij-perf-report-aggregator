@@ -326,6 +326,7 @@
     v-model:create-issue="showYoutrackDialog"
     v-model:accident-to-edit="accidentToEdit"
     v-model:should-run-llm-analysis="shouldRunLlmAnalysis"
+    v-model:should-run-bisect="shouldRunBisect"
     :accidents-configurator="accidentsConfigurator"
     :llm-analyses-configurator="llmAnalysesConfigurator"
     :data="data"
@@ -339,6 +340,7 @@
     :llm-analyses-configurator="llmAnalysesConfigurator"
     :timerange-configurator="timerangeConfigurator"
     :should-run-llm-analysis="shouldRunLlmAnalysis"
+    :should-run-bisect="shouldRunBisect"
   />
   <StacktraceModal
     v-if="showStacktrace"
@@ -400,6 +402,7 @@ const showLlmAnalysisDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
 const shouldRunLlmAnalysis = ref(false)
+const shouldRunBisect = ref(false)
 
 const buildCounter = computedAsync(async () => {
   const buildId = vm.data.value?.buildId

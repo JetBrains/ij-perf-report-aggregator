@@ -144,6 +144,32 @@
             >
           </div>
         </div>
+        <div
+          v-if="bisectDisplay.active"
+          class="flex justify-between items-center mt-10"
+        >
+          <div>
+            Bisect:
+            <template v-if="bisectDisplay.starting"> starting... </template>
+            <a
+              v-else-if="bisectDisplay.done"
+              target="_blank"
+              class="link-like-text"
+              :href="bisectBuildUrl"
+            >
+              View TC Build
+            </a>
+            <template v-else-if="bisectDisplay.failed"> failed </template>
+          </div>
+          <div class="icon-wrapper">
+            <i :class="bisectDisplay.icon"></i>
+            <span
+              v-if="bisectDisplay.done"
+              class="tooltip-text"
+              >The bisect result will be published to the YT ticket</span
+            >
+          </div>
+        </div>
       </div>
     </template>
   </Dialog>
@@ -152,6 +178,7 @@
 import { computed, Ref, ref } from "vue"
 import { useToast } from "openvue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
+import { startBisect } from "../sideBar/BisectRun"
 import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
@@ -179,15 +206,23 @@ enum LlmAnalysisState {
   FAILED,
 }
 
+enum BisectState {
+  NOT_STARTED,
+  STARTING,
+  DONE,
+  FAILED,
+}
+
 const router = useRouter()
 
-const { data, accident, accidentConfigurator, llmAnalysesConfigurator, timerangeConfigurator, shouldRunLlmAnalysis } = defineProps<{
+const { data, accident, accidentConfigurator, llmAnalysesConfigurator, timerangeConfigurator, shouldRunLlmAnalysis, shouldRunBisect } = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
   llmAnalysesConfigurator: LlmAnalysesConfigurator
   timerangeConfigurator: TimeRangeConfigurator
   shouldRunLlmAnalysis: boolean
+  shouldRunBisect: boolean
 }>()
 
 const youtrackClient = injectOrError(youtrackClientKey)
@@ -199,6 +234,8 @@ const createException = ref(false)
 const attachmentException = ref(false)
 const llmAnalysisBuildUrl = ref("")
 const llmAnalysisState = ref(LlmAnalysisState.NOT_STARTED)
+const bisectBuildUrl = ref("")
+const bisectState = ref(BisectState.NOT_STARTED)
 const progressState = ref(ProgressState.NOT_STARTED)
 const label = ref(generateLabel())
 
@@ -209,6 +246,14 @@ const llmAnalysisDisplay = computed(() => ({
   failed: llmAnalysisState.value === LlmAnalysisState.FAILED,
   icon:
     llmAnalysisState.value === LlmAnalysisState.PREPARING ? "pi pi-spin pi-spinner" : llmAnalysisState.value === LlmAnalysisState.DONE ? "pi pi-verified" : "pi pi-times-circle",
+}))
+
+const bisectDisplay = computed(() => ({
+  active: bisectState.value !== BisectState.NOT_STARTED,
+  starting: bisectState.value === BisectState.STARTING,
+  done: bisectState.value === BisectState.DONE,
+  failed: bisectState.value === BisectState.FAILED,
+  icon: bisectState.value === BisectState.STARTING ? "pi pi-spin pi-spinner" : bisectState.value === BisectState.DONE ? "pi pi-verified" : "pi pi-times-circle",
 }))
 
 function generateLabel(): string {
@@ -346,6 +391,32 @@ async function createTicket() {
     .catch((error: unknown) => {
       reportAttachmentFailure("Failed to upload attachments to YouTrack", error)
     })
+
+  if (shouldRunBisect) {
+    bisectState.value = BisectState.STARTING
+    void startBisect({
+      data,
+      serverConfigurator,
+      router,
+      timerangeConfigurator,
+      accidentKind: accident.kind,
+      ytIssueId: issueResponse.issue.idReadable,
+    })
+      .then((url) => {
+        bisectBuildUrl.value = url
+        bisectState.value = BisectState.DONE
+      })
+      .catch((error: unknown) => {
+        console.error("Bisect start failed:", error)
+        bisectState.value = BisectState.FAILED
+        toast.add({
+          severity: "error",
+          summary: "Bisect Start Failed",
+          detail: `Failed to start the bisect: ${error instanceof Error ? error.message : String(error)}`,
+          life: 8000,
+        })
+      })
+  }
 
   if (shouldRunLlmAnalysis) {
     llmAnalysisState.value = LlmAnalysisState.PREPARING

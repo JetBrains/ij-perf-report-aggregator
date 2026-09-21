@@ -245,7 +245,7 @@
 </template>
 <script setup lang="ts">
 import { getNavigateToTestUrl, InfoData } from "./InfoSidebar"
-import { getTeamcityBuildType } from "../../../util/artifacts"
+import { bisectTestPatterns, defaultJpsCompilation, resolveBisectBuildType } from "./BisectRun"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
@@ -278,21 +278,17 @@ const metric = ref(data.series[0].metricName ?? "")
 const test = ref(data.projectName)
 const isDegradation = data.deltaPrevious?.includes("-") ?? false
 const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
-const buildType = computedAsync(
-  () => getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId).then((bt) => (fullClassName && bt ? bt.replace(/_\d+$/, "_1") : bt)),
-  null
-)
+const buildType = computedAsync(() => resolveBisectBuildType(serverConfigurator, data.buildId), null)
 const buildId = ref(data.buildId.toString())
 const userEmail = useUserStore().user?.email
 const requester = ref(userEmail)
-const methodName = data.description.value?.methodName ?? ""
-const fullClassName = ref(methodName.slice(0, Math.max(0, methodName.lastIndexOf("#"))))
+const fullClassName = ref(bisectTestPatterns(data))
 // Pre-fill the target with a value centred between the before and after levels;
 // the user can still override it.
 const suggestedTarget = suggestTargetValue(data, direction.value)
 const targetValue: Ref<string | null> = ref(suggestedTarget == null ? null : String(suggestedTarget))
 const excludedCommits = ref("")
-const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= new Date("2025-10-19T23:59:59.999Z"))
+const targetJpsCompile = ref(defaultJpsCompilation(data))
 
 const firstCommit = ref()
 const lastCommit = ref()

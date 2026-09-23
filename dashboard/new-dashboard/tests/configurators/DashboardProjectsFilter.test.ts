@@ -24,9 +24,9 @@ describe("Dashboard projects filter", () => {
   }
 
   // Mirrors how DashboardPage derives the project set, so the test exercises the real wiring.
-  function machineConfigurator(chartsProjects: string[] = []) {
+  function machineConfigurator(chartsProjects: string[] = [], mode?: TestModeConfigurator) {
     const projects = computed(() => [...new Set([...chartsProjects, ...registry.sections.value.flatMap((it) => it.projects)])].toSorted())
-    return new MachineConfigurator(data.serverConfigurator, undefined, [dashboardProjectsFilter(projects)])
+    return new MachineConfigurator(data.serverConfigurator, undefined, mode === undefined ? [dashboardProjectsFilter(projects)] : [dashboardProjectsFilter(projects), mode])
   }
 
   beforeEach(() => {
@@ -84,15 +84,10 @@ describe("Dashboard projects filter", () => {
   // A mode can run on a single hardware class (goland's `wsl` only on windows-azure), so the
   // machine list has to be filtered by it too.
   describe("mode narrowing", () => {
-    function withMode(mode: TestModeConfigurator) {
-      const projects = computed(() => registry.sections.value.flatMap((it) => it.projects).toSorted())
-      return new MachineConfigurator(data.serverConfigurator, undefined, [dashboardProjectsFilter(projects), mode])
-    }
-
     it("sends the selected mode with the machine list query", async () => {
       const mode = new TestModeConfigurator(true)
       mode.selected.value = ["wsl"]
-      withMode(mode)
+      machineConfigurator([], mode)
 
       await awaitCallbackTrue(() => machineGroupsRequests().length > 0)
       expect(machineGroupsRequests()[0]).toContain('{"f":"mode","v":["wsl"]}')
@@ -101,7 +96,7 @@ describe("Dashboard projects filter", () => {
     it("reloads the machine list when the mode changes", async () => {
       const mode = new TestModeConfigurator(true)
       mode.selected.value = ["wsl"]
-      withMode(mode)
+      machineConfigurator([], mode)
       await awaitCallbackTrue(() => machineGroupsRequests().length === 1)
 
       mode.selected.value = ["split"]
@@ -112,7 +107,7 @@ describe("Dashboard projects filter", () => {
     it("sends the default mode as the empty string the reports are stored under", async () => {
       const mode = new TestModeConfigurator(true)
       mode.selected.value = [defaultModeName]
-      withMode(mode)
+      machineConfigurator([], mode)
 
       await awaitCallbackTrue(() => machineGroupsRequests().length > 0)
       expect(machineGroupsRequests()[0]).toContain('{"f":"mode","v":""}')

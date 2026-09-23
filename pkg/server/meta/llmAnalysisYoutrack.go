@@ -22,6 +22,7 @@ type CreateIssueByAnalysisRequest struct {
 	ChangesLink string `json:"changesLink"`
 	Delta       string `json:"delta"`
 	ChartPng    []byte `json:"chartPng,omitempty"`
+	Product     string `json:"product"`
 }
 
 func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -72,6 +73,7 @@ func CreatePostCreateIssueByAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 			Summary:     params.TicketLabel,
 			Description: generateDescription(descriptionData),
 			ExtraTags:   []Tag{analysedByIjPerfTag},
+			Product:     params.Product,
 		}, &response.Exceptions)
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)

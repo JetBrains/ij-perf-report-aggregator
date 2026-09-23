@@ -171,6 +171,7 @@ async function submitNew() {
       delta,
       changesLink,
       chartPng,
+      product: youtrackClient.productId ?? undefined,
     })
     toast.add({ severity: "success", summary: "Issue created", detail: resp.issue.idReadable, life: 4000 })
     emit("created", { id: resp.issue.id, idReadable: resp.issue.idReadable }, "created")

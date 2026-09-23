@@ -133,6 +133,7 @@ export interface CreateIssueByAnalysisRequest {
   delta: string
   changesLink: string
   chartPng?: string
+  product?: string
 }
 
 export interface LinkIssueByAnalysisRequest {

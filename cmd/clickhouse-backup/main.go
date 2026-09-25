@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
@@ -21,7 +23,7 @@ func main() {
 }
 
 func start(natsUrl string) error {
-	taskContext, cancel := util.CreateCommandContext()
+	taskContext, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	if os.Getenv("KUBERNETES_SERVICE_HOST") == "" {

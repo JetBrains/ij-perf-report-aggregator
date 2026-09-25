@@ -9,7 +9,9 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -72,7 +74,7 @@ func configureCollectFromTeamCity() error {
 	}
 	httpClient.CheckRedirect = checkRedirectFunc
 
-	taskContext, cancel := util.CreateCommandContext()
+	taskContext, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	for _, chunk := range config.BuildConfigurations {

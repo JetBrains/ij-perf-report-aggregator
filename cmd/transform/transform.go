@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
@@ -95,7 +97,7 @@ func transform(clickHouseUrl string, idName string, tableName string) error {
 
 	defer util.Close(db)
 
-	taskContext, cancel := util.CreateCommandContext()
+	taskContext, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	config := analyzer.GetAnalyzer(idName)

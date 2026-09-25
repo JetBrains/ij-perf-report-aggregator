@@ -1,13 +1,10 @@
 package util
 
 import (
-	"context"
 	"errors"
 	"io"
 	"log/slog"
 	"os"
-	"os/signal"
-	"syscall"
 )
 
 func Close(c io.Closer) {
@@ -19,8 +16,4 @@ func Close(c io.Closer) {
 		}
 		slog.Error("cannot close", "error", err)
 	}
-}
-
-func CreateCommandContext() (context.Context, context.CancelFunc) {
-	return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 }

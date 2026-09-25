@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 )
 
 func main() {
-	taskContext, cancel := util.CreateCommandContext()
+	taskContext, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
 	err := execute(taskContext)

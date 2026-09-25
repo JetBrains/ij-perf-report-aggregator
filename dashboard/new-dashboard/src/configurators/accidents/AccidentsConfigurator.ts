@@ -229,6 +229,9 @@ export abstract class AccidentsConfigurator {
         },
         body: JSON.stringify(params),
       })
+      if (!response.ok) {
+        throw new Error(`Failed to fetch accidents: ${response.status} ${response.statusText}`)
+      }
       const data: AccidentFromServer[] = (await response.json()) as AccidentFromServer[]
       const accidents = data.map((value) => {
         return new Accident(value.id, value.affectedTest, value.date, value.reason, value.buildNumber, capitalizeFirstLetter(value.kind), value.stacktrace, value.userName)

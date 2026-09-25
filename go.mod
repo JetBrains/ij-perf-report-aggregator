@@ -7,7 +7,6 @@ require (
 	github.com/ClickHouse/ch-go v0.74.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.48.0
 	github.com/VictoriaMetrics/fastcache v1.13.3
-	github.com/alitto/pond v1.9.2
 	github.com/andybalholm/brotli v1.2.4
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/go-chi/chi/v5 v5.3.2

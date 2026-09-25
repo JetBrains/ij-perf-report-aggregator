@@ -9,12 +9,11 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"github.com/alitto/pond"
+	"golang.org/x/sync/errgroup"
 )
 
 type queryResult struct {
@@ -37,27 +36,26 @@ func FetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
 	dataChan := make(chan QueryResultWithSettings, 5)
 	go func() {
 		defer close(dataChan)
-		var wg sync.WaitGroup
-		pool := pond.New(5, 1000)
+		var group errgroup.Group
+		group.SetLimit(5)
 		for _, setting := range settings {
-			wg.Add(1)
-			pool.Submit(func() {
-				defer wg.Done()
+			group.Go(func() error {
 				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 				defer cancel()
 				data, err := getDataFromClickhouse(ctx, client, backendUrl, setting.query())
 				if err != nil {
 					slog.Error("error while getting queryResult from clickhouse", "error", err, "settings", setting)
-					return
+					return nil
 				}
 				slog.Debug("fetched from clickhouse", "settings", setting)
 				dataChan <- QueryResultWithSettings{
 					queryResult: data,
 					Settings:    setting,
 				}
+				return nil
 			})
 		}
-		wg.Wait()
+		_ = group.Wait()
 	}()
 	return dataChan
 }

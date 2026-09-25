@@ -2,9 +2,8 @@ package degradation_detector
 
 import (
 	"runtime"
-	"sync"
 
-	"github.com/alitto/pond"
+	"golang.org/x/sync/errgroup"
 )
 
 type DegradationWithSettings struct {
@@ -15,20 +14,18 @@ type DegradationWithSettings struct {
 func InferDegradations(data <-chan QueryResultWithSettings) <-chan DegradationWithSettings {
 	degradationChan := make(chan DegradationWithSettings, 100)
 	go func() {
-		var wg sync.WaitGroup
-		pool := pond.New(runtime.GOMAXPROCS(0), 1000)
-		defer pool.StopAndWait()
+		defer close(degradationChan)
+		var group errgroup.Group
+		group.SetLimit(runtime.GOMAXPROCS(0))
 		for datum := range data {
-			wg.Add(1)
-			pool.Submit(func() {
-				defer wg.Done()
+			group.Go(func() error {
 				for _, degradation := range detectDegradations(datum.values, datum.builds, datum.timestamps, datum.Settings) {
 					degradationChan <- DegradationWithSettings{Details: degradation, Settings: datum.Settings}
 				}
+				return nil
 			})
 		}
-		wg.Wait()
-		close(degradationChan)
+		_ = group.Wait()
 	}()
 	return degradationChan
 }

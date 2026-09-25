@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -76,6 +77,7 @@ func configureCollectFromTeamCity() error {
 
 	for _, chunk := range config.BuildConfigurations {
 		if taskContext.Err() != nil {
+			slog.Info("cancelled", "reason", context.Cause(taskContext))
 			break
 		}
 

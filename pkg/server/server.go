@@ -285,9 +285,10 @@ func listenAndServe(port string, mux http.Handler) *http.Server {
 }
 
 func waitUntilTerminated(server *http.Server, shutdownTimeout time.Duration) {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-	<-signals
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	<-ctx.Done()
+	slog.Info("terminating", "cause", context.Cause(ctx))
 
 	shutdownHttpServer(server, shutdownTimeout)
 }

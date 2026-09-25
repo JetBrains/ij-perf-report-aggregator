@@ -22,13 +22,5 @@ func Close(c io.Closer) {
 }
 
 func CreateCommandContext() (context.Context, context.CancelFunc) {
-	ctx, cancel := context.WithCancel(context.Background())
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-signals
-		println("cancel on signal")
-		cancel()
-	}()
-	return ctx, cancel
+	return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 }

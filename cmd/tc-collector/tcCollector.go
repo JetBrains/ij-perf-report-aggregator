@@ -87,7 +87,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
 	errGroup.SetLimit(runtime.GOMAXPROCS(-1))
 	for _, buildTypeId := range buildConfigurationIds {
 		if taskContext.Err() != nil {
-			return fmt.Errorf("error in context: %w", taskContext.Err())
+			return fmt.Errorf("error in context: %w", context.Cause(taskContext))
 		}
 		errGroup.Go(func() error {
 			return collectBuildConfiguration(
@@ -173,7 +173,7 @@ func collectBuildConfiguration(taskContext context.Context, httpClient *http.Cli
 	nextHref := buildList.NextHref
 	for buildList.NextHref != "" {
 		if taskContext.Err() != nil {
-			return fmt.Errorf("error in context: %w", taskContext.Err())
+			return fmt.Errorf("error in context: %w", context.Cause(taskContext))
 		}
 
 		buildList, err = collector.loadBuilds(serverHost + nextHref)

@@ -47,9 +47,8 @@ func start(natsUrl string) error {
 	for taskContext.Err() == nil {
 		_, err = sub.NextMsgWithContext(taskContext)
 		if err != nil {
-			contextError := taskContext.Err()
-			if contextError != nil {
-				slog.Info("cancelled", "reason", contextError)
+			if taskContext.Err() != nil {
+				slog.Info("cancelled", "reason", context.Cause(taskContext))
 				return nil
 			}
 			return fmt.Errorf("cannot receive message: %w", err)

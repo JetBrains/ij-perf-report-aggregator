@@ -3,7 +3,6 @@ package main
 import (
 	"compress/gzip"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -46,6 +45,9 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
 				t.logger.Error("Failed to download artifact, skipping", "buildTypeId", build.Type, "buildId", build.Id, "artifact", artifactUrlString, "error", err)
 				continue
 			}
+			if report == nil {
+				continue
+			}
 
 			*result = append(*result, ArtifactItem{
 				data: report,
@@ -83,8 +85,11 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 			return nil, nil
 		}
 		responseBody, _ := io.ReadAll(response.Body)
-		t.logger.Warn("invalid response on downloading artifacts, skipping", "status", response.Status, "body", responseBody)
-		return nil, nil
+		err = fmt.Errorf("invalid response %s: %s", response.Status, responseBody)
+		if !isRetryableStatus(response.StatusCode) {
+			return nil, backoff.Permanent(err)
+		}
+		return nil, err
 	}
 
 	t.storeSessionIdCookie(response)
@@ -102,19 +107,21 @@ func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build 
 	bo := backoff.NewExponentialBackOff()
 	bo.MaxInterval = 5 * time.Second
 	result, err := backoff.Retry(ctx, func() ([]byte, error) {
-		data, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
-		if err != nil || data == nil {
-			return nil, fmt.Errorf("download failed: %w", err)
-		}
-		return data, nil
+		return t.downloadStartUpReport(ctx, build, artifactUrlString)
 	},
 		backoff.WithBackOff(bo),
 		backoff.WithMaxElapsedTime(15*time.Second),
 	)
 	if err != nil {
-		return nil, errors.New("maximum retries reached, download failed")
+		return nil, fmt.Errorf("download failed: %w", err)
 	}
 	return result, nil
+}
+
+// isRetryableStatus reports whether a failed artifact download may succeed on retry;
+// other client errors (auth, missing artifact) won't, so the artifact is skipped right away.
+func isRetryableStatus(statusCode int) bool {
+	return statusCode >= http.StatusInternalServerError || statusCode == http.StatusRequestTimeout || statusCode == http.StatusTooManyRequests
 }
 
 func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([]byte, error) {

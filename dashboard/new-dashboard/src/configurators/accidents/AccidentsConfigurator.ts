@@ -204,7 +204,21 @@ export abstract class AccidentsConfigurator {
     return projectAndMetrics
   }
 
-  async getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, customRange: string): Promise<Map<string, Accident[]>> {
+  protected loadAccidents(tests: string[], timeRange: TimeRange, customRange: string): void {
+    // "custom" is selected before a range is picked; keep the current accidents until there is one
+    if (timeRange === "custom" && customRange === "") {
+      return
+    }
+    this.getAccidentsFromMetaDb(tests, timeRange, customRange)
+      .then((value) => {
+        this.value.value = value
+      })
+      .catch((error: unknown) => {
+        console.error(error)
+      })
+  }
+
+  private async getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, customRange: string): Promise<Map<string, Accident[]>> {
     const interval = intervalToPostgresInterval(timeRange, customRange)
     const params = tests.length === 0 ? { interval } : { interval, tests }
     try {

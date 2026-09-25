@@ -14,13 +14,7 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
     this.dbType = dbTypeStore().dbType
     const tests = this.getProjectAndProjectWithMetrics(charts)
     combineLatest([timeRangeConfigurator.createObservable()]).subscribe(([[timeRange, customRange]]) => {
-      this.getAccidentsFromMetaDb(tests, timeRange, customRange)
-        .then((value) => {
-          this.value.value = value
-        })
-        .catch((error: unknown) => {
-          console.error(error)
-        })
+      this.loadAccidents(tests, timeRange, customRange)
     })
   }
 

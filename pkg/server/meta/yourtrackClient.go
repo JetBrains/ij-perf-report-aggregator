@@ -20,6 +20,7 @@ import (
 type YoutrackClient struct {
 	youTrackUrl   string
 	youtrackToken string
+	httpClient    *http.Client
 }
 
 type YoutrackProject struct {
@@ -68,6 +69,7 @@ func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {
 	return &YoutrackClient{
 		youTrackUrl:   youTrackUrl,
 		youtrackToken: youtrackToken,
+		httpClient:    http.DefaultClient,
 	}
 }
 
@@ -217,7 +219,7 @@ func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint st
 		req.Header.Set(key, value)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := client.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error performing request: %w", err)
 	}

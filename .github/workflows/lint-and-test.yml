@@ -32,7 +32,7 @@ jobs:
           fi
           echo "deadcode: no unreachable functions"
       - name: Run Go tests
-        run: go test ./pkg/...
+        run: go test ./cmd/... ./pkg/...
       - uses: ./.github/send-notification-action
         if: ${{ failure() }}
         with:

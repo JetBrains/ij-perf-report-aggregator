@@ -189,9 +189,31 @@ func SendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
 	if slackToken == "" {
 		return errors.New("SLACK_TOKEN is not set")
 	}
-	api := slack.New(slackToken, slack.OptionHTTPClient(client))
-	_, _, _, err := api.SendMessageContext(ctx, slackMessage.Channel, slack.MsgOptionText(slackMessage.Text, false))
-	return err
+	return sendSlackMessage(ctx, slack.New(slackToken, slack.OptionHTTPClient(client)), slackMessage)
+}
+
+const maxSlackAttempts = 5
+
+// sendSlackMessage retries when Slack rate-limits the request, waiting as long as Slack asks.
+// A run sends all its messages at once, so bursts to one channel exceed Slack's per-channel limit.
+func sendSlackMessage(ctx context.Context, api *slack.Client, slackMessage SlackMessage) error {
+	for attempt := 1; ; attempt++ {
+		_, _, _, err := api.SendMessageContext(ctx, slackMessage.Channel, slack.MsgOptionText(slackMessage.Text, false))
+		var rateLimited *slack.RateLimitedError
+		if !errors.As(err, &rateLimited) || attempt == maxSlackAttempts {
+			return err
+		}
+		// waiting past the deadline would only turn rate_limited into a less telling context error
+		if deadline, ok := ctx.Deadline(); ok && time.Until(deadline) < rateLimited.RetryAfter {
+			return err
+		}
+		slog.Info("slack rate limited, retrying", "channel", slackMessage.Channel, "retryAfter", rateLimited.RetryAfter, "attempt", attempt)
+		select {
+		case <-ctx.Done():
+			return err
+		case <-time.After(rateLimited.RetryAfter):
+		}
+	}
 }
 
 func getMachineGroup(pattern string) string {

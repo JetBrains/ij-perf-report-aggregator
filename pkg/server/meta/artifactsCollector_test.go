@@ -38,6 +38,29 @@ func TestReplaceSpecialCharactersWithHyphens(t *testing.T) {
 	}
 }
 
+func TestGetAttachmentName(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		name     string
+		filename string
+		want     string
+	}{
+		{name: "prefix and extension kept", filename: "idea-snapshot.hprof", want: "idea-previous.hprof"},
+		{name: "frontend marker kept", filename: "idea-frontend-snapshot.hprof", want: "idea-frontend-previous.hprof"},
+		{name: "frontend as prefix", filename: "frontend-idea.zip", want: "frontend-previous.zip"},
+		{name: "no extension", filename: "idea-logs", want: "idea-previous"},
+		{name: "dotfile has no extension", filename: ".hprof", want: ".hprof-previous"},
+		{name: "only last extension kept", filename: "idea-logs.tar.gz", want: "idea-previous.gz"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.want, getAttachmentName(tc.filename, "previous"))
+		})
+	}
+}
+
 func TestPerfintCollectorGetArtifactsPaths(t *testing.T) {
 	t.Parallel()
 	c := perfintCollector{}

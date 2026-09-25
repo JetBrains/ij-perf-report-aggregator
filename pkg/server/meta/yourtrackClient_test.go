@@ -43,8 +43,26 @@ func TestWaitIssueIsCreatedGivesUpAfterFiveAttempts(t *testing.T) {
 	t.Parallel()
 	synctest.Test(t, func(t *testing.T) {
 		client, requests := newFlakyYoutrack(t, 100)
+		start := time.Now()
 
-		require.ErrorContains(t, client.waitIssueIsCreated(context.Background(), "X-1"), "after 5 retries")
+		require.ErrorContains(t, client.waitIssueIsCreated(t.Context(), "X-1"), "after 5 retries")
 		assert.Equal(t, int32(5), requests.Load())
+		// no sleep after the last attempt
+		assert.Equal(t, 12*time.Second, time.Since(start))
+	})
+}
+
+func TestWaitIssueIsCreatedStopsWhenContextIsDone(t *testing.T) {
+	t.Parallel()
+	synctest.Test(t, func(t *testing.T) {
+		client, requests := newFlakyYoutrack(t, 100)
+		ctx, cancel := context.WithTimeout(t.Context(), 4*time.Second)
+		defer cancel()
+		start := time.Now()
+
+		err := client.waitIssueIsCreated(ctx, "X-1")
+		require.ErrorIs(t, err, context.DeadlineExceeded)
+		assert.Equal(t, int32(2), requests.Load())
+		assert.Equal(t, 4*time.Second, time.Since(start))
 	})
 }

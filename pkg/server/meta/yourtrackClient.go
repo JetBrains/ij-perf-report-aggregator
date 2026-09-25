@@ -239,30 +239,32 @@ func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint st
 }
 
 func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId string) error {
-	var responseData []byte
 	var err error
-	var issue YoutrackIssue
+	for attempt := range 5 {
+		if attempt > 0 {
+			select {
+			case <-ctx.Done():
+				return fmt.Errorf("checking whether the issue is created was cancelled: %w, last error: %w", context.Cause(ctx), err)
+			case <-time.After(3 * time.Second):
+			}
+		}
 
-	for range 5 {
+		var responseData []byte
 		responseData, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s?fields=id,idReadable", issueId), http.MethodGet, nil, map[string]string{
 			"Content-Type": "application/json",
 		})
-
-		if err == nil {
-			if err = json.Unmarshal(responseData, &issue); err == nil {
-				break
-			}
-			err = fmt.Errorf("error unmarshalling issue: %w", err)
-		} else {
+		if err != nil {
 			err = fmt.Errorf("error fetching from YouTrack: %w", err)
+			continue
 		}
-		time.Sleep(3 * time.Second)
-	}
 
-	if err != nil {
-		return fmt.Errorf("checking whether the issue is created failed after 5 retries: %w", err)
+		var issue YoutrackIssue
+		if err = json.Unmarshal(responseData, &issue); err == nil {
+			return nil
+		}
+		err = fmt.Errorf("error unmarshalling issue: %w", err)
 	}
-	return nil
+	return fmt.Errorf("checking whether the issue is created failed after 5 retries: %w", err)
 }
 
 type YoutrackUploadAttachmentsRequest struct {

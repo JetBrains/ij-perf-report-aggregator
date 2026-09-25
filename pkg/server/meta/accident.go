@@ -69,8 +69,8 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 			return
 		}
 
-		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace, user_name FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement' or LOWER(kind)='investigation') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
-		rows, err := metaDb.Query(request.Context(), sql)
+		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace, user_name FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement' or LOWER(kind)='investigation') AND date BETWEEN $1::date - INTERVAL '1 days' AND $1::date + INTERVAL '1 days'"
+		rows, err := metaDb.Query(request.Context(), sql, params.Date)
 		if err != nil {
 			slog.Error("unable to execute the query", "query", sql, "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
@@ -131,11 +131,13 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 			return
 		}
 
-		sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
+		sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name FROM accidents WHERE date >= CURRENT_DATE - $1::interval"
+		args := []any{params.Interval}
 		if params.Tests != nil {
-			sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ") or affected_test = ''"
+			sql += " and affected_test = any($2) or affected_test = ''"
+			args = append(args, params.Tests)
 		}
-		rows, err := metaDb.Query(request.Context(), sql)
+		rows, err := metaDb.Query(request.Context(), sql, args...)
 		if err != nil {
 			slog.Error("unable to execute the query", "query", sql, "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
@@ -143,13 +145,22 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 		}
 		defer rows.Close()
 
+		// pgx reports a parameter Postgres cannot parse (e.g. an empty interval) on the first Next,
+		// not from Query, so fetch it before the response starts and a 500 is still possible.
+		hasRow := rows.Next()
+		if !hasRow && rows.Err() != nil {
+			slog.Error("unable to execute the query", "query", sql, "error", rows.Err())
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		if _, err := writer.Write([]byte("[")); err != nil {
 			slog.Error("Failed to write JSON array start", "error", err)
 			return
 		}
 
 		firstItem := true
-		for rows.Next() {
+		for ; hasRow; hasRow = rows.Next() {
 			accident, err := getAccidentFromRow(rows)
 			if err != nil {
 				slog.Error("unable to scan row", "error", err)
@@ -317,25 +328,6 @@ func CreateGetAccidentByIdHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 	}
-}
-
-func stringArrayToSQL(input []string) string {
-	var str strings.Builder
-	str.WriteRune('\'')
-
-	for i, s := range input {
-		// Escape any single quotes in the string
-		escapedStr := strings.ReplaceAll(s, "'", "''")
-		str.WriteString(escapedStr)
-
-		// Add a separator if it's not the last element
-		if i < len(input)-1 {
-			str.WriteString("','")
-		}
-	}
-
-	str.WriteRune('\'')
-	return str.String()
 }
 
 func getAccidentFromRow(row pgx.CollectableRow) (accidentResponse, error) {

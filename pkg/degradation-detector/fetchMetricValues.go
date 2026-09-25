@@ -43,6 +43,11 @@ func FetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
 				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 				defer cancel()
 				data, err := getDataFromClickhouse(ctx, client, backendUrl, setting.query())
+				if errors.Is(err, errNoData) || errors.Is(err, errNotEnoughData) {
+					// settings whose metric has no recent data are routine, not a failure
+					slog.Info("no data to analyze", "error", err, "settings", setting)
+					return nil
+				}
 				if err != nil {
 					slog.Error("error while getting queryResult from clickhouse", "error", err, "settings", setting)
 					return nil
@@ -161,6 +166,11 @@ func (s PerformanceSettings) query() dataQuery.Query {
 	return query
 }
 
+var (
+	errNoData        = errors.New("no data")
+	errNotEnoughData = errors.New("not enough data")
+)
+
 func extractDataFromRequest(response []byte) (queryResult, error) {
 	var data [][][]any
 
@@ -169,10 +179,10 @@ func extractDataFromRequest(response []byte) (queryResult, error) {
 		return queryResult{}, fmt.Errorf("failed to decode JSON: %w", err)
 	}
 	if len(data) == 0 {
-		return queryResult{}, errors.New("no data")
+		return queryResult{}, errNoData
 	}
 	if len(data[0]) < 4 {
-		return queryResult{}, errors.New("not enough data")
+		return queryResult{}, errNotEnoughData
 	}
 	timestamps, err := SliceToSliceInt64(data[0][0])
 	if err != nil {

@@ -226,6 +226,10 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 	defer cancel()
 
 	for channel, message := range messages {
+		if channel == "" {
+			slog.Info("slack channel is not set, missing data message not sent", "message", message)
+			continue
+		}
 		err := SendSlackMessage(ctx, client, SlackMessage{
 			Text:    message,
 			Channel: channel,

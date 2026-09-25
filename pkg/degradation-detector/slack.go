@@ -169,6 +169,10 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
 			ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 			defer cancel()
 			message := result.Settings.CreateSlackMessage(result.Details)
+			if message.Channel == "" {
+				slog.Info("slack channel is not set, message not sent", "message", message)
+				return
+			}
 			err := SendSlackMessage(ctx, client, message)
 			if err != nil {
 				slog.Error("error while sending slack message", "error", err, "message", message)

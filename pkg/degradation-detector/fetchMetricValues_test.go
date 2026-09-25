@@ -27,7 +27,7 @@ func TestExtractDataFromRequest(t *testing.T) {
 func TestExtractDataFromRequestWithMissingColumn(t *testing.T) {
 	t.Parallel()
 	_, err := extractDataFromRequest([]byte(`[[[1000,2000],[10,20],["b1","b2"]]]`))
-	require.Error(t, err)
+	require.ErrorIs(t, err, errNotEnoughData)
 }
 
 func TestFetchMetricsFromClickhouseSkipsFailedQueries(t *testing.T) {

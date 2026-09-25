@@ -112,6 +112,11 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 			rcm.handleError(err, w)
 			return
 		}
+		if releaseBuffer {
+			// result aliases buffer.B until the response is written; releasing it earlier lets the next
+			// Get overwrite the body mid-write. Handlers take it from byteBufferPool, so return it there.
+			defer byteBufferPool.Put(buffer)
+		}
 		result, err = rcm.compressData(buffer.B)
 		if err != nil {
 			slog.Error("cannot compress result", "error", err)
@@ -120,9 +125,6 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 		}
 		rcm.cache.Set(cacheKey, result)
 		result = buffer.B
-		if releaseBuffer {
-			bytebufferpool.Put(buffer)
-		}
 	}
 
 	w.Header().Set("ETag", computeEtag(result))

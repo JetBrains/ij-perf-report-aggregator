@@ -389,7 +389,7 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	// Stacktrace or test history
 	if generateDescriptorData.Kind == "exception" {
 		if generateDescriptorData.StackTrace != "" {
-			parts = append(parts, fmt.Sprintf("**Stacktrace:**\n```%s```", generateDescriptorData.StackTrace))
+			parts = append(parts, "**Stacktrace:**\n```"+generateDescriptorData.StackTrace+"```")
 		}
 	} else {
 		if generateDescriptorData.TestHistoryUrl != nil && *generateDescriptorData.TestHistoryUrl != "" {

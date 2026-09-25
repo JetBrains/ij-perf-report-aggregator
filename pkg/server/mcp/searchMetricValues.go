@@ -92,14 +92,18 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 		if r.HasInstallerID {
 			installerIDExpr = "toUInt32(tc_installer_build_id) as inst_id"
 		}
+		// Join name and value as parallel arrays. Indexing back into them via arrayEnumerate
+		// (`measures.name`[idx]) copies the whole array into every joined row — quadratic in the
+		// measure count, and reports with thousands of measures blew past max_memory_usage on a
+		// single day's data.
 		var sb strings.Builder
 		fmt.Fprintf(&sb,
 			"select ? as db_name, ? as table_name, "+
 				"generated_time as gen_time, tc_build_id as build_id, "+
-				"toFloat64(`measures.value`[idx]) as value, "+
+				"toFloat64(m_value) as value, "+
 				"%s, %s "+
-				"from %s.%s array join arrayEnumerate(`measures.name`) as idx "+
-				"where project = ? and `measures.name`[idx] = ? "+
+				"from %s.%s array join `measures.name` as m_name, `measures.value` as m_value "+
+				"where project = ? and m_name = ? "+
 				"and generated_time > subtractDays(now(), ?)",
 			buildComponentsExpr, installerIDExpr, r.Database, r.Table)
 		args := []any{r.Database, r.Table, in.Project, in.MetricName, days}

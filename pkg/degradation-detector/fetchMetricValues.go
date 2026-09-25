@@ -171,7 +171,7 @@ func extractDataFromRequest(response []byte) (queryResult, error) {
 	if len(data) == 0 {
 		return queryResult{}, errors.New("no data")
 	}
-	if len(data[0]) < 3 {
+	if len(data[0]) < 4 {
 		return queryResult{}, errors.New("not enough data")
 	}
 	timestamps, err := SliceToSliceInt64(data[0][0])

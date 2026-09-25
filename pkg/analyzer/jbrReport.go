@@ -12,9 +12,9 @@ import (
 func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
 	runResult.Report = &model.Report{}
 	buildType := data.TcBuildType
-	if strings.Contains(buildType, "Performance") {
-		configName := buildType[strings.LastIndex(buildType, "Performance")+12:]
-		runResult.Report.Project = configName
+	// skip the separator that follows "Performance"
+	if _, after, found := strings.CutLast(buildType, "Performance"); found && after != "" {
+		runResult.Report.Project = after[1:]
 	}
 
 	reportURL := runResult.ReportFileName

@@ -148,8 +148,8 @@ func getArtifactCollector(testType string) artifactCollector {
 
 func getAttachmentName(filename, suffix string) string {
 	name, ext := filename, ""
-	if dot := strings.LastIndex(filename, "."); dot > 0 {
-		name, ext = filename[:dot], filename[dot+1:]
+	if before, after, found := strings.CutLast(filename, "."); found && before != "" {
+		name, ext = before, after
 	}
 
 	nameParts := strings.Split(name, "-")

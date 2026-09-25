@@ -72,8 +72,7 @@ func CreatePostAnalysisFeedback(metaDb *pgxpool.Pool) http.HandlerFunc {
 		_, err = metaDb.Exec(request.Context(), upsertSQL,
 			id, req.Rate, feedbackArg, userEmail)
 		if err != nil {
-			var pgErr *pgconn.PgError
-			if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.ForeignKeyViolation {
+			if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok && pgErr.Code == pgerrcode.ForeignKeyViolation {
 				http.Error(writer, "analysis not found", http.StatusNotFound)
 				return
 			}

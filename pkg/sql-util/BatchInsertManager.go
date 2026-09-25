@@ -35,7 +35,7 @@ func NewBatchInsertManager(insertContext context.Context, db driver.Conn, insert
 	poolCapacity := insertWorkerCount
 	if insertWorkerCount == -1 {
 		// not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
-		poolCapacity = runtime.NumCPU() - 4
+		poolCapacity = runtime.GOMAXPROCS(0) - 4
 		if poolCapacity < 2 {
 			poolCapacity = 1
 		}

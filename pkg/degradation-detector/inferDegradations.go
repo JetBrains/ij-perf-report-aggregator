@@ -16,7 +16,7 @@ func InferDegradations(data <-chan QueryResultWithSettings) <-chan DegradationWi
 	degradationChan := make(chan DegradationWithSettings, 100)
 	go func() {
 		var wg sync.WaitGroup
-		pool := pond.New(runtime.NumCPU(), 1000)
+		pool := pond.New(runtime.GOMAXPROCS(0), 1000)
 		defer pool.StopAndWait()
 		for datum := range data {
 			wg.Add(1)

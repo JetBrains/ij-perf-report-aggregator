@@ -189,7 +189,7 @@ const debugAliases = ["fmtlib"]
 const laggingHighlightingCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during browsing - average, max"],
-    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#percentage_share"]],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
     projects: syntaxHighlightingProjects,
     aliases: syntaxHighlightingAliases,
   },

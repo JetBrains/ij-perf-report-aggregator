@@ -48,6 +48,7 @@ import { groupBy3 } from "./utils"
 
 const variantOptions = [
   { label: "Built-in", value: "" },
+  { label: "NEXT", value: "NEXT" },
   { label: "SPTE_JS", value: "SPTE_JS" },
   { label: "TSGO_PROXY", value: "TSGO_PROXY" },
 ]

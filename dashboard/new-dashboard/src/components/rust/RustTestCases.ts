@@ -238,6 +238,19 @@ export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
     ],
   },
   {
+    label: "Associated Item Resolve",
+    projects: [
+      "org.rust.benchmarks.lang.core.types.RsAssociatedItemResolvePerformanceTest.test associated function call with many blanket impls - associated_function_call_with_many_blanket_impls",
+      "org.rust.benchmarks.lang.core.types.RsAssociatedItemResolvePerformanceTest.test method call with many blanket impls - method_call_with_many_blanket_impls",
+    ],
+  },
+  {
+    label: "Content Roots Setup",
+    projects: [
+      "org.rust.benchmarks.cargo.project.model.RsContentRootsSetupPerformanceTest.benchmark content root setup for large workspace - setupProjectRoots for 300 workspace members",
+    ],
+  },
+  {
     label: "Crates Local Index",
     projects: ["org.rust.benchmarks.toml.crates.local.CratesLocalIndexPerformanceTest.test CratesLocalIndexUpdateTask incremental performance - CratesLocalIndexUpdateTask"],
   },

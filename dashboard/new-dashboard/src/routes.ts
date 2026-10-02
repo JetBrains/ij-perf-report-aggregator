@@ -53,6 +53,7 @@ enum ROUTE_PREFIX {
   Toolbox = "/toolbox",
   LSP = "/lsp",
   KotlinNotebooks = "/kotlinNotebooks",
+  IJLight = "/ijLight",
   IntelliJLspClient = IntelliJ + "/lspClient",
 }
 
@@ -243,6 +244,7 @@ enum ROUTES {
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
   KotlinNotebooksTests = `${ROUTE_PREFIX.KotlinNotebooks}/${TEST_ROUTE}`,
   KotlinNotebooksDashboard = `${ROUTE_PREFIX.KotlinNotebooks}/${DASHBOARD_ROUTE}`,
+  IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -294,7 +296,7 @@ function perfTests(path: ROUTES, props: PerformanceTestsProps, pageTitle: string
 }
 
 // Startup metrics dashboard page.
-function startupDashboard(path: ROUTES, props: { table: string; defaultProject?: string }, pageTitle: string): RouteRecordRaw {
+function startupDashboard(path: ROUTES, props: { table: string; defaultProject?: string; projectFilter?: string; persistentId?: string }, pageTitle: string): RouteRecordRaw {
   return { path, component: COMPONENTS.startupDashboard, props, meta: { pageTitle } }
 }
 
@@ -797,6 +799,18 @@ const KOTLIN_NOTEBOOKS: Product = {
   ],
 }
 
+const IJ_LIGHT: Product = {
+  url: ROUTE_PREFIX.IJLight,
+  label: "IJ Light",
+  children: [
+    {
+      url: ROUTE_PREFIX.IJLight,
+      label: "",
+      tabs: [tab(ROUTES.IJLightStartupDashboard, STARTUP_LABEL)],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
   BAZEL,
@@ -806,6 +820,7 @@ export const PRODUCTS = [
   FLEET,
   GOLAND,
   IDEA,
+  IJ_LIGHT,
   IJENT,
   JBR,
   KMT,
@@ -1195,6 +1210,14 @@ const kotlinNotebooksRoutes = [
   dashboard(ROUTES.KotlinNotebooksDashboard, () => import("./components/kotlinNotebooks/PerformanceDashboard.vue"), "Kotlin Notebooks Dashboard"),
 ]
 
+const ijLightRoutes = [
+  startupDashboard(
+    ROUTES.IJLightStartupDashboard,
+    { table: "idea", defaultProject: "JetBrains Light idea", projectFilter: "JetBrains Light", persistentId: "ijLight-startup-dashboard" },
+    "IJ Light Startup dashboard"
+  ),
+]
+
 export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
@@ -1225,6 +1248,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...kotlinBuildToolsRoutes,
         ...lspRoutes,
         ...kotlinNotebooksRoutes,
+        ...ijLightRoutes,
         {
           path: ROUTES.ReportDegradations,
           component: () => import("./components/degradations/ReportDegradation.vue"),

@@ -63,6 +63,7 @@ interface PerformanceDashboardProps {
   dbName: string
   table: string
   defaultProject: string
+  projectFilter?: string | null
   initialMachine?: string | null
   persistentId: string
   charts?: Chart[] | null
@@ -83,6 +84,7 @@ const {
   branch = "master",
   initialMode = defaultModeName,
   defaultProject,
+  projectFilter = null,
 } = defineProps<PerformanceDashboardProps>()
 
 const container = useTemplateRef<HTMLElement>("container")
@@ -116,12 +118,12 @@ filters.push(timeRangeConfigurator)
 if (branchConfigurator != null) {
   filters.push(branchConfigurator)
 }
-const projectConfigurator = startupProjectConfigurator(serverConfigurator, persistenceForDashboard, true, filters)
+const projectConfigurator = startupProjectConfigurator(serverConfigurator, persistenceForDashboard, true, filters, projectFilter)
 const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
 
 // Narrowed by the selected projects and mode (hence built after them) — the groups differ per
 // mode. One-way: neither the project nor the mode list may depend on the machine.
-const machineFilters: FilterConfigurator[] = [...filters, selectedStartupProjectsFilter(projectConfigurator)]
+const machineFilters: FilterConfigurator[] = [...filters, selectedStartupProjectsFilter(projectConfigurator, projectFilter)]
 if (testModeConfigurator != null) {
   machineFilters.push(testModeConfigurator)
 }

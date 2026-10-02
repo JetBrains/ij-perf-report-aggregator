@@ -5,6 +5,7 @@
     :persistent-id="persistentId"
     initial-machine="Linux Munich i7-13700, 64 Gb"
     :default-project="defaultProject"
+    :project-filter="projectFilter"
   >
     <template #default="{ projectConfigurator }">
       <Divider label="Main Metrics" />
@@ -104,13 +105,22 @@ interface CustomChart {
   measure: string | string[]
 }
 
-const { table, customCharts = [] } = defineProps<{
+const {
+  table,
+  customCharts = [],
+  projectFilter = null,
+  persistentId: persistentIdOverride = null,
+} = defineProps<{
   table: string
   defaultProject: string
   customCharts?: CustomChart[]
+  // Only projects whose name contains this are shown (several products can share one table).
+  projectFilter?: string | null
+  // Needed when another dashboard over the same table exists, so the two don't share saved state.
+  persistentId?: string | null
 }>()
 
-const persistentId = computed(() => `${table}-startup-dashboard`)
+const persistentId = computed(() => persistentIdOverride ?? `${table}-startup-dashboard`)
 
 const generateChartKey = (chart: Chart, configurator: DimensionConfigurator) => {
   const projectId = configurator.selected.value ?? "default"

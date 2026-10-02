@@ -10,9 +10,17 @@ import { updateComponentState } from "./componentState"
 // the "<project>" stem, so queries here translate between the two forms.
 const startupSuffixes = ["/measureStartup", "/warmup"]
 
+// `projectFilter` narrows the projects to those whose name contains it (e.g. "JetBrains Light"
+// runs share the "idea" table with the regular IDEA startup runs).
 class ProjectLikeFilter implements FilterConfigurator {
+  constructor(private readonly projectFilter: string | null) {}
+
   configureFilter(query: DataQuery): boolean {
     query.addFilter({ f: "", q: startupSuffixes.map((suffix) => `project like '%${suffix}%'`).join(" or ") })
+    if (this.projectFilter != null) {
+      // Value form, not a predicate: the backend escapes it for us.
+      query.addFilter({ f: "project", v: `%${this.projectFilter}%`, o: "like" })
+    }
     return true
   }
 
@@ -27,9 +35,14 @@ class ProjectLikeFilter implements FilterConfigurator {
 // Narrows the machine list to the selected startup projects, so a hardware group that never ran
 // them is not offered in the selector.
 class SelectedStartupProjectsFilter implements FilterConfigurator {
-  private readonly anyStartupProject = new ProjectLikeFilter()
+  private readonly anyStartupProject: ProjectLikeFilter
 
-  constructor(private readonly configurator: DimensionConfigurator) {}
+  constructor(
+    private readonly configurator: DimensionConfigurator,
+    projectFilter: string | null
+  ) {
+    this.anyStartupProject = new ProjectLikeFilter(projectFilter)
+  }
 
   configureFilter(query: DataQuery): boolean {
     const selected = selectedToArray(this.configurator.selected.value)
@@ -51,8 +64,8 @@ class SelectedStartupProjectsFilter implements FilterConfigurator {
   }
 }
 
-export function selectedStartupProjectsFilter(configurator: DimensionConfigurator): FilterConfigurator {
-  return new SelectedStartupProjectsFilter(configurator)
+export function selectedStartupProjectsFilter(configurator: DimensionConfigurator, projectFilter: string | null = null): FilterConfigurator {
+  return new SelectedStartupProjectsFilter(configurator, projectFilter)
 }
 
 export function startupProjectConfigurator(
@@ -60,10 +73,11 @@ export function startupProjectConfigurator(
   persistentStateManager: PersistentStateManager | null,
   multiple: boolean = false,
   filters: FilterConfigurator[] = [],
+  projectFilter: string | null = null,
   customValueSort: ((a: string, b: string) => number) | null = null,
   aliases: Map<string, string> | null = null
 ): DimensionConfigurator {
-  const projectLikeFilter = new ProjectLikeFilter()
+  const projectLikeFilter = new ProjectLikeFilter(projectFilter)
   const allFilters = [projectLikeFilter, ...filters]
 
   const configurator = new DimensionConfigurator("project", multiple, aliases)

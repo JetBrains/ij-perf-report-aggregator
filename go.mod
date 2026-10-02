@@ -7,18 +7,18 @@ require (
 	github.com/ClickHouse/ch-go v0.74.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.48.0
 	github.com/VictoriaMetrics/fastcache v1.13.3
-	github.com/andybalholm/brotli v1.2.4
+	github.com/andybalholm/brotli v1.2.6
 	github.com/cenkalti/backoff/v5 v5.0.3
 	github.com/go-chi/chi/v5 v5.3.2
 	github.com/jackc/pgerrcode v0.0.0-20250907135507-afb5586c32a6
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/jackc/puddle/v2 v2.2.2
-	github.com/klauspost/compress v1.20.0
+	github.com/klauspost/compress v1.20.1
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/nats-io/nats.go v1.54.0
 	github.com/prometheus/client_golang v1.24.1
 	github.com/prometheus/client_model v0.6.3
-	github.com/prometheus/common v0.71.0
+	github.com/prometheus/common v0.72.0
 	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/slack-go/slack v0.29.0
@@ -67,7 +67,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/mod v0.41.0 // indirect
-	golang.org/x/oauth2 v0.36.0 // indirect
+	golang.org/x/oauth2 v0.37.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260908163034-4bcc4b2ee518 // indirect
 	golang.org/x/text v0.42.0 // indirect

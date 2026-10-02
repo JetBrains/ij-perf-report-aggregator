@@ -52,7 +52,6 @@ enum ROUTE_PREFIX {
   Diogen = "/diogen",
   Toolbox = "/toolbox",
   LSP = "/lsp",
-  KotlinNotebooks = "/kotlinNotebooks",
   IJLight = "/ijLight",
   IntelliJLspClient = IntelliJ + "/lspClient",
 }
@@ -242,8 +241,6 @@ enum ROUTES {
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
-  KotlinNotebooksTests = `${ROUTE_PREFIX.KotlinNotebooks}/${TEST_ROUTE}`,
-  KotlinNotebooksDashboard = `${ROUTE_PREFIX.KotlinNotebooks}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
@@ -787,18 +784,6 @@ const LSP: Product = {
   ],
 }
 
-const KOTLIN_NOTEBOOKS: Product = {
-  url: ROUTE_PREFIX.KotlinNotebooks,
-  label: "Kotlin Notebooks",
-  children: [
-    {
-      url: ROUTE_PREFIX.KotlinNotebooks,
-      label: "",
-      tabs: [tab(ROUTES.KotlinNotebooksDashboard, DASHBOARD_LABEL), tab(ROUTES.KotlinNotebooksTests, TESTS_LABEL)],
-    },
-  ],
-}
-
 const IJ_LIGHT: Product = {
   url: ROUTE_PREFIX.IJLight,
   label: "IJ Light",
@@ -826,7 +811,6 @@ export const PRODUCTS = [
   KMT,
   KOTLIN,
   KOTLIN_BUILD_TOOLS,
-  KOTLIN_NOTEBOOKS,
   LSP,
   ML_TESTS,
   PERF_UNIT,
@@ -1201,15 +1185,6 @@ const lspRoutes = [
   dashboard(ROUTES.LSPDashboard, () => import("./components/lsp/LSPDashboard.vue"), "LSP Dashboard"),
 ]
 
-const kotlinNotebooksRoutes = [
-  perfTests(
-    ROUTES.KotlinNotebooksTests,
-    { dbName: "perfintDev", table: "kotlinNotebooks", initialMachine: MACHINES.AWS_LINUX, withInstaller: false },
-    "Kotlin Notebooks Performance tests"
-  ),
-  dashboard(ROUTES.KotlinNotebooksDashboard, () => import("./components/kotlinNotebooks/PerformanceDashboard.vue"), "Kotlin Notebooks Dashboard"),
-]
-
 const ijLightRoutes = [
   startupDashboard(
     ROUTES.IJLightStartupDashboard,
@@ -1247,7 +1222,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...perfUnitTestsRoutes,
         ...kotlinBuildToolsRoutes,
         ...lspRoutes,
-        ...kotlinNotebooksRoutes,
         ...ijLightRoutes,
         {
           path: ROUTES.ReportDegradations,

@@ -103,6 +103,23 @@
         With LLM Analysis
       </label>
     </div>
+    <div
+      v-if="isBisectApplicable"
+      v-tooltip.bottom="bisectDisabledReason === '' ? null : { value: bisectDisabledReason, autoHide: false }"
+      class="flex items-center mb-4"
+    >
+      <ToggleSwitch
+        v-model="bisectToggleState"
+        :disabled="bisectDisabledReason !== ''"
+        input-id="runBisect"
+      />
+      <label
+        for="runBisect"
+        class="ml-2"
+      >
+        With Bisect
+      </label>
+    </div>
     <WarningNotice
       v-if="misclickWarning"
       :title="misclickWarning.title"
@@ -167,6 +184,7 @@ import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configur
 import { LlmAnalysesConfigurator } from "../../../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { startLlmAnalysisWithToast } from "../llmAnalysis/LlmAnalysisUtils"
 import { InfoData } from "./InfoSidebar"
+import { bisectDirectionOf, canStartBisectAutomatically, isBisectSupported } from "./BisectRun"
 import { generateDefaultReason, inferKindFromData } from "./AccidentUtils"
 import { detectPossibleMisclick } from "./MisclickHeuristic"
 import RelatedAccidents from "./RelatedAccidents.vue"
@@ -186,10 +204,12 @@ const showDialog = defineModel<boolean>("showDialog")
 const createIssue = defineModel<boolean>("createIssue")
 const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
 const shouldRunLlmAnalysisModel = defineModel<boolean>("shouldRunLlmAnalysis")
+const shouldRunBisectModel = defineModel<boolean>("shouldRunBisect")
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
 const llmAnalysisPreference = useStorage("runLlmAnalysis", true)
+const bisectPreference = useStorage("runBisect", false)
 
 const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
 const isKindAutoDetected = computed(() => accidentToEdit.value == null && inferKindFromData(data) === AccidentKind.Improvement && accidentType.value === AccidentKind.Improvement)
@@ -210,6 +230,27 @@ const llmAnalysisToggleState = computed({
   },
 })
 const shouldRunLlmAnalysis = computed(() => isLlmAnalysisApplicable.value && llmAnalysisToggleState.value)
+
+const isBisectApplicable = computed(
+  () => createIssueCheckbox.value && isBisectSupported(data) && (accidentType.value === AccidentKind.Regression || accidentType.value === AccidentKind.Improvement)
+)
+const bisectDisabledReason = computed(() => {
+  if (data?.series[0]?.metricName == null) return "Bisect needs a metric to target"
+  if (!canStartBisectAutomatically(data, accidentType.value)) {
+    return (
+      `The values around the selected point overlap, so no target value for a ${bisectDirectionOf(accidentType.value).toLowerCase()} can be derived automatically. ` +
+      `Start the bisect from the sidebar to pick the target value yourself.`
+    )
+  }
+  return ""
+})
+const bisectToggleState = computed({
+  get: () => bisectDisabledReason.value === "" && bisectPreference.value,
+  set: (v) => {
+    bisectPreference.value = v
+  },
+})
+const shouldRunBisect = computed(() => isBisectApplicable.value && bisectToggleState.value)
 
 function generateReason(): string {
   if (data == null) return ""
@@ -255,6 +296,7 @@ async function reportRegression() {
       if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
         shouldRunLlmAnalysisModel.value = shouldRunLlmAnalysis.value
+        shouldRunBisectModel.value = shouldRunBisect.value
         createIssue.value = true
       } else if (shouldRunLlmAnalysis.value) {
         void startLlmAnalysisWithToast(llmAnalysesConfigurator, value, toast)

@@ -21,14 +21,14 @@ require (
 	github.com/prometheus/common v0.72.0
 	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/slack-go/slack v0.29.0
+	github.com/slack-go/slack v0.30.1
 	github.com/stretchr/testify v1.12.1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.10
 	github.com/valyala/quicktemplate v1.8.0
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/sync v0.23.0
-	golang.org/x/tools v0.50.0
+	golang.org/x/tools v0.51.0
 )
 
 require (
@@ -69,7 +69,7 @@ require (
 	golang.org/x/mod v0.41.0 // indirect
 	golang.org/x/oauth2 v0.37.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/telemetry v0.0.0-20260908163034-4bcc4b2ee518 // indirect
+	golang.org/x/telemetry v0.0.0-20260924152758-ed294f943157 // indirect
 	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect

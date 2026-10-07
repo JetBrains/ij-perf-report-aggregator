@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/ClickHouse/ch-go"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/mcp"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
@@ -36,6 +37,11 @@ type StatsServer struct {
 	nameToDbPool sync.Map
 
 	poolMutex sync.Mutex
+
+	// shared by the BuildStore methods, see buildStoreConn
+	buildsConnOnce sync.Once
+	buildsConn     driver.Conn
+	buildsConnErr  error
 }
 
 func Serve(dbUrl string, natsUrl string) error {
@@ -128,6 +134,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Post("/", meta.CreatePostStartLlmAnalysis(dbpool))
 			r.Get("/", meta.CreateGetLlmAnalysisRuns(dbpool))
 			r.Get("/list", meta.CreateGetLlmAnalysisList(dbpool))
+			r.Get("/matches", meta.CreateGetLlmAnalysisMatches(dbpool, statsServer))
 			r.Get("/{id}", meta.CreateGetLlmAnalysisById(dbpool))
 			r.Patch("/{id}", meta.CreatePatchLlmAnalysisRun(dbpool))
 			r.Post("/{id}/createIssue", meta.CreatePostCreateIssueByAnalysis(dbpool))

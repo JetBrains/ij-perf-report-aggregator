@@ -4,7 +4,8 @@ import { combineLatest } from "./rxjs"
 import { DataQuery, DataQueryExecutorConfiguration, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { getCompressor, getZstdObservable } from "../components/common/zstd"
 import { dbTypeStore } from "../shared/dbTypes"
-import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
+import { injectOrError, injectOrNull, serverUrlKey, serverUrlObservableKey } from "../shared/injectionKeys"
+import type { Ref } from "vue"
 
 export class ServerWithCompressConfigurator implements ServerConfigurator {
   static getDefaultServerUrl(): string {
@@ -19,6 +20,8 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL
+  // the setting itself: _serverUrl is updated only while the observable is subscribed, which a page without data queries never does
+  private readonly serverUrlSetting: Ref<string> | null = null
 
   constructor(
     readonly db: string,
@@ -26,7 +29,10 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
     serverUrlObservable: Observable<string> | null = null
   ) {
     dbTypeStore().setDbType(db, table)
-    serverUrlObservable ??= injectOrError(serverUrlObservableKey)
+    if (serverUrlObservable == null) {
+      serverUrlObservable = injectOrError(serverUrlObservableKey)
+      this.serverUrlSetting = injectOrNull(serverUrlKey)
+    }
     this.observable = combineLatest([serverUrlObservable, getZstdObservable()])
       [map](([url, _]) => {
         this._serverUrl = url
@@ -36,7 +42,8 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   }
 
   get serverUrl(): string {
-    return this._serverUrl
+    const setting = this.serverUrlSetting?.value
+    return setting == null || setting === "" ? this._serverUrl : setting
   }
 
   compressString(params: string): string {
@@ -45,11 +52,11 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   }
 
   computeQueryUrl(query: DataQuery): string {
-    return `${this._serverUrl}/api/q/${this.compressString(serializeQuery(query))}`
+    return `${this.serverUrl}/api/q/${this.compressString(serializeQuery(query))}`
   }
 
   computeSerializedQueryUrl(url: string): string {
-    return `${this._serverUrl}/api/q/${this.compressString(url)}`
+    return `${this.serverUrl}/api/q/${this.compressString(url)}`
   }
 
   createObservable(): Observable<unknown> {

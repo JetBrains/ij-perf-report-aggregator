@@ -9,6 +9,8 @@ export const timeRangeKey: InjectionKey<Ref<TimeRange>> = Symbol("timeRange")
 export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("tooltipUrlProvider")
 
 export const serverUrlObservableKey: InjectionKey<Observable<string>> = Symbol("serverUrlObservable")
+// the same setting as a ref, readable synchronously, without subscribing (and so without waiting for zstd)
+export const serverUrlKey: InjectionKey<Ref<string>> = Symbol("serverUrl")
 
 export function injectOrError<T>(key: InjectionKey<T> | string): T {
   const value = inject(key)

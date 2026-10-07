@@ -431,6 +431,10 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 				http.Error(writer, err.Error(), http.StatusBadRequest)
 				return
 			}
+			// stored lowercase, like build commits, so matching other analyses and builds can compare them as is
+			for i, c := range *patch.LlmGuiltyCommits {
+				(*patch.LlmGuiltyCommits)[i] = strings.ToLower(c)
+			}
 		}
 		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, patch); err != nil {
 			http.Error(writer, "Failed to update LLM analysis run: "+err.Error(), http.StatusInternalServerError)

@@ -66,6 +66,39 @@ export interface LlmAnalysisListItem extends LlmAnalysisRun {
   avgRating?: number
 }
 
+export interface LlmAnalysisMatch {
+  id: number
+  createdAt: string
+  project: string
+  metric: string
+  currentBuildId: string
+  ytIssueId?: string
+  dashboardLink?: string
+  matchedCommits: string[]
+}
+
+// a detected regression of the same or a related metric, not analysed, whose build contains a guilty commit
+export interface LlmAnalysisDegradationMatch {
+  project: string
+  metric: string
+  buildId: string
+  // set when the analysed chart table is known
+  machine?: string
+  date: string
+  matchedCommits: string[]
+  rangeSize: number
+}
+
+export interface LlmAnalysisMatches {
+  // number of commits in the build's range, only for buildId queries
+  rangeSize?: number
+  matches: LlmAnalysisMatch[]
+  // only for analysisId queries
+  degradations?: LlmAnalysisDegradationMatch[]
+  // degradation machines were looked up in the requested chart table: an empty machine then means another table
+  machinesResolved?: boolean
+}
+
 export interface AnalysisFeedback {
   id: number
   analysisId: number
@@ -120,6 +153,19 @@ export class LlmAnalysisClient {
       throw new Error(`Failed to fetch analyses: ${response.statusText} ${errorMessage}`)
     }
     return (await response.json()) as LlmAnalysisListItem[]
+  }
+
+  // degradations are checked against TeamCity and take seconds, so they are requested separately
+  // db and table of the analysed chart let the backend resolve the machine of each degradation build
+  async getMatches(query: { buildId: string } | { analysisId: string; degradations?: "true"; db?: string; table?: string }): Promise<LlmAnalysisMatches> {
+    const params = new URLSearchParams(Object.entries(query).filter((entry): entry is [string, string] => entry[1] != null))
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/matches?${params.toString()}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Failed to fetch analysis matches: ${response.statusText} ${errorMessage}`)
+    }
+    return (await response.json()) as LlmAnalysisMatches
   }
 
   async getLlmAnalysisById(id: number | string): Promise<LlmAnalysisDetails> {

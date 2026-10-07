@@ -97,6 +97,18 @@
           </dd>
         </template>
 
+        <dd
+          v-if="details.llmGuiltyCommits?.length"
+          class="col-span-2 mt-2"
+        >
+          <LlmAnalysisMatches
+            title="Same commit blamed on other charts"
+            :analysis-id="details.id"
+            :chart-link="details.dashboardLink"
+            collapsed
+          />
+        </dd>
+
         <template v-if="details.llmComment">
           <dt class="col-span-2 sticky top-0 z-10 mt-4 border-t border-gray-200 bg-white pt-3 text-base font-semibold text-gray-900 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -154,6 +166,7 @@ import { buildUrl, InfoData } from "../sideBar/InfoSidebar"
 import { LlmAnalysisClient, LlmAnalysisDetails, LlmAnalysisState } from "./LlmAnalysisClient"
 import AnalysisFeedbackInline from "./AnalysisFeedbackInline.vue"
 import CreateYoutrackIssueForm from "./CreateYoutrackIssueForm.vue"
+import LlmAnalysisMatches from "./LlmAnalysisMatches.vue"
 import { injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 

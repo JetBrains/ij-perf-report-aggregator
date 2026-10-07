@@ -9,6 +9,8 @@ import (
 	"log/slog"
 	"strings"
 
+	sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -220,7 +222,7 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 // (nil, nil) means the build has no row there; an error means the question went unanswered, which the
 // caller must report rather than fold into "this build doesn't expose commits".
 func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID int64) ([]string, error) {
-	if err := validateIdentifier("database", db); err != nil {
+	if err := sql_util.ValidateIdentifier("database", db); err != nil {
 		return nil, err
 	}
 	sql := fmt.Sprintf(

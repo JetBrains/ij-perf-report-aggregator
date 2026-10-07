@@ -32,5 +32,6 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     groupBranches: useStorage("groupBranches", true),
     fadeOnHover: useStorage("fadeOnHover", false),
     stdDevInterval: useStorage("stdDevInterval", true),
+    similarDegradations: useStorage("similarDegradationsEnabled", true),
   }
 })

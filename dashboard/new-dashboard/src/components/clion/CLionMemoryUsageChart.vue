@@ -21,21 +21,9 @@
             <section>
               <GroupProjectsChart
                 :key="`radler-${selectedIndex}`"
-                :label="`[Radler] ${label}, Mb`"
+                :label="`${label}, Mb`"
                 :measure="[backendMeasures[selectedIndex], frontendMeasures[selectedIndex]]"
                 :projects="[radlerProject]"
-                :legend-formatter="legendFormatter"
-              />
-            </section>
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <section>
-              <GroupProjectsChart
-                :key="`clion-${selectedIndex}`"
-                :label="`[CLion] ${label}, Mb`"
-                :measure="[frontendMeasures[selectedIndex]]"
-                :projects="[clionProject]"
                 :legend-formatter="legendFormatter"
               />
             </section>
@@ -60,7 +48,6 @@ const selectedIndex = ref(1)
 
 const getAllMeasures = (prefix: string) => [`${prefix}/beforeGC`, prefix, `${prefix}/idle`]
 const tabDescription = ["Before GC", "After GC", "After GC (idle)"]
-const clionProject = `clion/${project}`
 const radlerProject = `radler/${project}`
 const backendMeasurePrefix = `rd.memory.allocatedManagedMemoryMb/${measure}`
 const frontendMeasurePrefix = `JVM.heapUsageMb/${measure}`
@@ -71,7 +58,6 @@ const frontendMeasures = getAllMeasures(frontendMeasurePrefix)
 const lengthDescComparer = (a: string, b: string) => b.length - a.length
 
 const legendFormatter = (name: string) => {
-  name = name.replace(clionProject, "JVM (Frontend)") // HACK: remove this line when CLion Classic gets more than one memory metric
   for (const frontendMeasure of frontendMeasures.toSorted(lengthDescComparer)) {
     name = name.replace(frontendMeasure, "JVM (Frontend)")
   }

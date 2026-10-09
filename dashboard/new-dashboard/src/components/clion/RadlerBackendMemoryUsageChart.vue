@@ -19,7 +19,7 @@
         <section>
           <GroupProjectsChart
             :key="`radler-${selectedIndex}`"
-            :label="`[Radler] ${label}, Mb`"
+            :label="`${label}, Mb`"
             :measure="[backendMeasures[selectedIndex]]"
             :projects="[radlerProject]"
             :legend-formatter="legendFormatter"

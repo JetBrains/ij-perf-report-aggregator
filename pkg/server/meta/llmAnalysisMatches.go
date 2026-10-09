@@ -277,7 +277,11 @@ func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds Bu
 	}
 	machinesResolved := false
 	if knownTable && len(result) > 0 {
-		if err := fillMachines(ctx, builds, db, table, result); err != nil {
+		// a regression is dated by its run, a couple of days around the candidate window covers runs finishing after
+		// midnight or timezone shifts
+		from := analysis.date.AddDate(0, 0, -(degradationMatchDaysBefore + 2))
+		to := analysis.date.AddDate(0, 0, degradationMatchDaysAfter+2)
+		if err := fillMachines(ctx, builds, db, table, result, from, to); err != nil {
 			// the list is still useful, links just can't select the point
 			slog.Warn("unable to look up degradation machines", "error", err, "db", db, "table", table)
 		} else {
@@ -287,26 +291,14 @@ func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds Bu
 	return result, machinesResolved, nil
 }
 
-func fillMachines(ctx context.Context, builds BuildStore, db string, table string, degradations []LlmAnalysisDegradationMatch) error {
+func fillMachines(ctx context.Context, builds BuildStore, db string, table string, degradations []LlmAnalysisDegradationMatch, from time.Time, to time.Time) error {
 	buildIds := make([]string, 0, len(degradations))
 	projects := make([]string, 0, len(degradations))
-	var from, to time.Time
 	for _, d := range degradations {
 		buildIds = append(buildIds, d.BuildId)
 		projects = append(projects, d.Project)
-		date, err := time.Parse(time.DateOnly, d.Date)
-		if err != nil {
-			return err
-		}
-		if from.IsZero() || date.Before(from) {
-			from = date
-		}
-		if date.After(to) {
-			to = date
-		}
 	}
-	// a regression is dated by its run, a couple of days around covers runs finishing after midnight or timezone shifts
-	runs, err := builds.BuildRuns(ctx, db, table, buildIds, projects, from.AddDate(0, 0, -2), to.AddDate(0, 0, 2))
+	runs, err := builds.BuildRuns(ctx, db, table, buildIds, projects, from, to)
 	if err != nil {
 		return err
 	}

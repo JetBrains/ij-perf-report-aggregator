@@ -15,6 +15,9 @@ export interface LlmAnalysisRequest {
   testMethodName?: string
   ytIssueId?: string
   dashboardLink?: string
+  // the ClickHouse table of the analysed chart, to find its runs
+  db?: string
+  table?: string
 }
 
 export enum LlmAnalysisState {
@@ -96,7 +99,7 @@ export interface LlmAnalysisMatches {
   matches: LlmAnalysisMatch[]
   // only for analysisId queries
   degradations?: LlmAnalysisDegradationMatch[]
-  // degradation machines were looked up in the requested chart table: an empty machine then means another table
+  // degradation machines were looked up in the analysed chart table: an empty machine then means another table
   machinesResolved?: boolean
 }
 
@@ -157,10 +160,9 @@ export class LlmAnalysisClient {
   }
 
   // degradations are checked against TeamCity and take seconds, so they are requested separately
-  // db and table of the analysed chart let the backend resolve the machine of each degradation build
   // project, metric and currentBuildId of the point's chart exclude its own analyses
   async getMatches(
-    query: { buildId: string; project?: string; metric?: string; currentBuildId?: string } | { analysisId: string; degradations?: "true"; db?: string; table?: string }
+    query: { buildId: string; project?: string; metric?: string; currentBuildId?: string } | { analysisId: string; degradations?: "true" }
   ): Promise<LlmAnalysisMatches> {
     const params = new URLSearchParams(Object.entries(query).filter((entry): entry is [string, string] => entry[1] != null))
     const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/matches?${params.toString()}`

@@ -220,16 +220,9 @@ function analysisLink(dashboardLink: string, id: number): string {
   return url.pathname + url.search
 }
 
-// db and table the chart page reads, from its route props, e.g. perfintDev and idea for /intellij/testsDev
-function chartTable(link: string): { db: string; table: string } | null {
-  const props: unknown = router.resolve(link).matched.at(-1)?.props["default"]
-  if (props == null || typeof props !== "object") return null
-  const { dbName, table } = props as { dbName?: unknown; table?: unknown }
-  return typeof dbName === "string" && typeof table === "string" ? { db: dbName, table } : null
-}
-
 // set when the backend resolved machines in the analysed chart table: a build without a machine is then in another
-// table, and the analysed chart page can't show it; false when the lookup failed, links then keep the analysed machine
+// table, and the analysed chart page can't show it; false when the table is unknown (an analysis started before it was
+// stored) or the lookup failed, links then keep the analysed machine
 const chartTableKnown = ref(false)
 
 function pointLink(build: LlmAnalysisDegradationMatch): string | null {
@@ -286,9 +279,8 @@ watch(
     const loads = [loadMatches]
     if (buildId == null) {
       loading.value = true
-      const table = chartLink == null ? null : chartTable(chartLink)
       const loadDegradations = client
-        .getMatches({ analysisId: String(analysisId), degradations: "true", ...table })
+        .getMatches({ analysisId: String(analysisId), degradations: "true" })
         .then((result) => {
           if (!isCurrent()) return
           chartTableKnown.value = result.machinesResolved === true

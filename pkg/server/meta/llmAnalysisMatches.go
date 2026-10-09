@@ -33,8 +33,8 @@ type LlmAnalysisDegradationMatch struct {
 	Project string `json:"project"`
 	Metric  string `json:"metric"`
 	BuildId string `json:"buildId"`
-	// Machine and Branch are filled when the request names the analysed chart table (db and table) and the regression
-	// is in it, so a link to that chart page can select the point; empty means the regression is in another table
+	// Machine and Branch are filled when the analysis stored its chart table and the regression is in it, so a link to
+	// that chart page can select the point; empty means the regression is in another table
 	Machine        string   `json:"machine,omitempty"`
 	Branch         string   `json:"branch,omitempty"`
 	Date           string   `json:"date"`
@@ -49,8 +49,8 @@ type LlmAnalysisMatches struct {
 	Matches   []LlmAnalysisMatch `json:"matches"`
 	// Degradations are filled in analysisId mode with degradations=true only, as they take seconds to check.
 	Degradations []LlmAnalysisDegradationMatch `json:"degradations,omitempty"`
-	// MachinesResolved tells that degradation machines were looked up in the requested chart table, so an empty machine
-	// means the regression is in another table, not that the lookup failed
+	// MachinesResolved tells that degradation machines were looked up in the analysed chart table, so an empty machine
+	// means the regression is in another table, not that the table is unknown or the lookup failed
 	MachinesResolved bool `json:"machinesResolved,omitempty"`
 }
 
@@ -125,8 +125,8 @@ func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.H
 				http.Error(writer, "invalid analysisId", http.StatusBadRequest)
 				return
 			}
-			err = metaDb.QueryRow(ctx, "SELECT COALESCE(llm_guilty_commits, '{}'), project, metric, current_build_id, created_at FROM analyses WHERE id = $1", id).
-				Scan(&commits, &analysis.project, &analysis.metric, &analysis.currentBuildId, &analysis.date)
+			err = metaDb.QueryRow(ctx, "SELECT COALESCE(llm_guilty_commits, '{}'), project, metric, current_build_id, created_at, COALESCE(db_name, ''), COALESCE(table_name, '') FROM analyses WHERE id = $1", id).
+				Scan(&commits, &analysis.project, &analysis.metric, &analysis.currentBuildId, &analysis.date, &analysis.db, &analysis.table)
 			if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 				slog.Error("unable to select analysis guilty commits", "error", err, "id", id)
 				writer.WriteHeader(http.StatusInternalServerError)
@@ -141,7 +141,7 @@ func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.H
 		switch {
 		case len(commits) == 0:
 		case excludeId != 0 && query.Get("degradations") == "true":
-			degradations, machinesResolved, err := findDegradationMatches(ctx, metaDb, builds, analysis, commits, query.Get("db"), query.Get("table"))
+			degradations, machinesResolved, err := findDegradationMatches(ctx, metaDb, builds, analysis, commits)
 			if err != nil {
 				slog.Error("unable to find degradation matches", "error", err, "analysisId", excludeId)
 				writer.WriteHeader(http.StatusInternalServerError)
@@ -198,13 +198,17 @@ type analysisRef struct {
 	currentBuildId string
 	// when the analysed build ran if known, else when the analysis was started
 	date time.Time
+	// the ClickHouse table of the analysed chart, empty for analyses started before it was stored
+	db    string
+	table string
 }
 
 // findDegradationMatches returns regressions of the analysis metric, or a metric related to it, on charts without a
-// successful or running analysis at that build (a failed one explains nothing), whose build contains one of the commits. db and table are the analysed chart table, if known.
+// successful or running analysis at that build (a failed one explains nothing), whose build contains one of the commits.
 // build_number holds the TeamCity build id for all detector settings except perfint and fleet (IDE build number),
 // those are skipped as their commits can't be resolved.
-func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds BuildStore, analysis analysisRef, commits []string, db string, table string) ([]LlmAnalysisDegradationMatch, bool, error) {
+func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds BuildStore, analysis analysisRef, commits []string) ([]LlmAnalysisDegradationMatch, bool, error) {
+	db, table := analysis.db, analysis.table
 	knownTable := db != "" && table != ""
 	if knownTable {
 		// the analysed run happened before the analysis was started, mostly days before

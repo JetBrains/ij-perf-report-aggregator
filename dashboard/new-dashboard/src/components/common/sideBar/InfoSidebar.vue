@@ -252,6 +252,7 @@
         title="Possibly explained by"
         :build-id="data.installerId ?? data.buildId"
         :chart="{ project: data.projectName, metric: data.series[0]?.metricName, currentBuildId: String(data.buildId) }"
+        collapsed
       />
 
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">

@@ -2,19 +2,17 @@ package server
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/base64"
-	"encoding/hex"
 	"strconv"
 	"time"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/installer"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 )
 
-// The installer tables of all databases hold the changes of every build by TeamCity build id, as unpadded base64 of
-// SHA-1, and outlive TeamCity build retention. A build may be in several databases, with the same changes.
+// The installer tables of all databases hold the changes of every build by TeamCity build id and outlive TeamCity
+// build retention. A build may be in several databases, with the same changes.
 const installerTables = "merge(REGEXP('.'), '^installer$')"
 
 // buildStoreConn returns one connection for all build lookups: a clickhouse-go connection is a pool safe for concurrent
@@ -44,15 +42,11 @@ func (t *StatsServer) BuildCommits(ctx context.Context, buildId string) ([]strin
 	defer rows.Close()
 	var commits []string
 	for rows.Next() {
-		var encoded []string
-		if err := rows.Scan(&encoded); err != nil {
+		var changes []string
+		if err := rows.Scan(&changes); err != nil {
 			return nil, err
 		}
-		for _, e := range encoded {
-			if raw, err := base64.RawStdEncoding.DecodeString(e); err == nil && len(raw) == sha1.Size {
-				commits = append(commits, hex.EncodeToString(raw))
-			}
-		}
+		commits = append(commits, installer.DecodeChanges(changes)...)
 	}
 	return commits, rows.Err()
 }
@@ -65,13 +59,10 @@ func (t *StatsServer) MatchBuildCommits(ctx context.Context, buildIds []string, 
 	encodedToCommit := make(map[string]string, len(commits))
 	encoded := make([]string, 0, len(commits))
 	for _, commit := range commits {
-		raw, err := hex.DecodeString(commit)
-		if err != nil || len(raw) != sha1.Size {
-			continue
+		if e, ok := installer.EncodeCommit(commit); ok {
+			encodedToCommit[e] = commit
+			encoded = append(encoded, e)
 		}
-		e := base64.RawStdEncoding.EncodeToString(raw)
-		encodedToCommit[e] = commit
-		encoded = append(encoded, e)
 	}
 	if len(ids) == 0 || len(encoded) == 0 {
 		return result, nil

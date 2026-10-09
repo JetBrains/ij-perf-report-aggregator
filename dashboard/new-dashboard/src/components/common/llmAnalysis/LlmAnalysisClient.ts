@@ -84,6 +84,7 @@ export interface LlmAnalysisDegradationMatch {
   buildId: string
   // set when the analysed chart table is known
   machine?: string
+  branch?: string
   date: string
   matchedCommits: string[]
   rangeSize: number

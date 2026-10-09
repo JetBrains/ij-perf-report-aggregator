@@ -114,6 +114,9 @@ export async function getArtifactsUrl(data: InfoData | null, serverConfigurator:
   return url
 }
 
+// the branch value a chart page selects: release branches are grouped by their major number, 253 covers 253.1234
+export const majorBranch = (branch: string) => (/\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch)
+
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
@@ -122,8 +125,6 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   } else {
     parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   }
-  const branch = data?.branch ?? ""
-  const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
   const mode = data?.mode ?? ""
   const testURL = parts.join("/")
 
@@ -131,7 +132,7 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
     ...currentRoute.query,
     ...(data?.buildId != undefined ? { [pointParamName]: data.buildId.toString() } : {}),
     project: data?.projectName ?? "",
-    branch: majorBranch,
+    branch: majorBranch(data?.branch ?? ""),
     machine: data?.machineName ?? "",
     mode: mode !== "" ? mode : "default",
   })

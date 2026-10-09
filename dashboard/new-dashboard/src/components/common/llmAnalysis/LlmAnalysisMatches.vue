@@ -164,7 +164,7 @@ import { injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { analysisParamName, pointParamName } from "../../../shared/selectedPointStore"
-import { buildUrl } from "../sideBar/InfoSidebar"
+import { buildUrl, majorBranch } from "../sideBar/InfoSidebar"
 import { groupDegradations } from "./degradationGroups"
 import { LlmAnalysisClient, LlmAnalysisDegradationMatch, LlmAnalysisMatch } from "./LlmAnalysisClient"
 
@@ -253,11 +253,13 @@ function chartPointLink(builds: LlmAnalysisDegradationMatch[]): string | null {
 const DAY_MS = 24 * 60 * 60 * 1000
 const isoDate = (time: number) => new Date(time).toISOString().slice(0, 10)
 
-// the page of the analysed chart, which holds for the same or a related metric, with the machine of the degradation build:
-// the same commit is often tested on several machines, and the chart shows only the selected ones
+// the page of the analysed chart, which holds for the same or a related metric, with the machine and branch of the
+// degradation build: the same commit is often tested on several machines and merged to other branches, and the chart
+// shows only the selected ones
 function degradationLink(chartLink: string, degradation: LlmAnalysisDegradationMatch): string {
   const url = new URL(chartLink, globalThis.location.origin)
   if (degradation.machine) url.searchParams.set("machine", degradation.machine)
+  if (degradation.branch) url.searchParams.set("branch", majorBranch(degradation.branch))
   url.searchParams.set("project", degradation.project)
   url.searchParams.set("measure", degradation.metric)
   url.searchParams.set(pointParamName, degradation.buildId)

@@ -33,9 +33,10 @@ type LlmAnalysisDegradationMatch struct {
 	Project string `json:"project"`
 	Metric  string `json:"metric"`
 	BuildId string `json:"buildId"`
-	// Machine is filled when the request names the analysed chart table (db and table) and the regression is in it,
-	// so a link to that chart page can select the point; empty means the regression is in another table
+	// Machine and Branch are filled when the request names the analysed chart table (db and table) and the regression
+	// is in it, so a link to that chart page can select the point; empty means the regression is in another table
 	Machine        string   `json:"machine,omitempty"`
+	Branch         string   `json:"branch,omitempty"`
 	Date           string   `json:"date"`
 	MatchedCommits []string `json:"matchedCommits"`
 	RangeSize      int      `json:"rangeSize"`
@@ -79,6 +80,7 @@ type BuildProject struct {
 
 type BuildRun struct {
 	Machine       string
+	Branch        string
 	GeneratedTime time.Time
 }
 
@@ -303,7 +305,9 @@ func fillMachines(ctx context.Context, builds BuildStore, db string, table strin
 		return err
 	}
 	for i := range degradations {
-		degradations[i].Machine = runs[BuildProject{degradations[i].BuildId, degradations[i].Project}].Machine
+		run := runs[BuildProject{degradations[i].BuildId, degradations[i].Project}]
+		degradations[i].Machine = run.Machine
+		degradations[i].Branch = run.Branch
 	}
 	return nil
 }

@@ -250,7 +250,6 @@ function degradationLink(chartLink: string, degradation: LlmAnalysisDegradationM
   url.searchParams.set("measure", degradation.metric)
   url.searchParams.set(pointParamName, degradation.buildId)
   url.searchParams.delete(analysisParamName)
-  // a date without a time is parsed as UTC, with a time as local, which the range is in
   const date = new Date(`${degradation.date}T00:00`)
   const start = new Date(date)
   start.setDate(date.getDate() - 30)

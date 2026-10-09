@@ -91,7 +91,6 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
 
 const formatDate = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
-// the customRange setting and url parameter: two local dates, start:end, both days included
 export function formatCustomRange(start: Date, end: Date): string {
   return `${formatDate(start)}:${formatDate(end)}`
 }

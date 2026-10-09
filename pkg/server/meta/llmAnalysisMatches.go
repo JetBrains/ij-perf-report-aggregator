@@ -194,8 +194,7 @@ type analysisRef struct {
 	metric         string
 	currentBuildId string
 	// when the analysed point's run was generated, or when the analysis was started for one not stored with it
-	date time.Time
-	// the ClickHouse table of the analysed chart, empty for analyses started before it was stored
+	date  time.Time
 	db    string
 	table string
 }

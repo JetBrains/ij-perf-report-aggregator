@@ -33,11 +33,9 @@ type LLMAnalysisRequest struct {
 	TestMethodName      *string                        `json:"testMethodName,omitempty"`
 	YtIssueId           *string                        `json:"ytIssueId,omitempty"`
 	DashboardLink       *string                        `json:"dashboardLink,omitempty"`
-	// the ClickHouse table of the analysed chart
-	Db    *string `json:"db,omitempty"`
-	Table *string `json:"table,omitempty"`
-	// when the analysed point's run was generated
-	RunDate *time.Time `json:"runDate,omitempty"`
+	Db                  *string                        `json:"db,omitempty"`
+	Table               *string                        `json:"table,omitempty"`
+	RunDate             *time.Time                     `json:"runDate,omitempty"`
 }
 
 type LlmAnalysisRun struct {
@@ -120,7 +118,6 @@ type LlmAnalysisRunPatch struct {
 	YtIssueId        *string           `json:"ytIssueId,omitempty"`
 }
 
-// lowercase only: the matching queries compare guilty commits to build commits as text
 var sha1HexRegex = regexp.MustCompile(`^[a-f0-9]{40}$`)
 
 func validateLlmGuiltyCommits(commits []string) error {

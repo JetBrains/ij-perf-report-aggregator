@@ -27,8 +27,6 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   ) {
     dbTypeStore().setDbType(db, table)
     serverUrlObservable ??= injectOrError(serverUrlObservableKey)
-    // the setting emits on subscribe, so the url is right away for pages that read it without subscribing to the
-    // observable below (which also waits for zstd)
     serverUrlObservable.subscribe((url) => {
       this._serverUrl = url
     })

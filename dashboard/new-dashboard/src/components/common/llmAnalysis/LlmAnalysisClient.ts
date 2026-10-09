@@ -15,10 +15,8 @@ export interface LlmAnalysisRequest {
   testMethodName?: string
   ytIssueId?: string
   dashboardLink?: string
-  // the ClickHouse table of the analysed chart, to find its runs
   db?: string
   table?: string
-  // when the analysed point's run was generated
   runDate?: string
 }
 

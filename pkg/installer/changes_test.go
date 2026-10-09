@@ -26,7 +26,6 @@ func TestChangesRoundTrip(t *testing.T) {
 	if _, ok := EncodeCommit("13 04 2022 12:14"); ok {
 		t.Error("EncodeCommit accepted a private build change")
 	}
-	// not base64 is kept, so a stored format change is visible
 	if decoded := DecodeChanges([]string{"not base64!", ""}); !slices.Equal(decoded, []string{"not base64!", ""}) {
 		t.Errorf("DecodeChanges kept %v", decoded)
 	}

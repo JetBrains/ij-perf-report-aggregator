@@ -23,7 +23,6 @@ export interface InfoData {
   title: string
   installerId: number | undefined
   date: string
-  // when the point's run was generated, the formatted date above is for display
   timestamp: number
   branch: string | undefined
   series: DataSeries[]
@@ -116,7 +115,6 @@ export async function getArtifactsUrl(data: InfoData | null, serverConfigurator:
   return url
 }
 
-// the branch value a chart page selects: release branches are grouped by their major number, 253 covers 253.1234
 export const majorBranch = (branch: string) => (/\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch)
 
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {

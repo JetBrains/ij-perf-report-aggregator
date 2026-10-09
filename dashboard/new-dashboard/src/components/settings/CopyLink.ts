@@ -27,7 +27,6 @@ export function getPersistentLink(url: string, timerangeConfigurator: TimeRangeC
     .replace(/([?&])timeRange=[^&]*&?/, "$1")
 
   if (timerangeConfigurator.value.value != "custom") {
-    // a day of margin on both sides
     const from = getDateAgoByDuration(timerangeConfigurator.value.value)
     from.setDate(from.getDate() - 1)
     const to = new Date()

@@ -27,7 +27,7 @@ describe("degradation matches grouping", () => {
     ])
     expect(result.groups.map((g) => g.metric)).toStrictEqual(["same", "related"])
     expect(result.groups[0].charts.map((c) => c.project)).toStrictEqual(["c", "b"])
-    expect(result.strongestRangeSize).toBe(20)
+    expect(result.strongest?.project).toBe("c")
   })
 
   it("reports common commits only when every chart matched the same ones", () => {

@@ -71,10 +71,10 @@
           <span class="matches-card__pill">{{ plural(degradationGroups.chartCount, "chart") }}</span>
           <span class="matches-card__pill">{{ plural(degradationGroups.groups.length, "metric") }}</span>
           <span
-            v-if="strongest"
+            v-if="degradationGroups.strongest"
             v-tooltip.top="'Smallest commit range among the charts: the fewer commits, the stronger the evidence'"
             class="matches-card__pill matches-card__pill--outline"
-            >strongest {{ strongest.matchedCommits.length }} of {{ strongest.rangeSize }} commits</span
+            >strongest {{ degradationGroups.strongest.matchedCommits.length }} of {{ degradationGroups.strongest.rangeSize }} commits</span
           >
         </span>
       </AccordionHeader>
@@ -207,7 +207,6 @@ const referenceLink = computed(() => chartLink ?? (buildId == null ? null : rout
 const isSameProduct = (match: LlmAnalysisMatch) => match.dashboardLink == null || referenceLink.value == null || productOf(match.dashboardLink) === productOf(referenceLink.value)
 
 const degradationGroups = computed(() => groupDegradations(degradations.value))
-const strongest = computed(() => degradationGroups.value.groups.flatMap((g) => g.charts).find((c) => c.rangeSize === degradationGroups.value.strongestRangeSize))
 
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`
 const shortCommits = (commits: string[]) => commits.map((c) => c.slice(0, 10)).join(", ")

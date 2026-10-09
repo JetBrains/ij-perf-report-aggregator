@@ -162,6 +162,7 @@ import { computed, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
+import { formatCustomRange } from "../../../configurators/TimeRangeConfigurator"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { analysisParamName, pointParamName } from "../../../shared/selectedPointStore"
 import { buildUrl, majorBranch } from "../sideBar/InfoSidebar"
@@ -238,9 +239,6 @@ function chartPointLink(builds: LlmAnalysisDegradationMatch[]): string | null {
   return null
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000
-const isoDate = (time: number) => new Date(time).toISOString().slice(0, 10)
-
 // the page of the analysed chart, which holds for the same or a related metric, with the machine and branch of the
 // degradation build: the same commit is often tested on several machines and merged to other branches, and the chart
 // shows only the selected ones
@@ -252,9 +250,14 @@ function degradationLink(chartLink: string, degradation: LlmAnalysisDegradationM
   url.searchParams.set("measure", degradation.metric)
   url.searchParams.set(pointParamName, degradation.buildId)
   url.searchParams.delete(analysisParamName)
-  const date = new Date(degradation.date).getTime()
+  // a date without a time is parsed as UTC, with a time as local, which the range is in
+  const date = new Date(`${degradation.date}T00:00`)
+  const start = new Date(date)
+  start.setDate(date.getDate() - 30)
+  const end = new Date(date)
+  end.setDate(date.getDate() + 7)
   url.searchParams.set("timeRange", "custom")
-  url.searchParams.set("customRange", `${isoDate(date - 30 * DAY_MS)}:${isoDate(date + 7 * DAY_MS)}`)
+  url.searchParams.set("customRange", formatCustomRange(start, end))
   return url.pathname + url.search
 }
 

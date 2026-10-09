@@ -36,6 +36,8 @@ type LLMAnalysisRequest struct {
 	// the ClickHouse table of the analysed chart
 	Db    *string `json:"db,omitempty"`
 	Table *string `json:"table,omitempty"`
+	// when the analysed point's run was generated
+	RunDate *time.Time `json:"runDate,omitempty"`
 }
 
 type LlmAnalysisRun struct {
@@ -608,11 +610,11 @@ func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMA
 		userEmailArg = &userEmail
 	}
 	idRow := metaDb.QueryRow(ctx,
-		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id, dashboard_link, db_name, table_name) "+
-			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id, created_at",
+		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id, dashboard_link, db_name, table_name, run_date) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id, created_at",
 		params.Project, params.Metric, params.CurrentBuildId,
 		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName, userEmailArg,
-		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId, params.DashboardLink, params.Db, params.Table)
+		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId, params.DashboardLink, params.Db, params.Table, params.RunDate)
 	if err := idRow.Scan(&id, &createdAt); err != nil {
 		slog.Error("cannot execute insert analyses query", "error", err,
 			"project", params.Project, "metric", params.Metric)

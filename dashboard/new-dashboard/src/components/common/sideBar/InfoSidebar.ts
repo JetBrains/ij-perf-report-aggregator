@@ -23,6 +23,8 @@ export interface InfoData {
   title: string
   installerId: number | undefined
   date: string
+  // when the point's run was generated, the formatted date above is for display
+  timestamp: number
   branch: string | undefined
   series: DataSeries[]
   accidents: Ref<Accident[] | undefined> | undefined

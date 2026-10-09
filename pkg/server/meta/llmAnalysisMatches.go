@@ -63,8 +63,6 @@ const (
 	// metrics are related when analyses blamed the same commit for both at least this many times (distinct commits),
 	// e.g. localInspections and localInspections#mean_value
 	relatedMetricMinCommits = 2
-	// how far back from the analysis start its run is looked up; older points fall back to the analysis date
-	analysedRunMaxAgeDays = 90
 )
 
 // BuildCommitsMatch is the part of a build's commits that is among the requested commits.
@@ -79,9 +77,8 @@ type BuildProject struct {
 }
 
 type BuildRun struct {
-	Machine       string
-	Branch        string
-	GeneratedTime time.Time
+	Machine string
+	Branch  string
 }
 
 // BuildStore reads builds from ClickHouse. Commits are full SHA-1 hex strings.
@@ -125,7 +122,7 @@ func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.H
 				http.Error(writer, "invalid analysisId", http.StatusBadRequest)
 				return
 			}
-			err = metaDb.QueryRow(ctx, "SELECT COALESCE(llm_guilty_commits, '{}'), project, metric, current_build_id, created_at, COALESCE(db_name, ''), COALESCE(table_name, '') FROM analyses WHERE id = $1", id).
+			err = metaDb.QueryRow(ctx, "SELECT COALESCE(llm_guilty_commits, '{}'), project, metric, current_build_id, COALESCE(run_date, created_at), COALESCE(db_name, ''), COALESCE(table_name, '') FROM analyses WHERE id = $1", id).
 				Scan(&commits, &analysis.project, &analysis.metric, &analysis.currentBuildId, &analysis.date, &analysis.db, &analysis.table)
 			if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 				slog.Error("unable to select analysis guilty commits", "error", err, "id", id)
@@ -196,7 +193,7 @@ type analysisRef struct {
 	project        string
 	metric         string
 	currentBuildId string
-	// when the analysed build ran if known, else when the analysis was started
+	// when the analysed point's run was generated, or when the analysis was started for one not stored with it
 	date time.Time
 	// the ClickHouse table of the analysed chart, empty for analyses started before it was stored
 	db    string
@@ -210,17 +207,6 @@ type analysisRef struct {
 func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds BuildStore, analysis analysisRef, commits []string) ([]LlmAnalysisDegradationMatch, bool, error) {
 	db, table := analysis.db, analysis.table
 	knownTable := db != "" && table != ""
-	if knownTable {
-		// the analysed run happened before the analysis was started, mostly days before
-		runs, err := builds.BuildRuns(ctx, db, table, []string{analysis.currentBuildId}, []string{analysis.project},
-			analysis.date.AddDate(0, 0, -analysedRunMaxAgeDays), analysis.date.AddDate(0, 0, 1))
-		if err != nil {
-			// the analysis date is a good enough window center
-			slog.Warn("unable to look up the analysed run date", "error", err, "db", db, "table", table)
-		} else if run, ok := runs[BuildProject{analysis.currentBuildId, analysis.project}]; ok {
-			analysis.date = run.GeneratedTime
-		}
-	}
 
 	// affected_test is project/metric; DISTINCT ON keeps one row per chart and build (an inferred regression a user
 	// also reported), with the longest metric when one metric is a suffix of another

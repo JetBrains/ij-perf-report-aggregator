@@ -117,7 +117,7 @@ func (t *StatsServer) BuildRuns(ctx context.Context, db string, table string, bu
 		return nil, err
 	}
 
-	sql := "SELECT tc_build_id, project, any(machine), any(branch), min(generated_time) FROM " + db + "." + table + " WHERE tc_build_id IN ? AND project IN ?"
+	sql := "SELECT tc_build_id, project, any(machine), any(branch) FROM " + db + "." + table + " WHERE tc_build_id IN ? AND project IN ?"
 	args := []any{ids, projects}
 	if !from.IsZero() && !to.IsZero() {
 		// tc_build_id is not in the sorting key, the time bounds let ClickHouse skip partitions
@@ -135,7 +135,7 @@ func (t *StatsServer) BuildRuns(ctx context.Context, db string, table string, bu
 			project string
 			run     meta.BuildRun
 		)
-		if err := rows.Scan(&id, &project, &run.Machine, &run.Branch, &run.GeneratedTime); err != nil {
+		if err := rows.Scan(&id, &project, &run.Machine, &run.Branch); err != nil {
 			return nil, err
 		}
 		result[meta.BuildProject{BuildId: strconv.FormatUint(uint64(id), 10), Project: project}] = run

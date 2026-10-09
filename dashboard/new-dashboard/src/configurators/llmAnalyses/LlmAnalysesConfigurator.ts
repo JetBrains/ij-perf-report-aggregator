@@ -121,6 +121,7 @@ export class LlmAnalysesConfigurator {
       dashboardLink,
       db: serverConfigurator.db,
       table: serverConfigurator.table,
+      runDate: new Date(data.timestamp).toISOString(),
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

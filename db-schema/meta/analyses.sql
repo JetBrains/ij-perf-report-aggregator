@@ -24,7 +24,9 @@ CREATE TABLE analyses
   total_cost_usd        NUMERIC(10, 4),
   -- the ClickHouse table of the analysed chart, to find its runs
   db_name               VARCHAR(255),
-  table_name            VARCHAR(255)
+  table_name            VARCHAR(255),
+  -- when the analysed point's run was generated
+  run_date              TIMESTAMPTZ
 );
 
 CREATE INDEX idx_analysis_lookup

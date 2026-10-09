@@ -114,12 +114,13 @@ type LlmAnalysisRunPatch struct {
 	YtIssueId        *string           `json:"ytIssueId,omitempty"`
 }
 
-var sha1HexRegex = regexp.MustCompile(`^[a-fA-F0-9]{40}$`)
+// lowercase only: the matching queries compare guilty commits to build commits as text
+var sha1HexRegex = regexp.MustCompile(`^[a-f0-9]{40}$`)
 
 func validateLlmGuiltyCommits(commits []string) error {
 	for i, c := range commits {
 		if !sha1HexRegex.MatchString(c) {
-			return fmt.Errorf("llmGuiltyCommits[%d] is not a 40-char hex SHA: %q", i, c)
+			return fmt.Errorf("llmGuiltyCommits[%d] is not a 40-char lowercase hex SHA: %q", i, c)
 		}
 	}
 	return nil
@@ -427,13 +428,13 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		if patch.LlmGuiltyCommits != nil {
-			if err := validateLlmGuiltyCommits(*patch.LlmGuiltyCommits); err != nil {
-				http.Error(writer, err.Error(), http.StatusBadRequest)
-				return
-			}
 			// stored lowercase, like build commits, so matching other analyses and builds can compare them as is
 			for i, c := range *patch.LlmGuiltyCommits {
 				(*patch.LlmGuiltyCommits)[i] = strings.ToLower(c)
+			}
+			if err := validateLlmGuiltyCommits(*patch.LlmGuiltyCommits); err != nil {
+				http.Error(writer, err.Error(), http.StatusBadRequest)
+				return
 			}
 		}
 		if err := updateLlmAnalysisRun(request.Context(), metaDb, id, patch); err != nil {

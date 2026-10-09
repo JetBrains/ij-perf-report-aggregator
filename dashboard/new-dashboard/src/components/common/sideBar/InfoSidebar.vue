@@ -247,6 +247,13 @@
 
       <LlmAnalysisRuns :data="data" />
 
+      <LlmAnalysisMatches
+        v-if="data"
+        title="Possibly explained by"
+        :build-id="data.installerId ?? data.buildId"
+        :chart="{ project: data.projectName, metric: data.series[0]?.metricName, currentBuildId: String(data.buildId) }"
+      />
+
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
@@ -386,6 +393,7 @@ import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { computedAsync } from "@vueuse/core"
 import LlmAnalysisRuns from "../llmAnalysis/LlmAnalysisRuns.vue"
+import LlmAnalysisMatches from "../llmAnalysis/LlmAnalysisMatches.vue"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator

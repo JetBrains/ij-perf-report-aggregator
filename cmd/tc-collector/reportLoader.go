@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +12,7 @@ import (
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/installer"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"golang.org/x/sync/errgroup"
 )
@@ -279,25 +277,17 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	encoding := base64.RawStdEncoding
-
-	var b bytes.Buffer
 	result := make([]string, len(changeList.List))
 	for index, change := range changeList.List {
 		if strings.Contains(change.Version, " ") {
 			// private build with custom change, format: 13 04 2022 12:14
 			continue
 		}
-		data, err := hex.DecodeString(change.Version)
-		if err != nil {
-			return nil, fmt.Errorf("failed to decode change version: %w", err)
+		encoded, ok := installer.EncodeCommit(change.Version)
+		if !ok {
+			return nil, fmt.Errorf("failed to decode change version: %q", change.Version)
 		}
-
-		b.Reset()
-
-		buf := make([]byte, encoding.EncodedLen(len(data)))
-		encoding.Encode(buf, data)
-		result[index] = string(buf)
+		result[index] = encoded
 	}
 
 	return result, nil

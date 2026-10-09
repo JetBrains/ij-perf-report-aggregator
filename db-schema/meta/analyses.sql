@@ -21,7 +21,10 @@ CREATE TABLE analyses
   llm_guilty_commits    VARCHAR(40)[],
   llm_comment           TEXT,
   dashboard_link        VARCHAR(4096),
-  total_cost_usd        NUMERIC(10, 4)
+  total_cost_usd        NUMERIC(10, 4),
+  db_name               VARCHAR(255),
+  table_name            VARCHAR(255),
+  run_date              TIMESTAMPTZ
 );
 
 CREATE INDEX idx_analysis_lookup

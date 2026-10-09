@@ -119,6 +119,9 @@ export class LlmAnalysesConfigurator {
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       ytIssueId: ytIssueId ?? undefined,
       dashboardLink,
+      db: serverConfigurator.db,
+      table: serverConfigurator.table,
+      runDate: new Date(data.timestamp).toISOString(),
     }
     const run = await this.client.sendLlmAnalysisRequest(request)
     this.value.value = [...this.value.value, run]

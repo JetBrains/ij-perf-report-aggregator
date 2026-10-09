@@ -43,11 +43,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
 
   public setCustomRange(start: Date, end: Date) {
     this.value.value = "custom"
-    this.customRange.value = `${this.getStringFromDate(start)}:${this.getStringFromDate(end)}`
-  }
-
-  private getStringFromDate(date: Date): string {
-    return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
+    this.customRange.value = formatCustomRange(start, end)
   }
 
   createObservable(): Observable<readonly [TimeRange, string]> {
@@ -91,6 +87,12 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     const date = new Date(Date.UTC(year, month - 1, day))
     return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0")
   }
+}
+
+const formatDate = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+
+export function formatCustomRange(start: Date, end: Date): string {
+  return `${formatDate(start)}:${formatDate(end)}`
 }
 
 function toClickhouseSql(duration: DurationParseResult): string {

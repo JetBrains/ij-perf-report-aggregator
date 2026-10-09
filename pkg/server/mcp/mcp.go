@@ -17,6 +17,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
+	sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -188,7 +189,7 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 		// Tools interpolate r.Database/r.Table directly into SQL. Drop anything that
 		// doesn't fit the safe-identifier shape so we never produce a query that
 		// needs quoting; in practice every real perf-report table satisfies this.
-		if validateIdentifier("database", r.Database) != nil || validateIdentifier("table", r.Table) != nil {
+		if sql_util.ValidateIdentifier("database", r.Database) != nil || sql_util.ValidateIdentifier("table", r.Table) != nil {
 			slog.Warn("mcp: skipping non-identifier table name", "db", r.Database, "table", r.Table)
 			continue
 		}
@@ -209,12 +210,12 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 // Empty db/table → all known tables; partial → filtered subset; both → exact match (must exist).
 func (s *service) resolveTables(ctx context.Context, db, table string) ([]tableRef, error) {
 	if db != "" {
-		if err := validateIdentifier("database", db); err != nil {
+		if err := sql_util.ValidateIdentifier("database", db); err != nil {
 			return nil, err
 		}
 	}
 	if table != "" {
-		if err := validateIdentifier("table", table); err != nil {
+		if err := sql_util.ValidateIdentifier("table", table); err != nil {
 			return nil, err
 		}
 	}
@@ -344,16 +345,4 @@ func truncatedNote(rows, limit int) string {
 		return ""
 	}
 	return fmt.Sprintf("exactly %d row(s) returned — the limit; more data likely exists, re-ask with a higher limit or narrower filters", limit)
-}
-
-func validateIdentifier(field, value string) error {
-	if value == "" {
-		return fmt.Errorf("%s is required", field)
-	}
-	for _, r := range value {
-		if !(r == '_' || (r >= '0' && r <= '9') || (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')) {
-			return fmt.Errorf("%s contains invalid character %q", field, r)
-		}
-	}
-	return nil
 }

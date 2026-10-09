@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,6 +33,9 @@ type LLMAnalysisRequest struct {
 	TestMethodName      *string                        `json:"testMethodName,omitempty"`
 	YtIssueId           *string                        `json:"ytIssueId,omitempty"`
 	DashboardLink       *string                        `json:"dashboardLink,omitempty"`
+	Db                  *string                        `json:"db,omitempty"`
+	Table               *string                        `json:"table,omitempty"`
+	RunDate             *time.Time                     `json:"runDate,omitempty"`
 }
 
 type LlmAnalysisRun struct {
@@ -114,12 +118,12 @@ type LlmAnalysisRunPatch struct {
 	YtIssueId        *string           `json:"ytIssueId,omitempty"`
 }
 
-var sha1HexRegex = regexp.MustCompile(`^[a-fA-F0-9]{40}$`)
+var sha1HexRegex = regexp.MustCompile(`^[a-f0-9]{40}$`)
 
 func validateLlmGuiltyCommits(commits []string) error {
 	for i, c := range commits {
 		if !sha1HexRegex.MatchString(c) {
-			return fmt.Errorf("llmGuiltyCommits[%d] is not a 40-char hex SHA: %q", i, c)
+			return fmt.Errorf("llmGuiltyCommits[%d] is not a 40-char lowercase hex SHA: %q", i, c)
 		}
 	}
 	return nil
@@ -134,6 +138,15 @@ func CreatePostStartLlmAnalysis(metaDb *pgxpool.Pool) http.HandlerFunc {
 		if err != nil {
 			http.Error(writer, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
+		}
+
+		for field, value := range map[string]*string{"db": llmAnalysisRequest.Db, "table": llmAnalysisRequest.Table} {
+			if value != nil {
+				if err := sql_util.ValidateIdentifier(field, *value); err != nil {
+					http.Error(writer, err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
 		}
 
 		userEmail := request.Header.Get("X-Auth-Request-Email")
@@ -427,6 +440,10 @@ func CreatePatchLlmAnalysisRun(metaDb *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 		if patch.LlmGuiltyCommits != nil {
+			// stored lowercase, like build commits, so matching other analyses and builds can compare them as is
+			for i, c := range *patch.LlmGuiltyCommits {
+				(*patch.LlmGuiltyCommits)[i] = strings.ToLower(c)
+			}
 			if err := validateLlmGuiltyCommits(*patch.LlmGuiltyCommits); err != nil {
 				http.Error(writer, err.Error(), http.StatusBadRequest)
 				return
@@ -590,11 +607,11 @@ func insertLlmAnalysisRow(ctx context.Context, metaDb *pgxpool.Pool, params LLMA
 		userEmailArg = &userEmail
 	}
 	idRow := metaDb.QueryRow(ctx,
-		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id, dashboard_link) "+
-			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, created_at",
+		"INSERT INTO analyses (project, metric, current_build_id, prev_build_id, current_value, previous_value, user_name, user_email, first_commit_revision, last_commit_revision, test_method_name, yt_issue_id, dashboard_link, db_name, table_name, run_date) "+
+			"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id, created_at",
 		params.Project, params.Metric, params.CurrentBuildId,
 		params.PrevBuildId, params.CurrentValue, params.PreviousValue, params.UserName, userEmailArg,
-		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId, params.DashboardLink)
+		params.FirstCommitRevision, params.LastCommitRevision, params.TestMethodName, params.YtIssueId, params.DashboardLink, params.Db, params.Table, params.RunDate)
 	if err := idRow.Scan(&id, &createdAt); err != nil {
 		slog.Error("cannot execute insert analyses query", "error", err,
 			"project", params.Project, "metric", params.Metric)

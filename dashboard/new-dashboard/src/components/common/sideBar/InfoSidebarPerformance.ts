@@ -191,6 +191,7 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
     changesUrl,
     installerUrl,
     date: timeFormatWithoutSeconds.format(dateMs),
+    timestamp: dateMs,
     machineName: machineName as string,
     projectName,
     title: "Details",

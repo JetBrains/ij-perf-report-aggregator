@@ -32,7 +32,8 @@ import { FilterConfigurator } from "../../configurators/filter"
 
 /**
  * `rerunsQuery` marks a setting that post-processes the loaded data, so the query has to be re-run when it is flipped.
- * The other settings are observed where they are applied - `stdDevInterval` by the measure configurator, `fadeOnHover` by the chart itself.
+ * The other settings are observed where they are applied - `stdDevInterval` by the measure configurator, `fadeOnHover` by the chart itself,
+ * `similarDegradations` by the LLM analysis matches.
  */
 const settings: { setting: BooleanSetting; label: string; tooltip: string; rerunsQuery?: boolean }[] = [
   {
@@ -74,6 +75,11 @@ const settings: { setting: BooleanSetting; label: string; tooltip: string; rerun
     setting: "fadeOnHover",
     label: "Fade others on hover",
     tooltip: "Fade out other series when hovering over one",
+  },
+  {
+    setting: "similarDegradations",
+    label: "Similar degradations",
+    tooltip: "Show LLM analyses and detected degradations of other charts whose build contains the same guilty commit, in the point sidebar and the analysis details",
   },
 ]
 

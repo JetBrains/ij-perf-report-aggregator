@@ -27,11 +27,11 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   ) {
     dbTypeStore().setDbType(db, table)
     serverUrlObservable ??= injectOrError(serverUrlObservableKey)
+    serverUrlObservable.subscribe((url) => {
+      this._serverUrl = url
+    })
     this.observable = combineLatest([serverUrlObservable, getZstdObservable()])
-      [map](([url, _]) => {
-        this._serverUrl = url
-        return null
-      })
+      [map](() => null)
       [shareReplay](1)
   }
 

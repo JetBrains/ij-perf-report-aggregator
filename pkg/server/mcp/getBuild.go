@@ -2,12 +2,13 @@ package mcp
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/installer"
+	sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -220,7 +221,7 @@ func (s *service) getBuild(ctx context.Context, _ *sdk.CallToolRequest, in getBu
 // (nil, nil) means the build has no row there; an error means the question went unanswered, which the
 // caller must report rather than fold into "this build doesn't expose commits".
 func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID int64) ([]string, error) {
-	if err := validateIdentifier("database", db); err != nil {
+	if err := sql_util.ValidateIdentifier("database", db); err != nil {
 		return nil, err
 	}
 	sql := fmt.Sprintf(
@@ -247,23 +248,19 @@ func (s *service) fetchInstallerChanges(ctx context.Context, db string, buildID 
 // unambiguous in IntelliJ-sized repos while keeping LLM token cost low.
 const shortCommitLen = 12
 
-// commitRange returns the (oldest, newest) commit pair from an installer changes
-// array. The collector stores commits newest-first as base64 raw-std SHA-1 bytes;
-// we decode to hex and truncate. A non-base64 input is returned as-is so a future
-// format switch (e.g. raw hex) doesn't silently corrupt output.
+// commitRange returns the (oldest, newest) short commit pair from an installer changes array, which is newest-first.
+// A value that is not base64 is returned as is, so a switch of the stored format (e.g. to hex) shows up instead of
+// silently corrupting the output.
 func commitRange(changes []string) (string, string) {
 	if len(changes) == 0 {
 		return "", ""
 	}
-	decode := func(s string) string {
-		if s == "" {
-			return ""
+	short := func(change string) string {
+		commit, ok := installer.DecodeCommit(change)
+		if !ok {
+			return change
 		}
-		b, err := base64.RawStdEncoding.DecodeString(s)
-		if err != nil {
-			return s
-		}
-		return hex.EncodeToString(b)[:min(len(b)*2, shortCommitLen)]
+		return commit[:min(len(commit), shortCommitLen)]
 	}
-	return decode(changes[len(changes)-1]), decode(changes[0])
+	return short(changes[len(changes)-1]), short(changes[0])
 }

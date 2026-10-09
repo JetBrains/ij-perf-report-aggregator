@@ -1,4 +1,4 @@
-import { parseDuration, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { formatCustomRange, parseDuration, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 
 function getDateAgoByDuration(s: string): Date {
   const result = parseDuration(s)
@@ -27,12 +27,11 @@ export function getPersistentLink(url: string, timerangeConfigurator: TimeRangeC
     .replace(/([?&])timeRange=[^&]*&?/, "$1")
 
   if (timerangeConfigurator.value.value != "custom") {
-    const now = new Date()
-    const ago = getDateAgoByDuration(timerangeConfigurator.value.value)
-    const dayFrom = ago.getDate() >= 2 ? ago.getDate() - 1 : ago.getDate()
-    const dayTo = now.getDate() < 31 ? now.getDate() + 1 : now.getDate()
-    const filter = `${ago.getFullYear()}-${ago.getUTCMonth() + 1}-${dayFrom}:${now.getFullYear()}-${now.getUTCMonth() + 1}-${dayTo}`
-    url = url + "&timeRange=custom&customRange=" + filter
+    const from = getDateAgoByDuration(timerangeConfigurator.value.value)
+    from.setDate(from.getDate() - 1)
+    const to = new Date()
+    to.setDate(to.getDate() + 1)
+    url = url + "&timeRange=custom&customRange=" + formatCustomRange(from, to)
   } else {
     url = url + "&timeRange=custom&customRange=" + timerangeConfigurator.customRange.value
   }

@@ -203,9 +203,6 @@ enum ROUTES {
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
-  VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
-  VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
-  VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
   VcsIdeaDashboardDev = `${ROUTE_PREFIX.Vcs}/ideaDev`,
   VcsSpaceDashboardDev = `${ROUTE_PREFIX.Vcs}/spaceDev`,
   VcsStarterDashboardDev = `${ROUTE_PREFIX.Vcs}/starterDev`,
@@ -366,9 +363,6 @@ const IDEA: Product = {
         tab(ROUTES.VcsIdeaDashboardDev, "Performance dashboard idea project DevServer"),
         tab(ROUTES.VcsSpaceDashboardDev, "Performance dashboard space project DevServer"),
         tab(ROUTES.VcsStarterDashboardDev, "Performance dashboard starter project DevServer"),
-        tab(ROUTES.VcsIdeaDashboard, "Performance dashboard idea project (obsolete)"),
-        tab(ROUTES.VcsSpaceDashboard, "Performance dashboard space project (obsolete)"),
-        tab(ROUTES.VcsStarterDashboard, "Performance dashboard starter project (obsolete)"),
       ],
     },
     {
@@ -1069,9 +1063,6 @@ const vcsRoutes = [
   dashboard(ROUTES.VcsIdeaDashboardDev, () => import("./components/vcs/PerformanceDashboardDev.vue"), "Vcs Idea performance dashboard DevServer"),
   dashboard(ROUTES.VcsSpaceDashboardDev, () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"), "Vcs Space performance dashboard DevServer"),
   dashboard(ROUTES.VcsStarterDashboardDev, () => import("./components/vcs/PerformanceStarterDashboardDev.vue"), "Vcs Starer performance dashboard DevServer"),
-  dashboard(ROUTES.VcsIdeaDashboard, () => import("./components/vcs/PerformanceDashboard.vue"), "Vcs Idea performance dashboard (obsolete)"),
-  dashboard(ROUTES.VcsSpaceDashboard, () => import("./components/vcs/PerformanceSpaceDashboard.vue"), "Vcs Space performance dashboard (obsolete)"),
-  dashboard(ROUTES.VcsStarterDashboard, () => import("./components/vcs/PerformanceStarterDashboard.vue"), "Vcs Starer performance dashboard (obsolete)"),
 ]
 
 const datagripRoutes = [

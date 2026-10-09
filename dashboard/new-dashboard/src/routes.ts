@@ -239,6 +239,7 @@ enum ROUTES {
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
+  IJLightPluginLoadDashboard = `${ROUTE_PREFIX.IJLight}/pluginLoad`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -785,7 +786,7 @@ const IJ_LIGHT: Product = {
     {
       url: ROUTE_PREFIX.IJLight,
       label: "",
-      tabs: [tab(ROUTES.IJLightStartupDashboard, STARTUP_LABEL)],
+      tabs: [tab(ROUTES.IJLightStartupDashboard, STARTUP_LABEL), tab(ROUTES.IJLightPluginLoadDashboard, "Plugin Load")],
     },
   ],
 }
@@ -1182,6 +1183,7 @@ const ijLightRoutes = [
     { table: "idea", defaultProject: "JetBrains Light idea", projectFilter: "JetBrains Light", persistentId: "ijLight-startup-dashboard" },
     "IJ Light Startup dashboard"
   ),
+  dashboard(ROUTES.IJLightPluginLoadDashboard, () => import("./components/ijLight/PluginLoadDashboard.vue"), "IJ Light Plugin Load dashboard"),
 ]
 
 export function getNewDashboardRoutes(): ParentRouteRecord[] {

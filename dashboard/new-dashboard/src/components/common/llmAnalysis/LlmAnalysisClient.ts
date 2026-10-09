@@ -158,7 +158,10 @@ export class LlmAnalysisClient {
 
   // degradations are checked against TeamCity and take seconds, so they are requested separately
   // db and table of the analysed chart let the backend resolve the machine of each degradation build
-  async getMatches(query: { buildId: string } | { analysisId: string; degradations?: "true"; db?: string; table?: string }): Promise<LlmAnalysisMatches> {
+  // project, metric and currentBuildId of the point's chart exclude its own analyses
+  async getMatches(
+    query: { buildId: string; project?: string; metric?: string; currentBuildId?: string } | { analysisId: string; degradations?: "true"; db?: string; table?: string }
+  ): Promise<LlmAnalysisMatches> {
     const params = new URLSearchParams(Object.entries(query).filter((entry): entry is [string, string] => entry[1] != null))
     const url = `${this.serverConfigurator?.serverUrl}/api/meta/llm/analyses/matches?${params.toString()}`
     const response = await fetch(url)

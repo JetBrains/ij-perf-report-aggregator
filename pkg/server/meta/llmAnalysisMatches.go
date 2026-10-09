@@ -96,7 +96,8 @@ type BuildStore interface {
 }
 
 // CreateGetLlmAnalysisMatches finds analyses that blamed a commit which could also explain another degradation.
-// With buildId, the commits are the ones of that build (a chart point not analysed yet).
+// With buildId, the commits are the ones of that build (a chart point not analysed yet); project, metric and
+// currentBuildId name the point's chart, whose own analyses are skipped as the point lists them as its runs.
 // With analysisId, they are the guilty commits of that analysis (other charts that commit was blamed for); with
 // degradations=true, detected regressions of other charts at builds containing them are returned instead.
 func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.HandlerFunc {
@@ -117,6 +118,7 @@ func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.H
 			}
 			commits = buildCommits
 			result.RangeSize = len(buildCommits)
+			analysis = analysisRef{project: query.Get("project"), metric: query.Get("metric"), currentBuildId: query.Get("currentBuildId")}
 		case query.Get("analysisId") != "":
 			id, err := strconv.Atoi(query.Get("analysisId"))
 			if err != nil || id <= 0 {
@@ -164,7 +166,7 @@ func CreateGetLlmAnalysisMatches(metaDb *pgxpool.Pool, builds BuildStore) http.H
 	}
 }
 
-// findAnalysisMatches skips the analysis excludeId and other runs on its chart and build, they are not other charts
+// findAnalysisMatches skips the analysis excludeId and the runs on the exclude chart and build, they are not other charts
 func findAnalysisMatches(ctx context.Context, metaDb *pgxpool.Pool, commits []string, excludeId int, exclude analysisRef) ([]LlmAnalysisMatch, error) {
 	const sql = "SELECT id, created_at, project, metric, current_build_id, yt_issue_id, dashboard_link, " +
 		"ARRAY(SELECT unnest(llm_guilty_commits::text[]) INTERSECT SELECT unnest($1::text[])) " +

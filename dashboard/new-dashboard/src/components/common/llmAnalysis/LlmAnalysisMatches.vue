@@ -174,7 +174,7 @@ const {
   title,
   buildId,
   analysisId,
-  exclude,
+  chart,
   chartLink,
   collapsed = false,
 } = defineProps<{
@@ -185,8 +185,8 @@ const {
   chartLink?: string
   buildId?: number | null
   analysisId?: number | string | null
-  // hides the analyses of the point itself, they are already listed as its runs
-  exclude?: { project: string; metric?: string; currentBuildId: string }
+  // the point's own chart (buildId mode): its analyses are not matches, the point already lists them as its runs
+  chart?: { project: string; metric?: string; currentBuildId: string }
 }>()
 
 const client = new LlmAnalysisClient(injectOrNull(serverConfiguratorKey))
@@ -212,11 +212,7 @@ const strongest = computed(() => degradationGroups.value.groups.flatMap((g) => g
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`
 const shortCommits = (commits: string[]) => commits.map((c) => c.slice(0, 10)).join(", ")
 
-const items = computed(() =>
-  matches.value
-    .filter((m) => exclude == null || m.project !== exclude.project || m.metric !== exclude.metric || m.currentBuildId !== exclude.currentBuildId)
-    .toSorted((a, b) => Number(isSameProduct(b)) - Number(isSameProduct(a)))
-)
+const items = computed(() => matches.value.toSorted((a, b) => Number(isSameProduct(b)) - Number(isSameProduct(a))))
 
 function analysisLink(dashboardLink: string, id: number): string {
   const url = new URL(dashboardLink, globalThis.location.origin)
@@ -282,7 +278,7 @@ watch(
     if (!similarDegradations.value || (buildId == null && analysisId == null)) return
     const isCurrent = () => similarDegradations.value && requested[0] === buildId && requested[1] === analysisId
     // independent requests: degradations take longer, and either one failing must not hide the other list
-    const loadMatches = client.getMatches(buildId == null ? { analysisId: String(analysisId) } : { buildId: String(buildId) }).then((result) => {
+    const loadMatches = client.getMatches(buildId == null ? { analysisId: String(analysisId) } : { buildId: String(buildId), ...chart }).then((result) => {
       if (!isCurrent()) return
       matches.value = result.matches
       rangeSize.value = result.rangeSize

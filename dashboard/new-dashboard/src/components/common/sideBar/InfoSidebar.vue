@@ -251,7 +251,7 @@
         v-if="data"
         title="Possibly explained by"
         :build-id="data.installerId ?? data.buildId"
-        :exclude="{ project: data.projectName, metric: data.series[0]?.metricName, currentBuildId: String(data.buildId) }"
+        :chart="{ project: data.projectName, metric: data.series[0]?.metricName, currentBuildId: String(data.buildId) }"
       />
 
       <div class="flex gap-5 text-base text-primary dark:text-primary-dark">

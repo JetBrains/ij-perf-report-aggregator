@@ -6,8 +6,9 @@ import PrimeVue from "openvue/config"
 import ToastService from "openvue/toastservice"
 import Tooltip from "openvue/tooltip"
 import { createApp } from "vue"
+import { SCROLL_RESTORATION_CAPTURE_DEFAULT, ScrollRestoration } from "vue-router/experimental"
 import App from "./App.vue"
-import { createAndConfigureRouter } from "./route"
+import { createAndConfigureRouter, restoreScroll } from "./route"
 // get rid of color.png
 // avoid tiff/svg/other deprecated stuff in a final build
 import "../theme/primeicons.css"
@@ -24,6 +25,7 @@ async function initApp() {
   const app = createApp(App)
   const router = createAndConfigureRouter()
   const pinia = createPinia()
+  app.use(ScrollRestoration, { router, capture: SCROLL_RESTORATION_CAPTURE_DEFAULT, restore: restoreScroll })
   app.use(router)
   app.use(PrimeVue, {
     theme: {

@@ -1,7 +1,8 @@
 import { ParentRouteRecord } from "new-dashboard/src/components/common/route"
 import { getNewDashboardRoutes } from "new-dashboard/src/routes"
 import { nextTick } from "vue"
-import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
+import { createRouter, createWebHistory, RouteLocationNormalized, Router, RouteRecordRaw } from "vue-router"
+import { SCROLL_RESTORATION_RESTORE_DEFAULT, ScrollRestorationSessionEntry } from "vue-router/experimental"
 
 function addRoutes(routes: ParentRouteRecord[], result: RouteRecordRaw[]) {
   for (const route of routes) {
@@ -27,25 +28,6 @@ export function createAndConfigureRouter(): Router {
   const router = createRouter({
     history: createWebHistory("/"),
     routes,
-    scrollBehavior(to, from, savedPosition) {
-      if (to.hash) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            const element = document.querySelector(to.hash)
-            const yOffset = -60 // Adjust this value as needed for your fixed header or other elements
-            const y = (element?.getBoundingClientRect().top ?? 0) + window.scrollY + yOffset
-            resolve({ top: y, behavior: "smooth" })
-          }, 600)
-        })
-      }
-      if (savedPosition) {
-        return savedPosition
-      }
-      if (to.path !== from.path) {
-        return { left: 0, top: 0 }
-      }
-      return false
-    },
   })
   router.afterEach((to, _from) => {
     void nextTick(() => {
@@ -53,4 +35,20 @@ export function createAndConfigureRouter(): Router {
     })
   })
   return router
+}
+
+export function restoreScroll(entry: ScrollRestorationSessionEntry | null | undefined, to: RouteLocationNormalized) {
+  if (to.hash) {
+    setTimeout(() => {
+      const element = document.querySelector(to.hash)
+      const yOffset = -60 // Adjust this value as needed for your fixed header or other elements
+      const y = (element?.getBoundingClientRect().top ?? 0) + window.scrollY + yOffset
+      window.scrollTo({ top: y, behavior: "smooth" })
+    }, 600)
+    return
+  }
+  // restore runs from App.vue (outside RouterView) before the new route renders, so wait for it
+  void nextTick(() => {
+    SCROLL_RESTORATION_RESTORE_DEFAULT(entry, to)
+  })
 }

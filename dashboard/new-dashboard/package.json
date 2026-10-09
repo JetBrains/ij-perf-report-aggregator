@@ -15,7 +15,7 @@
     "pragmastat": "^14.0.1",
     "rxjs": "9.0.0-beta.0",
     "vue": "^3.5.43",
-    "vue-router": "^5.3.1"
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4"

@@ -41,6 +41,7 @@ import { filter } from "rxjs/filter"
 import { shareReplay } from "rxjs/share-replay"
 import { provide, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
+import { useScrollRestoration } from "vue-router/experimental"
 
 const serverUrl = shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
@@ -48,6 +49,8 @@ const serverUrlObservable = refToObservable(serverUrl)
   [filter]((it: string | null): it is string => it !== null && it.length > 0)
   [shareReplay](1)
 provide(serverUrlObservableKey, serverUrlObservable)
+
+useScrollRestoration()
 
 const activePath = shallowRef("")
 const _route = useRoute()

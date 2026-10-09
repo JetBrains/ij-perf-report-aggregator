@@ -110,6 +110,16 @@ func newTestService(db chConn, tables []tableRef) *service {
 	return s
 }
 
+// newTestClient queues results on a fresh fakeDriver and connects a client to a service seeded with tables.
+func newTestClient(t *testing.T, tables []tableRef, results ...fakeQueryResult) *sdk.ClientSession {
+	t.Helper()
+	db := &fakeDriver{}
+	for _, r := range results {
+		db.push(r)
+	}
+	return connectClient(t, newTestService(db, tables))
+}
+
 // connectClient builds an in-memory MCP server from svc, connects a fresh client,
 // and returns the client session for use in `cs.CallTool(...)`.
 func connectClient(t *testing.T, svc *service) *sdk.ClientSession {

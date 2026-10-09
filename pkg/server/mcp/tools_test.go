@@ -12,6 +12,13 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+var (
+	// anyTable seeds the cache for tests that fail before any table is consulted.
+	anyTable  = tableRef{Database: "d", Table: "t"}
+	devIde    = tableRef{Database: "perfintDev", Table: "ide"}
+	devKotlin = tableRef{Database: "perfintDev", Table: "kotlin"}
+)
+
 // callTool invokes the named MCP tool with the given args, decoding StructuredContent into out.
 // Fails the test on transport errors. Returns the raw result so callers can also assert on IsError/Content.
 func callTool(t *testing.T, cs *sdk.ClientSession, name string, args map[string]any, out any) *sdk.CallToolResult {
@@ -32,6 +39,14 @@ func callTool(t *testing.T, cs *sdk.ClientSession, name string, args map[string]
 	return res
 }
 
+// callToolOK is callTool that also fails the test when the tool reports IsError.
+func callToolOK(t *testing.T, cs *sdk.ClientSession, name string, args map[string]any, out any) {
+	t.Helper()
+	if res := callTool(t, cs, name, args, out); res.IsError {
+		t.Fatalf("unexpected error: %s", errorText(t, res))
+	}
+}
+
 // errorText returns the concatenated text content of a tool result reported with IsError=true.
 func errorText(t *testing.T, res *sdk.CallToolResult) string {
 	t.Helper()
@@ -47,12 +62,28 @@ func errorText(t *testing.T, res *sdk.CallToolResult) string {
 	return sb.String()
 }
 
+func joinNotes(notes []string) string {
+	return strings.Join(notes, " | ")
+}
+
+// noCommitsBuildRow is a get_build union row with no build components and no installer commits,
+// so the fallback installer lookup runs. Fields per getBuild SQL:
+// db_name, table_name, project_name, branch_name, machine_name, bld_time,
+// bc1, bc2, bc3, inst_id, installer_changes
+func noCommitsBuildRow(database, table, buildTime string, installerID uint32) []any {
+	return []any{database, table, "kotlin-proj", "master", "linux", buildTime, uint16(0), uint16(0), uint16(0), installerID, []string{}}
+}
+
+// devServerValueRow is a perfintDev.ide search_metric_values row without build components (a Dev Server build).
+func devServerValueRow(genTime string, buildID uint32, value float64) []any {
+	return []any{"perfintDev", "ide", genTime, buildID, value, uint16(0), uint16(0), uint16(0), uint32(0)}
+}
+
 // --- list_projects -------------------------------------------------------------------
 
 func TestListProjects_HappyPath(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		rows: [][]any{
 			{"perfintDev", "ide", "kotlin"},
 			{"perfintDev", "ide", "spring"},
@@ -77,14 +108,8 @@ func TestListProjects_HappyPath(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
-
 	var out listProjectsOutput
-	res := callTool(t, cs, "list_projects", map[string]any{"branch": "master"}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "list_projects", map[string]any{"branch": "master"}, &out)
 	if out.Count != 2 || len(out.Rows) != 2 {
 		t.Fatalf("count=%d rows=%v", out.Count, out.Rows)
 	}
@@ -95,8 +120,7 @@ func TestListProjects_HappyPath(t *testing.T) {
 
 func TestListProjects_BranchDefaultsToMaster(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{anyTable}, fakeQueryResult{
 		verify: func(_ string, args []any) error {
 			if !slices.Contains(args, "master") {
 				return errors.New("expected branch=master to appear in args")
@@ -105,22 +129,15 @@ func TestListProjects_BranchDefaultsToMaster(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "d", Table: "t"}})
-	cs := connectClient(t, svc)
-
 	var out listProjectsOutput
-	res := callTool(t, cs, "list_projects", map[string]any{}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "list_projects", map[string]any{}, &out)
 }
 
 // --- search_metric_names -------------------------------------------------------------
 
 func TestSearchMetricNames_RequiresProject(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "d", Table: "t"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{anyTable})
 
 	// Missing key → SDK-level schema validation rejects it before the handler runs.
 	res := callTool(t, cs, "search_metric_names", map[string]any{}, nil)
@@ -137,8 +154,7 @@ func TestSearchMetricNames_RequiresProject(t *testing.T) {
 
 func TestSearchMetricNames_AppliesFilters(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		rows: [][]any{{"perfintDev", "ide", "startup_total"}},
 		verify: func(sql string, args []any) error {
 			if !strings.Contains(sql, "metric_name like ?") {
@@ -154,17 +170,11 @@ func TestSearchMetricNames_AppliesFilters(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
-
 	var out searchMetricNamesOutput
-	res := callTool(t, cs, "search_metric_names", map[string]any{
+	callToolOK(t, cs, "search_metric_names", map[string]any{
 		"project":      "kotlin",
 		"name_pattern": "startup%",
 	}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
 	if out.Count != 1 || out.Rows[0].Name != "startup_total" {
 		t.Errorf("unexpected output: %+v", out)
 	}
@@ -174,8 +184,7 @@ func TestSearchMetricNames_AppliesFilters(t *testing.T) {
 
 func TestSearchMetricValues_RequiresProjectAndMetric(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "d", Table: "t"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{anyTable})
 
 	// Empty values → handler's manual check fires (schema only enforces presence).
 	res := callTool(t, cs, "search_metric_values", map[string]any{"project": "", "metric_name": "x"}, nil)
@@ -191,9 +200,8 @@ func TestSearchMetricValues_RequiresProjectAndMetric(t *testing.T) {
 
 func TestSearchMetricValues_GroupsByDatabaseTable(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
 	// Rows arrive ordered by gen_time desc; groups are formed in arrival order.
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde, devKotlin}, fakeQueryResult{
 		rows: [][]any{
 			{"perfintDev", "ide", "2026-05-01 10:00:00", uint32(1001), 12.5, uint16(261), uint16(27258), uint16(48), uint32(777)},
 			{"perfintDev", "ide", "2026-05-01 09:00:00", uint32(1000), 12.0, uint16(261), uint16(27258), uint16(48), uint32(777)},
@@ -202,20 +210,11 @@ func TestSearchMetricValues_GroupsByDatabaseTable(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{
-		{Database: "perfintDev", Table: "ide"},
-		{Database: "perfintDev", Table: "kotlin"},
-	})
-	cs := connectClient(t, svc)
-
 	var out searchMetricValuesOutput
-	res := callTool(t, cs, "search_metric_values", map[string]any{
+	callToolOK(t, cs, "search_metric_values", map[string]any{
 		"project":     "kotlin",
 		"metric_name": "startup_total",
 	}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
 	if out.Count != 3 {
 		t.Errorf("count = %d, want 3", out.Count)
 	}
@@ -243,8 +242,7 @@ func TestSearchMetricValues_GroupsByDatabaseTable(t *testing.T) {
 
 func TestGetBuild_RequiresPositiveID(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "d", Table: "t"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{anyTable})
 
 	for _, id := range []int{0, -1} {
 		res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": id}, nil)
@@ -262,11 +260,8 @@ func TestGetBuild_HappyPath_WithInstallerCommits(t *testing.T) {
 	newestEnc := encodeSHA1(t, newestSHA)
 	oldestEnc := encodeSHA1(t, oldestSHA)
 
-	db := &fakeDriver{}
-	// Single row from the union; fields per getBuild SQL:
-	// db_name, table_name, project_name, branch_name, machine_name, bld_time,
-	// bc1, bc2, bc3, inst_id, installer_changes
-	db.push(fakeQueryResult{
+	// Rows from the union; fields as in noCommitsBuildRow.
+	cs := newTestClient(t, []tableRef{{Database: "perfintDev", Table: "ide", HasBuildTime: true, HasInstallerID: true, HasBuildComponents: true}}, fakeQueryResult{
 		rows: [][]any{
 			{"perfintDev", "ide", "kotlin", "master", "linux-hetzner-1", "2026-05-01 10:00:00", uint16(261), uint16(27258), uint16(48), uint32(777), []string{newestEnc, oldestEnc}},
 			// duplicate (db,table,project) — should be deduped.
@@ -275,14 +270,8 @@ func TestGetBuild_HappyPath_WithInstallerCommits(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide", HasBuildTime: true, HasInstallerID: true, HasBuildComponents: true}})
-	cs := connectClient(t, svc)
-
 	var out getBuildOutput
-	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 12345}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "get_build", map[string]any{"tc_build_id": 12345}, &out)
 	if out.BuildID != 12345 {
 		t.Errorf("BuildID = %d", out.BuildID)
 	}
@@ -315,27 +304,16 @@ func TestGetBuild_InstallerFallback(t *testing.T) {
 	const fallbackSHA = "abcdef1234567890abcdef1234567890abcdef12"
 	fallbackEnc := encodeSHA1(t, fallbackSHA)
 
-	db := &fakeDriver{}
-	// First call: union query returns one row but with no installer_changes (table has no installer column).
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
-		},
-	})
-	// Second call: the fallback `select ... from perfintDev.installer where id = ?` lookup.
-	db.push(fakeQueryResult{
-		rows: [][]any{{[]string{fallbackEnc}}},
-	})
-
 	// Note HasInstallerID=false so the SQL doesn't try to join installer in the union.
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "kotlin"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devKotlin},
+		// First call: union query returns one row but with no installer_changes (table has no installer column).
+		fakeQueryResult{rows: [][]any{noCommitsBuildRow("perfintDev", "kotlin", "2026-05-01 10:00:00", 0)}},
+		// Second call: the fallback `select ... from perfintDev.installer where id = ?` lookup.
+		fakeQueryResult{rows: [][]any{{[]string{fallbackEnc}}}},
+	)
 
 	var out getBuildOutput
-	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
 	if out.FirstCommit != fallbackSHA[:shortCommitLen] || out.LastCommit != fallbackSHA[:shortCommitLen] {
 		t.Errorf("fallback commits not applied: first=%q last=%q", out.FirstCommit, out.LastCommit)
 	}
@@ -353,11 +331,7 @@ func TestGetBuild_InstallerFallback(t *testing.T) {
 
 func TestGetBuild_UnknownBuildIsError(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{}})
 
 	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 4242}, nil)
 	msg := errorText(t, res)
@@ -368,53 +342,36 @@ func TestGetBuild_UnknownBuildIsError(t *testing.T) {
 
 func TestGetBuild_FailedCommitLookupIsReportedNotSwallowed(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	// A row with no installer commits, so the fallback lookup runs...
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
-		},
-	})
-	// ...and fails. That must not read as "this build has no commits".
-	db.push(fakeQueryResult{queryErr: errors.New("clickhouse: table installer doesn't exist")})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "kotlin"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devKotlin},
+		// A row with no installer commits, so the fallback lookup runs...
+		fakeQueryResult{rows: [][]any{noCommitsBuildRow("perfintDev", "kotlin", "2026-05-01 10:00:00", 0)}},
+		// ...and fails. That must not read as "this build has no commits".
+		fakeQueryResult{queryErr: errors.New("clickhouse: table installer doesn't exist")},
+	)
 
 	var out getBuildOutput
-	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
 	if out.FirstCommit != "" {
 		t.Errorf("first_commit = %q, want empty", out.FirstCommit)
 	}
-	joined := strings.Join(out.Notes, " | ")
-	if !strings.Contains(joined, "unknown, not absent") {
+	if joined := joinNotes(out.Notes); !strings.Contains(joined, "unknown, not absent") {
 		t.Errorf("a failed commit lookup must be reported in notes, got %q", joined)
 	}
 }
 
 func TestGetBuild_FallbackFailureBeforeSuccessDoesNotLeaveWarning(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
-			{"perfint", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 09:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
-		},
-	})
-	db.push(fakeQueryResult{queryErr: errors.New("installer lookup failed")})
-	db.push(fakeQueryResult{rows: [][]any{{[]string{"newest-commit", "oldest-commit"}}}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "kotlin"}, {Database: "perfint", Table: "kotlin"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devKotlin, {Database: "perfint", Table: "kotlin"}},
+		fakeQueryResult{rows: [][]any{
+			noCommitsBuildRow("perfintDev", "kotlin", "2026-05-01 10:00:00", 0),
+			noCommitsBuildRow("perfint", "kotlin", "2026-05-01 09:00:00", 0),
+		}},
+		fakeQueryResult{queryErr: errors.New("installer lookup failed")},
+		fakeQueryResult{rows: [][]any{{[]string{"newest-commit", "oldest-commit"}}}},
+	)
 
 	var out getBuildOutput
-	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
 	if out.FirstCommit != "oldest-commit" || out.LastCommit != "newest-commit" {
 		t.Fatalf("unexpected commit range: first=%q last=%q", out.FirstCommit, out.LastCommit)
 	}
@@ -425,26 +382,17 @@ func TestGetBuild_FallbackFailureBeforeSuccessDoesNotLeaveWarning(t *testing.T) 
 
 func TestGetBuild_LinkedInstallerWithoutCommitsIsNoted(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "ide", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(777), []string{}},
-		},
-	})
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide", HasInstallerID: true}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{{Database: "perfintDev", Table: "ide", HasInstallerID: true}},
+		fakeQueryResult{rows: [][]any{noCommitsBuildRow("perfintDev", "ide", "2026-05-01 10:00:00", 777)}},
+		fakeQueryResult{rows: [][]any{}},
+	)
 
 	var out getBuildOutput
-	res := callTool(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
 	if out.InstallerBuildID != 777 || out.FirstCommit != "" || out.LastCommit != "" {
 		t.Fatalf("unexpected installer metadata: %+v", out)
 	}
-	joined := strings.Join(out.Notes, " | ")
+	joined := joinNotes(out.Notes)
 	if !strings.Contains(joined, "no commit range available") || !strings.Contains(joined, "links installer 777") || strings.Contains(joined, "links no installer") {
 		t.Errorf("missing commits must not imply an absent installer link, got %q", joined)
 	}
@@ -452,32 +400,22 @@ func TestGetBuild_LinkedInstallerWithoutCommitsIsNoted(t *testing.T) {
 
 func TestGetBuild_NoInstallerIsNoted(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "kotlin", "kotlin-proj", "master", "linux", "2026-05-01 10:00:00", uint16(0), uint16(0), uint16(0), uint32(0), []string{}},
-		},
-	})
-	// The fallback finds no installer row: legitimately absent, but the caller must still be told.
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "kotlin"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devKotlin},
+		fakeQueryResult{rows: [][]any{noCommitsBuildRow("perfintDev", "kotlin", "2026-05-01 10:00:00", 0)}},
+		// The fallback finds no installer row: legitimately absent, but the caller must still be told.
+		fakeQueryResult{rows: [][]any{}},
+	)
 
 	var out getBuildOutput
 	callTool(t, cs, "get_build", map[string]any{"tc_build_id": 999}, &out)
-	if !strings.Contains(strings.Join(out.Notes, " | "), "links no installer") {
+	if !strings.Contains(joinNotes(out.Notes), "links no installer") {
 		t.Errorf("an empty commit range must be explained, got notes %v", out.Notes)
 	}
 }
 
 func TestSearchMetricValues_EmptyResultExplainsItself(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{}})
 
 	var out searchMetricValuesOutput
 	callTool(t, cs, "search_metric_values", map[string]any{
@@ -487,7 +425,7 @@ func TestSearchMetricValues_EmptyResultExplainsItself(t *testing.T) {
 	if out.Count != 0 || len(out.Notes) == 0 {
 		t.Fatalf("empty result must carry notes: %+v", out)
 	}
-	joined := strings.Join(out.Notes, " | ")
+	joined := joinNotes(out.Notes)
 	for _, want := range []string{`metric_name="typo_total"`, "perfintDev.ide", "search_metric_names"} {
 		if !strings.Contains(joined, want) {
 			t.Errorf("notes %q missing %q", joined, want)
@@ -497,8 +435,7 @@ func TestSearchMetricValues_EmptyResultExplainsItself(t *testing.T) {
 
 func TestSearchMetricValues_EmptyResultIncludesMachineFilter(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		verify: func(sql string, args []any) error {
 			if !strings.Contains(sql, "and machine like ?") || !slices.Contains(args, "no-such-machine%") {
 				return errors.New("expected machine filter in query")
@@ -507,35 +444,20 @@ func TestSearchMetricValues_EmptyResultIncludesMachineFilter(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
-
 	var out searchMetricValuesOutput
-	res := callTool(t, cs, "search_metric_values", map[string]any{
+	callToolOK(t, cs, "search_metric_values", map[string]any{
 		"project":     "kotlin",
 		"metric_name": "startup_total",
 		"machine":     "no-such-machine%",
 	}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
-	joined := strings.Join(out.Notes, " | ")
-	if out.Count != 0 || !strings.Contains(joined, `machine="no-such-machine%"`) {
+	if out.Count != 0 || !strings.Contains(joinNotes(out.Notes), `machine="no-such-machine%"`) {
 		t.Errorf("empty result must include the machine filter, got %+v", out)
 	}
 }
 
 func TestSearchMetricValues_LimitHitIsNoted(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
-		rows: [][]any{
-			{"perfintDev", "ide", "2026-05-01 10:00:00", uint32(1001), 12.5, uint16(0), uint16(0), uint16(0), uint32(0)},
-		},
-	})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{devServerValueRow("2026-05-01 10:00:00", 1001, 12.5)}})
 
 	var out searchMetricValuesOutput
 	callTool(t, cs, "search_metric_values", map[string]any{
@@ -543,7 +465,7 @@ func TestSearchMetricValues_LimitHitIsNoted(t *testing.T) {
 		"metric_name": "startup_total",
 		"limit":       1,
 	}, &out)
-	if !strings.Contains(strings.Join(out.Notes, " | "), "TRUNCATED at limit=1") {
+	if !strings.Contains(joinNotes(out.Notes), "TRUNCATED at limit=1") {
 		t.Errorf("a limit-sized answer must warn it is partial, got notes %v", out.Notes)
 	}
 }
@@ -553,17 +475,13 @@ func TestSearchMetricValues_LimitHitIsNoted(t *testing.T) {
 // "long-run baseline" from a window that may lie entirely after the change under investigation.
 func TestSearchMetricValues_TruncatedWindowNamesWhatIsMissing(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", "2026-09-09 03:50:53", uint32(1002), 121.0, uint16(0), uint16(0), uint16(0), uint32(0)},
-			{"perfintDev", "ide", "2026-09-07 10:00:00", uint32(1001), 378.0, uint16(0), uint16(0), uint16(0), uint32(0)},
-			{"perfintDev", "ide", "2026-09-03 20:44:26", uint32(1000), 96.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+			devServerValueRow("2026-09-09 03:50:53", 1002, 121.0),
+			devServerValueRow("2026-09-07 10:00:00", 1001, 378.0),
+			devServerValueRow("2026-09-03 20:44:26", 1000, 96.0),
 		},
 	})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
 
 	var out searchMetricValuesOutput
 	callTool(t, cs, "search_metric_values", map[string]any{
@@ -576,7 +494,7 @@ func TestSearchMetricValues_TruncatedWindowNamesWhatIsMissing(t *testing.T) {
 	if want := "2026-09-03..2026-09-09 (7 of 90 requested days)"; out.Covered != want {
 		t.Errorf("covered = %q, want %q", out.Covered, want)
 	}
-	notes := strings.Join(out.Notes, " | ")
+	notes := joinNotes(out.Notes)
 	for _, want := range []string{"TRUNCATED at limit=3", "2026-09-03..2026-09-09", "older data exists", `aggregate="daily"`} {
 		if !strings.Contains(notes, want) {
 			t.Errorf("truncation note missing %q, got %v", want, out.Notes)
@@ -586,16 +504,12 @@ func TestSearchMetricValues_TruncatedWindowNamesWhatIsMissing(t *testing.T) {
 
 func TestSearchMetricValues_UntruncatedAnswerStillReportsItsSpan(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", "2026-09-09 03:50:53", uint32(1001), 121.0, uint16(0), uint16(0), uint16(0), uint32(0)},
-			{"perfintDev", "ide", "2026-09-08 03:50:53", uint32(1000), 378.0, uint16(0), uint16(0), uint16(0), uint32(0)},
+			devServerValueRow("2026-09-09 03:50:53", 1001, 121.0),
+			devServerValueRow("2026-09-08 03:50:53", 1000, 378.0),
 		},
 	})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
 
 	var out searchMetricValuesOutput
 	callTool(t, cs, "search_metric_values", map[string]any{
@@ -608,7 +522,7 @@ func TestSearchMetricValues_UntruncatedAnswerStillReportsItsSpan(t *testing.T) {
 	if want := "2026-09-08..2026-09-09 (2 of 30 requested days)"; out.Covered != want {
 		t.Errorf("covered = %q, want %q", out.Covered, want)
 	}
-	if strings.Contains(strings.Join(out.Notes, " | "), "TRUNCATED") {
+	if strings.Contains(joinNotes(out.Notes), "TRUNCATED") {
 		t.Errorf("a complete answer must not claim truncation, got notes %v", out.Notes)
 	}
 }
@@ -621,16 +535,12 @@ func TestSearchMetricValues_UntruncatedAnswerStillReportsItsSpan(t *testing.T) {
 // something that reads as a bug.
 func TestSearchMetricValues_FullWindowIsNotReportedAsOverflow(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		rows: [][]any{
 			{"perfintDev", "ide", "2026-09-09", uint32(5), 378.0, 121.0, 483.0},
 			{"perfintDev", "ide", "2026-07-11", uint32(9), 221.0, 215.0, 543.0},
 		},
 	})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
 
 	var out searchMetricValuesOutput
 	callTool(t, cs, "search_metric_values", map[string]any{
@@ -647,8 +557,7 @@ func TestSearchMetricValues_FullWindowIsNotReportedAsOverflow(t *testing.T) {
 
 func TestSearchMetricValues_DailyAggregate(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{
 		verify: func(sql string, _ []any) error {
 			for _, want := range []string{"toDate(gen_time)", "quantileExact(0.5)(value)", "select distinct", "group by db_name, table_name, day"} {
 				if !strings.Contains(sql, want) {
@@ -664,19 +573,13 @@ func TestSearchMetricValues_DailyAggregate(t *testing.T) {
 		},
 	})
 
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
-
 	var out searchMetricValuesOutput
-	res := callTool(t, cs, "search_metric_values", map[string]any{
+	callToolOK(t, cs, "search_metric_values", map[string]any{
 		"project":     "spring_boot/showIntentions",
 		"metric_name": "test#max_awt_delay",
 		"days":        60,
 		"aggregate":   "daily",
 	}, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
 	if out.Count != 3 || len(out.Groups) != 1 {
 		t.Fatalf("count/groups = %d/%d, want 3/1", out.Count, len(out.Groups))
 	}
@@ -698,8 +601,7 @@ func TestSearchMetricValues_DailyAggregate(t *testing.T) {
 
 func TestSearchMetricValues_RejectsUnknownAggregate(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde})
 
 	res := callTool(t, cs, "search_metric_values", map[string]any{
 		"project":     "kotlin",
@@ -713,15 +615,11 @@ func TestSearchMetricValues_RejectsUnknownAggregate(t *testing.T) {
 
 func TestListProjects_EmptyResultExplainsItself(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{}})
 
 	var out listProjectsOutput
 	callTool(t, cs, "list_projects", map[string]any{"machine": "no-such-machine%"}, &out)
-	joined := strings.Join(out.Notes, " | ")
+	joined := joinNotes(out.Notes)
 	if !strings.Contains(joined, "no project matched") || !strings.Contains(joined, "no-such-machine%") {
 		t.Errorf("notes must name the filters that matched nothing, got %q", joined)
 	}
@@ -729,15 +627,11 @@ func TestListProjects_EmptyResultExplainsItself(t *testing.T) {
 
 func TestSearchMetricNames_EmptyResultExplainsItself(t *testing.T) {
 	t.Parallel()
-	db := &fakeDriver{}
-	db.push(fakeQueryResult{rows: [][]any{}})
-
-	svc := newTestService(db, []tableRef{{Database: "perfintDev", Table: "ide"}})
-	cs := connectClient(t, svc)
+	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{}})
 
 	var out searchMetricNamesOutput
 	callTool(t, cs, "search_metric_names", map[string]any{"project": "no-such-project"}, &out)
-	joined := strings.Join(out.Notes, " | ")
+	joined := joinNotes(out.Notes)
 	if !strings.Contains(joined, "no metric name matched") || !strings.Contains(joined, "list_projects") {
 		t.Errorf("notes must name the filters and the way to check them, got %q", joined)
 	}
@@ -750,17 +644,11 @@ func TestListTablesTool_UsesCache(t *testing.T) {
 	db := &fakeDriver{}
 	// No expectations queued: any query would fail. This proves the cache is hit.
 
-	svc := newTestService(db, []tableRef{
-		{Database: "perfintDev", Table: "ide"},
-		{Database: "perfintDev", Table: "kotlin"},
-	})
+	svc := newTestService(db, []tableRef{devIde, devKotlin})
 	cs := connectClient(t, svc)
 
 	var out listTablesOutput
-	res := callTool(t, cs, "list_tables", nil, &out)
-	if res.IsError {
-		t.Fatalf("unexpected error: %s", errorText(t, res))
-	}
+	callToolOK(t, cs, "list_tables", nil, &out)
 	if out.Count != 2 {
 		t.Errorf("count = %d", out.Count)
 	}
@@ -808,7 +696,7 @@ func TestListTables_RefreshesAfterTTL(t *testing.T) {
 
 func TestResolveTables_RejectsInvalidIdentifier(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "d", Table: "t"}})
+	svc := newTestService(&fakeDriver{}, []tableRef{anyTable})
 
 	if _, err := svc.resolveTables(t.Context(), "ok; drop", ""); err == nil {
 		t.Errorf("expected validation error for bad database identifier")
@@ -820,7 +708,7 @@ func TestResolveTables_RejectsInvalidIdentifier(t *testing.T) {
 
 func TestResolveTables_NoMatch(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{{Database: "perfintDev", Table: "ide"}})
+	svc := newTestService(&fakeDriver{}, []tableRef{devIde})
 
 	_, err := svc.resolveTables(t.Context(), "perfintDev", "missing")
 	if err == nil || !strings.Contains(err.Error(), "no known table matches") {
@@ -830,11 +718,7 @@ func TestResolveTables_NoMatch(t *testing.T) {
 
 func TestResolveTables_FilterByDatabase(t *testing.T) {
 	t.Parallel()
-	svc := newTestService(&fakeDriver{}, []tableRef{
-		{Database: "perfintDev", Table: "ide"},
-		{Database: "perfintDev", Table: "kotlin"},
-		{Database: "other", Table: "x"},
-	})
+	svc := newTestService(&fakeDriver{}, []tableRef{devIde, devKotlin, {Database: "other", Table: "x"}})
 
 	got, err := svc.resolveTables(t.Context(), "perfintDev", "")
 	if err != nil {

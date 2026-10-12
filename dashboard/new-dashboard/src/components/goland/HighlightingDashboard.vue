@@ -6,7 +6,6 @@
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     persistent-id="goland_highlighting_dashboard"
     table="goland"
-    branch="vietage/new-type-system"
   >
     <template #configurator>
       <DimensionSelect

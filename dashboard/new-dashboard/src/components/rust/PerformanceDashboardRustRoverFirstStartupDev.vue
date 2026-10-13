@@ -109,6 +109,14 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Rust CrateDefMaps size in MiB with real JVM object sizes (metric 'rust_class_instances_tree_size_jvm_mb#org.rust.lang.core.resolve2.CrateDefMap')"
+        measure="rust_class_instances_tree_size_jvm_mb#org.rust.lang.core.resolve2.CrateDefMap"
+        :projects="rustFirstStartupProjects.map((project) => `${project}/indexing`)"
+        value-unit="counter"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Rust CrateDefMaps size in MB (metric 'rust_class_instances_tree_size_mb#org.rust.lang.core.resolve2.CrateDefMap')"
         measure="rust_class_instances_tree_size_mb#org.rust.lang.core.resolve2.CrateDefMap"
         :projects="rustFirstStartupProjects.map((project) => `${project}/indexing`)"

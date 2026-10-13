@@ -53,6 +53,7 @@ enum ROUTE_PREFIX {
   Toolbox = "/toolbox",
   LSP = "/lsp",
   IJLight = "/ijLight",
+  Air = "/air",
   IntelliJLspClient = IntelliJ + "/lspClient",
 }
 
@@ -240,6 +241,8 @@ enum ROUTES {
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   IJLightPluginLoadDashboard = `${ROUTE_PREFIX.IJLight}/pluginLoad`,
+  AirTests = `${ROUTE_PREFIX.Air}/${TEST_ROUTE}`,
+  AirDashboard = `${ROUTE_PREFIX.Air}/${DASHBOARD_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -791,8 +794,21 @@ const IJ_LIGHT: Product = {
   ],
 }
 
+const AIR: Product = {
+  url: ROUTE_PREFIX.Air,
+  label: "Air",
+  children: [
+    {
+      url: ROUTE_PREFIX.Air,
+      label: "",
+      tabs: [tab(ROUTES.AirDashboard, DASHBOARD_LABEL), tab(ROUTES.AirTests, TESTS_LABEL)],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
+  AIR,
   BAZEL,
   CLION,
   DATAGRIP,
@@ -1186,6 +1202,11 @@ const ijLightRoutes = [
   dashboard(ROUTES.IJLightPluginLoadDashboard, () => import("./components/ijLight/PluginLoadDashboard.vue"), "IJ Light Plugin Load dashboard"),
 ]
 
+const airRoutes = [
+  perfTests(ROUTES.AirTests, { dbName: "perfintDev", table: "air", initialMachine: MACHINES.AWS_LINUX, withInstaller: false }, "Air Performance tests"),
+  dashboard(ROUTES.AirDashboard, () => import("./components/air/PerformanceDashboard.vue"), "Air Dashboard"),
+]
+
 export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
@@ -1216,6 +1237,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...kotlinBuildToolsRoutes,
         ...lspRoutes,
         ...ijLightRoutes,
+        ...airRoutes,
         {
           path: ROUTES.ReportDegradations,
           component: () => import("./components/degradations/ReportDegradation.vue"),

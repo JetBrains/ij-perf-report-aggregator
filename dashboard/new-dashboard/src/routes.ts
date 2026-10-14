@@ -242,7 +242,7 @@ enum ROUTES {
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   IJLightPluginLoadDashboard = `${ROUTE_PREFIX.IJLight}/pluginLoad`,
-  AirTests = `${ROUTE_PREFIX.Air}/${TEST_ROUTE}`,
+  AirTests = `${ROUTE_PREFIX.Air}/${DEV_TEST_ROUTE}`,
   AirDashboard = `${ROUTE_PREFIX.Air}/${DASHBOARD_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",

@@ -31,6 +31,7 @@ func Generators() []Generator {
 		withBackend("ultimate", GenerateUltimateSettings),
 		static("aia", GenerateAIASettings),
 		static("aiaTestToken", GenerateAIATestTokenSettings),
+		static("air", GenerateAirSettings),
 		withBackend("kotlinBuildTools", GenerateKotlinBuildToolsSettings),
 		withBackend("kotlinMultiplatformTooling", GenerateKotlinMultiplatformToolingSettings),
 		static("ui", GenerateUISettings),

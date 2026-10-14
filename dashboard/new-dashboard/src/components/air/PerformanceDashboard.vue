@@ -70,7 +70,7 @@ interface AirChart {
 }
 
 const longSessionM: AirChart[] = [
-  { label: "M: Open session", measure: ["open.M.gestureToTabMs", "open.M.gestureToSettledMs"] },
+  { label: "M: Open session", measure: ["open.M.gestureToTabMs", "open.M.coverRemovedMs", "open.M.gestureToSettledMs"] },
   {
     label: "M: Checkpoints",
     measure: [
@@ -87,7 +87,7 @@ const longSessionM: AirChart[] = [
 ]
 
 const longSessionXL: AirChart[] = [
-  { label: "XL: Open session", measure: ["open.XL.gestureToTabMs", "open.XL.gestureToSettledMs"] },
+  { label: "XL: Open session", measure: ["open.XL.gestureToTabMs", "open.XL.coverRemovedMs", "open.XL.gestureToSettledMs"] },
   {
     label: "XL: Checkpoints",
     measure: [
@@ -104,7 +104,7 @@ const longSessionXL: AirChart[] = [
 ]
 
 const longSessionXXL: AirChart[] = [
-  { label: "XXL: Open session", measure: ["open.XXL.gestureToTabMs", "open.XXL.gestureToSettledMs"] },
+  { label: "XXL: Open session", measure: ["open.XXL.gestureToTabMs", "open.XXL.coverRemovedMs", "open.XXL.gestureToSettledMs"] },
   {
     label: "XXL: Checkpoints",
     measure: [

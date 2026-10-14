@@ -32,7 +32,13 @@ func main() {
 		insertionResults := detector.PostDegradations(client, backendUrl, degradations)
 		filteredResults := detector.FilterErrors(insertionResults)
 		mergedResults := detector.MergeDegradations(filteredResults)
-		detector.SendDegradationsToSlack(mergedResults, client)
+		forSlack := make(chan detector.DegradationWithSettings, 100)
+		forHooks := make(chan detector.DegradationWithSettings, 100)
+		util.Broadcast(mergedResults, forSlack, forHooks)
+		var send sync.WaitGroup
+		send.Go(func() { detector.SendDegradationsToSlack(forSlack, client) })
+		send.Go(func() { detector.SendDegradationsToHooks(forHooks, client, setting.Hooks()) })
+		send.Wait()
 	})
 
 	wg.Go(func() {

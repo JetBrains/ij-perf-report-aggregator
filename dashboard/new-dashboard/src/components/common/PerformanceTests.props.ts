@@ -12,4 +12,6 @@ export interface PerformanceTestsProps {
   branch?: string | null
   withoutAccidents?: boolean
   machineGroupFilter?: string | string[] | null
+  // code owners are taken from the meta DB (project_owner) for this dbName/table
+  withCodeOwnerFilter?: boolean
 }

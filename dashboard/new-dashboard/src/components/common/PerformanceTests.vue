@@ -25,6 +25,16 @@
             <AdjustmentsVerticalIcon class="w-4 h-4" />
           </template>
         </DimensionSelect>
+        <DimensionSelect
+          v-if="codeOwnerConfigurator != null && codeOwnerConfigurator.values.value.length > 0"
+          label="Code owner"
+          :dimension="codeOwnerConfigurator"
+          :selected-label="codeOwnersSelectLabelFormat"
+        >
+          <template #icon>
+            <UserGroupIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
         <span
           v-if="testMetricSwitcher == TestMetricSwitcher.Tests"
           class="flex flex-row justify-between items-center"
@@ -178,6 +188,7 @@
 import { computed, onUnmounted, provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
+import { CodeOwnerConfigurator } from "../../configurators/CodeOwnerConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -195,7 +206,7 @@ import {
   serverConfiguratorKey,
   sidebarVmKey,
 } from "../../shared/keys"
-import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat } from "../../shared/labels"
+import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat, codeOwnersSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -230,6 +241,7 @@ const {
   branch = "master",
   withoutAccidents = false,
   machineGroupFilter = null,
+  withCodeOwnerFilter = false,
 } = defineProps<PerformanceTestsProps>()
 
 const machineFilters = toArray(machineGroupFilter)
@@ -285,7 +297,12 @@ if (testModeConfigurator != null) {
   filters.push(testModeConfigurator)
 }
 
-let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
+// code owners come from the meta DB and only narrow down the list of tests
+const codeOwnerConfigurator = withCodeOwnerFilter ? new CodeOwnerConfigurator(serverConfigurator, persistentStateManager, dbName, table) : null
+const scenarioFilters = (extra: FilterConfigurator[] = []): FilterConfigurator[] =>
+  codeOwnerConfigurator == null ? [...filters, ...extra] : [...filters, ...extra, codeOwnerConfigurator]
+
+let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters())
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
 
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
@@ -426,7 +443,7 @@ watch(
   (value) => {
     switch (value) {
       case TestMetricSwitcher.Tests: {
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters())
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, ...filters], true, "line")
         machineConfigurator?.updateFilters([...filters, scenarioConfigurator])
         // configurators are replaced (not mutated) above, so rebind the watcher to their new .selected refs
@@ -436,7 +453,7 @@ watch(
       }
       case TestMetricSwitcher.Metrics: {
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...filters, measureConfigurator])
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters([measureConfigurator]))
         machineConfigurator?.updateFilters([...filters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {

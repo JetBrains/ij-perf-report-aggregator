@@ -898,6 +898,7 @@ const intellijRoutes = [
       table: "idea",
       initialMachine: MACHINES.AWS_LINUX,
       withInstaller: false,
+      withCodeOwnerFilter: true,
     },
     meta: { pageTitle: "IntelliJ Integration Performance Tests On DevServer" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,

@@ -25,6 +25,16 @@
             <AdjustmentsVerticalIcon class="w-4 h-4" />
           </template>
         </DimensionSelect>
+        <DimensionSelect
+          v-if="codeOwnerConfigurator.values.value.length > 0"
+          label="Code owner"
+          :dimension="codeOwnerConfigurator"
+          :selected-label="codeOwnersSelectLabelFormat"
+        >
+          <template #icon>
+            <UserGroupIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
         <span
           v-if="testMetricSwitcher == TestMetricSwitcher.Tests"
           class="flex flex-row justify-between items-center"
@@ -178,6 +188,7 @@
 import { computed, onUnmounted, provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
+import { CodeOwnerConfigurator } from "../../configurators/CodeOwnerConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -195,7 +206,7 @@ import {
   serverConfiguratorKey,
   sidebarVmKey,
 } from "../../shared/keys"
-import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat } from "../../shared/labels"
+import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat, codeOwnersSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -285,7 +296,10 @@ if (testModeConfigurator != null) {
   filters.push(testModeConfigurator)
 }
 
-let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
+const codeOwnerConfigurator = new CodeOwnerConfigurator(serverConfigurator, persistentStateManager, dbName, table)
+const scenarioFilters = (extra: FilterConfigurator[] = []): FilterConfigurator[] => [...filters, ...extra, codeOwnerConfigurator]
+
+let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters())
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
 
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)

@@ -1,5 +1,5 @@
 import { map } from "rxjs/map"
-import { shallowRef } from "vue"
+import { Ref, shallowRef, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, ServerConfigurator } from "../components/common/dataQuery"
 import { DimensionConfigurator, filterSelected, selectedToArray } from "./DimensionConfigurator"
@@ -10,17 +10,39 @@ import { combineLatest, fromFetchWithRetryAndErrorHandling, refToObservable } fr
  * Code owners live in the meta (Postgres) DB, not in ClickHouse, so the owner list and the owner -> projects
  * mapping are loaded from /api/meta/projectOwners. As a filter, the selected owners are translated into a
  * `project in (...)` ClickHouse filter, which lets the Tests dimension depend on the selected code owners.
+ * While `enabled` is false, the filter is a no-op and the mapping is not loaded.
  */
 export class CodeOwnerConfigurator extends DimensionConfigurator implements DataQueryConfigurator {
   // null until the mapping is loaded
   private readonly ownerToProjects = shallowRef<Map<string, string[]> | null>(null)
   private readonly ownerObservable: Observable<string | string[] | null>
 
-  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager | null, dbName: string, table: string) {
+  constructor(
+    serverConfigurator: ServerConfigurator,
+    persistentStateManager: PersistentStateManager | null,
+    dbName: string,
+    table: string,
+    private readonly enabled: Ref<boolean>
+  ) {
     super("owner", true)
     persistentStateManager?.add("owner", this.selected)
-    this.ownerObservable = combineLatest([refToObservable(this.selected, true), refToObservable(this.ownerToProjects)])[map](([selected]) => selected)
+    this.ownerObservable = combineLatest([refToObservable(this.selected, true), refToObservable(this.ownerToProjects), refToObservable(enabled)])[map](([selected]) => selected)
 
+    // load the mapping only once the filter is enabled for the first time
+    let loadStarted = false
+    watch(
+      enabled,
+      (isEnabled) => {
+        if (isEnabled && !loadStarted) {
+          loadStarted = true
+          this.loadOwners(serverConfigurator, dbName, table)
+        }
+      },
+      { immediate: true }
+    )
+  }
+
+  private loadOwners(serverConfigurator: ServerConfigurator, dbName: string, table: string) {
     const params = new URLSearchParams({ db: dbName, table })
     this.state.loading = true
     updateComponentState(fromFetchWithRetryAndErrorHandling<Record<string, string> | null>(`${serverConfigurator.serverUrl}/api/meta/projectOwners?${params.toString()}`), this.state).subscribe(
@@ -53,7 +75,7 @@ export class CodeOwnerConfigurator extends DimensionConfigurator implements Data
 
   configureFilter(query: DataQuery): boolean {
     const owners = selectedToArray(this.selected.value)
-    if (owners.length === 0) {
+    if (!this.enabled.value || owners.length === 0) {
       return true
     }
     const ownerToProjects = this.ownerToProjects.value

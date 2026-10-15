@@ -33,5 +33,6 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     fadeOnHover: useStorage("fadeOnHover", false),
     stdDevInterval: useStorage("stdDevInterval", true),
     similarDegradations: useStorage("similarDegradationsEnabled", true),
+    codeOwnerFilter: useStorage("codeOwnerFilterEnabled", false),
   }
 })

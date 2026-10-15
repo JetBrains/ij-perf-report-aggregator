@@ -26,7 +26,7 @@
           </template>
         </DimensionSelect>
         <DimensionSelect
-          v-if="codeOwnerConfigurator != null && codeOwnerConfigurator.values.value.length > 0"
+          v-if="codeOwnerConfigurator != null && codeOwnerFilter && codeOwnerConfigurator.values.value.length > 0"
           label="Code owner"
           :dimension="codeOwnerConfigurator"
           :selected-label="codeOwnersSelectLabelFormat"
@@ -95,7 +95,10 @@
         />
       </template>
       <template #end>
-        <PlotSettings @update:configurators="updateConfigurators" />
+        <PlotSettings
+          :with-code-owner-filter="codeOwnerConfigurator != null"
+          @update:configurators="updateConfigurators"
+        />
       </template>
     </StickyToolbar>
     <SelectButton
@@ -187,6 +190,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
+import { storeToRefs } from "pinia"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { CodeOwnerConfigurator } from "../../configurators/CodeOwnerConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -215,6 +219,7 @@ import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
+import { useSettingsStore } from "../settings/settingsStore"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
@@ -298,7 +303,9 @@ if (testModeConfigurator != null) {
 }
 
 // code owners come from the meta DB and only narrow down the list of tests
-const codeOwnerConfigurator = withCodeOwnerFilter ? new CodeOwnerConfigurator(serverConfigurator, persistentStateManager, dbName, table) : null
+// the filter is experimental: it is applied only while enabled in the plot settings
+const { codeOwnerFilter } = storeToRefs(useSettingsStore())
+const codeOwnerConfigurator = withCodeOwnerFilter ? new CodeOwnerConfigurator(serverConfigurator, persistentStateManager, dbName, table, codeOwnerFilter) : null
 const scenarioFilters = (extra: FilterConfigurator[] = []): FilterConfigurator[] =>
   codeOwnerConfigurator == null ? [...filters, ...extra] : [...filters, ...extra, codeOwnerConfigurator]
 

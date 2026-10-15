@@ -10,7 +10,7 @@
     append-to="body"
   >
     <SettingSwitch
-      v-for="{ setting, label, tooltip } in settings"
+      v-for="{ setting, label, tooltip } in visibleSettings"
       :key="setting"
       :setting="setting"
       :label="label"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, useTemplateRef } from "vue"
+import { computed, onBeforeUnmount, useTemplateRef } from "vue"
 import SettingSwitch from "./SettingSwitch.vue"
 import { BooleanSetting, SettingConfigurator } from "./SettingConfigurator"
 import { useSettingsStore } from "./settingsStore"
@@ -29,6 +29,11 @@ import { storeToRefs } from "pinia"
 import { PopoverMethods } from "openvue/popover"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { FilterConfigurator } from "../../configurators/filter"
+
+const { withCodeOwnerFilter = false } = defineProps<{
+  // the code owner filter exists only on some dashboards, so its switch is shown only there
+  withCodeOwnerFilter?: boolean
+}>()
 
 /**
  * `rerunsQuery` marks a setting that post-processes the loaded data, so the query has to be re-run when it is flipped.
@@ -81,7 +86,14 @@ const settings: { setting: BooleanSetting; label: string; tooltip: string; rerun
     label: "Similar degradations",
     tooltip: "Show LLM analyses and detected degradations of other charts whose build contains the same guilty commit, in the point sidebar and the analysis details",
   },
+  {
+    setting: "codeOwnerFilter",
+    label: "Code owner filter (Alpha)",
+    tooltip: "Show the Code owner filter that limits the list of tests to the tests of the selected code owners",
+  },
 ]
+
+const visibleSettings = computed(() => (withCodeOwnerFilter ? settings : settings.filter((it) => it.setting !== "codeOwnerFilter")))
 
 const settingsPanel = useTemplateRef<PopoverMethods>("settingsPanel")
 const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")

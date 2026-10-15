@@ -15,13 +15,15 @@ import (
 // groupedComparisonSQL renders the query feeding buildGroupedComparisonResponse: the latest 50
 // values of each measure per project/machine group for both values of dimCol (branch or mode),
 // scanning the last month. The caller supplies only its own WHERE predicates.
+// groupArraySorted keeps at most 50 values per group (newest first) instead of sorting the whole
+// month: on perfUnitTests (~1k projects) the ORDER BY variant needed ~1.8 GiB, this one ~90 MiB.
 func groupedComparisonSQL(dimCol, table, where string) string {
 	return fmt.Sprintf(
 		"SELECT %[1]s AS Branch, project AS Project, measure_name AS MeasureName, machine_group AS Machine, "+
-			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
-			"FROM (SELECT %[1]s, project, %[2]s AS machine_group, measures.name AS measure_name, measures.value AS measure_value "+
+			"arrayMap(x -> x.2, groupArraySorted(50)((-toUnixTimestamp(generated_time), measure_value))) AS MeasureValues "+
+			"FROM (SELECT %[1]s, project, %[2]s AS machine_group, measures.name AS measure_name, measures.value AS measure_value, generated_time "+
 			"FROM %[3]s ARRAY JOIN measures "+
-			"WHERE %[4]s AND generated_time > subtractMonths(now(), 1) ORDER BY generated_time DESC) "+
+			"WHERE %[4]s AND generated_time > subtractMonths(now(), 1)) "+
 			"GROUP BY %[1]s, project, measure_name, machine_group",
 		dimCol, machine.GroupSQLExpr("machine"), table, where)
 }

@@ -136,6 +136,7 @@ interface CompareBranchesProps {
   dbName: string
   table: string
   metricsNames?: string[]
+  initialMachine?: string
 }
 
 interface TableRow {
@@ -147,9 +148,8 @@ interface TableRow {
   difference: number
 }
 
-const { dbName, table, metricsNames = MAIN_METRICS } = defineProps<CompareBranchesProps>()
+const { dbName, table, metricsNames = MAIN_METRICS, initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)" } = defineProps<CompareBranchesProps>()
 
-const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 

@@ -208,6 +208,7 @@ enum ROUTES {
   VcsSpaceDashboardDev = `${ROUTE_PREFIX.Vcs}/spaceDev`,
   VcsStarterDashboardDev = `${ROUTE_PREFIX.Vcs}/starterDev`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
+  PerfUnitCompareBranches = `${ROUTE_PREFIX.PerfUnit}/${COMPARE_BRANCHES_ROUTE}`,
   IJentBenchmarksDashboard = `${ROUTE_PREFIX.IJent}/benchmarksDashboard`,
   IJentPerfTestsDashboard = `${ROUTE_PREFIX.IJent}/performanceDashboard`,
   IJentSshPerfDashboard = `${ROUTE_PREFIX.IJent}/sshPerformanceDashboard`,
@@ -303,7 +304,11 @@ function compareBuilds(path: ROUTES, props: { dbName: string; table: string }, p
   return { path, component: COMPONENTS.compareBuilds, props, meta: { pageTitle } }
 }
 
-function compareBranches(path: ROUTES, props: { dbName: string; table: string; metricsNames?: string[] }, pageTitle: string = COMPARE_BRANCHES_LABEL): RouteRecordRaw {
+function compareBranches(
+  path: ROUTES,
+  props: { dbName: string; table: string; metricsNames?: string[]; initialMachine?: string },
+  pageTitle: string = COMPARE_BRANCHES_LABEL
+): RouteRecordRaw {
   return { path, component: COMPONENTS.compareBranches, props, meta: { pageTitle } }
 }
 
@@ -661,7 +666,7 @@ const PERF_UNIT: Product = {
     {
       url: ROUTE_PREFIX.PerfUnit,
       label: "",
-      tabs: [tab(ROUTES.PerfUnitTests, "Tests")],
+      tabs: [tab(ROUTES.PerfUnitTests, "Tests"), tab(ROUTES.PerfUnitCompareBranches, COMPARE_BRANCHES_LABEL)],
     },
   ],
 }
@@ -1168,6 +1173,12 @@ const perfUnitTestsRoutes = [
     },
     meta: { pageTitle: "Perf Unit Tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  compareBranches(ROUTES.PerfUnitCompareBranches, {
+    dbName: "perfUnitTests",
+    table: "report",
+    metricsNames: ["attempt.mean.ms"],
+    initialMachine: MACHINES.HETZNER,
+  }),
 ]
 
 const kotlinBuildToolsRoutes = [

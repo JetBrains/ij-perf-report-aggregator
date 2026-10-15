@@ -42,10 +42,14 @@ spec:
                 - name: HEALTH_SLACK_CHANNEL
                   value: {{ . | quote }}
                 {{- end }}
-              # The URLs and tokens of the degradation hooks, see setting.Hooks. Without the secret no hook sends.
+              {{- with .Values.degradationDetector.hookSecrets }}
+              # The URL and the token of each degradation hook, see setting.Hooks. A missing secret disables its hook.
               envFrom:
+                {{- range . }}
                 - secretRef:
-                    name: degradation-detector-hooks
+                    name: {{ . }}
                     optional: true
+                {{- end }}
+              {{- end }}
           imagePullSecrets:
             - name: ghcr

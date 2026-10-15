@@ -9,7 +9,6 @@ type testEditorMetricDef struct {
 
 func GenerateEditorSettings() []detector.PerformanceSettings {
 	testMetrics := []testEditorMetricDef{
-		{test: []string{}, metric: []string{"firstCodeAnalysis"}},
 		{test: []string{"toolbox_enterprise/ultimateCase/SecurityTests"}, metric: []string{"typingCodeAnalyzing"}},
 		{test: []string{"spring_boot_maven/inspection"}, metric: []string{"globalInspections"}},
 		{test: []string{"intellij_commit/editor-highlighting"}, metric: []string{"typing_}_duration", "typing_EditorBackSpace_duration"}},
@@ -29,6 +28,7 @@ func GenerateEditorSettings() []detector.PerformanceSettings {
 			"typingInKotlinFile_16Threads/typing",
 			"typingInKotlinFile_4Threads/typing",
 		}, metric: []string{"editor.typing.latency#90"}},
+		{test: []string{"idea/measureStartup"}, metric: []string{"reopenFileAfterIdeRestart"}},
 	}
 
 	machines := []string{"intellij-linux-performance-aws-%"} // uncomment latter to cover all os

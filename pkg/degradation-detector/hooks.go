@@ -14,20 +14,29 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Hook posts the new degradations of the matching tests to a webhook, besides the Slack message.
+// Hook posts the new degradations of one team to a webhook, besides the Slack message.
 //
-// A hook matches the PerformanceSettings of its Db and Table whose project starts with ProjectPrefix. The URL and the
-// token of the webhook come from the environment variables URLEnv and TokenEnv, so no secret is in the code. A hook
-// whose variables are not set sends nothing. A degradation reaches a hook once: the detector sends only the
-// degradations that it stored as new accidents.
+// A hook selects the degradations of the settings whose Slack channel is Channel, so it gets what the team gets in its
+// channel. Db, Table, ProjectPrefix, Branch and MetricPrefix narrow the selection further when they are set.
+// A degradation reaches a hook once: the detector sends only the degradations that it stored as new accidents.
+//
+// The URL and the token of the webhook come from the environment variables URLEnv and TokenEnv. The CronJob reads them
+// from the Kubernetes secret Secret, which is listed in degradationDetector.hookSecrets of the Helm values. A hook
+// whose variables are not set sends nothing.
 type Hook struct {
 	// Name identifies the hook in the logs.
-	Name          string
+	Name    string
+	Channel string
+
 	Db            string
 	Table         string
 	ProjectPrefix string
-	URLEnv        string
-	TokenEnv      string
+	Branch        string
+	MetricPrefix  string
+
+	Secret   string
+	URLEnv   string
+	TokenEnv string
 	// AuthScheme is the scheme of the Authorization header: "Bearer" when empty, "ApiKey" for Air Automation.
 	AuthScheme string
 }
@@ -63,12 +72,24 @@ const (
 )
 
 func (h Hook) matches(s PerformanceSettings) bool {
-	if s.Db != h.Db || s.Table != h.Table {
+	if normalizeChannel(s.Channel) != normalizeChannel(h.Channel) {
 		return false
 	}
-	// MergeDegradations joins the projects of one metric and build with commas.
-	for project := range strings.SplitSeq(s.Project, ",") {
-		if strings.HasPrefix(project, h.ProjectPrefix) {
+	if h.Db != "" && s.Db != h.Db || h.Table != "" && s.Table != h.Table || h.Branch != "" && s.Branch != h.Branch {
+		return false
+	}
+	// MergeDegradations joins the projects and the metrics of one channel, metric and build with commas.
+	return anyHasPrefix(s.Project, h.ProjectPrefix) && anyHasPrefix(s.Metric, h.MetricPrefix)
+}
+
+func normalizeChannel(channel string) string {
+	return strings.TrimPrefix(channel, "#")
+}
+
+// anyHasPrefix tells whether one of the comma-separated values starts with prefix. An empty prefix matches all values.
+func anyHasPrefix(values string, prefix string) bool {
+	for value := range strings.SplitSeq(values, ",") {
+		if strings.HasPrefix(value, prefix) {
 			return true
 		}
 	}

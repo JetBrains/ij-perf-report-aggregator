@@ -38,7 +38,7 @@ func hookTestDegradation() Degradation {
 }
 
 func hookTestHook(urlEnv string) Hook {
-	return Hook{Name: "test", Db: "perfintDev", Table: "air", ProjectPrefix: "air/", URLEnv: urlEnv, TokenEnv: urlEnv + "_TOKEN", AuthScheme: "ApiKey"}
+	return Hook{Name: "test", Channel: "ij-air-perf", URLEnv: urlEnv, TokenEnv: urlEnv + "_TOKEN", AuthScheme: "ApiKey"}
 }
 
 type hookStub struct {
@@ -74,18 +74,36 @@ func (s *hookStub) count() int {
 	return len(s.requests)
 }
 
-func TestHookMatches(t *testing.T) {
+func TestHookMatchesTheChannelOfTheTeam(t *testing.T) {
 	t.Parallel()
 	hook := hookTestHook("X")
 	assert.True(t, hook.matches(hookTestSettings("air/long-session/XL")))
-	assert.True(t, hook.matches(hookTestSettings("air/long-session/M,air/long-session/XL")), "a merged degradation")
-	assert.False(t, hook.matches(hookTestSettings("idea/long-session")), "another project")
+	assert.True(t, hook.matches(hookTestSettings("other/project")), "the channel alone selects")
+	withHash := hookTestSettings("air/long-session/XL")
+	withHash.Channel = "#ij-air-perf"
+	assert.True(t, hook.matches(withHash), "a channel with #")
 	other := hookTestSettings("air/long-session/XL")
-	other.Table = "idea"
-	assert.False(t, hook.matches(other), "another table")
-	other = hookTestSettings("air/long-session/XL")
-	other.Db = "perfint"
-	assert.False(t, hook.matches(other), "another database")
+	other.Channel = "ij-idea-perf"
+	assert.False(t, hook.matches(other), "another team")
+}
+
+func TestHookFiltersNarrowTheChannel(t *testing.T) {
+	t.Parallel()
+	hook := hookTestHook("X")
+	hook.Db, hook.Table, hook.ProjectPrefix, hook.Branch, hook.MetricPrefix = "perfintDev", "air", "air/", "master", "open."
+	assert.True(t, hook.matches(hookTestSettings("air/long-session/XL")))
+	assert.True(t, hook.matches(hookTestSettings("air/long-session/M,air/long-session/XL")), "a merged degradation")
+	for name, change := range map[string]func(*PerformanceSettings){
+		"another database": func(s *PerformanceSettings) { s.Db = "perfint" },
+		"another table":    func(s *PerformanceSettings) { s.Table = "idea" },
+		"another project":  func(s *PerformanceSettings) { s.Project = "idea/indexing" },
+		"another branch":   func(s *PerformanceSettings) { s.Branch = "263" },
+		"another metric":   func(s *PerformanceSettings) { s.Metric = "heap.XL.heapLive.MiB" },
+	} {
+		settings := hookTestSettings("air/long-session/XL")
+		change(&settings)
+		assert.False(t, hook.matches(settings), name)
+	}
 }
 
 func TestHookAuthorization(t *testing.T) {
@@ -170,7 +188,9 @@ func TestSendDegradationsToHooksSendsOnlyMatchingAndConfigured(t *testing.T) {
 
 	degradations := make(chan DegradationWithSettings, 3)
 	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: hookTestSettings("air/long-session/XL")}
-	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: hookTestSettings("idea/indexing")}
+	otherTeam := hookTestSettings("idea/indexing")
+	otherTeam.Channel = "ij-idea-perf"
+	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: otherTeam}
 	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: FleetStartupSettings{}}
 	close(degradations)
 

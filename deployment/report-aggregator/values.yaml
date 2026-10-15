@@ -11,6 +11,10 @@ collector:
   buildConfigurations: []
 degradationDetector:
   healthSlackChannel: ""
+  # One Kubernetes secret per degradation hook, see setting.Hooks. Each one is optional: a missing secret disables
+  # only its hook.
+  hookSecrets:
+    - degradation-detector-hook-air-perf
 images:
   backend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/backend
   frontend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend

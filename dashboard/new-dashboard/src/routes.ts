@@ -1166,9 +1166,10 @@ const perfUnitTestsRoutes = [
       table: "report",
       initialMachine: MACHINES.HETZNER,
       withInstaller: false,
+      withCodeOwnerFilter: true,
     },
     meta: { pageTitle: "Perf Unit Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  } satisfies TypedRouteRecord<PerformanceUnitTestsProps>,
 ]
 
 const kotlinBuildToolsRoutes = [

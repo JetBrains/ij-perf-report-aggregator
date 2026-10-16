@@ -10,7 +10,8 @@
     option-value="value"
     :show-toggle-all="false"
     panel-class="w-fit"
-    panel-style="overflow: visible"
+    :panel-style="panelStyle"
+    :virtual-scroller-options="virtualScrollerOptions"
     :selection-limit="selectionLimit"
     :filter="hasManyElements"
     @hide="clearSubMenu"
@@ -254,6 +255,22 @@ const placeholder = usePlaceholder(
 
 const hasManyElements = computed(() => {
   return branchItems.value.length > 4
+})
+
+// Rendering every option (each with a Checkbox and ripple) takes seconds in Safari for projects with 1000+ branches.
+const VIRTUAL_SCROLL_THRESHOLD = 100
+const isVirtual = computed(() => branchItems.value.length > VIRTUAL_SCROLL_THRESHOLD)
+
+const virtualScrollerOptions = computed(() => (isVirtual.value ? { itemSize: 35 } : undefined))
+
+const panelStyle = computed(() => {
+  if (!isVirtual.value) {
+    return { overflow: "visible" }
+  }
+  // virtual scroller content is absolutely positioned, so `w-fit` cannot size the panel by its options
+  // (min-width is set inline by MultiSelect to the trigger width, so set width instead)
+  const longestLabel = branchItems.value.reduce((max, it) => Math.max(max, it.label.length), 0)
+  return { overflow: "visible", width: `min(calc(${longestLabel}ch + 3.5rem), 90vw)` }
 })
 
 const groupableBranchConfigurator = computed(() => {

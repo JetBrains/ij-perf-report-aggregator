@@ -39,10 +39,19 @@
           </template>
         </MeasureSelect>
       </template>
+      <template #end>
+        <label class="flex items-center gap-1 text-sm">
+          <Checkbox
+            v-model="hideNoise"
+            binary
+          />
+          Hide noisy changes
+        </label>
+      </template>
     </StickyToolbar>
 
     <DataTable
-      :value="tableData"
+      :value="visibleRows"
       show-gridlines
       class="p-datatable-sm"
       sort-field="difference"
@@ -81,7 +90,7 @@
         :header="mode1 ?? ''"
       >
         <template #body="slotProps">
-          <div :class="getColorForBuild(slotProps.data.build1, slotProps.data.build2)">
+          <div :class="getColorForBuild(slotProps.data.build1, slotProps.data.build2, slotProps.data.significant)">
             {{ slotProps.data.build1 }}
           </div>
         </template>
@@ -91,7 +100,7 @@
         :header="mode2 ?? ''"
       >
         <template #body="slotProps">
-          <div :class="getColorForBuild(slotProps.data.build2, slotProps.data.build1)">
+          <div :class="getColorForBuild(slotProps.data.build2, slotProps.data.build1, slotProps.data.significant)">
             {{ slotProps.data.build2 }}
           </div>
         </template>
@@ -100,14 +109,25 @@
         field="difference"
         header="Difference (%)"
         :sortable="true"
-      />
+      >
+        <template #body="slotProps">
+          <span
+            v-tooltip.left="
+              `Shift bounds: ${slotProps.data.differenceLower}% … ${slotProps.data.differenceUpper}%${slotProps.data.significant ? '' : ' (includes 0, likely noise)'}`
+            "
+            :class="{ 'text-gray-400': !slotProps.data.significant }"
+          >
+            {{ slotProps.data.difference }}
+          </span>
+        </template>
+      </Column>
     </DataTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { filter } from "rxjs/filter"
-import { provide, ref, watch, useTemplateRef } from "vue"
+import { computed, provide, ref, watch, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -142,6 +162,9 @@ interface TableRow {
   build1: number
   build2: number
   difference: number
+  differenceLower: number
+  differenceUpper: number
+  significant: boolean
 }
 
 const { dbName, table, metricsNames = MAIN_METRICS } = defineProps<CompareBranchesProps>()
@@ -193,6 +216,9 @@ const mode1 = ref<string | null>(null)
 const mode2 = ref<string | null>(null)
 
 const tableData = ref<TableRow[]>()
+const hideNoise = ref(false)
+persistentStateManager.add("hideNoise", hideNoise)
+const visibleRows = computed(() => (hideNoise.value ? tableData.value?.filter((row) => row.significant) : tableData.value))
 const fetchedData = ref<TableRow[]>()
 combineLatest([testModeConfigurator1.createObservable(), testModeConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable()])
   [filter](() => {
@@ -216,7 +242,17 @@ combineLatest([testModeConfigurator1.createObservable(), testModeConfigurator2.c
           !/.*_\d+(#.*)?$/.test(r.MeasureName) //don't add metrics like foo_1
         ) {
           tests.add(r.Project)
-          table.push({ test: r.Project, metric: r.MeasureName, machine: r.Machine, build1: r.Median1, build2: r.Median2, difference: r.Diff })
+          table.push({
+            test: r.Project,
+            metric: r.MeasureName,
+            machine: r.Machine,
+            build1: r.Median1,
+            build2: r.Median2,
+            difference: r.Diff,
+            differenceLower: r.DiffLower,
+            differenceUpper: r.DiffUpper,
+            significant: r.Significant,
+          })
         }
       }
       testConfigurator.initData([...tests])
@@ -247,15 +283,19 @@ class ComparisonResult {
     readonly Machine: string,
     readonly Median1: number,
     readonly Median2: number,
-    readonly Diff: number
+    readonly Diff: number,
+    readonly DiffLower: number,
+    readonly DiffUpper: number,
+    readonly Significant: boolean
   ) {}
 }
 
-function getColorForBuild(build1: number, build2: number) {
+// only a difference outside the noise is colored
+function getColorForBuild(build1: number, build2: number, significant: boolean) {
   return [
     {
-      higher: build1 < build2,
-      lower: build1 > build2,
+      higher: significant && build1 < build2,
+      lower: significant && build1 > build2,
     },
   ]
 }

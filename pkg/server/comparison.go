@@ -28,6 +28,10 @@ func groupedComparisonSQL(dimCol, table, where string) string {
 		dimCol, machine.GroupSQLExpr("machine"), table, where)
 }
 
+// shiftBoundsMisrate is the chance that the true shift lies outside DiffLower..DiffUpper. Kept low
+// because a page compares hundreds of tests at once.
+const shiftBoundsMisrate = 1e-3
+
 type branchComparisonResponseItem struct {
 	Project     string
 	MeasureName string
@@ -35,6 +39,11 @@ type branchComparisonResponseItem struct {
 	Median1     float64
 	Median2     float64
 	Diff        float64
+	// bounds of the shift of value2 against value1, in percent of Median1
+	DiffLower float64
+	DiffUpper float64
+	// the bounds exclude zero, i.e. Diff is not noise
+	Significant bool
 }
 
 // buildGroupedComparisonResponse compares value1 against value2 per project/metric/machine
@@ -82,14 +91,24 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 			diff = math.Round((center2/center1-1)*1000) / 10
 		}
 
-		response = append(response, branchComparisonResponseItem{
+		item := branchComparisonResponseItem{
 			Project:     k.Project,
 			MeasureName: k.MeasureName,
 			Machine:     k.Machine,
 			Median1:     center1,
 			Median2:     center2,
 			Diff:        diff,
-		})
+		}
+		// a single run on each side collapses the bounds to one point, which says nothing about noise
+		if center1 != 0 && len(values1)*len(values2) > 1 {
+			bounds, err := pragmastat.ShiftBounds(values2, values1, shiftBoundsMisrate)
+			if err == nil {
+				item.DiffLower = math.Round(bounds.Lower/center1*1000) / 10
+				item.DiffUpper = math.Round(bounds.Upper/center1*1000) / 10
+				item.Significant = bounds.Lower > 0 || bounds.Upper < 0
+			}
+		}
+		response = append(response, item)
 	}
 
 	return response

@@ -75,10 +75,11 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 			continue
 		}
 
+		// derived from the two centers shown next to it: pragmastat.Ratio (median of pairwise
+		// ratios) can disagree in sign with them, e.g. 63 vs 62.5 reported as +1.6%
 		var diff float64
-		ratio, err := pragmastat.Ratio(values2, values1)
-		if err == nil {
-			diff = math.Round((ratio-1)*1000) / 10
+		if center1 != 0 {
+			diff = math.Round((center2/center1-1)*1000) / 10
 		}
 
 		response = append(response, branchComparisonResponseItem{

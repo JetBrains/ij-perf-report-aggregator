@@ -100,7 +100,7 @@ function isDurationFormatterApplicable(measureName: string): boolean {
 // The resolved rendering unit for a single value. Distinct from ValueUnit, the chart-level *request*.
 // Memory is binary (IEC): bytes/kibibytes/mebibytes render as B/KiB/MiB/GiB. File size and throughput
 // are decimal (SI): kilobytes/megabytes render as kB/MB/GB and kilobytesPerSecond as kB/s, MB/s.
-export type MeasureUnit = "nanoseconds" | "milliseconds" | "counter" | "bytes" | "kibibytes" | "mebibytes" | "kilobytes" | "megabytes" | "kilobytesPerSecond"
+export type MeasureUnit = "nanoseconds" | "microseconds" | "milliseconds" | "counter" | "bytes" | "kibibytes" | "mebibytes" | "kilobytes" | "megabytes" | "kilobytesPerSecond"
 
 // Units carrying a physical quantity (a size or a rate). While scaling these become a baseline ratio.
 const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", "kilobytesPerSecond"])
@@ -129,12 +129,14 @@ export function resolveMeasureUnit(measureName: string, opts: { storedType?: str
   return "milliseconds"
 }
 
-// Formats a single value that is already known to be in `unit`. Nanosecond values are converted to
+// Formats a single value that is already known to be in `unit`. Nano/microsecond values are converted to
 // milliseconds before humanizing; sizes and throughput auto-scale to a readable unit.
 export function formatMeasureValue(value: number, unit: MeasureUnit): string {
   switch (unit) {
     case "nanoseconds":
       return durationAxisPointerFormatter(value / 1_000_000)
+    case "microseconds":
+      return durationAxisPointerFormatter(value / 1_000)
     case "milliseconds":
       return durationAxisPointerFormatter(value)
     case "bytes":
@@ -160,8 +162,8 @@ export function formatMeasureValue(value: number, unit: MeasureUnit): string {
 // duration the duration unit is kept; otherwise the first physical family present wins (a rate,
 // then a binary memory size, then a decimal size), falling back to a plain counter.
 export function reduceToAxisUnit(units: MeasureUnit[]): MeasureUnit {
-  if (units.every((unit) => unit === "milliseconds" || unit === "nanoseconds")) {
-    return units.includes("nanoseconds") ? "nanoseconds" : "milliseconds"
+  if (units.every((unit) => unit === "milliseconds" || unit === "microseconds" || unit === "nanoseconds")) {
+    return units.includes("nanoseconds") ? "nanoseconds" : units.includes("microseconds") ? "microseconds" : "milliseconds"
   }
   const firstOf = (...candidates: MeasureUnit[]): MeasureUnit | undefined => units.find((unit) => candidates.includes(unit))
   return firstOf("kilobytesPerSecond") ?? firstOf("mebibytes", "kibibytes", "bytes") ?? firstOf("megabytes", "kilobytes") ?? "counter"

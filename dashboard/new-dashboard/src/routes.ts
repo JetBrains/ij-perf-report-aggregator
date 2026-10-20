@@ -151,6 +151,7 @@ enum ROUTES {
   WebStormProductMetricsDashboard = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
   WebStormDashboardDelicateProjects = `${ROUTE_PREFIX.WebStorm}/dashboardDelicateProjects`,
+  WebStormTSKotlinDashboard = `${ROUTE_PREFIX.WebStorm}/tskotlinDashboard`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}Dev`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
@@ -515,6 +516,7 @@ const WEBSTORM: Product = {
         tab(ROUTES.WebStormProductMetricsDashboard, PRODUCT_METRICS_LABEL),
         tab(ROUTES.WebStormDashboardBuiltInVsNEXT, "Built-in vs NEXT"),
         tab(ROUTES.WebStormDashboardDelicateProjects, "Delicate Projects"),
+        tab(ROUTES.WebStormTSKotlinDashboard, "🐗 TSKotlin"),
         tab(ROUTES.WebStormTests, TESTS_LABEL),
         tab(ROUTES.WebStormCompareBranches, COMPARE_BRANCHES_LABEL),
       ],
@@ -976,6 +978,7 @@ const webstormRoutes = [
   perfTests(ROUTES.WebStormTests, { dbName: "perfintDev", withInstaller: false, table: "webstorm", initialMachine: MACHINES.HETZNER }, "WebStorm Performance tests"),
   dashboard(ROUTES.WebStormDashboardBuiltInVsNEXT, () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"), "Built-in vs NEXT"),
   dashboard(ROUTES.WebStormDashboardDelicateProjects, () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"), "Delicate Projects"),
+  dashboard(ROUTES.WebStormTSKotlinDashboard, () => import("./components/webstorm/TSKotlinDashboard.vue"), "TSKotlin"),
   compareBuilds(ROUTES.WebStormCompare, { dbName: "perfintDev", table: "webstorm" }),
   compareBranches(ROUTES.WebStormCompareBranches, { dbName: "perfintDev", table: "webstorm" }),
 ]

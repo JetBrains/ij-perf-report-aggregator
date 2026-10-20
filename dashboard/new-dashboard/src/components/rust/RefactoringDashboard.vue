@@ -83,7 +83,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Optimize Imports File-type project: file_type/src/sources/iana/mod.rs"
+        label="Optimize Imports File-type project: file_type/src/sources/iana.rs"
         measure="execute_editor_optimizeimports"
         :projects="rustRefactoringTestCases.optimizeImportsFileTypeProject"
       />

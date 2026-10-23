@@ -125,8 +125,15 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Indexing Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Indexing: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustFirstStartupProjects.map((project) => `${project}/indexing`)"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Indexing: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustFirstStartupProjects.map((project) => `${project}/indexing`)"
       />
     </section>

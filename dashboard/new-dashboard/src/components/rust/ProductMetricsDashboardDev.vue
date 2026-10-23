@@ -57,8 +57,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`),
   },
   {
-    labels: ["Rust-only Inspections", "UI Lags in Rust-only Inspection Tests"],
-    measures: ["globalInspections", "test#max_awt_delay"],
+    labels: ["Rust-only Inspections", "UI Lags in Rust-only Inspection: Test Itself", "UI Lags in Rust-only Inspection: Whole IDE Run"],
+    measures: ["globalInspections", "test#max_awt_delay", "ide#max_awt_delay"],
     projects: rustGlobalInspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`),
   },
 ]

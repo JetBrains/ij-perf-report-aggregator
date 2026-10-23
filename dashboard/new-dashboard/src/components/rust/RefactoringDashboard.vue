@@ -36,8 +36,20 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Rename Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Rename: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="[
+          ...rustRefactoringTestCases.renameLowUseFn,
+          ...rustRefactoringTestCases.renameHighUseFn,
+          ...rustRefactoringTestCases.renameLowUseStruct,
+          ...rustRefactoringTestCases.renameHighUseStruct,
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Rename: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="[
           ...rustRefactoringTestCases.renameLowUseFn,
           ...rustRefactoringTestCases.renameHighUseFn,
@@ -62,8 +74,15 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Promote to Directory Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Promote to Directory: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="[...rustRefactoringTestCases.moveSmallFile, ...rustRefactoringTestCases.moveBigFile]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Promote to Directory: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="[...rustRefactoringTestCases.moveSmallFile, ...rustRefactoringTestCases.moveBigFile]"
       />
     </section>
@@ -111,8 +130,22 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Optimize Imports Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Optimize Imports: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="[
+          ...rustRefactoringTestCases.optimizeImportsSmallFile,
+          ...rustRefactoringTestCases.optimizeImportsBigFile,
+          ...rustRefactoringTestCases.optimizeImportsFileTypeProject,
+          ...rustRefactoringTestCases.optimizeImportsUseInsideMacro,
+          ...rustRefactoringTestCases.optimizeImportsSmallDirectory,
+          ...rustRefactoringTestCases.optimizeImportsBigDirectory,
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Optimize Imports: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="[
           ...rustRefactoringTestCases.optimizeImportsSmallFile,
           ...rustRefactoringTestCases.optimizeImportsBigFile,

@@ -32,8 +32,15 @@
 
     <section>
       <GroupProjectsChart
-        label="UI Lags in Local Inspection Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Local Inspection: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustLocalInspectionCases"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Local Inspection: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustLocalInspectionCases"
       />
     </section>
@@ -48,8 +55,15 @@
 
     <section>
       <GroupProjectsChart
-        label="UI Lags in Global Inspection Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Global Inspection: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Global Inspection: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
       />
     </section>
@@ -63,8 +77,15 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Completion Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Completion: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustCompletionCases"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Completion: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustCompletionCases"
       />
     </section>
@@ -77,8 +98,15 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Find Usages Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Find Usages: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustFindUsagesCases"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Find Usages: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustFindUsagesCases"
       />
     </section>
@@ -99,8 +127,15 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="UI Lags in Typing Tests (metric 'test#max_awt_delay')"
+        label="UI Lags in Typing: Test Itself (metric 'test#max_awt_delay')"
         measure="test#max_awt_delay"
+        :projects="rustTypingCases"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="UI Lags in Typing: Whole IDE Run (metric 'ide#max_awt_delay')"
+        measure="ide#max_awt_delay"
         :projects="rustTypingCases"
       />
     </section>

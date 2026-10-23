@@ -388,6 +388,13 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //gc
   ["freedMemory", metricInfo("Total memory freed by GC during the test, parsed from GCViewer output.", "mebibytes", "https://github.com/chewiebug/GCViewer#readme")],
   ["test#average_awt_delay", metricInfo("Average time to process a single empty AWT event in the queue during the test.", "milliseconds")],
+  [
+    "ide#max_awt_delay",
+    metricInfo(
+      "Maximum time to process a single empty AWT event in the queue from the application initialization to the exit. Includes project opening and indexing.",
+      "milliseconds"
+    ),
+  ],
   ["showQuickFixes", metricInfo("Time to show the quick fixes after calling Alt + Enter.", "milliseconds")],
   [
     "attempt.mad.ms",

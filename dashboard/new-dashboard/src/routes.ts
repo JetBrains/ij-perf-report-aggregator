@@ -52,6 +52,7 @@ enum ROUTE_PREFIX {
   Diogen = "/diogen",
   Toolbox = "/toolbox",
   LSP = "/lsp",
+  GoLSP = "/goLsp",
   IJLight = "/ijLight",
   Air = "/air",
   IntelliJLspClient = IntelliJ + "/lspClient",
@@ -241,6 +242,8 @@ enum ROUTES {
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
+  GoLSPTests = `${ROUTE_PREFIX.GoLSP}/${TEST_ROUTE}`,
+  GoLSPDashboard = `${ROUTE_PREFIX.GoLSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   IJLightPluginLoadDashboard = `${ROUTE_PREFIX.IJLight}/pluginLoad`,
   AirTests = `${ROUTE_PREFIX.Air}/${DEV_TEST_ROUTE}`,
@@ -789,6 +792,18 @@ const LSP: Product = {
   ],
 }
 
+const GO_LSP: Product = {
+  url: ROUTE_PREFIX.GoLSP,
+  label: "Go LSP",
+  children: [
+    {
+      url: ROUTE_PREFIX.GoLSP,
+      label: "",
+      tabs: [tab(ROUTES.GoLSPDashboard, DASHBOARD_LABEL), tab(ROUTES.GoLSPTests, TESTS_LABEL)],
+    },
+  ],
+}
+
 const IJ_LIGHT: Product = {
   url: ROUTE_PREFIX.IJLight,
   label: "IJ Light",
@@ -821,6 +836,7 @@ export const PRODUCTS = [
   DATAGRIP,
   DIOGEN,
   FLEET,
+  GO_LSP,
   GOLAND,
   IDEA,
   IJ_LIGHT,
@@ -1207,6 +1223,24 @@ const lspRoutes = [
   dashboard(ROUTES.LSPDashboard, () => import("./components/lsp/LSPDashboard.vue"), "LSP Dashboard"),
 ]
 
+const goLspRoutes = [
+  {
+    path: ROUTES.GoLSPTests,
+    component: () => import("./components/common/PerformanceUnitTests.vue"),
+    props: {
+      dbName: "perfUnitTests",
+      table: "report",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+      projectFilter: "kubernetes-go%/codeSearch",
+      persistentId: "goLspTests",
+      preselectAll: true,
+    },
+    meta: { pageTitle: "Go LSP Tests" },
+  } satisfies TypedRouteRecord<PerformanceUnitTestsProps>,
+  dashboard(ROUTES.GoLSPDashboard, () => import("./components/goLsp/GoLspDashboard.vue"), "Go LSP Dashboard"),
+]
+
 const ijLightRoutes = [
   startupDashboard(
     ROUTES.IJLightStartupDashboard,
@@ -1250,6 +1284,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...perfUnitTestsRoutes,
         ...kotlinBuildToolsRoutes,
         ...lspRoutes,
+        ...goLspRoutes,
         ...ijLightRoutes,
         ...airRoutes,
         {

@@ -104,6 +104,7 @@ var rules = []rule{
 	{prefixes: []string{"cidr.performance."}, group: "Mac Cidr Performance"},
 	{prefixes: []string{"intellij-macos-perf-eqx"}, group: "Apple M4 Pro (13 vCPU, 64 GB)"},
 	{prefixes: []string{"intellij-macos-docker-hw-de-unit"}, group: "Mac Mini M2 Pro (12 CPU, 32 GB)"},
+	{prefixes: []string{"ijent-macos-hw-de-unit"}, group: "MacBook Munich"},
 
 	// Legacy fixed-name agents (migrated from MachineConfigurator.valueToGroup). Entries that a
 	// prefix rule above already covers (blade-NNN, *-de-unit-NNNN, docker-*, unit-2200-large-*)

@@ -19,6 +19,7 @@ func TestGroupName(t *testing.T) {
 		"intellij-windows-performance-mem-aws-i-0deadbeef0022":      "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
 		"intellij-linux-hw-hetzner-agent-42":                        "linux-blade-hetzner",
 		"intellij-macos-perf-eqx-143291":                            "Apple M4 Pro (13 vCPU, 64 GB)",
+		"ijent-macos-hw-de-unit-1500":                               "MacBook Munich",
 		"ij-w11u-azr7":                                              "windows-azure",
 		// legacy fixed-name agents (migrated from valueToGroup)
 		"intellij-macos-hw-unit-1550": "macMini 2018",

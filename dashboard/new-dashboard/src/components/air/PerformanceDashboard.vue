@@ -6,6 +6,17 @@
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :with-installer="false"
   >
+    <template #configurator>
+      <SelectButton
+        v-model="selectedSizes"
+        :options="sizes"
+        option-label="short"
+        option-value="id"
+        multiple
+        :allow-empty="false"
+        aria-label="The long session sizes that the charts show"
+      />
+    </template>
     <template
       v-for="group in longSessionGroups"
       :key="group.title"
@@ -45,6 +56,8 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage } from "@vueuse/core"
+import { computed } from "vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { SERIES_NAME_SEPARATOR } from "../common/DataQueryExecutor"
 import DashboardPage from "../common/DashboardPage.vue"
@@ -66,13 +79,23 @@ interface AirGroup {
  * so their history and their degradation alerts stay. The legend names each size by what it is.
  */
 const sizes = [
-  { id: "M", label: "Small session: 30 turns, 9 MB journal" },
-  { id: "XL", label: "Medium session: 200 turns, 63 MB journal" },
-  { id: "XXL", label: "Large session: 500 turns, 160 MB journal" },
+  { id: "M", short: "Small: 30 turns", label: "Small session: 30 turns, 9 MB journal" },
+  { id: "XL", short: "Medium: 200 turns", label: "Medium session: 200 turns, 63 MB journal" },
+  { id: "XXL", short: "Large: 500 turns", label: "Large session: 500 turns, 160 MB journal" },
 ]
-const longSessionProjects = sizes.map((size) => `air/long-session/${size.id}`)
-const longSessionAliases = sizes.map((size) => size.label)
-const sizeLabels = new Set(longSessionAliases)
+const sizeLabels = new Set(sizes.map((size) => size.label))
+
+/**
+ * The sizes that every long session chart shows, chosen once for the whole page. A legend entry still hides one line of
+ * one chart. The choice stays for the next visit of this browser.
+ */
+const selectedSizes = useStorage<string[]>(
+  "air_dashboard_sizes",
+  sizes.map((size) => size.id)
+)
+const shownSizes = computed(() => sizes.filter((size) => selectedSizes.value.includes(size.id)))
+const longSessionProjects = computed(() => shownSizes.value.map((size) => `air/long-session/${size.id}`))
+const longSessionAliases = computed(() => shownSizes.value.map((size) => size.label))
 
 /** One chart of a long session step with one line for each size. `%s` in [template] is the size of the metric name. */
 function bySize(label: string, description: string, template: string): AirChart {

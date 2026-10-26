@@ -27,6 +27,10 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		{"heap.%s.heapLive.MiB", airStable},
 		{"prompt.%s.codeP95Ms", airNoisy},
 		{"scroll.%s.wheelP95Ms", airNoisy},
+		// A jump to the start and to 0.4 of the history builds and lays out rows far from the bottom. The settle time
+		// includes the quiet windows of the jump and of the settle, so it is noisy until the nights show otherwise.
+		{"scroll.%s.jump0.settledMs", airNoisy},
+		{"scroll.%s.jump40.settledMs", airNoisy},
 	}
 	metrics := map[string][]metric{
 		"air/many-agents": {
@@ -48,7 +52,7 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		}
 	}
 
-	settings := make([]detector.PerformanceSettings, 0, 30)
+	settings := make([]detector.PerformanceSettings, 0, 34)
 	for test, metrics := range metrics {
 		for _, m := range metrics {
 			settings = append(settings, detector.PerformanceSettings{

@@ -26,7 +26,7 @@
           </template>
         </DimensionSelect>
         <DimensionSelect
-          v-if="codeOwnerConfigurator != null && codeOwnerConfigurator.values.value.length > 0"
+          v-if="codeOwnerConfigurator.values.value.length > 0"
           label="Code owner"
           :dimension="codeOwnerConfigurator"
           :selected-label="codeOwnersSelectLabelFormat"

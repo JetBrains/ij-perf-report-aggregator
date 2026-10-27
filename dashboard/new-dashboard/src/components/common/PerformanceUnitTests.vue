@@ -9,6 +9,16 @@
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect
+          v-if="codeOwnerConfigurator.values.value.length > 0"
+          label="Code owner"
+          :dimension="codeOwnerConfigurator"
+          :selected-label="codeOwnersSelectLabelFormat"
+        >
+          <template #icon>
+            <UserGroupIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
+        <DimensionSelect
           label="Tests"
           :selected-label="testsSelectLabelFormat"
           :dimension="scenarioConfigurator"
@@ -74,6 +84,7 @@ import { ColdObservable } from "rxjs"
 import { computed, provide, useTemplateRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
+import { CodeOwnerConfigurator } from "../../configurators/CodeOwnerConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -82,7 +93,7 @@ import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCo
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import { testsSelectLabelFormat, metricsSelectLabelFormat, codeOwnersSelectLabelFormat } from "../../shared/labels"
 import { MAIN_METRICS } from "../../util/mainMetrics"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
@@ -159,6 +170,9 @@ if (machineConfigurator.selected.value.length === 0) {
   machineConfigurator.selected.value = [initialMachine]
 }
 const projectFilters: FilterConfigurator[] = projectFilter == null ? [] : [new ProjectLikeFilter(projectFilter)]
+
+const codeOwnerConfigurator = new CodeOwnerConfigurator(serverConfigurator, persistentStateManager, dbName, table)
+projectFilters.push(codeOwnerConfigurator)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...projectFilters, branchConfigurator, timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")

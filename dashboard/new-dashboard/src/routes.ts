@@ -1191,7 +1191,7 @@ const perfUnitTestsRoutes = [
       withInstaller: false,
     },
     meta: { pageTitle: "Perf Unit Tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  } satisfies TypedRouteRecord<PerformanceUnitTestsProps>,
   compareBranches(ROUTES.PerfUnitCompareBranches, {
     dbName: "perfUnitTests",
     table: "report",

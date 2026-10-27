@@ -26,7 +26,7 @@
           </template>
         </DimensionSelect>
         <DimensionSelect
-          v-if="codeOwnerConfigurator.values.value.length > 0"
+          v-if="codeOwnerConfigurator != null && codeOwnerConfigurator.values.value.length > 0"
           label="Code owner"
           :dimension="codeOwnerConfigurator"
           :selected-label="codeOwnersSelectLabelFormat"
@@ -440,7 +440,7 @@ watch(
   (value) => {
     switch (value) {
       case TestMetricSwitcher.Tests: {
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters())
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, ...filters], true, "line")
         machineConfigurator?.updateFilters([...filters, scenarioConfigurator])
         // configurators are replaced (not mutated) above, so rebind the watcher to their new .selected refs
@@ -450,7 +450,7 @@ watch(
       }
       case TestMetricSwitcher.Metrics: {
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...filters, measureConfigurator])
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, scenarioFilters([measureConfigurator]))
         machineConfigurator?.updateFilters([...filters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {

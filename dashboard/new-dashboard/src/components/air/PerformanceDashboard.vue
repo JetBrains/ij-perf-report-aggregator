@@ -37,6 +37,23 @@
       </section>
     </template>
     <template
+      v-for="group in acpGroups"
+      :key="group.title"
+    >
+      <Divider :title="group.title" />
+      <section>
+        <GroupProjectsChart
+          v-for="chart in group.charts"
+          :key="chart.label"
+          :label="chart.label"
+          :description="chart.description"
+          :measure="chart.measure"
+          :projects="chart.projects"
+          :legend-formatter="acpLegend"
+        />
+      </section>
+    </template>
+    <template
       v-for="group in otherGroups"
       :key="group.title"
     >
@@ -302,6 +319,133 @@ const otherGroups: (AirGroup & { project: string })[] = [
         label: "Session list of 2500 sessions: memory",
         description: "Over 3/4 of the max heap fails the test.",
         measure: ["sessionList.heapLive.MiB"],
+      },
+    ],
+  },
+]
+
+/**
+ * The ACP adapter performance tests (lane acp-perf, IJAI-2949). Each night they install the latest claude-acp, codex-acp
+ * and junie from the ACP registry and talk to them with a bare JSON-RPC client and a mock model, without Air. A project is
+ * one adapter, `air/acp/<agent>`. The big sessions have the sizes of the long session test, and a measure names its size.
+ * The test writes the sessions of junie through prompts, so junie has no sizes and no list scenarios.
+ */
+const acpAgents = [
+  { project: "air/acp/claude-acp", label: "claude-acp" },
+  { project: "air/acp/codex-acp", label: "codex-acp" },
+  { project: "air/acp/junie", label: "junie" },
+]
+const acpAgentLabels = new Map(acpAgents.map((agent) => [agent.project, agent.label]))
+const acpSizedProjects = acpAgents.filter((agent) => agent.label != "junie").map((agent) => agent.project)
+const acpAllProjects = acpAgents.map((agent) => agent.project)
+
+const acpMeasureLabels: Record<string, string> = {
+  "live.agentMs": "first turn",
+  "live.second.agentMs": "second turn",
+  "live.chunkLagP50Ms": "p50",
+  "live.chunkLagP95Ms": "p95",
+  "live.agentRssPeakMiB": "first turn",
+  "live.second.agentRssPeakMiB": "second turn",
+  "list.1k.activeFirst.warmMs": "1 000 sessions",
+  "list.10k.activeFirst.warmMs": "10 000 sessions",
+  "list.50k.activeFirst.warmMs": "50 000 sessions",
+  "list.initialize.coldMs": "61 000 sessions in the store",
+  "archive.ms": "archive",
+  "unarchive.ms": "unarchive",
+  "start.initializeMs": "initialize",
+}
+
+/** A line of an ACP chart is one adapter, with the size or the step that its measure names. */
+function acpLegend(name: string): string {
+  const parts = name.split(SERIES_NAME_SEPARATOR)
+  const agent = parts.map((part) => acpAgentLabels.get(part)).find((label) => label != undefined) ?? name
+  const measure = parts.find((part) => !acpAgentLabels.has(part)) ?? ""
+  const size = sizes.find((it) => measure.includes(`.${it.id}.`))
+  const step = size == undefined ? acpMeasureLabels[measure] : size.short
+  return step == undefined ? agent : `${agent}, ${step}`
+}
+
+interface AcpChart extends AirChart {
+  projects: string[]
+}
+
+/** One chart of an ACP step with one line for each adapter and size. `%s` in [template] is the size of the metric name. */
+function acpBySize(label: string, description: string, template: string): AcpChart {
+  return { label, description, measure: sizes.map((size) => template.replace("%s", size.id)), projects: acpSizedProjects }
+}
+
+const acpGroups: { title: string; charts: AcpChart[] }[] = [
+  {
+    title: "ACP adapters: open and continue a session of each size",
+    charts: [
+      {
+        label: "Start an adapter: the initialize request",
+        description: "The start of the adapter process and its answer to initialize, median of 3 starts. Air pays it for each new session.",
+        measure: ["start.initializeMs"],
+        projects: acpAllProjects,
+      },
+      acpBySize(
+        "Open a session: session/load replays the history",
+        "From session/load until its answer, with every replayed update. All user turns must arrive, and the model must not be called.",
+        "open.%s.replayMs"
+      ),
+      acpBySize("Open a session: peak memory of the adapter", "The largest sum of the resident memory of the adapter process tree during the replay.", "open.%s.agentRssPeakMiB"),
+      acpBySize(
+        "Continue a session: from the prompt to the request to the model",
+        "From session/prompt until the headers of the request reach the mock model. The time that the adapter prepares the turn: it reads the history and builds the request.",
+        "continue.%s.toModelMs"
+      ),
+      acpBySize(
+        "Continue a session: the size of the request to the model",
+        "The body of the request of the continued turn, in bytes. It grows with the history that the adapter sends.",
+        "continue.%s.requestBytes"
+      ),
+    ],
+  },
+  {
+    title: "ACP adapters: a live turn of 241 model steps",
+    charts: [
+      {
+        label: "Live turn: the time of the adapter",
+        description:
+          "20 000 text parts, 200 file reads, 20 outputs of 300 000 characters and 20 images, then a second turn in the same session. The time of the turn without the time of the mock model.",
+        measure: ["live.agentMs", "live.second.agentMs"],
+        projects: acpAllProjects,
+      },
+      {
+        label: "Live turn: the delay of a text part",
+        description: "From the flush of a stamped text part by the mock model to its arrival at the ACP client. junie sends no text parts, so it has no line.",
+        measure: ["live.chunkLagP50Ms", "live.chunkLagP95Ms"],
+        projects: acpSizedProjects,
+      },
+      {
+        label: "Live turn: peak memory of the adapter",
+        description: "The largest sum of the resident memory of the adapter process tree during the turn.",
+        measure: ["live.agentRssPeakMiB", "live.second.agentRssPeakMiB"],
+        projects: acpAllProjects,
+      },
+    ],
+  },
+  {
+    title: "ACP adapters: the session list",
+    charts: [
+      {
+        label: "Session list: the first page of 100 sessions",
+        description: "session/list of a project with 1 000, 10 000 and 50 000 sessions, warm. A time that grows with the count means that a page reads the whole history.",
+        measure: ["list.1k.activeFirst.warmMs", "list.10k.activeFirst.warmMs", "list.50k.activeFirst.warmMs"],
+        projects: acpSizedProjects,
+      },
+      {
+        label: "Session list: the first start after the index is gone",
+        description: "The initialize of an adapter on a store of 61 000 sessions without its index, as after an update. Codex builds its state database here.",
+        measure: ["list.initialize.coldMs"],
+        projects: acpSizedProjects,
+      },
+      {
+        label: "Archive and unarchive a session of the size XXL",
+        description: "From _session/archive or _session/unarchive until session/list shows the session in its new place.",
+        measure: ["archive.ms", "unarchive.ms"],
+        projects: acpSizedProjects,
       },
     ],
   },

@@ -8,7 +8,7 @@
     "echarts": "^6.1.0",
     "fast-equals": "^6.2.1",
     "humanize-duration": "^3.35.0",
-    "marked": "^18.1.1",
+    "marked": "^18.1.2",
     "openvue": "^1.0.0",
     "p-limit": "^7.3.3",
     "pinia": "^4.1.0",

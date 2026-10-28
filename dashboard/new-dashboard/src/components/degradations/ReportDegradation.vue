@@ -80,9 +80,9 @@ const dateFormatted = computed(() => {
   return year.toString() + "-" + month.toString() + "-" + day.toString()
 })
 
-const accidentType = ref<string>("Regression")
+const accidentType = ref<AccidentKind>(AccidentKind.Regression)
 const reason = ref("")
-function getAccidentTypes(): string[] {
+function getAccidentTypes(): AccidentKind[] {
   const values = Object.values(AccidentKind)
   values.splice(values.indexOf(AccidentKind.InferredRegression), 1)
   values.splice(values.indexOf(AccidentKind.InferredImprovement), 1)

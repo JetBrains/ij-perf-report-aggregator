@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
 import { ref } from "vue"
-import { Accident, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { replaceToLink } from "../../../util/linkReplacer"
 import { InfoData } from "./InfoSidebar"
 
@@ -77,7 +77,7 @@ function getAffectedTests(accident: AccidentSimple): string {
 const accidentsAroundDate = ref<AccidentSimple[] | undefined>([])
 
 interface AccidentSimple {
-  kind: string
+  kind: AccidentKind
   reason: string
   affectedTests: string[]
   date: string

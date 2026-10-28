@@ -71,7 +71,7 @@ export abstract class AccidentsConfigurator {
     this.value.value = updatedMap //we need to update value in reference to trigger the change
   }
 
-  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
+  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: AccidentKind, stacktrace: string = "") {
     const userName = useUserStore().user?.name ?? ""
     const response = await fetch(this.getAccidentUrl() + "accidents/", {
       method: "POST",
@@ -91,9 +91,7 @@ export abstract class AccidentsConfigurator {
     const id = Number(idString)
     this.value.value ??= new Map<string, Accident[]>()
     const updatedMap = new Map(this.value.value)
-    updatedMap.set(`${affected_test}_${build_number}`, [
-      { id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace, userName },
-    ])
+    updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind, stacktrace, userName }])
     this.value.value = updatedMap //we need to update value in reference to trigger the change
     return id
   }
@@ -319,5 +317,5 @@ function capitalizeFirstLetter(str: string): AccidentKind {
 }
 
 function isAccidentKind(str: string): str is AccidentKind {
-  return Object.values(AccidentKind).includes(str as AccidentKind)
+  return (Object.values(AccidentKind) as string[]).includes(str)
 }

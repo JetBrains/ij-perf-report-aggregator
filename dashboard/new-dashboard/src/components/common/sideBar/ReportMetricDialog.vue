@@ -191,7 +191,7 @@ const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
 const llmAnalysisPreference = useStorage("runLlmAnalysis", true)
 
-const accidentType = ref<string>(accidentToEdit.value?.kind ?? inferKindFromData(data))
+const accidentType = ref<AccidentKind>(accidentToEdit.value?.kind ?? inferKindFromData(data))
 const isKindAutoDetected = computed(() => accidentToEdit.value == null && inferKindFromData(data) === AccidentKind.Improvement && accidentType.value === AccidentKind.Improvement)
 watch(
   () => accidentToEdit.value,
@@ -317,12 +317,12 @@ watch(createIssueCheckbox, (newValue) => {
   }
 })
 
-function copy(accident: { kind: string; reason: string }) {
+function copy(accident: { kind: AccidentKind; reason: string }) {
   reason.value = accident.reason
   accidentType.value = accident.kind
 }
 
-function getAccidentTypes(): string[] {
+function getAccidentTypes(): AccidentKind[] {
   const values = Object.values(AccidentKind)
   //don't report Inferred type manually
   values.splice(values.indexOf(AccidentKind.InferredRegression), 1)

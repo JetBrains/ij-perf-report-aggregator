@@ -99,6 +99,7 @@ func Serve(dbUrl string, natsUrl string) error {
 	router.Handle("/api/metrics", prometheusMetrics.Handler())
 
 	router.Get("/api/meta/degradations", CreateGetDegradationsHandler(dbpool))
+	router.Post("/api/meta/degradations", CreateGetDegradationsHandler(dbpool))
 
 	router.Route("/api/meta", func(r chi.Router) {
 		r.Route("/accidents", func(r chi.Router) {

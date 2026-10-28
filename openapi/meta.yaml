@@ -119,7 +119,92 @@ paths:
                 items:
                   $ref: '#/components/schemas/DegradationReportEntry'
         '400':
-          description: Bad Request. One or more required query parameters are missing.
+          description: Bad Request. The owner, from or to value is missing (in the query or, for POST, the body).
+        '500':
+          description: Internal Server Error. A database query failed.
+    post:
+      summary: Get degradations by owner and date range (owners in the request body)
+      description: >
+        Same as GET, but owners and additional metrics may also be passed in a JSON request body, which avoids
+        "414 URI Too Long" for long owner lists. Values from the body are merged with the `owner` and
+        `additionalMetric` query parameters. The body is optional; `from` and `to` are always taken from the query.
+        Empty owner values are ignored; if no owners remain, returns 400.
+      parameters:
+        - name: owner
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Optional owners, merged with `owners` from the request body.
+          example: ['Java']
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start of date range, inclusive.
+          example: '2024-01-01'
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End of date range, inclusive.
+          example: '2024-03-31'
+        - name: inferredEvents
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Include inferred regressions/improvements (detected by R2D2). Excluded by default.
+        - name: additionalMetric
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Extra metric names, merged with `additionalMetrics` from the request body.
+          example: ['myCustomMetric']
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owners:
+                  type: array
+                  items:
+                    type: string
+                  description: Owners to filter by, merged with the `owner` query parameters.
+                  example: ['Java', 'Editor & Highlighting']
+                additionalMetrics:
+                  type: array
+                  items:
+                    type: string
+                  description: Extra metric names to include beyond the default main metrics list.
+                  example: ['myCustomMetric']
+      responses:
+        '200':
+          description: Returns a list of degradation entries, ordered by date descending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DegradationReportEntry'
+        '400':
+          description: Bad Request. The request body is not valid JSON or has unknown fields, or the owner, from or to value is missing.
         '500':
           description: Internal Server Error. A database query failed.
   /api/meta/projectsByOwner:

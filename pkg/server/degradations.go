@@ -2,6 +2,9 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -24,33 +27,84 @@ type degradationReportEntry struct {
 	Link         string `json:"link"`
 }
 
-// CreateGetDegradationsHandler returns a GET handler that fetches pre-computed
+type degradationsRequestBody struct {
+	Owners            []string `json:"owners"`
+	AdditionalMetrics []string `json:"additionalMetrics"`
+}
+
+type degradationsParams struct {
+	owners            []string
+	from              string
+	to                string
+	includeInferred   bool
+	additionalMetrics []string
+}
+
+var errDegradationsMissingParams = errors.New(`"owner" (query parameter, or "owners" in the POST body), "from" and "to" are all required`)
+
+func dropBlank(values []string) []string {
+	return slices.DeleteFunc(values, func(s string) bool { return s == "" })
+}
+
+// parseDegradationsRequest reads the query parameters and, for POST, merges in the optional JSON body.
+func parseDegradationsRequest(r *http.Request) (degradationsParams, error) {
+	q := r.URL.Query()
+	params := degradationsParams{
+		owners:            q["owner"],
+		from:              q.Get("from"),
+		to:                q.Get("to"),
+		includeInferred:   q.Get("inferredEvents") == "true",
+		additionalMetrics: q["additionalMetric"],
+	}
+
+	if r.Method == http.MethodPost && r.Body != nil {
+		var body degradationsRequestBody
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&body)
+		if err != nil && !errors.Is(err, io.EOF) {
+			return degradationsParams{}, fmt.Errorf("invalid request body: %w", err)
+		}
+		params.owners = slices.Concat(params.owners, body.Owners)
+		params.additionalMetrics = slices.Concat(params.additionalMetrics, body.AdditionalMetrics)
+	}
+
+	params.owners = dropBlank(params.owners)
+	params.additionalMetrics = dropBlank(params.additionalMetrics)
+
+	if len(params.owners) == 0 || params.from == "" || params.to == "" {
+		return degradationsParams{}, errDegradationsMissingParams
+	}
+	return params, nil
+}
+
+// CreateGetDegradationsHandler returns a handler (served for GET and POST) that fetches pre-computed
 // degradations (accidents) from the meta DB for one or more owners and a date range.
 //
 // Query parameters:
 //
-//	owner            – (required, repeatable) matched against project_owner.owner
+//	owner            – (required unless given in the body, repeatable) matched against project_owner.owner
 //	from             – (required) start of date range, inclusive (ISO date, e.g. "2024-01-01")
 //	to               – (required) end of date range, inclusive (ISO date, e.g. "2024-03-31")
 //	inferredEvents   – (optional) include R2D2-detected regressions/improvements; default false
 //	additionalMetric – (optional, repeatable) extra metric names beyond the default mainMetrics list
 //
+// POST additionally accepts an optional JSON body {"owners": [...], "additionalMetrics": [...]} whose
+// values are merged with the query parameters; use it when the owner list is too long for a URL.
+//
 // Example:
 //
 //	GET /api/meta/degradations?owner=Java&owner=IntelliJ+Kotlin+Plugin&from=2024-01-01&to=2024-03-31&inferredEvents=true&additionalMetric=myMetric
+//	POST /api/meta/degradations?from=2024-01-01&to=2024-03-31 {"owners": ["Java", "IntelliJ Kotlin Plugin"]}
 func CreateGetDegradationsHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		q := r.URL.Query()
-		owners := slices.DeleteFunc(q["owner"], func(s string) bool { return s == "" })
-		from := q.Get("from")
-		to := q.Get("to")
-		includeInferred := q.Get("inferredEvents") == "true"
-		additionalMetrics := slices.DeleteFunc(q["additionalMetric"], func(s string) bool { return s == "" })
-
-		if len(owners) == 0 || from == "" || to == "" {
-			http.Error(w, `query parameters "owner", "from", and "to" are all required`, http.StatusBadRequest)
+		params, err := parseDegradationsRequest(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		owners, from, to := params.owners, params.from, params.to
+		includeInferred, additionalMetrics := params.includeInferred, params.additionalMetrics
 
 		allowedMetrics := slices.Concat(mainMetrics, additionalMetrics)
 

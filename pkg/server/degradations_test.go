@@ -69,6 +69,13 @@ func TestParseDegradationsRequest(t *testing.T) {
 			wantErrContains: "invalid request body",
 		},
 		{
+			name:            "POST unknown body field",
+			method:          http.MethodPost,
+			query:           "from=2024-01-01&to=2024-03-31",
+			body:            `{"owner": ["Java"]}`,
+			wantErrContains: `unknown field "owner"`,
+		},
+		{
 			name:            "POST empty body and no owners",
 			method:          http.MethodPost,
 			query:           "from=2024-01-01&to=2024-03-31",

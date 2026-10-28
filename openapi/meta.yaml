@@ -204,7 +204,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/DegradationReportEntry'
         '400':
-          description: Bad Request. The request body is not valid JSON, or the owner, from or to value is missing.
+          description: Bad Request. The request body is not valid JSON or has unknown fields, or the owner, from or to value is missing.
         '500':
           description: Internal Server Error. A database query failed.
   /api/meta/projectsByOwner:

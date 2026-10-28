@@ -40,7 +40,7 @@ type degradationsParams struct {
 	additionalMetrics []string
 }
 
-var errDegradationsMissingParams = errors.New(`query parameters "owner", "from", and "to" are all required`)
+var errDegradationsMissingParams = errors.New(`"owner" (query parameter, or "owners" in the POST body), "from" and "to" are all required`)
 
 func dropBlank(values []string) []string {
 	return slices.DeleteFunc(values, func(s string) bool { return s == "" })
@@ -59,7 +59,9 @@ func parseDegradationsRequest(r *http.Request) (degradationsParams, error) {
 
 	if r.Method == http.MethodPost && r.Body != nil {
 		var body degradationsRequestBody
-		err := json.NewDecoder(r.Body).Decode(&body)
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&body)
 		if err != nil && !errors.Is(err, io.EOF) {
 			return degradationsParams{}, fmt.Errorf("invalid request body: %w", err)
 		}

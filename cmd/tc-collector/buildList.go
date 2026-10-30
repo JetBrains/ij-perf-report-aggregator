@@ -103,11 +103,3 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
 	}
 	return &result, nil
 }
-
-type ChangeList struct {
-	List []Change `json:"change"`
-}
-
-type Change struct {
-	Version string `json:"version"`
-}

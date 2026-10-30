@@ -252,7 +252,7 @@ func computeBuildDate(build *Build) (int, time.Time, error) {
 }
 
 func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string, error) {
-	artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(buildId) + ")&fields=change(version)&count=10000")
+	artifactUrl, err := url.Parse(t.serverUrl + "/builds/id:" + strconv.Itoa(buildId) + "?fields=" + installer.BuildChangesFields)
 	if err != nil {
 		return nil, err
 	}
@@ -271,23 +271,24 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
 
 	t.storeSessionIdCookie(response)
 
-	var changeList ChangeList
-	err = json.NewDecoder(response.Body).Decode(&changeList)
+	var buildChanges installer.BuildChanges
+	err = json.NewDecoder(response.Body).Decode(&buildChanges)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	result := make([]string, len(changeList.List))
-	for index, change := range changeList.List {
-		if strings.Contains(change.Version, " ") {
+	commits := buildChanges.CheckedOutCommits()
+	result := make([]string, 0, len(commits))
+	for _, commit := range commits {
+		if strings.Contains(commit, " ") {
 			// private build with custom change, format: 13 04 2022 12:14
 			continue
 		}
-		encoded, ok := installer.EncodeCommit(change.Version)
+		encoded, ok := installer.EncodeCommit(commit)
 		if !ok {
-			return nil, fmt.Errorf("failed to decode change version: %q", change.Version)
+			return nil, fmt.Errorf("failed to decode change version: %q", commit)
 		}
-		result[index] = encoded
+		result = append(result, encoded)
 	}
 
 	return result, nil

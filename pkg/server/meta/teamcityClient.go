@@ -9,6 +9,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/installer"
 )
 
 type TeamCityClient struct {
@@ -198,14 +200,6 @@ type BuildInfo struct {
 	StartDate   string `json:"startDate"`
 }
 
-type Change struct {
-	Version string `json:"version"`
-}
-
-type Changes struct {
-	Change []Change `json:"change"`
-}
-
 func (client *TeamCityClient) getBuildType(ctx context.Context, buildID string) (string, error) {
 	res, err := client.makeRequest(ctx, "/app/rest/builds/id:"+buildID, map[string]string{"Accept": "application/json"})
 	if err != nil {
@@ -257,24 +251,25 @@ func (client *TeamCityClient) getBuildInfo(ctx context.Context, buildID string) 
 }
 
 func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {
-	res, err := client.makeRequest(ctx, "/app/rest/changes?locator=build:(id:"+buildID+")&count=10000", map[string]string{"Accept": "application/json"})
+	res, err := client.makeRequest(ctx, "/app/rest/builds/id:"+url.QueryEscape(buildID)+"?fields="+installer.BuildChangesFields, map[string]string{"Accept": "application/json"})
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
 
-	var changes Changes
-	if err := json.NewDecoder(res.Body).Decode(&changes); err != nil {
+	var build installer.BuildChanges
+	if err := json.NewDecoder(res.Body).Decode(&build); err != nil {
 		return nil, fmt.Errorf("failed to decode changes response: %w", err)
 	}
 
-	if len(changes.Change) == 0 {
+	commits := build.CheckedOutCommits()
+	if len(commits) == 0 {
 		return nil, fmt.Errorf("no changes found for build %s", buildID)
 	}
 
 	revisions := &CommitRevisions{
-		LastCommit:  changes.Change[0].Version,
-		FirstCommit: changes.Change[len(changes.Change)-1].Version,
+		LastCommit:  commits[0],
+		FirstCommit: commits[len(commits)-1],
 	}
 
 	return revisions, nil
@@ -364,14 +359,16 @@ func (client *TeamCityClient) getChangeID(ctx context.Context, buildTypeID, vers
 	return changes.Change[0].Id, nil
 }
 
-func (client *TeamCityClient) getChangesBetweenBuilds(ctx context.Context, buildTypeID, branch, sinceBuildID, untilBuildID string) ([]changeRef, error) {
+// getChangesBetweenBuilds returns the changes of the builds between the two builds (see installer.BuildChanges for the
+// versioned settings commits that are excluded).
+func (client *TeamCityClient) getChangesBetweenBuilds(ctx context.Context, buildTypeID, branch, sinceBuildID, untilBuildID string) ([]installer.Change, error) {
 	branchDim := ""
 	if branch != "" {
 		branchDim = "branch:(name:" + url.QueryEscape(branch) + "),"
 	}
 	endpoint := fmt.Sprintf(
-		"/app/rest/builds?locator=buildType:(id:%s),%ssinceBuild:(id:%s),untilBuild:(id:%s),count:10000&fields=build(changes($locator(count:10000),change(id,version)))",
-		url.QueryEscape(buildTypeID), branchDim, url.QueryEscape(sinceBuildID), url.QueryEscape(untilBuildID))
+		"/app/rest/builds?locator=buildType:(id:%s),%ssinceBuild:(id:%s),untilBuild:(id:%s),count:10000&fields=build(%s)",
+		url.QueryEscape(buildTypeID), branchDim, url.QueryEscape(sinceBuildID), url.QueryEscape(untilBuildID), installer.BuildChangesFields)
 	res, err := client.makeRequest(ctx, endpoint, map[string]string{"Accept": "application/json"})
 	if err != nil {
 		return nil, err
@@ -379,17 +376,15 @@ func (client *TeamCityClient) getChangesBetweenBuilds(ctx context.Context, build
 	defer res.Body.Close()
 
 	var builds struct {
-		Build []struct {
-			Changes changesResponse `json:"changes"`
-		} `json:"build"`
+		Build []installer.BuildChanges `json:"build"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&builds); err != nil {
 		return nil, fmt.Errorf("failed to decode builds-with-changes response: %w", err)
 	}
 
-	changes := make([]changeRef, 0)
-	for _, b := range builds.Build {
-		changes = append(changes, b.Changes.Change...)
+	changes := make([]installer.Change, 0)
+	for i := range builds.Build {
+		changes = append(changes, builds.Build[i].CheckedOutChanges()...)
 	}
 	return changes, nil
 }

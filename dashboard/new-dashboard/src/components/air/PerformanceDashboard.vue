@@ -5,6 +5,7 @@
     persistent-id="air_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :with-installer="false"
+    :history-start="historyStart"
   >
     <template #configurator>
       <SelectButton
@@ -78,6 +79,12 @@ interface AirGroup {
  * The sizes of the long session test. The metric names and the projects keep the size names of the test, M, XL and XXL,
  * so their history and their degradation alerts stay. The legend names each size by what it is.
  */
+/**
+ * The first day of the points that the charts show. The tests changed how they measure on that day, and the earlier
+ * points are not comparable.
+ */
+const historyStart = "2026-11-02"
+
 const sizes = [
   {
     id: "M",
@@ -125,9 +132,7 @@ function sizeLegend(name: string): string {
 
 const jumpPoints = [
   { point: 0, label: "the start of the history" },
-  { point: 20, label: "20 % of the history" },
   { point: 40, label: "40 % of the history" },
-  { point: 60, label: "60 % of the history" },
   { point: 80, label: "80 % of the history" },
 ]
 
@@ -142,13 +147,8 @@ const longSessionGroups: AirGroup[] = [
       ),
       bySize(
         "Open a session: from the click to the first visible text",
-        "Until the loading cover goes away. The page removes it when the text and the code editors near the viewport are built. A removal by the timeout of the page fails the test.",
+        "Until the loading cover goes away. The page removes it after the text near the viewport is built and laid out, so the next frame shows the transcript. A removal by the timeout of the page fails the test.",
         "open.%s.coverRemovedMs"
-      ),
-      bySize(
-        "Open a session: from the click to a settled transcript",
-        "The later of the cover removal and the last move or height change of the transcript.",
-        "open.%s.gestureToSettledMs"
       ),
     ],
   },
@@ -157,22 +157,22 @@ const longSessionGroups: AirGroup[] = [
     charts: [
       bySize(
         "Open, backend: replay the session journal into the projection",
-        "From the request of the projection until it is ready, with the lock waits. The [AIR_SESSION_RESTORE] rich projection ready line of the IDE log.",
+        "From the request of the projection until it is ready, with the lock waits. It runs off the EDT. The [AIR_SESSION_RESTORE] rich projection ready line of the IDE log.",
         "checkpoint.%s.rich_projection_ready.totalMs"
       ),
       bySize(
         "Open, frontend: apply the session snapshot and render it on the EDT",
-        "From the arrival of the snapshot in the frontend until the screen rendered it. The [AIR_SESSION_RESTORE] frontend reload applied line.",
+        "From the arrival of the snapshot in the frontend until the end of the render on the EDT. The wait of the background coroutine after the render is a separate log field and is not in this time. The [AIR_SESSION_RESTORE] frontend reload applied line.",
         "checkpoint.%s.frontend_reload_applied.totalMs"
       ),
       bySize(
         "Open, frontend: build the rows of the transcript",
-        "Build the rows of the messages, the tool calls and the code blocks. The [AIR_SESSION_RESTORE] frontend transcript rows applied line.",
+        "One EDT event that builds the rows of the messages, the tool calls and the code blocks. The largest freeze of the open. The [AIR_SESSION_RESTORE] frontend transcript rows applied line.",
         "checkpoint.%s.frontend_transcript_rows_applied.elapsedMs"
       ),
       bySize(
         "Open, frontend: from the session panel to the first painted text",
-        "From the creation of the session panel until the first paint of the transcript. The [AIR_SESSION_RESTORE] frontend first content paint finished line.",
+        "From the creation of the session panel until the paint that removes the cover. The [AIR_SESSION_RESTORE] frontend first content paint finished line.",
         "checkpoint.%s.frontend_first_content_paint_finished.totalSincePanelCreationMs"
       ),
     ],
@@ -181,55 +181,44 @@ const longSessionGroups: AirGroup[] = [
     title: "Long session: continue the old session with a prompt",
     charts: [
       bySize(
-        "Continue a session: from Send to the session/load request at the agent",
-        "Air starts the agent process and sends session/load. The time includes the start of the agent.",
-        "continue.%s.sendToLoadMs"
+        "Continue a session: from the answer of session/load to the prompt at the agent",
+        "After the agent answered session/load, Air drops the replayed updates, reads the tail of the journal and recovers the owner of the session, then sends the prompt. The time ends when the prompt arrives at the agent.",
+        "continue.%s.loadAnsweredToPromptMs"
       ),
-      bySize("Continue a session: from Send to the prompt at the agent", "Until the agent got the prompt that the user sent.", "continue.%s.sendToPromptMs"),
     ],
   },
   {
     title: "Long session: a long streamed answer",
     charts: [
       bySize(
-        "Long answer: from the last chunk to the completed turn in the UI",
-        "Until the running status row of the turn goes away. It shows how far the UI lags behind the agent.",
-        "answer.%s.streamEndToCompletedMs"
+        "Long answer: from a written chunk to the frame that shows it, p95",
+        "The test agent streams a long Markdown answer. For each section mark, the time runs from the write of its chunk to the end of the first frame that shows it. It shows how far the screen lags behind the agent.",
+        "answer.%s.streamLagP95Ms"
       ),
       bySize(
         "Long answer: from the last chunk to a settled transcript",
-        "Until the end of the first frame with the built text after the last change of the transcript.",
+        "From the write of the last chunk until the end of the first frame with the built text after the last change of the transcript. The EDT backlog at the end of the stream counts.",
         "answer.%s.streamEndToSettledMs"
       ),
     ],
   },
   {
-    title: "Long session: typing and scrolling latency",
+    title: "Long session: scrolling and typing",
     charts: [
       bySize(
         "Mouse wheel up from the bottom of the transcript: p95 latency of one wheel event",
-        "10 bursts of 400 wheel events, one each 16 ms. The time runs to the end of the first frame that shows the scroll. The p95 of the worst burst. An event over 2 s fails the test.",
+        "One burst of up to 375 wheel notches, one each 16 ms, for 6 s, into history that is not built yet. Animated scrolling is off. Each event runs from its post to the end of the first frame after its dispatch, so the wait in the EDT queue counts. The burst stops at the top. An event over 2 s fails the test.",
         "scroll.%s.wheelP95Ms"
       ),
       bySize(
-        "Mouse wheel up from the bottom of the transcript: the slowest single wheel event",
-        "The slowest wheel event to the frame of its scroll in the 10 bursts.",
-        "scroll.%s.wheelMaxMs"
-      ),
-      bySize(
-        "Mouse wheel right after the long answer: p95 latency of one wheel event",
-        "200 wheel events over the transcript next to the long answer, each to the frame of its scroll.",
-        "answer.%s.wheelP95Ms"
-      ),
-      bySize(
-        "Typing prose into the prompt: p95 latency of one character",
-        "1000 characters of prose at the pace of a fast typist. The time runs from the key event to the paint of the editor.",
-        "prompt.%s.proseP95Ms"
-      ),
-      bySize(
         "Typing code into the prompt: p95 latency of one character",
-        "50 lines of code at the pace of a fast typist, from the key event to the paint of the editor. A character over 500 ms fails the test.",
+        "1740 characters of code. The next key goes after the paint of the last one, the end of its completion and an idle EDT, so each value is the cost of one key. The time runs from the key event to the start of the editor paint. A character over 500 ms fails the test.",
         "prompt.%s.codeP95Ms"
+      ),
+      bySize(
+        "Typing into the prompt: p95 latency of a line break",
+        "Shift+Enter in the prose and the code of the prompt, from the key event to the paint of the editor.",
+        "prompt.%s.lineBreakP95Ms"
       ),
     ],
   },
@@ -238,7 +227,7 @@ const longSessionGroups: AirGroup[] = [
     charts: jumpPoints.map(({ point, label }) =>
       bySize(
         `Jump to ${label}: time until the transcript settles`,
-        "The scrollbar jumps to this point of the history, as a user drags it there. The transcript builds far text only near the visible area. The time runs to the end of the first frame with no empty part in the viewport, after the last change. Over 60 s fails the test.",
+        "Right after the open, the scrollbar jumps to this point of history that is not built yet, as a user drags it there. The time runs to the end of the first frame with no empty part in the viewport, after the last change. A jump to a built place or to the shown position gives no value. Over 60 s fails the test.",
         `scroll.%s.jump${point}.settledMs`
       )
     ),
@@ -246,17 +235,15 @@ const longSessionGroups: AirGroup[] = [
   {
     title: "Long session: memory",
     charts: [
-      bySize("Live heap before the open of the session", "The used heap after a full garbage collection, before the click.", "heap.%s.before_the_open.MiB"),
-      bySize("Live heap right after the open of the session", "The difference to the heap before the open is what the open session keeps.", "heap.%s.after_the_open.MiB"),
       bySize(
-        "Live heap at the end of the scenario, after a full garbage collection",
-        "What the IDE keeps after the open, the scroll, the answer and the typing. Over 3/4 of the max heap fails the test.",
-        "heap.%s.heapLive.MiB"
+        "Live heap right after the open of the session",
+        "The used heap after a full garbage collection, after the open. It holds what the open session keeps.",
+        "heap.%s.after_the_open.MiB"
       ),
       bySize(
-        "Peak heap during the scenario",
-        "The largest used heap after a pause of the garbage collector, without the collections that the test calls itself.",
-        "heap.%s.workingSet.MiB"
+        "Live heap at the end of the scenario, after a full garbage collection",
+        "What the IDE keeps after the open, the scroll, the answer and the typing. The lane IDE has the heap of a user IDE, 2048 MiB. Over 3/4 of it fails the test.",
+        "heap.%s.heapLive.MiB"
       ),
     ],
   },
@@ -264,19 +251,13 @@ const longSessionGroups: AirGroup[] = [
 
 /** The readable name of each measure of the charts that have one line for each measure. */
 const measureLabels: Record<string, string> = {
-  "manyAgents.edtP95Ms": "EDT latency, p95",
-  "manyAgents.edtMaxMs": "EDT latency, max",
-  "manyAgents.focusedTabLagMs": "Focused tab",
-  "manyAgents.openTabLagMaxMs": "Slowest of the hidden open tabs",
+  "manyAgents.focusedContentLagP95Ms": "p95",
+  "manyAgents.focusedContentLagMaxMs": "max",
+  "manyAgents.edtMaxMs": "The longest EDT wait",
   "manyAgents.heapLive.MiB": "Live heap after a full garbage collection",
-  "manyAgents.workingSet.MiB": "Peak heap after a collector pause",
-  "manyAgents.stream.gcPauseMs": "Collector pauses in the stream",
-  "sessionList.firstShowMs": "First show after the restart",
+  "sessionList.firstShowMs": "First show: from the activation of the window to the frame with the newest row",
   "sessionList.refreshMedianMs": "Refresh, median of 9",
-  "sessionList.wheelP95Ms": "Wheel event latency, p95",
-  "sessionList.wheelMaxMs": "Wheel event latency, max",
   "sessionList.heapLive.MiB": "Live heap after a full garbage collection",
-  "sessionList.workingSet.MiB": "Peak heap after a collector pause",
 }
 
 function measureLegend(name: string): string {
@@ -286,28 +267,24 @@ function measureLegend(name: string): string {
 
 const otherGroups: (AirGroup & { project: string })[] = [
   {
-    title: "Many agents: 10 sessions stream at once for 5 minutes",
+    title: "Many agents: 10 sessions stream at once for 20 seconds",
     project: "air/many-agents",
     charts: [
       {
-        label: "Ten agents stream at once: EDT latency",
-        description: "10 sessions of a test agent stream with 5 subagents each. One is in the focused tab, 3 in hidden tabs, 6 without a tab.",
-        measure: ["manyAgents.edtP95Ms", "manyAgents.edtMaxMs"],
+        label: "Ten agents stream at once: from a written chunk to the frame that shows it in the focused tab",
+        description:
+          "10 sessions of a test agent stream, each into one growing answer, with 5 subagents each. One is in the focused tab, 3 in hidden tabs, 6 without a tab. The time runs from the write of a marked chunk to the end of the first frame that shows it.",
+        measure: ["manyAgents.focusedContentLagP95Ms", "manyAgents.focusedContentLagMaxMs"],
       },
       {
-        label: "Ten agents stream at once: from the end of the stream to the completed turn in a tab",
-        description: "Until the running status row of the turn goes away in the tab.",
-        measure: ["manyAgents.focusedTabLagMs", "manyAgents.openTabLagMaxMs"],
+        label: "Ten agents stream at once: the longest EDT wait",
+        description: "A probe posts to the EDT each 10 ms during the stream. The longest time that one probe waited.",
+        measure: ["manyAgents.edtMaxMs"],
       },
       {
         label: "Ten agents stream at once: memory",
         description: "Over 3/4 of the max heap fails the test.",
-        measure: ["manyAgents.heapLive.MiB", "manyAgents.workingSet.MiB"],
-      },
-      {
-        label: "Ten agents stream at once: garbage collection time",
-        description: "The pauses of the collector in the stream, without the collections that the test calls itself.",
-        measure: ["manyAgents.stream.gcPauseMs"],
+        measure: ["manyAgents.heapLive.MiB"],
       },
     ],
   },
@@ -317,18 +294,14 @@ const otherGroups: (AirGroup & { project: string })[] = [
     charts: [
       {
         label: "Session list of 2500 sessions: first show after a restart, and a refresh",
-        description: "10 sessions of 2000 turns, 100 of 150 turns, the rest of one turn, each with a valid summary.json. A journal read fails the test.",
+        description:
+          "The part waits until the list holds all 2500 sessions. The first show runs from the activation of the window to the end of the first frame that shows the newest row. A refresh bypasses the caches. A journal read fails the test.",
         measure: ["sessionList.firstShowMs", "sessionList.refreshMedianMs"],
-      },
-      {
-        label: "Session list of 2500 sessions: mouse wheel latency over the tree",
-        description: "200 wheel events over the Agent Sessions tree. Only a burst that moved the tree has a value.",
-        measure: ["sessionList.wheelP95Ms", "sessionList.wheelMaxMs"],
       },
       {
         label: "Session list of 2500 sessions: memory",
         description: "Over 3/4 of the max heap fails the test.",
-        measure: ["sessionList.heapLive.MiB", "sessionList.workingSet.MiB"],
+        measure: ["sessionList.heapLive.MiB"],
       },
     ],
   },

@@ -14,6 +14,15 @@ var (
 	airNoisy  = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 25, EffectSizeThreshold: 3}
 )
 
+// A typed character costs about 12 ms. A step of 1-3 ms is 10-25 % of that and is noise, so only a latency over 50 ms,
+// the start of what a user feels, reports.
+var airTypingLimit = detector.AnalysisSettings{
+	ReportType:     detector.DegradationEvent,
+	AnalysisKind:   detector.ThresholdAnalysis,
+	ThresholdMode:  detector.ThresholdGreaterThan,
+	ThresholdValue: 50,
+}
+
 func GenerateAirSettings() []detector.PerformanceSettings {
 	type metric struct {
 		name     string
@@ -21,24 +30,23 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 	}
 	longSession := []metric{
 		{"open.%s.coverRemovedMs", airStable},
-		{"open.%s.gestureToSettledMs", airStable},
-		{"continue.%s.sendToPromptMs", airStable},
+		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airStable},
+		{"continue.%s.loadAnsweredToPromptMs", airNoisy},
+		{"answer.%s.streamLagP95Ms", airNoisy},
 		{"answer.%s.streamEndToSettledMs", airNoisy},
 		{"heap.%s.heapLive.MiB", airStable},
-		{"prompt.%s.codeP95Ms", airNoisy},
+		{"prompt.%s.codeP95Ms", airTypingLimit},
 		{"scroll.%s.wheelP95Ms", airNoisy},
-		// A jump to the start and to 0.4 of the history shows rows far from the bottom, whose text the transcript builds
-		// only near the visible area. The time runs to the frame that shows the built text, so it is noisy until the
-		// nights show otherwise.
+		// A jump to the start and to 0.4 of the history lands on rows that are not built yet. The time runs to the frame
+		// that shows the built text, so it is noisy until the nights show otherwise.
 		{"scroll.%s.jump0.settledMs", airNoisy},
 		{"scroll.%s.jump40.settledMs", airNoisy},
 	}
 	metrics := map[string][]metric{
 		"air/many-agents": {
 			{"manyAgents.heapLive.MiB", airStable},
-			{"manyAgents.openTabLagMaxMs", airStable},
-			{"manyAgents.focusedTabLagMs", airNoisy},
-			{"manyAgents.edtP95Ms", airNoisy},
+			{"manyAgents.focusedContentLagP95Ms", airNoisy},
+			{"manyAgents.edtMaxMs", airNoisy},
 		},
 		"air/session-list": {
 			{"sessionList.heapLive.MiB", airStable},

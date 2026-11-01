@@ -63,6 +63,7 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
+import { HistoryStartConfigurator } from "../../configurators/HistoryStartConfigurator"
 import {
   accidentsConfiguratorKey,
   branchConfiguratorKey,
@@ -100,6 +101,8 @@ interface PerformanceDashboardProps {
   branch?: string | null
   initialMode?: string[]
   withMode?: boolean
+  /** The first day, `YYYY-MM-DD`, whose points the charts show. A dashboard whose tests changed their method sets it. */
+  historyStart?: string | null
 }
 
 const {
@@ -114,6 +117,7 @@ const {
   branch = "master",
   initialMode = defaultModeName,
   withMode = true,
+  historyStart = null,
 } = defineProps<PerformanceDashboardProps>()
 
 const container = useTemplateRef<HTMLElement>("container")
@@ -189,6 +193,10 @@ if (releaseNightlyConfigurator != null) {
 
 if (testModeConfigurator != null) {
   dashboardConfigurators.push(testModeConfigurator)
+}
+
+if (historyStart != null) {
+  dashboardConfigurators.push(new HistoryStartConfigurator(historyStart))
 }
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)

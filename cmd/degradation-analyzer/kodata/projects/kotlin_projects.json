@@ -311,16 +311,20 @@
       ]
     },
     "navigationToDeclaration": {
-      "intelliJSources": [
-        "intellij_sources/navigation_from_MPPWorkspace_to_class_LLDBDriverConfiguration",
-        "intellij_sources/navigation_from_KonanRunConfigurationType_to_class_ConfigurationTypeBase",
-        "intellij_sources/navigation_from_KonanLauncher_to_val_configuration",
-        "intellij_sources/navigation_from_MPPProjectTaskRunner_to_method_isNative"
+      "intelliJ": [
+        "intellij_commit/navigation_from_MPPWorkspace_to_class_LLDBDriverConfiguration",
+        "intellij_commit/navigation_from_KonanRunConfigurationType_to_class_ConfigurationTypeBase",
+        "intellij_commit/navigation_from_KonanLauncher_to_val_configuration",
+        "intellij_commit/navigation_from_MPPProjectTaskRunner_to_method_isNative"
       ]
     },
     "sequenceHighlighting": {
-      "intelliJSources": ["intellij_sources/sequence_highlighting_start_from_FirCompletionContributorBase.kt"],
-      "kotlinLang": ["kotlin_lang/sequence_highlighting_start_from_LLFirDesignatedExpectActualMatcherTransformer.kt"]
+      "intelliJ": [
+        "intellij_commit/sequence_highlighting_start_from_FirCompletionContributorBase.kt"
+      ],
+      "kotlinLang": [
+        "kotlin_lang/sequence_highlighting_start_from_LLFirDesignatedExpectActualMatcherTransformer.kt"
+      ]
     },
     "deleteAllImports": {
       "arrow": ["arrow/user_scenario/remove_all_imports/Either.kt"]
@@ -351,22 +355,30 @@
       ]
     },
     "intelliJFindUsagesAndHighlighting": {
-      "intelliJSources": ["intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"]
+      "intelliJ": [
+        "intellij_commit/usage_of_setUp_highlight_IdeResourcesUtil.kt"
+      ]
     },
     "kotlinFindUsagesAndHighlighting": {
       "kotlinLang": ["kotlin_lang/usage_of_Flag_highlight_RawFirBuilder.kt"]
     },
     "intelliJFindUsagesAndHighlightingNoFindUsages": {
-      "intelliJSources": ["intellij_sources/highlight_IdeResourcesUtil.kt"]
+      "intelliJ": [
+        "intellij_commit/highlight_IdeResourcesUtil.kt"
+      ]
     },
     "kotlinFindUsagesAndHighlightingKotlinNoFindUsages": {
       "kotlinLang": ["kotlin_lang/highlight_RawFirBuilder.kt"]
     },
     "intelliJFindUsagesAndGotoImplementation": {
-      "intelliJSources": ["intellij_sources/usage_of_setUp_goto_implementation_ReadActionCache.kt"]
+      "intelliJ": [
+        "intellij_commit/usage_of_setUp_goto_implementation_ReadActionCache.kt"
+      ]
     },
     "intelliJFindUsagesAndGotoImplementationNoUsages": {
-      "intelliJSources": ["intellij_sources/goto_implementation_ReadActionCache.kt"]
+      "intelliJ": [
+        "intellij_commit/goto_implementation_ReadActionCache.kt"
+      ]
     },
     "kotlinFindUsagesAndGotoImplementation": {
       "kotlinLang": ["kotlin_lang/usage_of_Flag_goto_implementation_KaptExtensionConfig.kt"]

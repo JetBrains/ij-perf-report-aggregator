@@ -96,7 +96,6 @@ const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   intelliJ2: buildCategory("IntelliJ suite 2", ""),
   intelliJ3: buildCategory("IntelliJ suite 3", ""),
 
-  intelliJSources: buildCategory("IntelliJ Sources", "intellij_sources/"),
   intelliJTyping: buildCategory("IntelliJ with typing", ""),
   kotlinLang: buildCategory("Kotlin lang", "kotlin_lang/"),
   kotlinLang_slow: buildCategory("Kotlin lang (slow)", "kotlin_lang/"),

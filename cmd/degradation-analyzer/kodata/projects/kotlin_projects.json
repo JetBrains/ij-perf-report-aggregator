@@ -302,7 +302,7 @@
       ]
     },
     "convertJavaToKotlin": {
-      "intelliJSources": [
+      "intelliJ": [
         "intellij_commit/javaToKotlin/HighlightFixUtil",
         "intellij_commit/javaToKotlin/CompilerConfigurationImpl",
         "intellij_commit/javaToKotlin/DaemonCodeAnalyzerImpl",

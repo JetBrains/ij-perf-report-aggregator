@@ -6,7 +6,8 @@ import { DataQueryResult, SERIES_NAME_SEPARATOR } from "../common/DataQueryExecu
 // nothing. That makes positional parsing fragile — set membership against the known dimension
 // values is reliable and order-agnostic.
 export interface IndexedSeries {
-  // values keyed by `${branch}::${project}::${metric}`
+  // values keyed by `${column}::${project}::${metric}`, where the column is the branch, or columnName(branch, mode)
+  // when modes are given
   byKey: Map<string, number[]>
   unresolvedNames: string[]
 }
@@ -36,11 +37,14 @@ export function indexSeries(
   configuration: DataQueryExecutorConfiguration,
   branches: readonly string[],
   projects: readonly string[],
-  measures: readonly string[]
+  measures: readonly string[],
+  // Two or more modes split each branch into one column per mode; the mode producer names every series then.
+  modes: readonly string[] = []
 ): IndexedSeries {
   const byKey = new Map<string, number[]>()
   const unresolvedNames: string[] = []
   const dims = makeDimensions(branches, projects, measures)
+  const modesSet = new Set(modes)
   for (let i = 0; i < data.length; i++) {
     const seriesData = data[i]
     // A deviation fetched to draw a chart's band is not a measurement of the metric it belongs to, and it
@@ -55,7 +59,13 @@ export function indexSeries(
     if (resolved.fellBack) {
       unresolvedNames.push(seriesName.length > 0 ? seriesName : measureName)
     }
-    const key = seriesKey(resolved.branch, resolved.project, resolved.metric)
+    let column = resolved.branch
+    if (modesSet.size > 0) {
+      const mode = seriesName.split(SERIES_NAME_SEPARATOR).find((part) => modesSet.has(part))
+      if (mode == null) continue
+      column = columnName(resolved.branch, mode)
+    }
+    const key = seriesKey(column, resolved.project, resolved.metric)
     const existing = byKey.get(key)
     if (existing == null) {
       byKey.set(key, values)
@@ -68,6 +78,11 @@ export function indexSeries(
 
 export function seriesKey(branch: string, project: string, metric: string): string {
   return `${branch}::${project}::${metric}`
+}
+
+// The compare-table column of one branch in one mode; also its header.
+export function columnName(branch: string, mode: string): string {
+  return `${branch}${SERIES_NAME_SEPARATOR}${mode}`
 }
 
 // One measured build within a series: its generated_time (ms) and value.

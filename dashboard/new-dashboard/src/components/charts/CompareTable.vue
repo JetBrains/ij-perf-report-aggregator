@@ -4,8 +4,8 @@
       <div class="text-sm">
         <template v-if="selection == null">
           <span class="text-gray-500"
-            >Select at least two branches in the toolbar to compare. The base is chosen automatically (release branch > master > first selected) so master shows up as a regression
-            candidate against the stable release.</span
+            >Select at least two branches or two modes in the toolbar to compare. The base is chosen automatically (release branch > master > first selected) so master shows up as
+            a regression candidate against the stable release; between modes, the default mode is the base.</span
           >
         </template>
         <template v-else-if="!hasRows">
@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
 import { deepEqual } from "fast-equals"
-import { computed, onUnmounted, ref, shallowRef, triggerRef, watch } from "vue"
+import { computed, inject, onUnmounted, ref, shallowRef, triggerRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { ValueUnit } from "../common/chart"
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -132,9 +132,9 @@ import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfig
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { DimensionConfigurator, selectedToArray } from "../../configurators/DimensionConfigurator"
 import { injectOrError } from "../../shared/injectionKeys"
-import { branchConfiguratorKey, compareSectionsRegistryKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { branchConfiguratorKey, compareSectionsRegistryKey, dashboardConfiguratorsKey, serverConfiguratorKey, testModeConfiguratorKey } from "../../shared/keys"
 import { openTestDrilldown } from "../../util/testDrilldown"
-import { BaseAndCompared, CompareSectionConfig, pickBaseAndCompared } from "./compareMode"
+import { CompareColumns, CompareSectionConfig, pickCompareColumns } from "./compareMode"
 import { indexSeries, seriesKey } from "./compareQuery"
 import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, formatSignedPercent, isSignificantBranch, severityCellClass } from "./compareStats"
 import { formatMeasureValue, resolveMeasureUnit } from "../common/formatter"
@@ -174,9 +174,12 @@ const sectionRows = shallowRef(new Map<string, CompareRow[]>())
 const sectionLoading = shallowRef(new Map<string, boolean>())
 const significantOnly = ref(true)
 
-const selectedBranches = computed<string[]>(() => selectedToArray(branchConfigurator.selected.value))
+const testModeConfigurator = inject(testModeConfiguratorKey, null)
 
-const selection = computed<BaseAndCompared | null>(() => pickBaseAndCompared(selectedBranches.value))
+const selectedBranches = computed<string[]>(() => selectedToArray(branchConfigurator.selected.value))
+const comparesBranches = computed(() => selectedBranches.value.length >= 2)
+
+const selection = computed<CompareColumns | null>(() => pickCompareColumns(selectedBranches.value, selectedToArray(testModeConfigurator?.selected.value)))
 const baseHeader = computed(() => selection.value?.base ?? "base")
 const comparedBranches = computed<string[]>(() => selection.value?.compared ?? [])
 
@@ -291,8 +294,7 @@ function recompute(entry: SubscriptionEntry, data: DataQueryResult, configuratio
   if (sel == null) return // executor still alive but the user has narrowed the selection — nothing to render.
 
   const measures = toArray(section.measure)
-  const branches = [sel.base, ...sel.compared]
-  const indexed = indexSeries(data, configuration, branches, section.projects, measures)
+  const indexed = indexSeries(data, configuration, sel.branches, section.projects, measures, sel.modes)
 
   for (const name of indexed.unresolvedNames) {
     if (entry.warnedNames.has(name)) continue
@@ -375,7 +377,7 @@ function formatRowRange(row: CompareRow, lo: number, hi: number): string {
 
 function handleNavigateToTest(row: CompareRow): void {
   const sel = selection.value
-  const branches = sel == null ? null : [sel.base, ...sel.compared]
+  const branches = sel == null || !comparesBranches.value ? null : sel.branches
   openTestDrilldown(router, { project: row.project, measure: row.metric, branches })
 }
 

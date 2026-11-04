@@ -3,6 +3,7 @@ import { DataQueryConfigurator } from "../components/common/dataQuery"
 import { InfoSidebar } from "../components/common/sideBar/InfoSidebar"
 import { AccidentsConfigurator } from "../configurators/accidents/AccidentsConfigurator"
 import { BranchConfigurator } from "../configurators/BranchConfigurator"
+import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { LlmAnalysesConfigurator } from "../configurators/llmAnalyses/LlmAnalysesConfigurator"
 import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { FilterConfigurator } from "../configurators/filter"
@@ -16,6 +17,7 @@ export const serverConfiguratorKey: InjectionKey<ServerWithCompressConfigurator>
 export const accidentsConfiguratorKey: InjectionKey<AccidentsConfigurator> = Symbol("accidentsKey")
 export const dashboardConfiguratorsKey: InjectionKey<DataQueryConfigurator[] | FilterConfigurator[]> = Symbol("dashboardConfiguratorsKey")
 export const branchConfiguratorKey: InjectionKey<BranchConfigurator | null> = Symbol("branchConfiguratorKey")
+export const testModeConfiguratorKey: InjectionKey<DimensionConfigurator | null> = Symbol("testModeConfiguratorKey")
 export const renderModeKey: InjectionKey<Ref<RenderMode>> = Symbol("renderModeKey")
 export const compareSectionsRegistryKey: InjectionKey<CompareSectionsRegistry> = Symbol("compareSectionsRegistryKey")
 export const youtrackClientKey: InjectionKey<YoutrackClient> = Symbol("youtrackClientKey")

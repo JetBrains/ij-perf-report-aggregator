@@ -57,6 +57,7 @@ import { computed, provide, ref, useTemplateRef, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dashboardProjectsFilter } from "../../configurators/DashboardProjectsFilter"
+import { selectedToArray } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
@@ -72,6 +73,7 @@ import {
   renderModeKey,
   serverConfiguratorKey,
   sidebarVmKey,
+  testModeConfiguratorKey,
 } from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import CompareTable from "../charts/CompareTable.vue"
@@ -192,6 +194,7 @@ if (testModeConfigurator != null) {
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 provide(branchConfiguratorKey, branchConfigurator)
+provide(testModeConfiguratorKey, testModeConfigurator)
 
 const renderMode = ref<RenderMode>("charts")
 const renderModeOptions = [
@@ -203,12 +206,10 @@ provide(compareSectionsRegistryKey, compareRegistry)
 
 const canCompare = computed(() => {
   if (branchConfigurator == null) return false
-  const sel = branchConfigurator.selected.value
-  const count = sel == null ? 0 : Array.isArray(sel) ? sel.length : 1
-  return count >= 2
+  return selectedToArray(branchConfigurator.selected.value).length >= 2 || selectedToArray(testModeConfigurator?.selected.value).length >= 2
 })
 
-// Drop back to charts when the user narrows to a single branch: comparing master to itself is degenerate.
+// Drop back to charts when the user narrows to a single branch and mode: comparing master to itself is degenerate.
 watch(canCompare, (allowed) => {
   if (!allowed && renderMode.value === "compare") {
     renderMode.value = "charts"

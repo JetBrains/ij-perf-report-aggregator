@@ -1,8 +1,9 @@
-import { computed, onUnmounted, Ref, shallowRef, triggerRef, watch } from "vue"
+import { computed, inject, onUnmounted, Ref, shallowRef, triggerRef, watch } from "vue"
 import { DimensionConfigurator, selectedToArray } from "../../../configurators/DimensionConfigurator"
 import { PredefinedMeasureConfigurator } from "../../../configurators/MeasureConfigurator"
+import { defaultModeName, TestModeConfigurator } from "../../../configurators/TestModeConfigurator"
 import { injectOrError } from "../../../shared/injectionKeys"
-import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../../shared/keys"
+import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey, testModeConfiguratorKey } from "../../../shared/keys"
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 import { DataQueryExecutor, DataQueryResult } from "../../common/DataQueryExecutor"
 import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
@@ -80,6 +81,19 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   const serverConfigurator = injectOrError(serverConfiguratorKey)
   const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey) as DataQueryConfigurator[]
   const branchConfigurator = injectOrError(branchConfiguratorKey)
+  const dashboardModeConfigurator = inject(testModeConfiguratorKey, null)
+
+  // The two engines are compared within one test mode: the default mode when it is selected, else the first selected
+  // mode. Without the filter, the runs of every mode join the series of the engine project they publish under.
+  const modeConfigurator = new TestModeConfigurator(false)
+  watch(
+    () => selectedToArray(dashboardModeConfigurator?.selected.value),
+    (modes) => {
+      modeConfigurator.selected.value = modes.length === 0 || modes.includes(defaultModeName) ? defaultModeName : modes[0]
+    },
+    { immediate: true }
+  )
+  const queryConfigurators = [...dashboardConfigurators.filter((configurator) => configurator !== dashboardModeConfigurator), modeConfigurator]
 
   const rowsByBase = shallowRef(new Map<string, EngineCompareRow[]>())
   const loadingByBase = shallowRef(new Map<string, boolean>())
@@ -177,7 +191,7 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     const measures = shallowRef<string[]>(measuresFor(project))
     // "auto" value unit — declared units (sub-metrics) and the stored type (duration) resolve formatting.
     const measureConfigurator = new PredefinedMeasureConfigurator(measures, shallowRef(false), "line", "auto", {}, null, "item")
-    const executor = new DataQueryExecutor([...dashboardConfigurators, scenario, serverConfigurator, measureConfigurator])
+    const executor = new DataQueryExecutor([...queryConfigurators, scenario, serverConfigurator, measureConfigurator])
     const entry: BaseEntry = { project, legacyProject, newProject, measures, lastData: null, lastConfiguration: null, unsubscribe: () => {} }
     setLoading(project.base, true)
     entry.unsubscribe = executor.subscribe((data, configuration, loading) => {

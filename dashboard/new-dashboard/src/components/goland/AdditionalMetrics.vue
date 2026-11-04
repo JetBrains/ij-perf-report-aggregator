@@ -1,4 +1,15 @@
 <template>
+  <!-- Outside the lazy accordion, so that these charts are mounted and the compare table lists them next to the durations. -->
+  <Divider label="Runtime" />
+  <section>
+    <GroupProjectsChart
+      v-for="chart in runtimeCharts"
+      :key="chart.key"
+      :label="chart.label"
+      :measure="chart.measure"
+      :projects="projects"
+    />
+  </section>
   <ChartAccordion :lazy="true">
     <AccordionPanel value="0">
       <AccordionHeader>Additional metrics</AccordionHeader>
@@ -64,6 +75,16 @@ interface ChartDef {
   measure: string
 }
 
+// The cost of the whole run: allocation, CPU, GC, the heap peak, and the heap retained after a full GC.
+const runtimeCharts: ChartDef[] = [
+  { key: "allocated", label: "Allocated", measure: "JVM.totalMegabytesAllocated" },
+  { key: "totalCpu", label: "Total CPU", measure: "JVM.totalCpuTimeMs" },
+  { key: "gcCollectionTime", label: "GC collection time", measure: "JVM.GC.collectionTimesMs" },
+  { key: "gcCollections", label: "GC collections", measure: "JVM.GC.collections" },
+  { key: "usedHeap", label: "Used heap, peak", measure: "JVM.usedHeapMegabytes" },
+  { key: "footprintAfterFullGC", label: "Footprint after full GC", measure: "avgfootprintAfterFullGC" },
+]
+
 // Grouped: efficiency → pauses → freed → G1 mark → G1 shrink.
 const gcCharts: ChartDef[] = [
   { key: "throughput", label: "Throughput", measure: "throughput" },
@@ -90,25 +111,19 @@ const memoryCharts: ChartDef[] = [
   { key: "ramMinusMappings", label: "RAM minus mappings", measure: "MEM.avgRamMinusFileMappingsMegabytes" },
   { key: "maxHeap", label: "Max heap", measure: "JVM.maxHeapMegabytes" },
   { key: "committedHeap", label: "Committed heap", measure: "JVM.committedHeapMegabytes" },
-  { key: "usedHeap", label: "Used heap", measure: "JVM.usedHeapMegabytes" },
-  { key: "heapPeak", label: "Heap used, peak", measure: "totalHeapUsedMax" },
-  { key: "footprintAfterFullGC", label: "Footprint after full GC", measure: "avgfootprintAfterFullGC" },
+  { key: "heapPeak", label: "Heap used, peak (GC log)", measure: "totalHeapUsedMax" },
   { key: "metaspacePeak", label: "Metaspace peak", measure: "totalPermUsedMax" },
   { key: "nativeUsed", label: "Native used", measure: "JVM.usedNativeMegabytes" },
   { key: "directBuffers", label: "Direct byte buffers", measure: "JVM.totalDirectByteBuffersMegabytes" },
 ]
 
-// Grouped: CPU → threads → safepoints → JVM-reported GC → allocation.
+// Grouped: threads → safepoints.
 const jvmCharts: ChartDef[] = [
-  { key: "totalCpu", label: "Total CPU", measure: "JVM.totalCpuTimeMs" },
   { key: "maxThreads", label: "Max threads", measure: "JVM.maxThreadCount" },
   { key: "newThreads", label: "New threads", measure: "JVM.newThreadsCount" },
   { key: "timeToSafepoints", label: "Time to safepoints", measure: "JVM.totalTimeToSafepointsMs" },
   { key: "timeAtSafepoints", label: "Time at safepoints", measure: "JVM.totalTimeAtSafepointsMs" },
   { key: "safepointCount", label: "Safepoint count", measure: "JVM.totalSafepointCount" },
-  { key: "gcCollectionTime", label: "GC collection time", measure: "JVM.GC.collectionTimesMs" },
-  { key: "gcCollections", label: "GC collections", measure: "JVM.GC.collections" },
-  { key: "allocated", label: "Allocated", measure: "JVM.totalMegabytesAllocated" },
 ]
 
 const osCharts: ChartDef[] = [{ key: "osLoad", label: "OS load average", measure: "OS.loadAverage" }]

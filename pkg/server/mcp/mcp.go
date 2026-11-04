@@ -86,6 +86,7 @@ type tableRef struct {
 	HasBuildTime       bool   `json:"-"`
 	HasInstallerID     bool   `json:"-"`
 	HasBuildComponents bool   `json:"-"`
+	HasMode            bool   `json:"-"`
 }
 
 func newService(db chConn) *service {
@@ -167,10 +168,11 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 		select database, table,
 		       sum(name = 'build_time') > 0 as has_build_time,
 		       sum(name = 'tc_installer_build_id') > 0 as has_installer_id,
-		       sum(name in ('build_c1', 'build_c2', 'build_c3')) = 3 as has_build_components
+		       sum(name in ('build_c1', 'build_c2', 'build_c3')) = 3 as has_build_components,
+		       sum(name = 'mode') > 0 as has_mode
 		from system.columns
 		where name in ('measures.name', 'project', 'build_time', 'tc_installer_build_id',
-		               'build_c1', 'build_c2', 'build_c3')
+		               'build_c1', 'build_c2', 'build_c3', 'mode')
 		group by database, table
 		having sum(name = 'measures.name') > 0 and sum(name = 'project') > 0
 		order by database, table
@@ -183,7 +185,7 @@ func (s *service) listTables(ctx context.Context) ([]tableRef, error) {
 	out := make([]tableRef, 0, 64)
 	for rows.Next() {
 		var r tableRef
-		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID, &r.HasBuildComponents); err != nil {
+		if err := rows.Scan(&r.Database, &r.Table, &r.HasBuildTime, &r.HasInstallerID, &r.HasBuildComponents, &r.HasMode); err != nil {
 			return nil, fmt.Errorf("scan: %w", err)
 		}
 		// Tools interpolate r.Database/r.Table directly into SQL. Drop anything that

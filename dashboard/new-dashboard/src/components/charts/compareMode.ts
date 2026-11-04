@@ -1,6 +1,8 @@
 import { deepEqual } from "fast-equals"
 import { ref, Ref } from "vue"
 import { ValueUnit } from "../common/chart"
+import { defaultModeName } from "../../configurators/TestModeConfigurator"
+import { columnName } from "./compareQuery"
 
 export type RenderMode = "charts" | "compare"
 
@@ -33,6 +35,39 @@ export function pickBaseAndCompared(selected: readonly string[]): BaseAndCompare
   const compared = selected.filter((b) => b !== base)
   if (compared.length === 0) return null
   return { base, compared }
+}
+
+// The base of a mode comparison is the default mode when it is selected, else the first selected mode.
+export function pickBaseAndComparedModes(selected: readonly string[]): BaseAndCompared | null {
+  if (selected.length < 2) return null
+  const base = selected.includes(defaultModeName) ? defaultModeName : selected[0]
+  return { base, compared: selected.filter((m) => m !== base) }
+}
+
+export interface CompareColumns extends BaseAndCompared {
+  // The column dimension that indexSeries matches against series-name parts, base first: the branches, or the modes
+  // when a single branch is selected.
+  branches: string[]
+  // The modes, base first, when every column is one branch in one mode; otherwise empty.
+  modes: string[]
+}
+
+// Two or more branches are compared with each other; with two or more modes as well, each column is one branch in one
+// mode, and the base is the base branch in the base mode. A single branch compares the selected modes.
+export function pickCompareColumns(branches: readonly string[], modes: readonly string[]): CompareColumns | null {
+  const byBranch = pickBaseAndCompared(branches)
+  const byMode = pickBaseAndComparedModes(modes)
+  if (byBranch == null) {
+    return byMode == null ? null : { ...byMode, branches: [byMode.base, ...byMode.compared], modes: [] }
+  }
+  const branchColumns = [byBranch.base, ...byBranch.compared]
+  if (byMode == null) {
+    return { ...byBranch, branches: branchColumns, modes: [] }
+  }
+  const modeColumns = [byMode.base, ...byMode.compared]
+  const base = columnName(byBranch.base, byMode.base)
+  const compared = branchColumns.flatMap((branch) => modeColumns.map((mode) => columnName(branch, mode))).filter((column) => column !== base)
+  return { base, compared, branches: branchColumns, modes: modeColumns }
 }
 
 export interface CompareSectionConfig {

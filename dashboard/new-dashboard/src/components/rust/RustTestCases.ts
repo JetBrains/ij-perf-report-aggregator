@@ -71,7 +71,18 @@ export const rustFirstStartupProjects = [...rustGlobalInspectionProjects, "stres
 
 export const rustSearchEverywhereCases = ["searchEverywhere/cargo/go-to-all-with-warmup/Display/typingLetterByLetter"]
 
-export const rustFindUsagesCases = ["find-usages/yew", "find-usages/wasm"]
+export const rustFindUsagesCases = [
+  "find-usages/yew",
+  "find-usages/wasm",
+  "find-usages/wasm-js-value",
+  "find-usages/tokio",
+  "find-usages/salvo",
+  "find-usages/salvo-render",
+  "find-usages/typst-content",
+  "find-usages/yew-html",
+  "find-usages/ratatui-buffer",
+  "find-usages/ratatui-rect-width",
+]
 
 export const rustTypingCases = ["typing/nalgebra/typing"]
 

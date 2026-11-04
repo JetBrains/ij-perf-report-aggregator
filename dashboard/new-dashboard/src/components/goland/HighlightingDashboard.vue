@@ -1,7 +1,6 @@
 <template>
   <DashboardPage
     :with-installer="false"
-    :with-mode="false"
     db-name="perfintDev"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     persistent-id="goland_highlighting_dashboard"

@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -16,6 +17,7 @@ type searchMetricValuesInput struct {
 	MetricName string `json:"metric_name"         jsonschema:"Metric name (exact match in measures.name) to retrieve values for"`
 	Branch     string `json:"branch,omitempty"    jsonschema:"Branch filter (default: master)"`
 	Machine    string `json:"machine,omitempty"   jsonschema:"Optional machine LIKE pattern. Runs from different machine pools are not comparable; filter to one pool before comparing values."`
+	Mode       string `json:"mode,omitempty"      jsonschema:"Optional test mode filter (exact match in the mode column), e.g. \"legacy_and_new\"; \"default\" selects the runs without a mode. Omitted: runs of every mode. Tables without a mode column are skipped when it is set."`
 	Database   string `json:"database,omitempty"  jsonschema:"Optional database to restrict the scan to"`
 	Table      string `json:"table,omitempty"     jsonschema:"Optional table to restrict the scan to"`
 	Days       int    `json:"days,omitempty"      jsonschema:"Lookback window in days (default 30, max 365). Reached in full only when limit does not cut the answer short — the covered field says what came back."`
@@ -62,6 +64,14 @@ type searchMetricValuesOutput struct {
 
 const aggregateDaily = "daily"
 
+// modeValue maps the "default" mode of the dashboards to the empty mode column of its runs.
+func modeValue(mode string) string {
+	if mode == "default" {
+		return ""
+	}
+	return mode
+}
+
 func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest, in searchMetricValuesInput) (*sdk.CallToolResult, searchMetricValuesOutput, error) {
 	if in.Project == "" {
 		return nil, searchMetricValuesOutput{}, errors.New("project is required")
@@ -78,6 +88,13 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 	tables, err := s.resolveTables(ctx, in.Database, in.Table)
 	if err != nil {
 		return nil, searchMetricValuesOutput{}, err
+	}
+	if in.Mode != "" {
+		// A copy: resolveTables can return the shared table cache.
+		tables = slices.DeleteFunc(slices.Clone(tables), func(r tableRef) bool { return !r.HasMode })
+		if len(tables) == 0 {
+			return nil, searchMetricValuesOutput{}, errors.New("mode is set, but no matching table has a mode column")
+		}
 	}
 	days := min(max(cmp.Or(in.Days, 30), 1), 365)
 	limit := min(max(cmp.Or(in.Limit, 200), 1), 5000)
@@ -108,6 +125,10 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 			buildComponentsExpr, installerIDExpr, r.Database, r.Table)
 		args := []any{r.Database, r.Table, in.Project, in.MetricName, days}
 		args = appendBranchMachine(&sb, args, in.Branch, in.Machine)
+		if in.Mode != "" {
+			sb.WriteString(" and mode = ?")
+			args = append(args, modeValue(in.Mode))
+		}
 		return sb.String(), args
 	}
 
@@ -192,6 +213,9 @@ func (s *service) searchMetricValues(ctx context.Context, _ *sdk.CallToolRequest
 		}
 		if in.Machine != "" {
 			filters = append(filters, fmt.Sprintf("machine=%q", in.Machine))
+		}
+		if in.Mode != "" {
+			filters = append(filters, fmt.Sprintf("mode=%q", in.Mode))
 		}
 		out.Notes = append(out.Notes, noRowsNote("measurement", filters, tables),
 			"metric_name and project must match exactly — list the real ones with search_metric_names / list_projects before concluding the metric has no data")

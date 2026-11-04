@@ -455,6 +455,62 @@ func TestSearchMetricValues_EmptyResultIncludesMachineFilter(t *testing.T) {
 	}
 }
 
+func TestSearchMetricValues_ModeFilter(t *testing.T) {
+	t.Parallel()
+	devGoland := tableRef{Database: "perfintDev", Table: "goland", HasMode: true}
+	cs := newTestClient(t, []tableRef{devIde, devGoland}, fakeQueryResult{
+		verify: func(sql string, args []any) error {
+			if !strings.Contains(sql, "and mode = ?") || !slices.Contains(args, "legacy_and_new") {
+				return errors.New("expected mode filter in query")
+			}
+			if strings.Contains(sql, "from perfintDev.ide") {
+				return errors.New("a table without a mode column must be skipped")
+			}
+			return nil
+		},
+	})
+
+	var out searchMetricValuesOutput
+	callToolOK(t, cs, "search_metric_values", map[string]any{
+		"project":     "kubernetes/indexing",
+		"metric_name": "indexingTimeWithoutPauses",
+		"mode":        "legacy_and_new",
+	}, &out)
+	if !strings.Contains(joinNotes(out.Notes), `mode="legacy_and_new"`) {
+		t.Errorf("empty result must include the mode filter, got %+v", out)
+	}
+}
+
+func TestSearchMetricValues_DefaultModeIsTheEmptyMode(t *testing.T) {
+	t.Parallel()
+	cs := newTestClient(t, []tableRef{{Database: "perfintDev", Table: "goland", HasMode: true}}, fakeQueryResult{
+		verify: func(sql string, args []any) error {
+			if !strings.Contains(sql, "and mode = ?") || !slices.Contains(args, "") {
+				return errors.New("expected an empty mode filter for the default mode")
+			}
+			return nil
+		},
+	})
+
+	var out searchMetricValuesOutput
+	callToolOK(t, cs, "search_metric_values", map[string]any{"project": "p", "metric_name": "m", "mode": "default"}, &out)
+}
+
+func TestSearchMetricValues_NoModeFilterByDefault(t *testing.T) {
+	t.Parallel()
+	cs := newTestClient(t, []tableRef{{Database: "perfintDev", Table: "goland", HasMode: true}}, fakeQueryResult{
+		verify: func(sql string, _ []any) error {
+			if strings.Contains(sql, "mode = ?") {
+				return errors.New("did not expect a mode filter (none supplied)")
+			}
+			return nil
+		},
+	})
+
+	var out searchMetricValuesOutput
+	callToolOK(t, cs, "search_metric_values", map[string]any{"project": "p", "metric_name": "m"}, &out)
+}
+
 func TestSearchMetricValues_LimitHitIsNoted(t *testing.T) {
 	t.Parallel()
 	cs := newTestClient(t, []tableRef{devIde}, fakeQueryResult{rows: [][]any{devServerValueRow("2026-05-01 10:00:00", 1001, 12.5)}})
@@ -662,8 +718,8 @@ func TestListTables_RefreshesAfterTTL(t *testing.T) {
 	db := &fakeDriver{}
 	db.push(fakeQueryResult{
 		rows: [][]any{
-			{"perfintDev", "ide", true, true, true},
-			{"perfintDev", "kotlin", false, false, false},
+			{"perfintDev", "ide", true, true, true, true},
+			{"perfintDev", "kotlin", false, false, false, false},
 		},
 	})
 
@@ -676,7 +732,7 @@ func TestListTables_RefreshesAfterTTL(t *testing.T) {
 	if err != nil {
 		t.Fatalf("listTables: %v", err)
 	}
-	if len(got) != 2 || got[0].Table != "ide" || !got[0].HasInstallerID || !got[0].HasBuildComponents {
+	if len(got) != 2 || got[0].Table != "ide" || !got[0].HasInstallerID || !got[0].HasBuildComponents || !got[0].HasMode || got[1].HasMode {
 		t.Errorf("refreshed result wrong: %+v", got)
 	}
 	if len(db.calls) != 1 {

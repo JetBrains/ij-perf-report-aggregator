@@ -65,6 +65,18 @@ export const rustGlobalInspectionProjects = [
   "ratatui",
   "ratty",
   "polkavm",
+  "http-body",
+  "hashes",
+  "ureq",
+  "leptos",
+  "namada",
+  "vector",
+  "qdrant",
+  "foundry",
+  "greptimedb",
+  "materialize",
+  "ruff",
+  "typst",
 ]
 
 export const rustFirstStartupProjects = [...rustGlobalInspectionProjects, "stress-vfs-refresh-macros"]
@@ -106,6 +118,7 @@ export const rustCompletionCases = [
   "completion/cargo/tests/testsuite/git.rs",
   "completion/cargo/src/cargo/util/config/mod.rs",
   "completion/cargo/src/cargo/util/context/schema.rs",
+  "completion/cargo/src/context/schema.rs",
   "completion/cargo/fingerprint/mod.rs",
   "completion/cargo/toml/mod.rs",
   "completion/chrono/src/naive/date.rs",
@@ -148,6 +161,7 @@ export const rustCompletionCases = [
   "completion/syn/benches/rust.rs",
   "completion/syn/tests/common/eq.rs",
   "completion/clippy/clippy_lints/src/write/empty_string.rs",
+  "completion/http-body/http-body-util/src/limited.rs",
 ]
 
 export const rustLocalInspectionCases = [
@@ -170,8 +184,10 @@ export const rustLocalInspectionCases = [
   "cargo/local-inspection/tests/testsuite/git.rs",
   "cargo/local-inspection/src/cargo/util/config/mod.rs",
   "cargo/local-inspection/src/cargo/util/context/schema.rs",
+  "cargo/local-inspection/src/context/schema.rs",
   "cargo/local-inspection/src/cargo/core/compiler/fingerprint/mod.rs",
   "cargo/local-inspection/src/cargo/core/compiler/fingerprint/dep_info.rs",
+  "cargo/local-inspection/src/compiler/fingerprint/dep_info.rs",
   "cargo/local-inspection/src/cargo/util/toml/mod.rs",
   "chrono/local-inspection/src/naive/date.rs",
   "chrono/local-inspection/src/naive/date/mod.rs",
@@ -213,6 +229,7 @@ export const rustLocalInspectionCases = [
   "syn/local-inspection/benches/rust.rs",
   "syn/local-inspection/tests/common/eq.rs",
   "clippy/local-inspection/clippy_lints/src/write/empty_string.rs",
+  "http-body/local-inspection/http-body-util/src/limited.rs",
 ]
 export const rustDebuggerTestCases = ["hello-world/Debugger performance test", "hello-world-async/Debugger performance test", "bevy-application/Debugger performance test"]
 export const rustRefactoringTestCases = {

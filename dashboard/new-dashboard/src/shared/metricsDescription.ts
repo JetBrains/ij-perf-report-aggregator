@@ -310,6 +310,13 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["%expandMainMenu", metricInfo("Time to recursively expand all actions in the main menu bar (GROUP_MAIN_MENU).", "milliseconds")],
   ["%expandProjectMenu", metricInfo("Time to expand the Project View context menu popup (GROUP_PROJECT_VIEW_POPUP).", "milliseconds")],
   ["%expandEditorMenu", metricInfo("Time to expand the editor right-click context menu (GROUP_EDITOR_POPUP).", "milliseconds")],
+  //settings
+  ["settings.dialog.shown.afterSmartMode", metricInfo("Time from the start of opening the Settings dialog until it appears (warm, after smart mode).", "milliseconds")],
+  [
+    "settings.configurableTree.built.afterSmartMode",
+    metricInfo("Time to build the configurable tree in the Settings dialog. This is part of the dialog shown time.", "milliseconds"),
+  ],
+  ["settings.page.ready.afterSmartMode", metricInfo("Time until the selected Settings page is ready.", "milliseconds")],
   //new file
   ["createKotlinFile", metricInfo("Time to create a new Kotlin file via the New File template action.", "milliseconds")],
   ["createJavaFile", metricInfo("Time to create a new Java class/file via the New File action (JavaDirectoryService.createClass).", "milliseconds")],

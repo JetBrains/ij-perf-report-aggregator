@@ -61,6 +61,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/find-in-files", "intellij_commit/find-in-files-old"],
   },
   {
+    labels: ["Settings Dialog (warm open)"],
+    measures: [["settings.dialog.shown.afterSmartMode", "settings.configurableTree.built.afterSmartMode", "settings.page.ready.afterSmartMode"]],
+    projects: ["intellij_commit/settings/open-warm"],
+  },
+  {
     labels: ["EditorContextMenu"],
     measures: ["popupShown#EditorContextMenu"],
     projects: ["popups-performance-test/test-popups"],

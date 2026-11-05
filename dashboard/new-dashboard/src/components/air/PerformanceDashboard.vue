@@ -161,9 +161,9 @@ const longSessionGroups: AirGroup[] = [
         "checkpoint.%s.rich_projection_ready.totalMs"
       ),
       bySize(
-        "Open, frontend: apply the session snapshot and render it on the EDT",
-        "From the arrival of the snapshot in the frontend until the end of the render on the EDT. The wait of the background coroutine after the render is a separate log field and is not in this time. The [AIR_SESSION_RESTORE] frontend reload applied line.",
-        "checkpoint.%s.frontend_reload_applied.totalMs"
+        "Open, frontend: apply the session snapshot to the model",
+        "The work of the frontend on the snapshot of the session before the render. Its render on the EDT takes about 1 ms, and its wait for the EDT is the other work of the open, which the rows chart shows. The [AIR_SESSION_RESTORE] frontend reload applied line.",
+        "checkpoint.%s.frontend_reload_applied.modelApplyMs"
       ),
       bySize(
         "Open, frontend: build the rows of the transcript",
@@ -192,7 +192,7 @@ const longSessionGroups: AirGroup[] = [
     charts: [
       bySize(
         "Long answer: from a written chunk to the frame that shows it, p95",
-        "The test agent streams a long Markdown answer. For each section mark, the time runs from the write of its chunk to the end of the first frame that shows it. It shows how far the screen lags behind the agent.",
+        "The test agent streams a long Markdown answer. The first 16 sections stream at 6000 characters a second, the pace of a fast agent. For each of their section marks, the time runs from the write of its chunk to the end of the first frame that shows it. It shows how far the screen lags behind the agent.",
         "answer.%s.streamLagP95Ms"
       ),
       bySize(

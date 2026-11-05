@@ -14,13 +14,15 @@ var (
 	airNoisy  = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 25, EffectSizeThreshold: 3}
 )
 
-// A typed character costs about 12 ms. A step of 1-3 ms is 10-25 % of that and is noise, so only a latency over 50 ms,
-// the start of what a user feels, reports.
-var airTypingLimit = detector.AnalysisSettings{
-	ReportType:     detector.DegradationEvent,
-	AnalysisKind:   detector.ThresholdAnalysis,
-	ThresholdMode:  detector.ThresholdGreaterThan,
-	ThresholdValue: 50,
+// airOver alerts when the latest value is over limitMs. A metric of a few frames moves by one frame from night to night,
+// which is 30-80 % of its value, so a step of its median says nothing. A value over the limit is what a user notices.
+func airOver(limitMs float64) detector.AnalysisSettings {
+	return detector.AnalysisSettings{
+		ReportType:     detector.DegradationEvent,
+		AnalysisKind:   detector.ThresholdAnalysis,
+		ThresholdMode:  detector.ThresholdGreaterThan,
+		ThresholdValue: limitMs,
+	}
 }
 
 func GenerateAirSettings() []detector.PerformanceSettings {
@@ -31,22 +33,22 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 	longSession := []metric{
 		{"open.%s.coverRemovedMs", airStable},
 		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airStable},
-		{"continue.%s.loadAnsweredToPromptMs", airNoisy},
+		{"continue.%s.loadAnsweredToPromptMs", airOver(300)},
 		{"answer.%s.streamLagP95Ms", airNoisy},
-		{"answer.%s.streamEndToSettledMs", airNoisy},
+		{"answer.%s.streamEndToSettledMs", airOver(300)},
 		{"heap.%s.heapLive.MiB", airStable},
-		{"prompt.%s.codeP95Ms", airTypingLimit},
-		{"scroll.%s.wheelP95Ms", airNoisy},
-		// A jump to the start and to 0.4 of the history lands on rows that are not built yet. The time runs to the frame
-		// that shows the built text, so it is noisy until the nights show otherwise.
-		{"scroll.%s.jump0.settledMs", airNoisy},
-		{"scroll.%s.jump40.settledMs", airNoisy},
+		{"prompt.%s.codeP95Ms", airOver(50)},
+		{"scroll.%s.wheelP95Ms", airOver(50)},
+		// A jump to the start and to 0.4 of the history lands on rows that are not built yet. A blank screen of 200 ms
+		// after a drag is what a user notices.
+		{"scroll.%s.jump0.settledMs", airOver(200)},
+		{"scroll.%s.jump40.settledMs", airOver(200)},
 	}
 	metrics := map[string][]metric{
 		"air/many-agents": {
 			{"manyAgents.heapLive.MiB", airStable},
 			{"manyAgents.focusedContentLagP95Ms", airNoisy},
-			{"manyAgents.edtMaxMs", airNoisy},
+			{"manyAgents.edtMaxMs", airOver(50)},
 		},
 		"air/session-list": {
 			{"sessionList.heapLive.MiB", airStable},

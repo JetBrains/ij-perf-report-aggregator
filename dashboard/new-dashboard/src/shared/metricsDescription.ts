@@ -477,6 +477,9 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
 
   // Other
   ["Memory | IDE | RESIDENT SIZE (MB) 95th pctl", metricInfo("95th-percentile resident set size — near-peak real memory footprint.", "mebibytes")],
+  ["editor.typing.latency#90", metricInfo("90th percentile of keystroke latency in the editor across the typing run.", "milliseconds")],
+  ["editor.typing.latency#max", metricInfo("Keystroke latency of the slowest keystroke in the typing run.", "milliseconds")],
+  ["ui.latency#max_value", metricInfo("Maximum UI latency during the run.", "milliseconds")],
   ["ui.lagging#max_value", metricInfo("Maximum UI-thread lag during the run — the longest stretch the EDT stayed blocked and unresponsive.", "milliseconds")],
 ])
 

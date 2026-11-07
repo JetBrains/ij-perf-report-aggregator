@@ -23,6 +23,12 @@
       </section>
     </template>
 
+    <PerProjectBreakdown
+      title="File analysis per file"
+      :projects="fileAnalysisProjects"
+      :charts="fileAnalysisBreakdown"
+    />
+
     <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
@@ -32,6 +38,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
+import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
 
 interface ChartDef {
   key: string
@@ -97,6 +104,13 @@ const allProjects = [...fileAnalysisProjects, ...globalInspectionProjects, ...go
 const fileAnalysisCharts: ChartDef[] = [
   { key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" },
   { key: "fusHighlighting", label: "Highlighting Duration (FUS)", measure: "fus_daemon_finished_full_duration_since_started_ms" },
+]
+
+// Which highlighting pass moved the file analysis time, and whether the findings changed with it: a faster run
+// that also reports fewer warnings lost an inspection rather than got faster.
+const fileAnalysisBreakdown: BreakdownChart[] = [
+  { key: "passes", label: "Highlighting passes", measures: ["LocalInspectionsPass", "GeneralHighlightingPass", "LineMarkersPass", "InlayHintsPass", "CodeVisionPass"] },
+  { key: "findings", label: "Findings", measures: ["localInspections#Errors", "localInspections#Warnings", "localInspections#Weak Warnings"] },
 ]
 
 const globalInspectionCharts: ChartDef[] = [

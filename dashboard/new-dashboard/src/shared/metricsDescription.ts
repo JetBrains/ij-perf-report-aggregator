@@ -161,6 +161,9 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   //analysis
   ["firstCodeAnalysis", metricInfo("Time to perform syntax and semantic highlighting when a file opens for the first time (cold daemon pass).", "milliseconds")],
   ["localInspections", metricInfo("Total time of on-the-fly code analysis. Measured from daemon restart to daemon finish.", "milliseconds")],
+  ["localInspections#Errors", metricInfo("Number of errors the on-the-fly code analysis reported in the file.", "counter", undefined, "stable")],
+  ["localInspections#Warnings", metricInfo("Number of warnings the on-the-fly code analysis reported in the file.", "counter", undefined, "stable")],
+  ["localInspections#Weak Warnings", metricInfo("Number of weak warnings the on-the-fly code analysis reported in the file.", "counter", undefined, "stable")],
   ["localInspections#mean_value", metricInfo("Mean time of on-the-fly code analysis. Measured from daemon restart to daemon finish.", "milliseconds")],
   ["runDaemon/executionTime", metricInfo("Time to complete a first daemon run. It might be restarted so it is not a full time.", "milliseconds")],
   ["globalInspections", metricInfo("Time to run all inspections in batch mode (Inspect Code / Inspect Project).", "milliseconds")],

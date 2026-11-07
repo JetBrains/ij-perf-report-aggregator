@@ -10,7 +10,7 @@
           :key="project"
         >
           <Divider :label="project" />
-          <section>
+          <section class="grid grid-cols-[repeat(auto-fill,minmax(480px,1fr))] gap-x-4">
             <GroupProjectsChart
               v-for="chart in charts"
               :key="chart.key"

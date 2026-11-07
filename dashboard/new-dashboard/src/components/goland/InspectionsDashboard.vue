@@ -94,7 +94,10 @@ const singleInspectionProjects = [
 
 const allProjects = [...fileAnalysisProjects, ...globalInspectionProjects, ...golangciLintLocalProjects, ...golangciLintGlobalProjects, ...singleInspectionProjects]
 
-const fileAnalysisCharts: ChartDef[] = [{ key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" }]
+const fileAnalysisCharts: ChartDef[] = [
+  { key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" },
+  { key: "fusHighlighting", label: "Highlighting Duration (FUS)", measure: "fus_daemon_finished_full_duration_since_started_ms" },
+]
 
 const globalInspectionCharts: ChartDef[] = [
   {

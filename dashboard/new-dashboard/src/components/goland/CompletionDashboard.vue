@@ -35,7 +35,7 @@ import AdditionalMetrics from "./AdditionalMetrics.vue"
 interface ChartDef {
   key: string
   label: string
-  measure: string
+  measure: string | string[]
 }
 
 const typingProjects = ["act/typing"]
@@ -62,7 +62,9 @@ const allGroups = [
     projects: typingProjects,
     charts: [
       { key: "totalTime", label: "Total Time", measure: "typing" },
-      { key: "uiLagging", label: "UI Lagging (max)", measure: "ui.lagging#max_value" },
+      { key: "keystrokeLatency", label: "Keystroke latency", measure: ["typing#latency#mean_value", "editor.typing.latency#90", "editor.typing.latency#max"] },
+      { key: "uiStalls", label: "UI stalls (max)", measure: ["ui.lagging#max_value", "ui.latency#max_value"] },
+      { key: "codeAnalysis", label: "Code analysis after typing", measure: "typingCodeAnalyzing" },
     ],
   },
   { value: "basic", title: "Basic Completion", prefix: "Basic", projects: basicProjects, charts: completionCharts },

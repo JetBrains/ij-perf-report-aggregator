@@ -35,7 +35,7 @@ import AdditionalMetrics from "./AdditionalMetrics.vue"
 interface ChartDef {
   key: string
   label: string
-  measure: string
+  measure: string | string[]
 }
 
 interface GroupDef {
@@ -51,9 +51,7 @@ const allProjects = debugProjects
 
 const debugCharts: ChartDef[] = [
   { key: "launch", label: "Launch Debug", measure: "debugRunConfiguration" },
-  { key: "stepInto", label: "Step Into", measure: "debugStep_into" },
-  { key: "stepOut", label: "Step Out", measure: "debugStep_out" },
-  { key: "stepOver", label: "Step Over", measure: "debugStep_over" },
+  { key: "steps", label: "Steps", measure: ["debugStep_into", "debugStep_out", "debugStep_over"] },
 ]
 
 const allGroups: GroupDef[] = [{ value: "debugActions", title: "Debug Actions", prefix: "Debug", projects: debugProjects, charts: debugCharts }]

@@ -27,16 +27,21 @@ export function splitSeriesName(rawSeriesName: string, measures: readonly string
 }
 
 /**
- * Styles for a chart that plots two or three measures for several projects: one color per project and one line
- * type per measure, so that a project keeps its color across measures. Returns null for any other chart, which
- * keeps the default palette: with one project the measures are told apart by color, and past six series line
- * types stop telling projects apart, so such a chart is better split per project.
+ * Styles for a chart that plots several measures. With several projects (at most six series, two or three
+ * measures), each project gets one color and each measure one line type, so that a project keeps its color across
+ * measures. With one project, each measure takes the palette slot of its position in `measures`, so that a
+ * measure keeps its color in every per-project chart of the same measures, also when one of them lacks data.
+ * Returns null for any other chart, which keeps the default palette; past six series, line types stop telling
+ * projects apart and the chart is better split per project.
  */
 export function resolveSeriesStyles(series: readonly ({ group: string; measure: string } | null)[], measures: readonly string[], darkMode: boolean): (SeriesStyle | null)[] | null {
   const groups = [...new Set(series.filter((it) => it != null).map((it) => it.group))]
+  const palette = darkMode ? chartTheme.color : LIGHT_PALETTE
+  if (groups.length === 1 && measures.length >= 2 && measures.length <= palette.length) {
+    return series.map((it) => (it == null ? null : { color: palette[measures.indexOf(it.measure)], lineType: "solid" }))
+  }
   const plotted = measures.filter((measure) => series.some((it) => it?.measure === measure))
   if (groups.length < 2 || plotted.length < 2 || plotted.length > LINE_TYPES.length || groups.length * plotted.length > MAX_STYLED_SERIES) return null
-  const palette = darkMode ? chartTheme.color : LIGHT_PALETTE
   return series.map((it) =>
     it == null
       ? null

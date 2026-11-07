@@ -453,6 +453,8 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["completion#standard_deviation", metricInfo("Spread of completion time across invocations. Rising values mean inconsistent latency.", "milliseconds")],
   ["completion#firstElementShown#mean_value", metricInfo("Mean time to first suggestion (span instrument); includes the cold run.", "milliseconds")],
   ["completion_1#firstElementShown", metricInfo("Time to first suggestion on the cold first run (span instrument).", "milliseconds")],
+  ["performCompletion#mean_value", metricInfo("Mean cost of computing suggestions across invocations: resolve, type inference, stub-index lookups.", "milliseconds")],
+  ["arrangeItems#mean_value", metricInfo("Mean time to sort and arrange the suggestions in the completion popup.", "milliseconds")],
   ["performCompletion_1", metricInfo("Cold-run cost of computing suggestions: resolve, type inference, stub-index lookups.", "milliseconds")],
 
   ["debugStep_out", metricInfo("Time from invoking Step Out until the debugger pauses again.", "milliseconds")],

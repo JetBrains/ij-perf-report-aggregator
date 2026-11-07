@@ -54,17 +54,20 @@ describe("series styles", () => {
     expect(resolveSeriesStyles(series, [MEASURES[0], MEASURES[1], "x"], false)?.map((it) => it?.lineType)).toStrictEqual(["solid", "dashed"])
   })
 
-  it("keeps the default palette for one project", () => {
-    expect(
-      resolveSeriesStyles(
-        [
-          { group: "caddy", measure: MEASURES[0] },
-          { group: "caddy", measure: MEASURES[1] },
-        ],
-        MEASURES,
-        false
-      )
-    ).toBeNull()
+  it("colors one project by the position of the measure, also when a measure lacks data", () => {
+    const measures = ["a", "b", "c"]
+    const full = resolveSeriesStyles(
+      measures.map((measure) => ({ group: "caddy", measure })),
+      measures,
+      false
+    )!
+    const partial = resolveSeriesStyles(
+      ["a", "c"].map((measure) => ({ group: "permify", measure })),
+      measures,
+      false
+    )!
+    expect(partial.map((it) => it?.color)).toStrictEqual([full[0]?.color, full[2]?.color])
+    expect(partial.map((it) => it?.lineType)).toStrictEqual(["solid", "solid"])
   })
 
   it("keeps the default palette for one measure", () => {

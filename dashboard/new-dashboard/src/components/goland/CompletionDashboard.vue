@@ -46,6 +46,7 @@ const allProjects = [...typingProjects, ...basicProjects, ...smartProjects]
 const completionCharts: ChartDef[] = [
   { key: "duration90", label: "Duration 90p", measure: "fus_completion_duration_90p" },
   { key: "median", label: "Duration (median)", measure: "completion#median_value" },
+  { key: "mean", label: "Duration (mean)", measure: "completion#mean_value" },
   { key: "timeToShow90", label: "Time to show 90p", measure: "fus_time_to_show_90p" },
   { key: "timeToShowCold", label: "Time to show (cold)", measure: "completion_1#firstElementShown" },
   { key: "timeToShowMean", label: "Time to show (mean)", measure: "completion#firstElementShown#mean_value" },
@@ -53,7 +54,6 @@ const completionCharts: ChartDef[] = [
   { key: "resolveMean", label: "Resolve (mean)", measure: "performCompletion#mean_value" },
   { key: "rankingMean", label: "Ranking (mean)", measure: "arrangeItems#mean_value" },
   { key: "items", label: "Result items", measure: "completion#number#mean_value" },
-  { key: "stddev", label: "Standard deviation", measure: "completion#standard_deviation" },
 ]
 
 const allGroups = [

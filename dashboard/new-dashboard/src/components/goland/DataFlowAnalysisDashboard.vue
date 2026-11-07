@@ -23,6 +23,12 @@
       </section>
     </template>
 
+    <PerProjectBreakdown
+      title="DFA stages per project"
+      :projects="dfaProjects"
+      :charts="stageBreakdown"
+    />
+
     <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
@@ -32,6 +38,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
+import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
 
 interface ChartDef {
   key: string
@@ -78,6 +85,14 @@ const generalCharts: ChartDef[] = [
   { key: "filesCount", label: "General Files Count", measure: "go.dfa.general.files.count" },
   { key: "functionsCount", label: "General Functions Count", measure: "go.dfa.general.functions.count" },
   { key: "resolveIssues", label: "Resolve Issues", measure: "go.dfa.general.resolve.issue.count" },
+]
+
+const stageBreakdown: BreakdownChart[] = [
+  {
+    key: "stages",
+    label: "Stage time",
+    measures: ["go.dfa.granular.total.ir.time.ms", "go.dfa.solver.total.time.ms", "go.dfa.granular.interpretation.time.ms", "go.dfa.granular.resolve.time.ms"],
+  },
 ]
 
 const allGroups: GroupDef[] = [

@@ -50,6 +50,8 @@ const completionCharts: ChartDef[] = [
   { key: "timeToShowCold", label: "Time to show (cold)", measure: "completion_1#firstElementShown" },
   { key: "timeToShowMean", label: "Time to show (mean)", measure: "completion#firstElementShown#mean_value" },
   { key: "resolveCold", label: "Resolve (cold)", measure: "performCompletion_1" },
+  { key: "resolveMean", label: "Resolve (mean)", measure: "performCompletion#mean_value" },
+  { key: "rankingMean", label: "Ranking (mean)", measure: "arrangeItems#mean_value" },
   { key: "items", label: "Result items", measure: "completion#number#mean_value" },
   { key: "stddev", label: "Standard deviation", measure: "completion#standard_deviation" },
 ]

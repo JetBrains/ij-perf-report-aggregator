@@ -32,6 +32,8 @@ import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
+import { resolveSeriesStyles, splitSeriesName } from "../components/charts/seriesStyle"
+import { HOVER_GROUP_KEY } from "../components/charts/hoverFade"
 import { MAIN_METRICS, MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./accidents/AccidentsConfigurator"
 import { getMedianScale, scaleToMedian } from "../components/settings/transforms/scaling"
@@ -405,12 +407,18 @@ class MergeResults {
   constructor(
     readonly data: DataQueryResult,
     private readonly idToSeriesName: Map<number, string>,
+    private readonly idToRawSeriesName: Map<number, string>,
     private readonly idToMeasureName: Map<number, string>,
     private readonly idToOwnerMeasureName: Map<number, string>
   ) {}
 
   getSeriesName(index: number): string {
     return this.idToSeriesName.get(index) as string
+  }
+
+  /** The series name as the query producers built it, before it is turned into a label. */
+  getRawSeriesName(index: number): string {
+    return this.idToRawSeriesName.get(index) as string
   }
 
   getMeasureName(index: number): string {
@@ -445,6 +453,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
   const mergedDataList: DataQueryResult = []
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
+  const seriesIdToRawSeriesName = new Map<number, string>()
   const seriesIdToMeasureName = new Map<number, string>()
   const seriesIdToOwnerMeasureName = new Map<number, string>()
   for (const [dataIndex, seriesData] of dataList.entries()) {
@@ -473,6 +482,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
       const newId = mergedDataList.push(seriesData) - 1
       seriesIdsToIndex.set(id, newId)
       seriesIdToSeriesName.set(newId, seriesName)
+      seriesIdToRawSeriesName.set(newId, configuration.seriesNames[dataIndex])
       seriesIdToMeasureName.set(newId, measureName)
       seriesIdToOwnerMeasureName.set(newId, configuration.ownerMeasureNames[dataIndex] ?? measureName)
     }
@@ -480,7 +490,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
   for (const [index, seriesData] of mergedDataList.entries()) {
     mergedDataList[index] = sortColumnsByTime(seriesData)
   }
-  return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName, seriesIdToOwnerMeasureName)
+  return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToRawSeriesName, seriesIdToMeasureName, seriesIdToOwnerMeasureName)
 }
 
 type PointKey = string | number
@@ -552,6 +562,10 @@ async function configureChart(
   const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.filter((_, index) => !mergeResults.isCompanion(index)).map((seriesData) => (seriesData[0] ?? []) as number[]))
   const measureUnits: MeasureUnit[] = []
   const stdDevByOwnerSeriesId = collectStdDevCompanions(mergeResults)
+  const seriesSplits = mergeResults.data.map((_, index) =>
+    mergeResults.isCompanion(index) || configuration.measures.length < 2 ? null : splitSeriesName(mergeResults.getRawSeriesName(index), configuration.measures)
+  )
+  const seriesStyles = resolveSeriesStyles(seriesSplits, configuration.measures, useDarkModeStore().darkMode)
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
     // A companion is drawn as a band around its mean rather than as a line.
@@ -577,6 +591,13 @@ async function configureChart(
     const measureName = mergeResults.getMeasureName(dataIndex)
     const seriesName = mergeResults.getSeriesName(dataIndex)
     const seriesId = getSeriesId(measureName, seriesName)
+    const seriesStyle = seriesStyles?.[dataIndex] ?? null
+    // Hovering one measure of a project highlights all of that project's measures.
+    const hoverGroup = seriesSplits[dataIndex]?.group
+    const styleOptions = {
+      ...(hoverGroup == undefined ? {} : { [HOVER_GROUP_KEY]: hoverGroup }),
+      ...(seriesStyle == null ? {} : { color: seriesStyle.color, lineStyle: { type: seriesStyle.lineType } }),
+    }
     let stdDevs = resolveStdDevsPerPoint(seriesData, stdDevByOwnerSeriesId.get(seriesId))
 
     if (settings.removeOutliers) {
@@ -628,6 +649,7 @@ async function configureChart(
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id: seriesId,
         name: seriesName,
+        ...styleOptions,
         type: settings.smoothing ? "scatter" : chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
@@ -676,6 +698,7 @@ async function configureChart(
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
           id: seriesId + "smoothed",
           name: seriesName,
+          ...styleOptions,
           type: "line",
           symbol: "none",
           silent: true,
@@ -697,7 +720,9 @@ async function configureChart(
           valueScale,
         })
         if (band != null) {
-          series.push(...getStdDevBandSeries(band, seriesId, seriesName))
+          series.push(
+            ...getStdDevBandSeries(band, seriesId, seriesName, seriesStyle?.color).map((it) => ({ ...it, ...(hoverGroup == undefined ? {} : { [HOVER_GROUP_KEY]: hoverGroup }) }))
+          )
         }
       }
     }

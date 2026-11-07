@@ -6,8 +6,18 @@ import { setSeriesHoverCursor } from "./intervalSelection"
 import { parseSeriesId } from "./seriesId"
 import { STD_DEV_BAND_OPACITY } from "./stdDevInterval"
 
+/**
+ * Series option key that names the group a series fades with; series without it fade with their own derived series.
+ */
+export const HOVER_GROUP_KEY = "hoverGroup"
+
 const FADED_SERIES_OPACITY = 0.2
 const VISIBLE_SERIES_OPACITY = 1
+
+interface SeriesWithGroup {
+  id?: string
+  [HOVER_GROUP_KEY]?: string
+}
 
 export class HoverFadeController {
   private hoveredGroupId: string | null = null
@@ -49,7 +59,8 @@ export class HoverFadeController {
   }
 
   private readonly onMouseOver = (params: ECElementEvent) => {
-    this.setHoveredGroup(HoverFadeController.groupId(params.seriesId))
+    const series = (this.chartManager.chart.getOption() as { series?: SeriesWithGroup[] }).series
+    this.setHoveredGroup(HoverFadeController.groupId(series?.find((it) => it.id === params.seriesId) ?? { id: params.seriesId }))
   }
 
   private readonly onMouseOut = () => {
@@ -74,14 +85,14 @@ export class HoverFadeController {
       return
     }
 
-    const option = this.chartManager.chart.getOption() as { series?: { id?: string }[] }
+    const option = this.chartManager.chart.getOption() as { series?: SeriesWithGroup[] }
     if (option.series == null) {
       this.appliedGroupId = groupId
       return
     }
 
     const series = option.series.map((s) => {
-      const opacity = groupId == null || HoverFadeController.groupId(s.id) === groupId ? VISIBLE_SERIES_OPACITY : FADED_SERIES_OPACITY
+      const opacity = groupId == null || HoverFadeController.groupId(s) === groupId ? VISIBLE_SERIES_OPACITY : FADED_SERIES_OPACITY
       switch (s.id == undefined ? null : parseSeriesId(s.id).role) {
         case "stdDevBandFill": {
           // A band has no stroke of its own, so fading it means fading its fill.
@@ -102,11 +113,15 @@ export class HoverFadeController {
     this.appliedGroupId = groupId
   }
 
-  private static groupId(seriesId?: string): string | null {
-    if (seriesId == null || seriesId.length === 0) {
+  private static groupId(series: SeriesWithGroup): string | null {
+    const group = series[HOVER_GROUP_KEY]
+    if (group != undefined) {
+      return HOVER_GROUP_KEY + ":" + group
+    }
+    if (series.id == null || series.id.length === 0) {
       return null
     }
-    return parseSeriesId(seriesId).ownerSeriesId
+    return parseSeriesId(series.id).ownerSeriesId
   }
 
   private clearPendingReset() {

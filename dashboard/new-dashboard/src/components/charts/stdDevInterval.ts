@@ -40,9 +40,10 @@ export function buildStdDevBand({ timestamps, values, stdDevs, valueScale }: Std
 }
 
 // An invisible lower line lifts the filled width series off the axis.
-export function getStdDevBandSeries(band: StdDevBand, ownerSeriesId: string, seriesName: string): LineSeriesOption[] {
+export function getStdDevBandSeries(band: StdDevBand, ownerSeriesId: string, seriesName: string, color?: string): LineSeriesOption[] {
   const common: LineSeriesOption = {
     name: seriesName, // Share the owner's palette color and legend entry.
+    color, // The owner's explicit color, when it has one instead of a palette color.
     type: "line",
     stack: "stdDevBand:" + ownerSeriesId,
     stackStrategy: "all", // Also stack onto a lower edge of zero.

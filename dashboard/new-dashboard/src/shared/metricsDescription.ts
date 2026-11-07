@@ -169,6 +169,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["globalInspections", metricInfo("Time to run all inspections in batch mode (Inspect Code / Inspect Project).", "milliseconds")],
   //indexing
   ["indexSize", metricInfo("Total size of indexes written to disk after indexing.", "kilobytes")],
+  ["indexSize#*", metricInfo("Size of one index written to disk after indexing.", "kilobytes")],
   ["lexingSize#*", metricInfo("Size of the lexed content of a file type (in bytes).", "bytes")],
   ["parsingSize#*", metricInfo("Size of the parsed content of a file type (in bytes).", "bytes")],
   ["numberOfIndexedFiles", metricInfo("Total files that went through the indexing pipeline.", "counter", undefined, "stable")],

@@ -62,6 +62,12 @@
       </AccordionPanel>
     </ChartAccordion>
 
+    <PerProjectBreakdown
+      title="Index size and file types per project"
+      :projects="indexingProjects"
+      :charts="indexingBreakdown"
+    />
+
     <AdditionalMetrics :projects="allProjects" />
   </DashboardPage>
 </template>
@@ -72,6 +78,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import ChartAccordion from "../charts/ChartAccordion.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
+import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
 import AccordionPanel from "openvue/accordionpanel"
 import AccordionHeader from "openvue/accordionheader"
 import AccordionContent from "openvue/accordioncontent"
@@ -124,6 +131,13 @@ const allGroups: GroupDef[] = [
   { value: "parsing", title: "Parsing & Lexing", prefix: "Parsing", projects: breakdownProjects, charts: parsingCharts },
   { value: "scanning", title: "Scanning", prefix: "Scanning", projects: indexingProjects, charts: scanningCharts },
   { value: "responsiveness", title: "Responsiveness", prefix: "Responsiveness", projects: indexingProjects, charts: responsivenessCharts },
+]
+
+// The three largest indexes make up about 80% of the total size on kubernetes, and the non-Go file types are what the
+// Go-only processing charts above leave out.
+const indexingBreakdown: BreakdownChart[] = [
+  { key: "indexSize", label: "Index size by index", measures: ["indexSize#stubs", "indexSize#idindex", "indexSize#trigram.index"] },
+  { key: "processingTime", label: "Processing time by file type", measures: ["processingTime#Go", "processingTime#YAML", "processingTime#JSON", "processingTime#protobuf"] },
 ]
 
 const indexingPipelineCharts: ChartDef[] = [

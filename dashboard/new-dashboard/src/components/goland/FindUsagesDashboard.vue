@@ -63,6 +63,7 @@ const allProjects = findUsagesProjects
 const findUsagesCharts: ChartDef[] = [
   { key: "total", label: "Total Execution Time", measure: "findUsages" },
   { key: "firstUsage", label: "First Usage Time", measure: "findUsages_firstUsage" },
+  { key: "popup", label: "Popup Shown", measure: "findUsage_popup" },
   { key: "number", label: "Number of Usages", measure: "findUsages#number" },
 ]
 

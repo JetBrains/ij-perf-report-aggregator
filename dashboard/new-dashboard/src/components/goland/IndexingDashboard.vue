@@ -98,11 +98,13 @@ const indexingCharts: ChartDef[] = [
   { key: "indexingTime", label: "Indexing Time", measure: "indexingTimeWithoutPauses" },
   { key: "indexedFiles", label: "Indexed Files", measure: "numberOfIndexedFilesWritingIndexValue" },
   { key: "indexSize", label: "Index Size", measure: "indexSize" },
+  { key: "fusDumbIndexing", label: "Dumb Indexing (FUS)", measure: "fus_dumb_indexing_time" },
 ]
 
 const processingCharts: ChartDef[] = [
   { key: "processingTime", label: "Processing Time", measure: "processingTime#Go" },
   { key: "processingSpeed", label: "Processing Speed", measure: "processingSpeedAvg#Go" },
+  { key: "processingSpeedWorst", label: "Processing Speed (worst file)", measure: "processingSpeedWorst#Go" },
 ]
 
 // Lexing/parsing metrics are keyed by Language.getID() ("go", lowercase); processing metrics above
@@ -114,11 +116,14 @@ const parsingCharts: ChartDef[] = [
 
 const scanningCharts: ChartDef[] = [{ key: "scanningTime", label: "Scanning Time", measure: "scanningTimeWithoutPauses" }]
 
+const responsivenessCharts: ChartDef[] = [{ key: "uiLag", label: "UI Lag During Indexing", measure: "lagging_with_threshold_10_during_indexing_total_time" }]
+
 const allGroups: GroupDef[] = [
   { value: "total", title: "Total Indexing", prefix: "Total", projects: indexingProjects, charts: indexingCharts },
   { value: "processing", title: "Processing", prefix: "Processing", projects: breakdownProjects, charts: processingCharts },
   { value: "parsing", title: "Parsing & Lexing", prefix: "Parsing", projects: breakdownProjects, charts: parsingCharts },
   { value: "scanning", title: "Scanning", prefix: "Scanning", projects: indexingProjects, charts: scanningCharts },
+  { value: "responsiveness", title: "Responsiveness", prefix: "Responsiveness", projects: indexingProjects, charts: responsivenessCharts },
 ]
 
 const indexingPipelineCharts: ChartDef[] = [

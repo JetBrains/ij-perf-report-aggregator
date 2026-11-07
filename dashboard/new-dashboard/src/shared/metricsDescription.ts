@@ -286,6 +286,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
       "https://plugins.jetbrains.com/docs/intellij/smart-mode-and-dumb-mode.html"
     ),
   ],
+  [
+    "lagging_with_threshold_10_during_indexing_total_time",
+    metricInfo("Total UI lag during indexing: the sum of the EDT stalls longer than 10 ms while indexes were built.", "milliseconds"),
+  ],
   ["dumbModeTimeWithPauses", metricInfo("Total time the IDE spent in dumb mode (indexes not ready), including pauses from GC and UI freezes.", "milliseconds")],
   ["pausedTimeInIndexingOrScanning", metricInfo("Time the indexing or scanning pipeline was paused.", "milliseconds")],
   ["numberOfRunsOfIndexing", metricInfo("Number of indexing passes. Higher means more incremental re-indexing.", "counter", undefined, "lower")],

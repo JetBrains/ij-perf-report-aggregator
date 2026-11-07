@@ -1,15 +1,25 @@
 <template>
-  <!-- Outside the lazy accordion, so that these charts are mounted and the compare table lists them next to the durations. -->
-  <Divider label="Runtime" />
-  <section>
-    <GroupProjectsChart
-      v-for="chart in runtimeCharts"
-      :key="chart.key"
-      :label="chart.label"
-      :measure="chart.measure"
-      :projects="projects"
-    />
-  </section>
+  <!-- In compare mode, outside the lazy accordion, so that these charts are mounted and the compare table lists them
+       next to the durations. As charts, one row per project: a run varies by 30-40% from the next, so the lines of
+       several projects in one chart cross on almost every build. -->
+  <template v-if="renderMode === 'compare'">
+    <Divider label="Runtime" />
+    <section>
+      <GroupProjectsChart
+        v-for="chart in runtimeCharts"
+        :key="chart.key"
+        :label="chart.label"
+        :measure="chart.measure"
+        :projects="projects"
+      />
+    </section>
+  </template>
+  <PerProjectBreakdown
+    v-else
+    title="Runtime per project"
+    :projects="projects"
+    :charts="runtimeBreakdown"
+  />
   <ChartAccordion :lazy="true">
     <AccordionPanel value="0">
       <AccordionHeader>Additional metrics</AccordionHeader>
@@ -66,8 +76,14 @@ import Divider from "../common/Divider.vue"
 import AccordionPanel from "openvue/accordionpanel"
 import AccordionHeader from "openvue/accordionheader"
 import AccordionContent from "openvue/accordioncontent"
+import { inject, ref } from "vue"
+import { renderModeKey } from "../../shared/keys"
+import { RenderMode } from "../charts/compareMode"
+import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
 
 defineProps<{ projects: string[] }>()
+
+const renderMode = inject(renderModeKey, ref<RenderMode>("charts"))
 
 interface ChartDef {
   key: string
@@ -84,6 +100,8 @@ const runtimeCharts: ChartDef[] = [
   { key: "usedHeap", label: "Used heap, peak", measure: "JVM.usedHeapMegabytes" },
   { key: "footprintAfterFullGC", label: "Footprint after full GC", measure: "avgfootprintAfterFullGC" },
 ]
+
+const runtimeBreakdown: BreakdownChart[] = runtimeCharts.map((chart) => ({ key: chart.key, label: chart.label, measures: [chart.measure] }))
 
 // Grouped: efficiency → pauses → freed → G1 mark → G1 shrink.
 const gcCharts: ChartDef[] = [

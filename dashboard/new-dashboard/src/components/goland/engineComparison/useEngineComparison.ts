@@ -7,18 +7,18 @@ import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 import { DataQueryExecutor, DataQueryResult } from "../../common/DataQueryExecutor"
 import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
-import { indexSeriesRuns, seriesKey, SeriesRun } from "../../charts/compareQuery"
-import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, isSignificantBranch } from "../../charts/compareStats"
+import { indexSeriesRuns, seriesKey } from "../../charts/compareQuery"
+import { BaseStats, BranchStats } from "../../charts/compareStats"
 import { bucketOf, buildMeasure, HighlightingProject, phaseOf, projects, Quantity } from "./highlightingMetrics"
 import { computeEngineAggregates, EngineAggregates, EngineComparePoint } from "./engineCompareAggregates"
-import { dayKey, pickRunValues } from "./engineRunSelection"
+import { compareCell, dayKey, pairRuns } from "./engineRunSelection"
 
 // How the comparison reduces the runs in the window: "aggregated" = robust center over every run
 // (SPEC-style verdict), "single" = one run's before/after (see EngineComparisonMode below).
 export type EngineComparisonMode = "aggregated" | "single"
 
-// A selectable run in single-run mode. `day` is the UTC-day key used to align the two engines; `label`
-// is the human date. LEGACY and NEW of a project share a build, so a day picks a coherent snapshot.
+// A selectable run in single-run mode. `day` is the UTC-day key that groups the paired builds; `label`
+// is the human date.
 export interface RunDay {
   day: number
   label: string
@@ -49,7 +49,7 @@ interface EngineComparisonOptions {
   quantity: Readonly<Ref<Quantity>>
   // Aggregated vs single-run view.
   mode: Readonly<Ref<EngineComparisonMode>>
-  // In single-run mode, the run day to show; null means the latest run present.
+  // In single-run mode, the run day to show; null means the newest day with a paired build in any project.
   selectedRunDay: Readonly<Ref<number | null>>
 }
 
@@ -97,8 +97,18 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
 
   const rowsByBase = shallowRef(new Map<string, EngineCompareRow[]>())
   const loadingByBase = shallowRef(new Map<string, boolean>())
-  // day key -> representative timestamp (ms) for labeling; union across bases and engines.
-  const runTimeByDay = shallowRef(new Map<number, number>())
+  // Per base: day key -> newest paired build timestamp (ms) of that day. Replaced on each result, so a
+  // narrower time range or another branch drops the days it no longer has.
+  const runTimeByDayByBase = shallowRef(new Map<string, Map<number, number>>())
+  const runTimeByDay = computed(() => {
+    const union = new Map<number, number>()
+    for (const byDay of runTimeByDayByBase.value.values()) {
+      for (const [day, t] of byDay) union.set(day, Math.max(t, union.get(day) ?? t))
+    }
+    return union
+  })
+  // The day a null run selection resolves to: one day for every cell, so a "latest" summary is one snapshot.
+  const newestDay = computed<number | null>(() => (runTimeByDay.value.size === 0 ? null : Math.max(...runTimeByDay.value.keys())))
   const entries = new Map<string, BaseEntry>()
 
   const selectedBranches = (): string[] => {
@@ -114,20 +124,6 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     triggerRef(loadingByBase)
   }
 
-  // Record every run's day so the picker can list available runs, keeping the newest timestamp per day.
-  function noteRunDays(runs: readonly SeriesRun[]): void {
-    let changed = false
-    for (const run of runs) {
-      const day = dayKey(run.t)
-      const existing = runTimeByDay.value.get(day)
-      if (existing == null || run.t > existing) {
-        runTimeByDay.value.set(day, run.t)
-        changed = true
-      }
-    }
-    if (changed) triggerRef(runTimeByDay)
-  }
-
   function recompute(project: HighlightingProject, data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
     const entry = entries.get(project.base)
     if (entry == null) return
@@ -137,25 +133,26 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     const measures = measuresFor(project)
     const indexed = indexSeriesRuns(data, configuration, branches, [entry.legacyProject, entry.newProject], measures)
 
-    const rows: EngineCompareRow[] = []
     // types[i] and measures[i] are parallel (measuresFor maps the former to the latter), so reuse the
-    // already-built measure name instead of recomputing it.
-    for (let i = 0; i < types.length; i++) {
-      const type = types[i]
+    // already-built measure name instead of recomputing it. Days are noted for all cells before any cell
+    // resolves the newest day.
+    const baseDays = new Map<number, number>()
+    const cells = types.map((type, i) => {
       const measure = measures[i]
-      // Merge across selected branches; the dashboard is single-branch by design, so this is a no-op
-      // for the common case and a defensive concat if the user widens the branch selection.
-      const legacyRuns = branches.flatMap((branch) => indexed.get(seriesKey(branch, entry.legacyProject, measure)) ?? [])
-      const newRuns = branches.flatMap((branch) => indexed.get(seriesKey(branch, entry.newProject, measure)) ?? [])
-      noteRunDays(legacyRuns)
-      noteRunDays(newRuns)
+      const runsOf = (variant: string) => branches.flatMap((branch) => indexed.get(seriesKey(branch, variant, measure)) ?? [])
+      const pairs = pairRuns(runsOf(entry.legacyProject), runsOf(entry.newProject))
+      for (const pair of pairs) baseDays.set(dayKey(pair.t), Math.max(pair.t, baseDays.get(dayKey(pair.t)) ?? 0))
+      return { type, measure, pairs }
+    })
+    runTimeByDayByBase.value.set(project.base, baseDays)
+    triggerRef(runTimeByDayByBase)
 
-      const values = pickRunValues(opts.mode.value === "single", opts.selectedRunDay.value, legacyRuns, newRuns)
-      if (values == null || (values.legacy.length === 0 && values.new.length === 0)) continue
-
-      const legacy = computeBaseStats(values.legacy)
-      const newStats = computeBranchStats(legacy, values.new)
-      const ratio = Number.isFinite(legacy.center) && legacy.center > 0 && Number.isFinite(newStats.center) ? newStats.center / legacy.center : Number.NaN
+    const single = opts.mode.value === "single"
+    const day = opts.selectedRunDay.value ?? newestDay.value
+    const rows: EngineCompareRow[] = []
+    for (const { type, measure, pairs } of cells) {
+      const cell = compareCell(single, day, pairs)
+      if (cell == null) continue
       rows.push({
         base: project.base,
         title: project.title,
@@ -163,11 +160,7 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
         phase: phaseOf(type),
         bucket: bucketOf(type),
         measure,
-        legacy,
-        new: newStats,
-        ratio,
-        diffPercent: newStats.diffPercent,
-        significant: isSignificantBranch(newStats),
+        ...cell,
       })
     }
 
@@ -228,6 +221,11 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   // Mode / run-day change reuses the cached query result — same data, different reduction.
   watch([opts.mode, opts.selectedRunDay], () => {
     recomputeFromCache()
+  })
+
+  // A later base can bring a newer day; cells resolved to an older "latest" day must move to it.
+  watch(newestDay, () => {
+    if (opts.mode.value === "single" && opts.selectedRunDay.value == null) recomputeFromCache()
   })
 
   onUnmounted(() => {

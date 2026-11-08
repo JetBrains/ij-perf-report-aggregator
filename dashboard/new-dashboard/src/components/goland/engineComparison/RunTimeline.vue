@@ -15,18 +15,18 @@
           />
           <button
             v-for="run in ordered"
-            :key="run.day"
+            :key="run.t"
             v-tooltip.top="run.label"
             type="button"
             class="relative z-10 rounded-full transition-all"
             :class="
-              isSelected(run.day)
+              isSelected(run.t)
                 ? 'w-3.5 h-3.5 bg-blue-500 ring-2 ring-blue-300 dark:ring-blue-700'
                 : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-500 hover:bg-gray-400 dark:hover:bg-gray-400'
             "
             :aria-label="`Show run ${run.label}`"
-            :aria-pressed="isSelected(run.day)"
-            @click="select(run.day)"
+            :aria-pressed="isSelected(run.t)"
+            @click="select(run.t)"
           />
         </div>
       </div>
@@ -40,28 +40,28 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { RunDay } from "./useEngineComparison"
+import { Run } from "./useEngineComparison"
 
-// null means "follow the latest run"; a day key pins a specific run.
+// null means "follow the latest run"; a build timestamp pins a specific run.
 const model = defineModel<number | null>({ default: null })
-const { runs } = defineProps<{ runs: RunDay[] }>()
+const { runs } = defineProps<{ runs: Run[] }>()
 
 // runs arrive newest-first; a timeline reads oldest -> newest left -> right.
-const ordered = computed<RunDay[]>(() => runs.toReversed())
-const newestDay = computed<number | null>(() => runs[0]?.day ?? null)
+const ordered = computed<Run[]>(() => runs.toReversed())
+const newestRun = computed<number | null>(() => runs[0]?.t ?? null)
 
-function isSelected(day: number): boolean {
-  return model.value === day || (model.value == null && day === newestDay.value)
+function isSelected(t: number): boolean {
+  return model.value === t || (model.value == null && t === newestRun.value)
 }
 
-const isLatest = computed(() => model.value == null || model.value === newestDay.value)
+const isLatest = computed(() => model.value == null || model.value === newestRun.value)
 
 const selectedLabel = computed(() => {
-  const day = model.value ?? newestDay.value
-  return runs.find((run) => run.day === day)?.label ?? "—"
+  const t = model.value ?? newestRun.value
+  return runs.find((run) => run.t === t)?.label ?? "—"
 })
 
-function select(day: number): void {
-  model.value = day
+function select(t: number): void {
+  model.value = t
 }
 </script>

@@ -49,7 +49,7 @@ let chartManager: ChartManagerHelper | null = null
 
 function tooltipFor(row: EngineCompareRow): string {
   const { before, after } = formatEngineCell(row)
-  return `${row.title} · ${bucketLabel(row.bucket)}<br/>LEGACY ${before} → NEW ${after}<br/>Δ ${formatSignedPercent(row.diffPercent)}`
+  return `${row.title} · ${bucketLabel(row.bucket)}<br/>LEGACY ${before} → NEW ${after}<br/>per-build Δ ${formatSignedPercent(row.diffPercent)}`
 }
 
 function renderChart(): void {

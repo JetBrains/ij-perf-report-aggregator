@@ -109,11 +109,6 @@
       <span class="font-medium text-red-600 dark:text-red-400">{{ line.engine }} missing:</span>
       <span class="ml-1">{{ line.cells.join(", ") }}</span>
     </div>
-
-    <p class="text-xs text-gray-500">
-      A synthetic win here maps to revenue only when the interactive First-Code-Analysis APDEX gate (which covers highlighting) moves too — read this as a sensor, not a money
-      metric.
-    </p>
   </div>
 </template>
 

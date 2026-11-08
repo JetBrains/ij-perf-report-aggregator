@@ -138,7 +138,7 @@ export function computeEngineAggregates(rows: readonly EngineComparePoint[], gap
 }
 
 // -1 when NEW is lower (better) by a practically relevant margin, 1 when higher, 0 otherwise.
-export function geomeanDirection(geomean: number): -1 | 0 | 1 {
+function geomeanDirection(geomean: number): -1 | 0 | 1 {
   if (!Number.isFinite(geomean) || geomean <= 0) return 0
   const percent = (geomean - 1) * 100
   if (Math.abs(percent) < DIFF_PERCENT_WARN) return 0

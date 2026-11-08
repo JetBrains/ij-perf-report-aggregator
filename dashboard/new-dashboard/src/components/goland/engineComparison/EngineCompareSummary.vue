@@ -23,18 +23,11 @@
         <div class="flex flex-col gap-2 text-sm max-w-md">
           <span class="font-semibold">How this verdict is computed</span>
           <hr class="w-full border-gray-200 dark:border-gray-600" />
+          <p>The geometric mean of NEW ÷ LEGACY over all cells, equally weighted. A cell's ratio is the center of its per-build ratios.</p>
+          <p>A cell is significant when it moves by ≥5% and lies outside the build-to-build spread of its ratio.</p>
           <p>
-            The overall figure is the geometric mean of each cell's NEW ÷ LEGACY ratio, all cells weighted equally — the SPEC-style summary that keeps a 180× spread of absolute
-            values from letting slow files dominate. In aggregated mode a cell's ratio is the center of its per-build ratios.
-          </p>
-          <p>
-            Improved / regressed / neutral counts apply the same two-gate significance test as the compare table (robust effect size <em>and</em> ≥5% change). A single run has no
-            spread of its own, so its effect size is judged against the build-to-build spread of both engines over the selected time range.
-          </p>
-          <p>
-            NEW is called faster or slower only when the overall move is at least 5%, no bucket or phase moves the other way (a Simpson's-paradox split), and the significant cells
-            against the move are fewer than those with it; otherwise the verdict is mixed. In a single run, a cell that one engine did not publish blocks the verdict, because a
-            crash or a timeout would otherwise drop out of the mean; over all runs, such cells are listed below the verdict.
+            Faster or slower needs a ≥5% move, no bucket or phase moving the other way, and fewer significant cells against the move than with it; otherwise the verdict is mixed.
+            In a single run, a missing result blocks the verdict.
           </p>
         </div>
       </Popover>
@@ -113,7 +106,7 @@
       :key="line.engine"
       class="text-sm"
     >
-      <span class="font-medium text-red-600 dark:text-red-400">{{ line.engine }} has no result:</span>
+      <span class="font-medium text-red-600 dark:text-red-400">{{ line.engine }} missing:</span>
       <span class="ml-1">{{ line.cells.join(", ") }}</span>
     </div>
 
@@ -141,10 +134,7 @@ const eyebrow = computed(() => {
   return mode === "single" ? `${what} — ${runLabel || "single run"}` : `${what} — overall`
 })
 
-const subtitle = computed(() => {
-  const coverage = `geometric mean of NEW ÷ LEGACY over ${aggregates.count} of ${aggregates.cells} cells (project × phase × file), equally weighted`
-  return mode === "single" ? `single run${runLabel ? ` — ${runLabel}` : ""} · ${coverage}` : coverage
-})
+const subtitle = computed(() => `${aggregates.count} of ${aggregates.cells} cells (project × phase × file)`)
 
 function gapText(gap: EngineGap): string {
   const builds = mode === "aggregated" ? ` (${gap.builds} ${gap.builds === 1 ? "build" : "builds"})` : ""
@@ -183,18 +173,15 @@ const overall = computed<{ headline: string; tone: Tone }>(() => {
   const { label } = describeGeomean(aggregates.grandGeomean)
   switch (verdict.kind) {
     case "noData":
-      return { headline: "Not enough comparable data yet", tone: "none" }
+      return { headline: "No data", tone: "none" }
     case "incomplete": {
-      const parts = [
-        verdict.newGaps > 0 ? `NEW has no result for ${cellCount(verdict.newGaps)}` : "",
-        verdict.legacyGaps > 0 ? `LEGACY has no result for ${cellCount(verdict.legacyGaps)}` : "",
-      ]
+      const parts = [verdict.newGaps > 0 ? `NEW missing in ${cellCount(verdict.newGaps)}` : "", verdict.legacyGaps > 0 ? `LEGACY missing in ${cellCount(verdict.legacyGaps)}` : ""]
       return { headline: `No verdict: ${parts.filter((part) => part !== "").join(", ")}`, tone: verdict.newGaps > 0 ? "worse" : "none" }
     }
     case "same":
-      return { headline: "NEW is about the same as LEGACY", tone: "same" }
+      return { headline: "About the same", tone: "same" }
     case "mixed":
-      return { headline: `Mixed: ${label} overall, but buckets, phases or cells disagree`, tone: "same" }
+      return { headline: `Mixed: ${label} overall`, tone: "same" }
   }
   return { headline: `NEW is ${label}`, tone: verdict.kind }
 })

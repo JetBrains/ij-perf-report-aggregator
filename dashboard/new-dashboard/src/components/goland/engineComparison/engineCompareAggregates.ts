@@ -35,9 +35,21 @@ interface EngineExtreme {
   diffPercent: number
 }
 
+// A cell that one engine did not publish in some builds of the compared scope (see countMissing).
+export interface EngineGap {
+  base: string
+  title: string
+  metricType: string
+  engine: "LEGACY" | "NEW"
+  builds: number
+}
+
 export interface EngineAggregates {
   // Cells with a usable ratio (finite, positive) — the denominator of grandGeomean.
   count: number
+  // Cells the comparison covers: every project × every selected metric type, measured or not.
+  cells: number
+  gaps: EngineGap[]
   // Geomean of NEW/LEGACY across all usable cells; NaN when none. < 1 means NEW is faster overall.
   grandGeomean: number
   // Per-bucket geomeans, in the order buckets first appear (fast -> medium -> slow).
@@ -84,7 +96,7 @@ function groupGeomean(rows: readonly EngineComparePoint[], keyFn: (row: EngineCo
   })
 }
 
-export function computeEngineAggregates(rows: readonly EngineComparePoint[]): EngineAggregates {
+export function computeEngineAggregates(rows: readonly EngineComparePoint[], gaps: readonly EngineGap[], cells: number): EngineAggregates {
   const { geomean: grandGeomean, count } = geomeanOf(rows.map((row) => row.ratio))
 
   let regressed = 0
@@ -110,6 +122,8 @@ export function computeEngineAggregates(rows: readonly EngineComparePoint[]): En
 
   return {
     count,
+    cells,
+    gaps: [...gaps],
     grandGeomean,
     perBucket: groupGeomean(rows, (row) => row.bucket),
     perPhase: groupGeomean(rows, (row) => row.phase),

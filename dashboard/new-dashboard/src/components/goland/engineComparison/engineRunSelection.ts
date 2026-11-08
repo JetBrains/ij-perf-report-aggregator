@@ -24,6 +24,19 @@ export function pairRuns(legacyRuns: readonly SeriesRun[], newRuns: readonly Ser
   return pairs.toSorted((a, b) => a.t - b.t)
 }
 
+// How many builds of `scope` published the cell for one engine only. Such a build is a crash, a timeout
+// or a skipped file of the other engine, so it must count against that engine, not drop out of the verdict.
+export function countMissing(scope: Iterable<number>, legacyRuns: readonly SeriesRun[], newRuns: readonly SeriesRun[]): { legacy: number; new: number } {
+  const legacyTimes = new Set(legacyRuns.map((run) => run.t))
+  const newTimes = new Set(newRuns.map((run) => run.t))
+  const missing = { legacy: 0, new: 0 }
+  for (const t of scope) {
+    if (legacyTimes.has(t) && !newTimes.has(t)) missing.new++
+    else if (newTimes.has(t) && !legacyTimes.has(t)) missing.legacy++
+  }
+  return missing
+}
+
 // The [legacy, new] value arrays for one cell, from paired builds only.
 //   - aggregated (single=false): every paired build.
 //   - single: the paired build whose timestamp is `run`.

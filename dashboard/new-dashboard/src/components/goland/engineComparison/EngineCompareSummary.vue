@@ -107,6 +107,15 @@
       </div>
     </div>
 
+    <div
+      v-for="line in gapLines"
+      :key="line.engine"
+      class="text-sm"
+    >
+      <span class="font-medium text-red-600 dark:text-red-400">{{ line.engine }} has no result:</span>
+      <span class="ml-1">{{ line.cells.join(", ") }}</span>
+    </div>
+
     <p class="text-xs text-gray-500">
       A synthetic win here maps to revenue only when the interactive First-Code-Analysis APDEX gate (which covers highlighting) moves too — read this as a sensor, not a money
       metric.
@@ -117,7 +126,7 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from "vue"
 import { PopoverMethods } from "openvue/popover"
-import { EngineAggregates } from "./engineCompareAggregates"
+import { EngineAggregates, EngineGap } from "./engineCompareAggregates"
 import { EngineComparisonMode } from "./useEngineComparison"
 import { bucketLabel, metricTypeLabel, phaseLabel } from "./highlightingMetrics"
 import { formatSignedPercent } from "../../charts/compareStats"
@@ -128,10 +137,18 @@ type Tone = "faster" | "slower" | "same" | "none"
 
 const eyebrow = computed(() => (mode === "single" ? `NEW vs LEGACY — ${runLabel || "single run"}` : "NEW vs LEGACY — overall"))
 
-const subtitle = computed(() =>
-  mode === "single"
-    ? `single run${runLabel ? ` — ${runLabel}` : ""} · ${aggregates.count} scenarios (NEW ÷ LEGACY)`
-    : `geometric mean of ${aggregates.count} per-scenario ratios (NEW ÷ LEGACY)`
+const subtitle = computed(() => {
+  const coverage = `geometric mean of NEW ÷ LEGACY over ${aggregates.count} of ${aggregates.cells} cells (project × phase × file), equally weighted`
+  return mode === "single" ? `single run${runLabel ? ` — ${runLabel}` : ""} · ${coverage}` : coverage
+})
+
+function gapText(gap: EngineGap): string {
+  const builds = mode === "aggregated" ? ` (${gap.builds} ${gap.builds === 1 ? "build" : "builds"})` : ""
+  return `${gap.title} · ${metricTypeLabel(gap.metricType)}${builds}`
+}
+
+const gapLines = computed(() =>
+  (["NEW", "LEGACY"] as const).map((engine) => ({ engine, cells: aggregates.gaps.filter((gap) => gap.engine === engine).map((gap) => gapText(gap)) })).filter((line) => line.cells.length > 0)
 )
 
 // A geomean of NEW ÷ LEGACY ratios, phrased as a faster/slower verdict. Below 1% is "about the same"

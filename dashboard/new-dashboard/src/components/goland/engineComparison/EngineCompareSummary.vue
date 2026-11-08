@@ -7,7 +7,14 @@
         <div class="text-2xl font-semibold flex items-baseline gap-2">
           <span :class="toneClass(overall.tone)">{{ overall.headline }}</span>
         </div>
-        <div class="text-xs text-gray-500 mt-1">{{ subtitle }}</div>
+        <div class="text-xs text-gray-500 mt-1">
+          {{ subtitle
+          }}<span
+            v-if="overall.caveat"
+            class="ml-1 font-medium text-amber-600 dark:text-amber-400"
+            >· {{ overall.caveat }}</span
+          >
+        </div>
       </div>
       <button
         type="button"
@@ -26,8 +33,8 @@
           <p>The geometric mean of NEW ÷ LEGACY over all cells, equally weighted. A cell's ratio is the center of its per-build ratios.</p>
           <p>A cell is significant when it moves by ≥5% and lies outside the build-to-build spread of its ratio.</p>
           <p>
-            Faster or slower needs a ≥5% move, no bucket or phase moving the other way, and fewer significant cells against the move than with it; otherwise the verdict is mixed.
-            In a single run, a missing result blocks the verdict.
+            The headline is flagged as unconfirmed when the move is under 5%, a bucket or phase moves the other way, or the significant cells against the move are at least as many
+            as those with it. In a single run, a missing result blocks the verdict.
           </p>
         </div>
       </Popover>
@@ -115,7 +122,7 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from "vue"
 import { PopoverMethods } from "openvue/popover"
-import { EngineAggregates, EngineGap, geomeanDirection, resolveVerdict } from "./engineCompareAggregates"
+import { EngineAggregates, EngineGap, resolveVerdict } from "./engineCompareAggregates"
 import { EngineComparisonMode } from "./useEngineComparison"
 import { bucketLabel, metricTypeLabel, phaseLabel, Quantity } from "./highlightingMetrics"
 import { formatSignedPercent } from "../../charts/compareStats"
@@ -145,40 +152,34 @@ const gapLines = computed(() =>
 // Lower is better for every quantity, but only a duration is "faster": less allocation is "lower".
 const words = computed(() => (quantity.suffix === "" ? { lower: "faster", higher: "slower" } : { lower: "lower", higher: "higher" }))
 
-// A geomean of NEW ÷ LEGACY ratios as a signed move, or "about the same" inside the practical threshold.
+// A geomean of NEW ÷ LEGACY ratios as a signed, colored move; below 1% rounding noise reads "about the same".
+// Whether the move is large and consistent enough is the verdict's call, shown as its caveat.
 function describeGeomean(geomean: number): { label: string; tone: Tone } {
   if (!Number.isFinite(geomean) || geomean <= 0) return { label: "—", tone: "none" }
   const percent = (geomean - 1) * 100
-  switch (geomeanDirection(geomean)) {
-    case -1:
-      return { label: `${Math.abs(percent).toFixed(0)}% ${words.value.lower}`, tone: "better" }
-    case 1:
-      return { label: `${percent.toFixed(0)}% ${words.value.higher}`, tone: "worse" }
-    default:
-      return { label: "about the same", tone: "same" }
-  }
+  if (Math.abs(percent) < 1) return { label: "about the same", tone: "same" }
+  return percent < 0 ? { label: `${Math.abs(percent).toFixed(0)}% ${words.value.lower}`, tone: "better" } : { label: `${percent.toFixed(0)}% ${words.value.higher}`, tone: "worse" }
 }
 
 function cellCount(count: number): string {
   return `${count} ${count === 1 ? "cell" : "cells"}`
 }
 
-const overall = computed<{ headline: string; tone: Tone }>(() => {
+const overall = computed<{ headline: string; tone: Tone; caveat: string }>(() => {
   const verdict = resolveVerdict(aggregates, mode === "single")
-  const { label } = describeGeomean(aggregates.grandGeomean)
+  const { label, tone } = describeGeomean(aggregates.grandGeomean)
   switch (verdict.kind) {
     case "noData":
-      return { headline: "No data", tone: "none" }
+      return { headline: "No data", tone: "none", caveat: "" }
     case "incomplete": {
       const parts = [verdict.newGaps > 0 ? `NEW missing in ${cellCount(verdict.newGaps)}` : "", verdict.legacyGaps > 0 ? `LEGACY missing in ${cellCount(verdict.legacyGaps)}` : ""]
-      return { headline: `No verdict: ${parts.filter((part) => part !== "").join(", ")}`, tone: verdict.newGaps > 0 ? "worse" : "none" }
+      return { headline: `No verdict: ${parts.filter((part) => part !== "").join(", ")}`, tone: verdict.newGaps > 0 ? "worse" : "none", caveat: "" }
     }
-    case "same":
-      return { headline: "About the same", tone: "same" }
-    case "mixed":
-      return { headline: `Mixed: ${label} overall`, tone: "same" }
   }
-  return { headline: `NEW is ${label}`, tone: verdict.kind }
+  const headline = tone === "same" ? "About the same" : `NEW is ${label}`
+  if (verdict.kind === "mixed") return { headline, tone, caveat: "not in every bucket, phase or cell" }
+  if (verdict.kind === "same" && tone !== "same") return { headline, tone, caveat: "under the 5% threshold" }
+  return { headline, tone, caveat: "" }
 })
 
 function toneClass(tone: Tone): string {

@@ -1,3 +1,5 @@
+import { DIFF_PERCENT_WARN } from "../../charts/compareStats"
+
 // Pure aggregation of the LEGACY-vs-NEW engine comparison, following SPEC/Fleming-Wallace methodology:
 // the summary statistic is the geometric mean of per-cell ratios (NEW/LEGACY). A single grand geomean
 // hides a Simpson's-paradox split (NEW can win overall while losing every bucket), so per-bucket and
@@ -133,4 +135,41 @@ export function computeEngineAggregates(rows: readonly EngineComparePoint[], gap
     worstRegression,
     bestImprovement,
   }
+}
+
+// -1 when NEW is lower (better) by a practically relevant margin, 1 when higher, 0 otherwise.
+export function geomeanDirection(geomean: number): -1 | 0 | 1 {
+  if (!Number.isFinite(geomean) || geomean <= 0) return 0
+  const percent = (geomean - 1) * 100
+  if (Math.abs(percent) < DIFF_PERCENT_WARN) return 0
+  return percent < 0 ? -1 : 1
+}
+
+export type EngineVerdict =
+  | { kind: "noData" }
+  | { kind: "incomplete"; newGaps: number; legacyGaps: number }
+  | { kind: "same" }
+  | { kind: "mixed" }
+  | { kind: "better" }
+  | { kind: "worse" }
+
+// The headline over the aggregates. NEW is better or worse only when the grand geomean moves by a
+// practically relevant margin, no bucket or phase moves the other way, and the significant cells against
+// the move are fewer than those with it. In a single run, a cell without both results also blocks it;
+// over a window, one failed build would block it until the window moves past, so the gaps stay a caveat.
+export function resolveVerdict(aggregates: EngineAggregates, single: boolean): EngineVerdict {
+  if (aggregates.count === 0) return { kind: "noData" }
+  if (single && aggregates.gaps.length > 0) {
+    const newGaps = aggregates.gaps.filter((gap) => gap.engine === "NEW").length
+    return { kind: "incomplete", newGaps, legacyGaps: aggregates.gaps.length - newGaps }
+  }
+  const groupDirections = new Set<number>([...aggregates.perBucket, ...aggregates.perPhase].map((group) => geomeanDirection(group.geomean)))
+  const direction = geomeanDirection(aggregates.grandGeomean)
+  if (groupDirections.has(-1) && groupDirections.has(1)) return { kind: "mixed" }
+  if (direction === 0) return { kind: "same" }
+  if (groupDirections.has(-direction)) return { kind: "mixed" }
+  const against = direction < 0 ? aggregates.regressed : aggregates.improved
+  const along = direction < 0 ? aggregates.improved : aggregates.regressed
+  if (against > 0 && against >= along) return { kind: "mixed" }
+  return { kind: direction < 0 ? "better" : "worse" }
 }

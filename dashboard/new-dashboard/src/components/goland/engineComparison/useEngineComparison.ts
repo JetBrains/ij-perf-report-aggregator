@@ -7,7 +7,7 @@ import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 import { DataQueryExecutor, DataQueryResult } from "../../common/DataQueryExecutor"
 import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
-import { indexSeriesRuns, seriesKey } from "../../charts/compareQuery"
+import { indexSeriesRuns, SeriesRun, seriesKey } from "../../charts/compareQuery"
 import { BaseStats, BranchStats } from "../../charts/compareStats"
 import { bucketOf, buildMeasure, HighlightingProject, phaseOf, projects, Quantity } from "./highlightingMetrics"
 import { computeEngineAggregates, EngineAggregates, EngineComparePoint } from "./engineCompareAggregates"
@@ -49,7 +49,7 @@ interface EngineComparisonOptions {
   quantity: Readonly<Ref<Quantity>>
   // Aggregated vs single-run view.
   mode: Readonly<Ref<EngineComparisonMode>>
-  // In single-run mode, the build timestamp to show; null means the newest paired build in any project.
+  // In single-run mode, the build timestamp to show; null means the newest build in any project.
   selectedRun: Readonly<Ref<number | null>>
 }
 
@@ -60,16 +60,21 @@ interface EngineComparison {
   loading: Ref<boolean>
 }
 
+// The runs of one (base, metric type) cell for each engine, as the last query returned them.
+interface CellRuns {
+  type: string
+  measure: string
+  legacy: SeriesRun[]
+  new: SeriesRun[]
+}
+
 // One live query per project base, mirroring today's per-project GroupProjectsChart ownership. Measure
-// names embed the project's scenario file, so the bases cannot share a single executor. The last result
-// is cached so a mode/run switch recomputes without a refetch (the query is unchanged).
+// names embed the project's scenario file, so the bases cannot share a single executor.
 interface BaseEntry {
   project: HighlightingProject
   legacyProject: string
   newProject: string
   measures: Ref<string[]>
-  lastData: DataQueryResult | null
-  lastConfiguration: DataQueryExecutorConfiguration | null
   unsubscribe: () => void
 }
 
@@ -95,12 +100,11 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   )
   const queryConfigurators = [...dashboardConfigurators.filter((configurator) => configurator !== dashboardModeConfigurator), modeConfigurator]
 
-  const rowsByBase = shallowRef(new Map<string, EngineCompareRow[]>())
+  // Replaced on each result, so a narrower time range or another branch drops the builds it no longer has.
+  const cellsByBase = shallowRef(new Map<string, CellRuns[]>())
   const loadingByBase = shallowRef(new Map<string, boolean>())
-  // Per base: the timestamps of its paired builds. Replaced on each result, so a narrower time range or
-  // another branch drops the builds it no longer has.
-  const runTimesByBase = shallowRef(new Map<string, Set<number>>())
-  const runTimes = computed(() => new Set([...runTimesByBase.value.values()].flatMap((times) => [...times])))
+  // Every build that published a selected cell of any project with both engines.
+  const runTimes = computed(() => new Set([...cellsByBase.value.values()].flatMap((cells) => cells.flatMap((cell) => pairRuns(cell.legacy, cell.new).map((pair) => pair.t)))))
   // The build a null run selection resolves to: one build for every cell, so a "latest" summary is one snapshot.
   const newestRun = computed<number | null>(() => (runTimes.value.size === 0 ? null : Math.max(...runTimes.value)))
   const entries = new Map<string, BaseEntry>()
@@ -118,56 +122,20 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     triggerRef(loadingByBase)
   }
 
-  function recompute(project: HighlightingProject, data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
-    const entry = entries.get(project.base)
-    if (entry == null) return
-
-    const types = opts.selectedMetricTypes.value
+  function storeCells(entry: BaseEntry, data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
     const branches = selectedBranches()
-    const measures = measuresFor(project)
+    const measures = measuresFor(entry.project)
     const indexed = indexSeriesRuns(data, configuration, branches, [entry.legacyProject, entry.newProject], measures)
-
-    // types[i] and measures[i] are parallel (measuresFor maps the former to the latter), so reuse the
-    // already-built measure name instead of recomputing it. Builds are noted for all cells before any cell
-    // resolves the newest build.
-    const baseRuns = new Set<number>()
-    const cells = types.map((type, i) => {
-      const measure = measures[i]
-      const runsOf = (variant: string) => branches.flatMap((branch) => indexed.get(seriesKey(branch, variant, measure)) ?? [])
-      const pairs = pairRuns(runsOf(entry.legacyProject), runsOf(entry.newProject))
-      for (const pair of pairs) baseRuns.add(pair.t)
-      return { type, measure, pairs }
-    })
-    runTimesByBase.value.set(project.base, baseRuns)
-    triggerRef(runTimesByBase)
-
-    const single = opts.mode.value === "single"
-    const run = opts.selectedRun.value ?? newestRun.value
-    const rows: EngineCompareRow[] = []
-    for (const { type, measure, pairs } of cells) {
-      const cell = compareCell(single, run, pairs)
-      if (cell == null) continue
-      rows.push({
-        base: project.base,
-        title: project.title,
-        metricType: type,
-        phase: phaseOf(type),
-        bucket: bucketOf(type),
-        measure,
-        ...cell,
-      })
-    }
-
-    rowsByBase.value.set(project.base, rows)
-    triggerRef(rowsByBase)
-  }
-
-  function recomputeFromCache(): void {
-    for (const entry of entries.values()) {
-      if (entry.lastData != null && entry.lastConfiguration != null) {
-        recompute(entry.project, entry.lastData, entry.lastConfiguration)
-      }
-    }
+    const runsOf = (variant: string, measure: string) => branches.flatMap((branch) => indexed.get(seriesKey(branch, variant, measure)) ?? [])
+    // types[i] and measures[i] are parallel (measuresFor maps the former to the latter).
+    const cells = opts.selectedMetricTypes.value.map((type, i) => ({
+      type,
+      measure: measures[i],
+      legacy: runsOf(entry.legacyProject, measures[i]),
+      new: runsOf(entry.newProject, measures[i]),
+    }))
+    cellsByBase.value.set(entry.project.base, cells)
+    triggerRef(cellsByBase)
   }
 
   for (const project of projects) {
@@ -179,27 +147,25 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     // "auto" value unit — declared units (sub-metrics) and the stored type (duration) resolve formatting.
     const measureConfigurator = new PredefinedMeasureConfigurator(measures, shallowRef(false), "line", "auto", {}, null, "item")
     const executor = new DataQueryExecutor([...queryConfigurators, scenario, serverConfigurator, measureConfigurator])
-    const entry: BaseEntry = { project, legacyProject, newProject, measures, lastData: null, lastConfiguration: null, unsubscribe: () => {} }
+    const entry: BaseEntry = { project, legacyProject, newProject, measures, unsubscribe: () => {} }
     setLoading(project.base, true)
     entry.unsubscribe = executor.subscribe((data, configuration, loading) => {
       setLoading(project.base, loading)
       if (loading || data == null) return
-      entry.lastData = data
-      entry.lastConfiguration = configuration
-      recompute(project, data, configuration)
+      storeCells(entry, data, configuration)
     })
     entries.set(project.base, entry)
   }
 
   // Measures change (metric-type or quantity selection) triggers a fresh query per base. Empty metric
-  // selection makes each measure configurator produce no query, so clear rows explicitly.
+  // selection makes each measure configurator produce no query, so clear the cells explicitly.
   watch(
     [opts.selectedMetricTypes, opts.quantity],
     () => {
       if (opts.selectedMetricTypes.value.length === 0) {
-        if (rowsByBase.value.size > 0) {
-          rowsByBase.value.clear()
-          triggerRef(rowsByBase)
+        if (cellsByBase.value.size > 0) {
+          cellsByBase.value.clear()
+          triggerRef(cellsByBase)
         }
         for (const base of entries.keys()) setLoading(base, false)
         return
@@ -212,23 +178,33 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     { flush: "post" }
   )
 
-  // Mode / run change reuses the cached query result — same data, different reduction.
-  watch([opts.mode, opts.selectedRun], () => {
-    recomputeFromCache()
-  })
-
-  // A later base can bring a newer build; cells resolved to an older "latest" build must move to it.
-  watch(newestRun, () => {
-    if (opts.mode.value === "single" && opts.selectedRun.value == null) recomputeFromCache()
-  })
-
   onUnmounted(() => {
     for (const entry of entries.values()) entry.unsubscribe()
     entries.clear()
   })
 
-  // Flatten in the canonical project order regardless of which executor resolved first.
-  const rows = computed<EngineCompareRow[]>(() => projects.flatMap((project) => rowsByBase.value.get(project.base) ?? []))
+  // Rows in the canonical project order regardless of which executor resolved first.
+  const rows = computed<EngineCompareRow[]>(() => {
+    const single = opts.mode.value === "single"
+    const run = opts.selectedRun.value ?? newestRun.value
+    const rows: EngineCompareRow[] = []
+    for (const project of projects) {
+      for (const cell of cellsByBase.value.get(project.base) ?? []) {
+        const stats = compareCell(single, run, pairRuns(cell.legacy, cell.new))
+        if (stats == null) continue
+        rows.push({
+          base: project.base,
+          title: project.title,
+          metricType: cell.type,
+          phase: phaseOf(cell.type),
+          bucket: bucketOf(cell.type),
+          measure: cell.measure,
+          ...stats,
+        })
+      }
+    }
+    return rows
+  })
   const aggregates = computed<EngineAggregates>(() => computeEngineAggregates(rows.value))
   const runs = computed<Run[]>(() =>
     [...runTimes.value]

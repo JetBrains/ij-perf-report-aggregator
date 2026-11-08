@@ -17,28 +17,28 @@ function point(overrides: Partial<EngineComparePoint>): EngineComparePoint {
 
 describe("engine comparison aggregates", () => {
   it("returns the geometric mean of positive ratios", () => {
-    const aggregates = computeEngineAggregates([point({ ratio: 0.5 }), point({ ratio: 2 })])
+    const aggregates = computeEngineAggregates([point({ ratio: 0.5 }), point({ ratio: 2 })], [], 0)
     // sqrt(0.5 * 2) === 1
     expect(aggregates.grandGeomean).toBeCloseTo(1, 10)
     expect(aggregates.count).toBe(2)
   })
 
   it("skips zero, negative, and NaN ratios", () => {
-    const aggregates = computeEngineAggregates([point({ ratio: 2 }), point({ ratio: 0 }), point({ ratio: -1 }), point({ ratio: Number.NaN })])
+    const aggregates = computeEngineAggregates([point({ ratio: 2 }), point({ ratio: 0 }), point({ ratio: -1 }), point({ ratio: Number.NaN })], [], 0)
     expect(aggregates.count).toBe(1)
     expect(aggregates.grandGeomean).toBeCloseTo(2, 10)
   })
 
   it("groups per bucket in first-appearance order", () => {
     const rows = [point({ bucket: "fast", ratio: 0.5 }), point({ bucket: "medium", ratio: 2 }), point({ bucket: "slow", ratio: 4 })]
-    const aggregates = computeEngineAggregates(rows)
+    const aggregates = computeEngineAggregates(rows, [], 0)
     expect(aggregates.perBucket.map((group) => group.key)).toStrictEqual(["fast", "medium", "slow"])
     expect(aggregates.perBucket[0].geomean).toBeCloseTo(0.5, 10)
   })
 
   it("groups per phase and averages within a phase", () => {
     const rows = [point({ phase: "coldStartHighlighting", ratio: 0.5 }), point({ phase: "coldStartHighlighting", ratio: 2 }), point({ phase: "warmStartHighlighting", ratio: 4 })]
-    const aggregates = computeEngineAggregates(rows)
+    const aggregates = computeEngineAggregates(rows, [], 0)
     expect(aggregates.perPhase.map((group) => group.key)).toStrictEqual(["coldStartHighlighting", "warmStartHighlighting"])
     // cold has ratios 0.5 and 2 -> geomean 1
     expect(aggregates.perPhase[0].geomean).toBeCloseTo(1, 10)
@@ -53,7 +53,7 @@ describe("engine comparison aggregates", () => {
       point({ significant: true, diffPercent: 0 }), // neutral (no move)
       point({ significant: true, diffPercent: Number.NaN }), // neutral (unusable)
     ]
-    const aggregates = computeEngineAggregates(rows)
+    const aggregates = computeEngineAggregates(rows, [], 0)
     expect(aggregates.regressed).toBe(1)
     expect(aggregates.improved).toBe(1)
     expect(aggregates.neutral).toBe(3)
@@ -65,22 +65,24 @@ describe("engine comparison aggregates", () => {
       point({ base: "b", significant: true, diffPercent: 45 }),
       point({ base: "e", significant: false, diffPercent: 99 }), // ignored: not significant
     ]
-    const aggregates = computeEngineAggregates(rows)
+    const aggregates = computeEngineAggregates(rows, [], 0)
     expect(aggregates.worstRegression?.base).toBe("b")
     expect(aggregates.worstRegression?.diffPercent).toBe(45)
   })
 
   it("selects the best improvement among significant rows", () => {
     const rows = [point({ base: "c", significant: true, diffPercent: -5 }), point({ base: "d", significant: true, diffPercent: -60 })]
-    const aggregates = computeEngineAggregates(rows)
+    const aggregates = computeEngineAggregates(rows, [], 0)
     expect(aggregates.bestImprovement?.base).toBe("d")
     expect(aggregates.bestImprovement?.diffPercent).toBe(-60)
   })
 
   it("handles empty input", () => {
-    const aggregates = computeEngineAggregates([])
+    const aggregates = computeEngineAggregates([], [], 0)
     expect(aggregates).toStrictEqual({
       count: 0,
+      cells: 0,
+      gaps: [],
       grandGeomean: Number.NaN,
       perBucket: [],
       perPhase: [],

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { compareCell, pairRuns, pickRunValues } from "../../../../src/components/goland/engineComparison/engineRunSelection"
+import { compareCell, countMissing, pairRuns, pickRunValues } from "../../../../src/components/goland/engineComparison/engineRunSelection"
 
 const DAY0 = 0
 const DAY1 = 86_400_000
@@ -85,6 +85,20 @@ describe("engine run selection", () => {
     const expected = Math.exp((Math.log(0.9) + (Math.log(0.9) + Math.log(1.1)) / 2) / 2)
     expect(compareCell(false, null, pairs)?.ratio).toBeCloseTo(expected, 10)
     expect(compareCell(false, null, pairs)?.ratio).toBeLessThan(1)
+  })
+
+  it("countMissing counts the builds of the scope that published one engine only", () => {
+    const legacy = [
+      { t: DAY0, v: 100 },
+      { t: DAY0 + 1, v: 100 },
+      { t: DAY1, v: 100 },
+    ]
+    const brandNew = [
+      { t: DAY0, v: 50 },
+      { t: DAY0 + 2, v: 50 },
+    ]
+    // DAY0: paired; DAY0 + 1: NEW missing; DAY0 + 2: LEGACY missing; DAY1: outside the scope; DAY1 + 1: neither engine.
+    expect(countMissing([DAY0, DAY0 + 1, DAY0 + 2, DAY1 + 1], legacy, brandNew)).toStrictEqual({ legacy: 1, new: 1 })
   })
 
   it("compareCell returns null without a paired build of the run", () => {

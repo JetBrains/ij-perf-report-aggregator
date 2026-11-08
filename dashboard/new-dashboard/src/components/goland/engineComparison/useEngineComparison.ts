@@ -10,8 +10,8 @@ import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
 import { indexSeriesRuns, SeriesRun, seriesKey } from "../../charts/compareQuery"
 import { BaseStats, BranchStats } from "../../charts/compareStats"
 import { bucketOf, buildMeasure, HighlightingProject, phaseOf, projects, Quantity } from "./highlightingMetrics"
-import { computeEngineAggregates, EngineAggregates, EngineComparePoint } from "./engineCompareAggregates"
-import { compareCell, pairRuns } from "./engineRunSelection"
+import { computeEngineAggregates, EngineAggregates, EngineComparePoint, EngineGap } from "./engineCompareAggregates"
+import { compareCell, countMissing, pairRuns } from "./engineRunSelection"
 
 // How the comparison reduces the runs in the window: "aggregated" = robust center over every run
 // (SPEC-style verdict), "single" = one run's before/after (see EngineComparisonMode below).
@@ -103,8 +103,9 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   // Replaced on each result, so a narrower time range or another branch drops the builds it no longer has.
   const cellsByBase = shallowRef(new Map<string, CellRuns[]>())
   const loadingByBase = shallowRef(new Map<string, boolean>())
-  // Every build that published a selected cell of any project with both engines.
-  const runTimes = computed(() => new Set([...cellsByBase.value.values()].flatMap((cells) => cells.flatMap((cell) => pairRuns(cell.legacy, cell.new).map((pair) => pair.t)))))
+  // Every build that published any selected cell of any project for either engine. A build in which one
+  // engine failed everywhere still belongs here, so its missing results are counted.
+  const runTimes = computed(() => new Set([...cellsByBase.value.values()].flatMap((cells) => cells.flatMap((cell) => [...cell.legacy, ...cell.new].map((run) => run.t)))))
   // The build a null run selection resolves to: one build for every cell, so a "latest" summary is one snapshot.
   const newestRun = computed<number | null>(() => (runTimes.value.size === 0 ? null : Math.max(...runTimes.value)))
   const entries = new Map<string, BaseEntry>()
@@ -183,13 +184,19 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     entries.clear()
   })
 
-  // Rows in the canonical project order regardless of which executor resolved first.
-  const rows = computed<EngineCompareRow[]>(() => {
+  // Rows and gaps in the canonical project order regardless of which executor resolved first. The
+  // scope is the selected build in single mode and every build of the window in aggregated mode.
+  const comparison = computed<{ rows: EngineCompareRow[]; gaps: EngineGap[] }>(() => {
     const single = opts.mode.value === "single"
     const run = opts.selectedRun.value ?? newestRun.value
+    const scope = single ? (run == null ? [] : [run]) : runTimes.value
     const rows: EngineCompareRow[] = []
+    const gaps: EngineGap[] = []
     for (const project of projects) {
       for (const cell of cellsByBase.value.get(project.base) ?? []) {
+        const missing = countMissing(scope, cell.legacy, cell.new)
+        if (missing.new > 0) gaps.push({ base: project.base, title: project.title, metricType: cell.type, engine: "NEW", builds: missing.new })
+        if (missing.legacy > 0) gaps.push({ base: project.base, title: project.title, metricType: cell.type, engine: "LEGACY", builds: missing.legacy })
         const stats = compareCell(single, run, pairRuns(cell.legacy, cell.new))
         if (stats == null) continue
         rows.push({
@@ -203,9 +210,14 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
         })
       }
     }
-    return rows
+    return { rows, gaps }
   })
-  const aggregates = computed<EngineAggregates>(() => computeEngineAggregates(rows.value))
+
+  const rows = computed<EngineCompareRow[]>(() => comparison.value.rows)
+  // The metric types of the stored results, not of the live selection: until a refetch lands, the
+  // rows and gaps still describe the previous selection.
+  const storedTypes = computed(() => new Set([...cellsByBase.value.values()].flatMap((cells) => cells.map((cell) => cell.type))))
+  const aggregates = computed<EngineAggregates>(() => computeEngineAggregates(comparison.value.rows, comparison.value.gaps, projects.length * storedTypes.value.size))
   const runs = computed<Run[]>(() =>
     [...runTimes.value]
       .toSorted((a, b) => b - a)

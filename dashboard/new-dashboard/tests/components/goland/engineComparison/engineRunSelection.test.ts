@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { dayKey, latestRunByDay, MS_PER_DAY, pickRunValues } from "../../../../src/components/goland/engineComparison/engineRunSelection"
+import { compareCell, dayKey, MS_PER_DAY, pairRuns, pickRunValues } from "../../../../src/components/goland/engineComparison/engineRunSelection"
 
 const DAY0 = 0
 const DAY1 = MS_PER_DAY
-const DAY2 = 2 * MS_PER_DAY
 
 describe("engine run selection", () => {
   it("dayKey floors a timestamp to its UTC day", () => {
@@ -11,56 +10,67 @@ describe("engine run selection", () => {
     expect(dayKey(DAY0)).toBe(0)
   })
 
-  it("latestRunByDay keeps the last run of each day", () => {
-    const byDay = latestRunByDay([
-      { t: DAY0, v: 1 },
-      { t: DAY0 + 100, v: 2 },
+  it("pairRuns keeps only the builds measured with both engines, sorted by time", () => {
+    const legacy = [
+      { t: DAY1, v: 110 },
+      { t: DAY0, v: 100 },
+      { t: DAY0 + 100, v: 105 },
+    ]
+    const brandNew = [
+      { t: DAY0, v: 50 },
+      { t: DAY1, v: 40 },
+    ]
+    expect(pairRuns(legacy, brandNew)).toStrictEqual([
+      { t: DAY0, legacy: 100, new: 50 },
+      { t: DAY1, legacy: 110, new: 40 },
     ])
-    expect(byDay.get(0)?.v).toBe(2)
   })
 
-  it("aggregated mode returns every run's value", () => {
-    const values = pickRunValues(
-      false,
-      null,
-      [
-        { t: DAY0, v: 100 },
-        { t: DAY1, v: 110 },
-      ],
-      [{ t: DAY0, v: 50 }]
-    )
-    expect(values).toStrictEqual({ legacy: [100, 110], new: [50] })
+  it("pairRuns pairs a build that straddles UTC midnight only by its exact timestamp", () => {
+    expect(pairRuns([{ t: DAY1 - 1, v: 1 }], [{ t: DAY1, v: 2 }])).toStrictEqual([])
   })
 
-  it("single mode with no day picks the latest common day", () => {
-    const legacy = [
-      { t: DAY0, v: 100 },
-      { t: DAY1, v: 110 },
+  it("aggregated mode returns every paired build", () => {
+    const pairs = [
+      { t: DAY0, legacy: 100, new: 50 },
+      { t: DAY1, legacy: 110, new: 40 },
     ]
-    const brandNew = [
-      { t: DAY0, v: 50 },
-      { t: DAY1, v: 40 },
-    ]
-    expect(pickRunValues(true, null, legacy, brandNew)).toStrictEqual({ legacy: [110], new: [40] })
+    expect(pickRunValues(false, null, pairs)).toStrictEqual({ legacy: [100, 110], new: [50, 40] })
   })
 
-  it("single mode honors an explicit day", () => {
-    const legacy = [
-      { t: DAY0, v: 100 },
-      { t: DAY1, v: 110 },
-    ]
-    const brandNew = [
-      { t: DAY0, v: 50 },
-      { t: DAY1, v: 40 },
-    ]
-    expect(pickRunValues(true, 0, legacy, brandNew)).toStrictEqual({ legacy: [100], new: [50] })
+  it("aggregated mode returns null when no build has both engines", () => {
+    expect(pickRunValues(false, null, [])).toBeNull()
   })
 
-  it("single mode skips a day missing one engine", () => {
-    expect(pickRunValues(true, DAY2 / MS_PER_DAY, [{ t: DAY2, v: 1 }], [{ t: DAY0, v: 2 }])).toBeNull()
+  it("single mode picks the latest paired build of the day", () => {
+    const pairs = [
+      { t: DAY0, legacy: 100, new: 50 },
+      { t: DAY0 + 100, legacy: 101, new: 51 },
+      { t: DAY1, legacy: 110, new: 40 },
+    ]
+    expect(pickRunValues(true, 0, pairs)).toStrictEqual({ legacy: [101], new: [51] })
   })
 
-  it("single mode returns null when the engines share no day", () => {
-    expect(pickRunValues(true, null, [{ t: DAY0, v: 1 }], [{ t: DAY1, v: 2 }])).toBeNull()
+  it("single mode returns null for a day without a paired build", () => {
+    expect(pickRunValues(true, 1, [{ t: DAY0, legacy: 100, new: 50 }])).toBeNull()
+    expect(pickRunValues(true, null, [{ t: DAY0, legacy: 100, new: 50 }])).toBeNull()
+  })
+
+  it("single mode does not flag a change inside the LEGACY build-to-build spread", () => {
+    const pairs = [100, 120, 90, 110, 80].map((legacy, i) => ({ t: DAY0 + i, legacy, new: legacy }))
+    pairs.push({ t: DAY0 + 10, legacy: 100, new: 106 })
+    const cell = compareCell(true, 0, pairs)
+    expect(cell?.diffPercent).toBeCloseTo(6, 10)
+    expect(cell).toMatchObject({ significant: false })
+  })
+
+  it("single mode flags a change far outside the LEGACY spread", () => {
+    const pairs = [100, 101, 99, 100, 101].map((legacy, i) => ({ t: DAY0 + i, legacy, new: legacy }))
+    pairs.push({ t: DAY0 + 10, legacy: 100, new: 150 })
+    expect(compareCell(true, 0, pairs)).toMatchObject({ significant: true })
+  })
+
+  it("compareCell returns null without a paired build of the day", () => {
+    expect(compareCell(true, 1, [{ t: DAY0, legacy: 100, new: 50 }])).toBeNull()
   })
 })

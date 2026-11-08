@@ -2,46 +2,58 @@
 // aggregated-vs-single reduction is unit-testable without a Vue render context.
 
 import { SeriesRun } from "../../charts/compareQuery"
+import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, isSignificantBranch } from "../../charts/compareStats"
 
 export const MS_PER_DAY = 86_400_000
 
-// The UTC-day index of a timestamp (ms). Runs in the same nightly share a day, so this aligns the two
-// engine variants (which are measured in the same build) onto one selectable snapshot.
+// The UTC-day index of a timestamp (ms), used to group builds for the run picker.
 export function dayKey(timestampMs: number): number {
   return Math.floor(timestampMs / MS_PER_DAY)
 }
 
-// The latest run of each day, keyed by day. Runs are assumed sorted ascending by timestamp, so a later
-// same-day run overwrites an earlier one.
-export function latestRunByDay(runs: readonly SeriesRun[]): Map<number, SeriesRun> {
-  const byDay = new Map<number, SeriesRun>()
-  for (const run of runs) byDay.set(dayKey(run.t), run)
-  return byDay
+// One build measured with both engines.
+export interface PairedRun {
+  t: number
+  legacy: number
+  new: number
 }
 
-// The [legacy, new] value arrays for one cell.
-//   - aggregated (single=false): every run's value.
-//   - single: the run of `selectedDay` (or the latest day both engines share when selectedDay is null).
-// Returns null when a single-run day lacks one of the engines — the caller skips that cell.
-export function pickRunValues(
+// The builds present in both series, ascending by timestamp. One build publishes both engine variants
+// with the same generated_time, so an exact timestamp match pairs them; a build missing one engine is dropped.
+export function pairRuns(legacyRuns: readonly SeriesRun[], newRuns: readonly SeriesRun[]): PairedRun[] {
+  const newByTime = new Map<number, number>()
+  for (const run of newRuns) newByTime.set(run.t, run.v)
+  const pairs: PairedRun[] = []
+  for (const run of legacyRuns) {
+    const value = newByTime.get(run.t)
+    if (value != null) pairs.push({ t: run.t, legacy: run.v, new: value })
+  }
+  return pairs.toSorted((a, b) => a.t - b.t)
+}
+
+// The [legacy, new] value arrays for one cell, from paired builds only.
+//   - aggregated (single=false): every paired build.
+//   - single: the latest paired build of `day`.
+// Returns null when no paired build qualifies — the caller skips that cell.
+export function pickRunValues(single: boolean, day: number | null, pairs: readonly PairedRun[]): { legacy: number[]; new: number[] } | null {
+  const selected = single ? pairs.filter((pair) => day != null && dayKey(pair.t) === day).slice(-1) : pairs
+  if (selected.length === 0) return null
+  return { legacy: selected.map((pair) => pair.legacy), new: selected.map((pair) => pair.new) }
+}
+
+// The LEGACY-vs-NEW statistics of one cell, or null when no paired build qualifies (see pickRunValues).
+// A single build has no spread of its own, so its disparity is judged against the LEGACY build-to-build
+// spread of all `pairs`.
+export function compareCell(
   single: boolean,
-  selectedDay: number | null,
-  legacyRuns: readonly SeriesRun[],
-  newRuns: readonly SeriesRun[]
-): { legacy: number[]; new: number[] } | null {
-  if (!single) {
-    return { legacy: legacyRuns.map((run) => run.v), new: newRuns.map((run) => run.v) }
-  }
-  const legacyByDay = latestRunByDay(legacyRuns)
-  const newByDay = latestRunByDay(newRuns)
-  let day = selectedDay
-  if (day == null) {
-    const commonDays = [...legacyByDay.keys()].filter((d) => newByDay.has(d))
-    if (commonDays.length === 0) return null
-    day = Math.max(...commonDays)
-  }
-  const legacyRun = legacyByDay.get(day)
-  const newRun = newByDay.get(day)
-  if (legacyRun == null || newRun == null) return null
-  return { legacy: [legacyRun.v], new: [newRun.v] }
+  day: number | null,
+  pairs: readonly PairedRun[]
+): { legacy: BaseStats; new: BranchStats; ratio: number; diffPercent: number; significant: boolean } | null {
+  const values = pickRunValues(single, day, pairs)
+  if (values == null) return null
+  const legacy = computeBaseStats(values.legacy)
+  const baseline = single ? { ...legacy, spread: computeBaseStats(pairs.map((pair) => pair.legacy)).spread } : legacy
+  const newStats = computeBranchStats(baseline, values.new)
+  const ratio = Number.isFinite(legacy.center) && legacy.center > 0 && Number.isFinite(newStats.center) ? newStats.center / legacy.center : Number.NaN
+  return { legacy, new: newStats, ratio, diffPercent: newStats.diffPercent, significant: isSignificantBranch(newStats) }
 }

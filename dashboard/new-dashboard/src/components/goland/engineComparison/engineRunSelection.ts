@@ -4,13 +4,6 @@
 import { SeriesRun } from "../../charts/compareQuery"
 import { BaseStats, BranchStats, computeBaseStats, computeBranchStats, isSignificantBranch } from "../../charts/compareStats"
 
-export const MS_PER_DAY = 86_400_000
-
-// The UTC-day index of a timestamp (ms), used to group builds for the run picker.
-export function dayKey(timestampMs: number): number {
-  return Math.floor(timestampMs / MS_PER_DAY)
-}
-
 // One build measured with both engines.
 export interface PairedRun {
   t: number
@@ -33,10 +26,10 @@ export function pairRuns(legacyRuns: readonly SeriesRun[], newRuns: readonly Ser
 
 // The [legacy, new] value arrays for one cell, from paired builds only.
 //   - aggregated (single=false): every paired build.
-//   - single: the latest paired build of `day`.
+//   - single: the paired build whose timestamp is `run`.
 // Returns null when no paired build qualifies — the caller skips that cell.
-export function pickRunValues(single: boolean, day: number | null, pairs: readonly PairedRun[]): { legacy: number[]; new: number[] } | null {
-  const selected = single ? pairs.filter((pair) => day != null && dayKey(pair.t) === day).slice(-1) : pairs
+export function pickRunValues(single: boolean, run: number | null, pairs: readonly PairedRun[]): { legacy: number[]; new: number[] } | null {
+  const selected = single ? pairs.filter((pair) => pair.t === run) : pairs
   if (selected.length === 0) return null
   return { legacy: selected.map((pair) => pair.legacy), new: selected.map((pair) => pair.new) }
 }
@@ -46,10 +39,10 @@ export function pickRunValues(single: boolean, day: number | null, pairs: readon
 // spread of all `pairs`.
 export function compareCell(
   single: boolean,
-  day: number | null,
+  run: number | null,
   pairs: readonly PairedRun[]
 ): { legacy: BaseStats; new: BranchStats; ratio: number; diffPercent: number; significant: boolean } | null {
-  const values = pickRunValues(single, day, pairs)
+  const values = pickRunValues(single, run, pairs)
   if (values == null) return null
   const legacy = computeBaseStats(values.legacy)
   const baseline = single ? { ...legacy, spread: computeBaseStats(pairs.map((pair) => pair.legacy)).spread } : legacy

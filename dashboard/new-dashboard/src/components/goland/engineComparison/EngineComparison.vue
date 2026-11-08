@@ -24,8 +24,8 @@
         />
         <RunTimeline
           v-if="mode === 'single'"
-          v-model="selectedRunDay"
-          :runs="runDays"
+          v-model="selectedRun"
+          :runs="runs"
         />
       </div>
       <EngineCompareSummary
@@ -68,24 +68,24 @@ const { selectedMetricTypes, quantity, bothEnginesSelected } = defineProps<{
 // Single run is the default view: it shows one build's exact before/after, so a real improvement is
 // visible rather than smeared by the across-runs median. Toggle to Aggregated for the SPEC-style verdict.
 const mode = ref<EngineComparisonMode>("single")
-// null follows the latest run; a day key pins a specific run (set via the timeline).
-const selectedRunDay = ref<number | null>(null)
+// null follows the latest run; a build timestamp pins a specific run (set via the timeline).
+const selectedRun = ref<number | null>(null)
 
 const modeOptions = [
   { label: "Aggregated (all runs)", value: "aggregated" },
   { label: "Single run", value: "single" },
 ]
 
-const { rows, aggregates, runDays, loading } = useEngineComparison({
+const { rows, aggregates, runs, loading } = useEngineComparison({
   selectedMetricTypes: toRef(() => selectedMetricTypes),
   quantity: toRef(() => quantity),
   mode,
-  selectedRunDay,
+  selectedRun,
 })
 
 const currentRunLabel = computed(() => {
   if (mode.value !== "single") return ""
-  if (selectedRunDay.value == null) return runDays.value[0]?.label ?? "latest"
-  return runDays.value.find((run) => run.day === selectedRunDay.value)?.label ?? ""
+  if (selectedRun.value == null) return runs.value[0]?.label ?? "latest"
+  return runs.value.find((run) => run.t === selectedRun.value)?.label ?? ""
 })
 </script>

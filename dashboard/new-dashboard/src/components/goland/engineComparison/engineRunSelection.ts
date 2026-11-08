@@ -35,8 +35,10 @@ export function pickRunValues(single: boolean, run: number | null, pairs: readon
 }
 
 // The LEGACY-vs-NEW statistics of one cell, or null when no paired build qualifies (see pickRunValues).
-// A single build has no spread of its own, so its disparity is judged against the LEGACY build-to-build
-// spread of all `pairs`.
+// The cell is judged by its per-build NEW ÷ LEGACY ratios: both engines run in one build, so the drift
+// the build shares (machine, commit) cancels out. The ratio is the center of the selected builds' ratios,
+// and its effect size is measured against the spread of the log ratios over all `pairs`, which also
+// gives a single build a noise estimate.
 export function compareCell(
   single: boolean,
   run: number | null,
@@ -45,8 +47,18 @@ export function compareCell(
   const values = pickRunValues(single, run, pairs)
   if (values == null) return null
   const legacy = computeBaseStats(values.legacy)
-  const baseline = single ? { ...legacy, spread: computeBaseStats(pairs.map((pair) => pair.legacy)).spread } : legacy
-  const newStats = computeBranchStats(baseline, values.new)
-  const ratio = Number.isFinite(legacy.center) && legacy.center > 0 && Number.isFinite(newStats.center) ? newStats.center / legacy.center : Number.NaN
-  return { legacy, new: newStats, ratio, diffPercent: newStats.diffPercent, significant: isSignificantBranch(newStats) }
+  const newStats = computeBranchStats(legacy, values.new)
+  const selected = values.legacy.flatMap((legacyValue, i) => logRatio(legacyValue, values.new[i]))
+  if (selected.length === 0) return { legacy, new: newStats, ratio: Number.NaN, diffPercent: Number.NaN, significant: false }
+  const center = computeBaseStats(selected).center
+  const noise = computeBaseStats(pairs.flatMap((pair) => logRatio(pair.legacy, pair.new))).spread
+  const ratio = Math.exp(center)
+  const diffPercent = (ratio - 1) * 100
+  const disparity = noise > 0 ? center / noise : center === 0 ? 0 : Math.sign(center) * Number.POSITIVE_INFINITY
+  const judged = { ...newStats, diffPercent, disparity }
+  return { legacy, new: judged, ratio, diffPercent, significant: isSignificantBranch(judged) }
+}
+
+function logRatio(legacyValue: number, newValue: number): number[] {
+  return legacyValue > 0 && newValue > 0 ? [Math.log(newValue / legacyValue)] : []
 }

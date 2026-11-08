@@ -95,12 +95,15 @@ function buildCell(base: string, type: string): CellData {
   const row = rowByCell.value.get(`${base}::${type}`)
   if (row == null || !Number.isFinite(row.diffPercent)) return { text: "—", class: "text-gray-400", tooltip: "" }
   const { before, after } = formatEngineCell(row)
-  // Aggregated over many runs shows the sample sizes; a single run has n=1 and omits them.
-  const counts = mode === "aggregated" ? ` · n=${row.legacy.count}/${row.new.count}` : ""
+  // Aggregated over many runs shows the sample sizes; a single run has n=1 and omits them. The Δ is the
+  // center of the per-build ratios, so over many runs it need not match the ratio of the two centers.
+  const aggregated = mode === "aggregated"
+  const counts = aggregated ? ` · n=${row.legacy.count}/${row.new.count}` : ""
+  const centers = aggregated ? "center " : ""
   return {
     text: formatSignedPercent(row.diffPercent, 0),
     class: severityCellClass(row.diffPercent) ?? "",
-    tooltip: `LEGACY ${before} → NEW ${after} · Δ ${formatSignedPercent(row.diffPercent)}${counts}`,
+    tooltip: `LEGACY ${centers}${before} → NEW ${centers}${after} · per-build Δ ${formatSignedPercent(row.diffPercent)}${counts}`,
   }
 }
 

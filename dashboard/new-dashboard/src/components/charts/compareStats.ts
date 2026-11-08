@@ -93,7 +93,7 @@ export function computeBaseStats(values: number[]): BaseStats {
 }
 
 // A |Δ%| at or above this is a practically-relevant change; below it is treated as flat.
-const DIFF_PERCENT_WARN = 5
+export const DIFF_PERCENT_WARN = 5
 // A |Δ%| at or above this is a severe change (drives the darker heatmap/cell tint).
 const DIFF_PERCENT_SEVERE = 20
 

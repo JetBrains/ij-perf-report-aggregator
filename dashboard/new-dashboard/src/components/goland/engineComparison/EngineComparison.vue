@@ -32,6 +32,7 @@
         :aggregates="aggregates"
         :mode="mode"
         :run-label="currentRunLabel"
+        :quantity="quantity"
       />
       <EngineCompareHeatmap
         :rows="rows"

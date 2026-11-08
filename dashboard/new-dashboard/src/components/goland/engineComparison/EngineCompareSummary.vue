@@ -24,16 +24,17 @@
           <span class="font-semibold">How this verdict is computed</span>
           <hr class="w-full border-gray-200 dark:border-gray-600" />
           <p>
-            The overall figure is the geometric mean of each scenario's NEW ÷ LEGACY ratio — the SPEC-style summary that keeps a 180× spread of absolute values from letting slow
-            files dominate.
+            The overall figure is the geometric mean of each cell's NEW ÷ LEGACY ratio, all cells weighted equally — the SPEC-style summary that keeps a 180× spread of absolute
+            values from letting slow files dominate. In aggregated mode a cell's ratio is the center of its per-build ratios.
           </p>
           <p>
-            A single grand mean can hide a Simpson's-paradox split (NEW winning overall while losing every bucket), so the per-bucket and per-phase means are shown alongside it —
-            trust the verdict only when they agree.
+            Improved / regressed / neutral counts apply the same two-gate significance test as the compare table (robust effect size <em>and</em> ≥5% change). A single run has no
+            spread of its own, so its effect size is judged against the build-to-build spread of both engines over the selected time range.
           </p>
           <p>
-            Improved / regressed / neutral counts apply the same two-gate significance test as the compare table (robust effect size <em>and</em> ≥5% change); everything else is
-            neutral.
+            NEW is called faster or slower only when the overall move is at least 5%, no bucket or phase moves the other way (a Simpson's-paradox split), and the significant cells
+            against the move are fewer than those with it; otherwise the verdict is mixed. In a single run, a cell that one engine did not publish blocks the verdict, because a
+            crash or a timeout would otherwise drop out of the mean; over all runs, such cells are listed below the verdict.
           </p>
         </div>
       </Popover>
@@ -126,16 +127,19 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from "vue"
 import { PopoverMethods } from "openvue/popover"
-import { EngineAggregates, EngineGap } from "./engineCompareAggregates"
+import { EngineAggregates, EngineGap, geomeanDirection, resolveVerdict } from "./engineCompareAggregates"
 import { EngineComparisonMode } from "./useEngineComparison"
-import { bucketLabel, metricTypeLabel, phaseLabel } from "./highlightingMetrics"
+import { bucketLabel, metricTypeLabel, phaseLabel, Quantity } from "./highlightingMetrics"
 import { formatSignedPercent } from "../../charts/compareStats"
 
-const { aggregates, mode, runLabel } = defineProps<{ aggregates: EngineAggregates; mode: EngineComparisonMode; runLabel: string }>()
+const { aggregates, mode, runLabel, quantity } = defineProps<{ aggregates: EngineAggregates; mode: EngineComparisonMode; runLabel: string; quantity: Quantity }>()
 
-type Tone = "faster" | "slower" | "same" | "none"
+type Tone = "better" | "worse" | "same" | "none"
 
-const eyebrow = computed(() => (mode === "single" ? `NEW vs LEGACY — ${runLabel || "single run"}` : "NEW vs LEGACY — overall"))
+const eyebrow = computed(() => {
+  const what = quantity.suffix === "" ? "NEW vs LEGACY" : `NEW vs LEGACY — ${quantity.label}`
+  return mode === "single" ? `${what} — ${runLabel || "single run"}` : `${what} — overall`
+})
 
 const subtitle = computed(() => {
   const coverage = `geometric mean of NEW ÷ LEGACY over ${aggregates.count} of ${aggregates.cells} cells (project × phase × file), equally weighted`
@@ -148,30 +152,58 @@ function gapText(gap: EngineGap): string {
 }
 
 const gapLines = computed(() =>
-  (["NEW", "LEGACY"] as const).map((engine) => ({ engine, cells: aggregates.gaps.filter((gap) => gap.engine === engine).map((gap) => gapText(gap)) })).filter((line) => line.cells.length > 0)
+  (["NEW", "LEGACY"] as const)
+    .map((engine) => ({ engine, cells: aggregates.gaps.filter((gap) => gap.engine === engine).map((gap) => gapText(gap)) }))
+    .filter((line) => line.cells.length > 0)
 )
 
-// A geomean of NEW ÷ LEGACY ratios, phrased as a faster/slower verdict. Below 1% is "about the same"
-// so rounding noise does not read as a real move.
+// Lower is better for every quantity, but only a duration is "faster": less allocation is "lower".
+const words = computed(() => (quantity.suffix === "" ? { lower: "faster", higher: "slower" } : { lower: "lower", higher: "higher" }))
+
+// A geomean of NEW ÷ LEGACY ratios as a signed move, or "about the same" inside the practical threshold.
 function describeGeomean(geomean: number): { label: string; tone: Tone } {
   if (!Number.isFinite(geomean) || geomean <= 0) return { label: "—", tone: "none" }
   const percent = (geomean - 1) * 100
-  if (Math.abs(percent) < 1) return { label: "about the same", tone: "same" }
-  return percent < 0 ? { label: `${Math.abs(percent).toFixed(0)}% faster`, tone: "faster" } : { label: `${percent.toFixed(0)}% slower`, tone: "slower" }
+  switch (geomeanDirection(geomean)) {
+    case -1:
+      return { label: `${Math.abs(percent).toFixed(0)}% ${words.value.lower}`, tone: "better" }
+    case 1:
+      return { label: `${percent.toFixed(0)}% ${words.value.higher}`, tone: "worse" }
+    default:
+      return { label: "about the same", tone: "same" }
+  }
+}
+
+function cellCount(count: number): string {
+  return `${count} ${count === 1 ? "cell" : "cells"}`
 }
 
 const overall = computed<{ headline: string; tone: Tone }>(() => {
-  const { label, tone } = describeGeomean(aggregates.grandGeomean)
-  if (tone === "none") return { headline: "Not enough comparable data yet", tone }
-  if (tone === "same") return { headline: "NEW is about the same as LEGACY", tone }
-  return { headline: `NEW is ${label}`, tone }
+  const verdict = resolveVerdict(aggregates, mode === "single")
+  const { label } = describeGeomean(aggregates.grandGeomean)
+  switch (verdict.kind) {
+    case "noData":
+      return { headline: "Not enough comparable data yet", tone: "none" }
+    case "incomplete": {
+      const parts = [
+        verdict.newGaps > 0 ? `NEW has no result for ${cellCount(verdict.newGaps)}` : "",
+        verdict.legacyGaps > 0 ? `LEGACY has no result for ${cellCount(verdict.legacyGaps)}` : "",
+      ]
+      return { headline: `No verdict: ${parts.filter((part) => part !== "").join(", ")}`, tone: verdict.newGaps > 0 ? "worse" : "none" }
+    }
+    case "same":
+      return { headline: "NEW is about the same as LEGACY", tone: "same" }
+    case "mixed":
+      return { headline: `Mixed: ${label} overall, but buckets, phases or cells disagree`, tone: "same" }
+  }
+  return { headline: `NEW is ${label}`, tone: verdict.kind }
 })
 
 function toneClass(tone: Tone): string {
   switch (tone) {
-    case "faster":
+    case "better":
       return "text-green-600 dark:text-green-400"
-    case "slower":
+    case "worse":
       return "text-red-600 dark:text-red-400"
     default:
       return "text-gray-500"

@@ -17,7 +17,7 @@ type searchMetricValuesInput struct {
 	MetricName string `json:"metric_name"         jsonschema:"Metric name (exact match in measures.name) to retrieve values for"`
 	Branch     string `json:"branch,omitempty"    jsonschema:"Branch filter (default: master)"`
 	Machine    string `json:"machine,omitempty"   jsonschema:"Optional machine LIKE pattern. Runs from different machine pools are not comparable; filter to one pool before comparing values."`
-	Mode       string `json:"mode,omitempty"      jsonschema:"Optional test mode filter (exact match in the mode column), e.g. \"legacy_and_new\"; \"default\" selects the runs without a mode. Omitted: runs of every mode. Tables without a mode column are skipped when it is set."`
+	Mode       string `json:"mode,omitempty"      jsonschema:"Optional test mode filter (exact match in the mode column), e.g. \"types2\"; \"default\" selects the runs without a mode. Omitted: runs of every mode. Tables without a mode column are skipped when it is set."`
 	Database   string `json:"database,omitempty"  jsonschema:"Optional database to restrict the scan to"`
 	Table      string `json:"table,omitempty"     jsonschema:"Optional table to restrict the scan to"`
 	Days       int    `json:"days,omitempty"      jsonschema:"Lookback window in days (default 30, max 365). Reached in full only when limit does not cut the answer short — the covered field says what came back."`

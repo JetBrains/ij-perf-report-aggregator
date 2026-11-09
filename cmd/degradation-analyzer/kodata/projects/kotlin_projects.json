@@ -306,9 +306,10 @@
         "intellij_commit/javaToKotlin/HighlightFixUtil",
         "intellij_commit/javaToKotlin/CompilerConfigurationImpl",
         "intellij_commit/javaToKotlin/DaemonCodeAnalyzerImpl",
-        "intellij_commit/javaToKotlin/HighlightNamesUtil",
-        "intellij_commit/javaToKotlin/EditorImpl"
-      ]
+        "intellij_commit/javaToKotlin/EditorImpl",
+        "intellij_commit/javaToKotlin/SwiftParser"
+      ],
+      "springFramework": ["spring-framework/javaToKotlin/DefaultListableBeanFactory", "spring-framework/javaToKotlin/HttpHeaders"]
     },
     "navigationToDeclaration": {
       "intelliJ": [

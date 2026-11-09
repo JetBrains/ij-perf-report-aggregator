@@ -9,10 +9,7 @@
           >
         </template>
         <template v-else-if="!hasRows">
-          <span class="text-gray-500"
-            >Comparing against base <span class="font-semibold">{{ selection.base }}</span
-            >. Loading…</span
-          >
+          <span class="text-gray-500">Comparing against base <span class="font-semibold">{{ selection.base }}</span>. Loading…</span>
         </template>
         <template v-else>
           <span class="font-semibold">{{ significantCount }} of {{ totalRows }} tests </span>

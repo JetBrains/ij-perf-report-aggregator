@@ -95,9 +95,7 @@
           :key="group.metric"
           class="mb-3 last:mb-0"
         >
-          <div class="mb-1 text-sm font-medium">
-            {{ group.metric }} <span class="font-normal text-gray-500">· {{ group.charts.length }}</span>
-          </div>
+          <div class="mb-1 text-sm font-medium">{{ group.metric }} <span class="font-normal text-gray-500">· {{ group.charts.length }}</span></div>
           <ul class="flex flex-col gap-1 break-all">
             <li
               v-for="chart in group.charts"

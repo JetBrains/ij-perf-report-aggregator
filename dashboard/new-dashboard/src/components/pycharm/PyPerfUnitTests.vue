@@ -3,7 +3,7 @@
     db-name="perfUnitTests"
     table="report"
     persistent-id="py_perf_unit_tests"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="linux-unit-perf-blade"
     :with-installer="false"
   >
     <Divider label="Pandas" />

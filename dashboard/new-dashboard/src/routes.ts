@@ -17,6 +17,7 @@ const COMPONENTS = {
 
 const MACHINES = {
   HETZNER: "linux-blade-hetzner",
+  BLADE_UNIT_TESTS: "linux-unit-perf-blade",
   AWS_LINUX: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
 }
 
@@ -891,7 +892,7 @@ const intellijRoutes = [
     props: {
       dbName: "perfUnitTests",
       table: "report",
-      initialMachine: MACHINES.HETZNER,
+      initialMachine: MACHINES.BLADE_UNIT_TESTS,
       withInstaller: false,
       projectFilter: "com.intellij.gradle.%benchmark%",
       persistentId: "gradleBenchmarks-dashboard",
@@ -1187,7 +1188,7 @@ const perfUnitTestsRoutes = [
     props: {
       dbName: "perfUnitTests",
       table: "report",
-      initialMachine: MACHINES.HETZNER,
+      initialMachine: MACHINES.BLADE_UNIT_TESTS,
       withInstaller: false,
     },
     meta: { pageTitle: "Perf Unit Tests" },
@@ -1196,7 +1197,7 @@ const perfUnitTestsRoutes = [
     dbName: "perfUnitTests",
     table: "report",
     metricsNames: ["attempt.mean.ms"],
-    initialMachine: MACHINES.HETZNER,
+    initialMachine: MACHINES.BLADE_UNIT_TESTS,
   }),
 ]
 
@@ -1215,7 +1216,7 @@ const lspRoutes = [
     props: {
       dbName: "perfUnitTests",
       table: "report",
-      initialMachine: MACHINES.HETZNER,
+      initialMachine: MACHINES.BLADE_UNIT_TESTS,
       withInstaller: false,
     },
     meta: { pageTitle: "LSP Tests" },

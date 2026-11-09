@@ -222,6 +222,7 @@ func getMachineGroup(pattern string) string {
 		"intellij-windows-performance-%":   "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
 		"intellij-linux-hw-hetzner%":       "linux-blade-hetzner",
 		"intellij-linux-%-hetzner-%":       "linux-blade-hetzner",
+		"ij-linux-x64-perf-hw-blade-%":     "linux-unit-perf-blade",
 		"intellij-linux-hw-munit-%":        "Linux Munich i7-3770, 32 Gb",
 		"intellij-windows-hw-munit-%":      "Windows Munich i7-3770, 32 Gb",
 		"intellij-macos-perf-eqx-%":        "Apple M4 Pro (13 vCPU, 64 GB)",

@@ -3,7 +3,7 @@
     db-name="perfUnitTests"
     table="report"
     persistent-id="pycharm_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="linux-unit-perf-blade"
     :with-installer="false"
   >
     <section>

@@ -3,7 +3,7 @@
     db-name="perfUnitTests"
     table="report"
     persistent-id="lspDashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="linux-unit-perf-blade"
     :charts="charts"
     :with-installer="false"
   >

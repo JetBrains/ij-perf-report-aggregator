@@ -5,6 +5,7 @@ import (
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTestMatchesPackages(t *testing.T) {
@@ -180,4 +181,21 @@ func TestResolveRoute(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSplitUnitTestsByMachine(t *testing.T) {
+	t.Parallel()
+	series := splitUnitTestsByMachine(
+		[]string{"com.test.Both", "com.test.BladeOnly"},
+		[]string{"com.test.Both", "com.test.HetznerOnly"},
+	)
+
+	require.Len(t, series, 2)
+	assert.Equal(t, bladeUnitTestsMachine, series[0].machine)
+	assert.Equal(t, []string{"com.test.Both", "com.test.BladeOnly"}, series[0].tests)
+	assert.Equal(t, unitTestsOnBladeSince, series[0].ignoreChangesBefore)
+	// A test that runs on both pools is analyzed on Blade only.
+	assert.Equal(t, hetznerUnitTestsMachine, series[1].machine)
+	assert.Equal(t, []string{"com.test.HetznerOnly"}, series[1].tests)
+	assert.True(t, series[1].ignoreChangesBefore.IsZero())
 }

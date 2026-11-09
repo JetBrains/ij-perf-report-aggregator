@@ -3,7 +3,7 @@
     db-name="perfUnitTests"
     table="report"
     persistent-id="rust_unit_tests_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="linux-unit-perf-blade"
     :charts="charts"
     :with-installer="false"
   >

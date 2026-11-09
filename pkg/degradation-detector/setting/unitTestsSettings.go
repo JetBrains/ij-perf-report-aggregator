@@ -3,7 +3,9 @@ package setting
 import (
 	"log/slog"
 	"net/http"
+	"slices"
 	"strings"
+	"time"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
@@ -141,20 +143,64 @@ var teamConfigs = []teamConfig{
 
 const catchAllUnitTestsChannel = "ij-perf-unit-tests-alerts"
 
+// The unit performance tests run on the Blade agents. Some tests, such as the Go LSP tests,
+// run only on the Hetzner agents, so the detector keeps the Hetzner series for them.
+const (
+	bladeUnitTestsMachine   = "ij-linux-x64-perf-hw-blade-%"
+	hetznerUnitTestsMachine = "intellij-linux-%-hetzner-%"
+)
+
+// unitTestsOnBladeSince is the switch of the unit performance tests to the Blade agents.
+// The Blade series contain the changes that the Hetzner series already reported, so the
+// detector does not report a Blade change before this time. The detector does not post a
+// change older than 28 days, so this has no effect from 07.12.2026.
+var unitTestsOnBladeSince = time.Date(2026, time.November, 9, 0, 0, 0, 0, time.UTC)
+
+// unitTestsMachineSeries is the tests that the detector analyzes on one machine pattern.
+type unitTestsMachineSeries struct {
+	machine             string
+	tests               []string
+	ignoreChangesBefore time.Time
+}
+
+// splitUnitTestsByMachine gives each test one series: the Blade series, or the Hetzner series
+// when the test does not run on the Blade agents.
+func splitUnitTestsByMachine(bladeTests, hetznerTests []string) []unitTestsMachineSeries {
+	var hetznerOnly []string
+	for _, test := range hetznerTests {
+		if !slices.Contains(bladeTests, test) {
+			hetznerOnly = append(hetznerOnly, test)
+		}
+	}
+	return []unitTestsMachineSeries{
+		{machine: bladeUnitTestsMachine, tests: bladeTests, ignoreChangesBefore: unitTestsOnBladeSince},
+		{machine: hetznerUnitTestsMachine, tests: hetznerOnly},
+	}
+}
+
 func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 
 	mainSettings := detector.PerformanceSettings{
-		Db:      "perfUnitTests",
-		Table:   "report",
-		Branch:  "master",
-		Machine: "intellij-linux-%-hetzner-%",
-		Metric:  "attempt.mean.ms",
+		Db:     "perfUnitTests",
+		Table:  "report",
+		Branch: "master",
+		Metric: "attempt.mean.ms",
 	}
 
-	tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)
+	testsOnMachine := func(machine string) ([]string, error) {
+		machineSettings := mainSettings
+		machineSettings.Machine = machine
+		return detector.FetchAllTests(backendUrl, client, machineSettings)
+	}
+	bladeTests, err := testsOnMachine(bladeUnitTestsMachine)
 	if err != nil {
-		slog.Error("error while getting tests", "error", err)
+		slog.Error("error while getting tests", "error", err, "machine", bladeUnitTestsMachine)
+		return settings
+	}
+	hetznerTests, err := testsOnMachine(hetznerUnitTestsMachine)
+	if err != nil {
+		slog.Error("error while getting tests", "error", err, "machine", hetznerUnitTestsMachine)
 		return settings
 	}
 
@@ -175,20 +221,26 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 		projectOwners = map[string]string{}
 	}
 
-	for _, test := range tests {
-		route := resolveRoute(test, projectOwners, ownerChannels, teamConfigs)
-		metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, mainSettings, test, route.additionalTestMetrics)...)
-		for _, metric := range metrics {
-			settings = append(settings, detector.PerformanceSettings{
-				Project: test,
-				Db:      mainSettings.Db,
-				Table:   mainSettings.Table,
-				Branch:  mainSettings.Branch,
-				Machine: mainSettings.Machine,
-				Metric:  metric,
-				Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention,
-				AnalysisSettings: route.analysisSettings,
-			})
+	for _, series := range splitUnitTestsByMachine(bladeTests, hetznerTests) {
+		machineSettings := mainSettings
+		machineSettings.Machine = series.machine
+		for _, test := range series.tests {
+			route := resolveRoute(test, projectOwners, ownerChannels, teamConfigs)
+			analysis := route.analysisSettings
+			analysis.IgnoreChangesBefore = series.ignoreChangesBefore
+			metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, machineSettings, test, route.additionalTestMetrics)...)
+			for _, metric := range metrics {
+				settings = append(settings, detector.PerformanceSettings{
+					Project: test,
+					Db:      mainSettings.Db,
+					Table:   mainSettings.Table,
+					Branch:  mainSettings.Branch,
+					Machine: series.machine,
+					Metric:  metric,
+					Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention,
+					AnalysisSettings: analysis,
+				})
+			}
 		}
 	}
 

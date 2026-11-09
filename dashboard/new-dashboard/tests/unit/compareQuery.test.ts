@@ -22,25 +22,25 @@ describe("compare table series index", () => {
   it("takes the mode names as the columns when a single branch is selected", () => {
     const { data, configuration } = series([
       [["master", "default", KUBERNETES], [100]],
-      [["master", "legacy_and_new", KUBERNETES], [200]],
+      [["master", "types2", KUBERNETES], [200]],
       [["master", "default", DOCKER], [50]],
     ])
-    const indexed = indexSeries(data, configuration, ["default", "legacy_and_new"], [KUBERNETES, DOCKER], [METRIC])
+    const indexed = indexSeries(data, configuration, ["default", "types2"], [KUBERNETES, DOCKER], [METRIC])
     expect(indexed.byKey.get(seriesKey("default", KUBERNETES, METRIC))).toStrictEqual([100])
-    expect(indexed.byKey.get(seriesKey("legacy_and_new", KUBERNETES, METRIC))).toStrictEqual([200])
+    expect(indexed.byKey.get(seriesKey("types2", KUBERNETES, METRIC))).toStrictEqual([200])
   })
 
   it("keeps the runs of each mode apart when two branches and two modes are selected", () => {
     const { data, configuration } = series([
       [["master", "default", KUBERNETES], [100]],
-      [["master", "legacy_and_new", KUBERNETES], [200]],
+      [["master", "types2", KUBERNETES], [200]],
       [["261", "default", KUBERNETES], [90]],
-      [["261", "legacy_and_new", KUBERNETES], [180]],
+      [["261", "types2", KUBERNETES], [180]],
       [["master", "default", DOCKER], [50]],
     ])
-    const indexed = indexSeries(data, configuration, ["261", "master"], [KUBERNETES, DOCKER], [METRIC], ["default", "legacy_and_new"])
+    const indexed = indexSeries(data, configuration, ["261", "master"], [KUBERNETES, DOCKER], [METRIC], ["default", "types2"])
     expect(indexed.byKey.get(seriesKey(columnName("master", "default"), KUBERNETES, METRIC))).toStrictEqual([100])
-    expect(indexed.byKey.get(seriesKey(columnName("master", "legacy_and_new"), KUBERNETES, METRIC))).toStrictEqual([200])
+    expect(indexed.byKey.get(seriesKey(columnName("master", "types2"), KUBERNETES, METRIC))).toStrictEqual([200])
     expect(indexed.byKey.get(seriesKey(columnName("261", "default"), KUBERNETES, METRIC))).toStrictEqual([90])
   })
 })

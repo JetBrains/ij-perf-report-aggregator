@@ -460,7 +460,7 @@ func TestSearchMetricValues_ModeFilter(t *testing.T) {
 	devGoland := tableRef{Database: "perfintDev", Table: "goland", HasMode: true}
 	cs := newTestClient(t, []tableRef{devIde, devGoland}, fakeQueryResult{
 		verify: func(sql string, args []any) error {
-			if !strings.Contains(sql, "and mode = ?") || !slices.Contains(args, "legacy_and_new") {
+			if !strings.Contains(sql, "and mode = ?") || !slices.Contains(args, "types2") {
 				return errors.New("expected mode filter in query")
 			}
 			if strings.Contains(sql, "from perfintDev.ide") {
@@ -474,9 +474,9 @@ func TestSearchMetricValues_ModeFilter(t *testing.T) {
 	callToolOK(t, cs, "search_metric_values", map[string]any{
 		"project":     "kubernetes/indexing",
 		"metric_name": "indexingTimeWithoutPauses",
-		"mode":        "legacy_and_new",
+		"mode":        "types2",
 	}, &out)
-	if !strings.Contains(joinNotes(out.Notes), `mode="legacy_and_new"`) {
+	if !strings.Contains(joinNotes(out.Notes), `mode="types2"`) {
 		t.Errorf("empty result must include the mode filter, got %+v", out)
 	}
 }

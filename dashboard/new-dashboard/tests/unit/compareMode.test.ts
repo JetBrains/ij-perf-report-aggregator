@@ -48,7 +48,7 @@ describe("compareMode base/compared mode selection", () => {
   })
 
   it("takes the default mode as the base wherever it is in the selection", () => {
-    expect(pickBaseAndComparedModes(["legacy_and_new", "default"])).toStrictEqual({ base: "default", compared: ["legacy_and_new"] })
+    expect(pickBaseAndComparedModes(["types2", "default"])).toStrictEqual({ base: "default", compared: ["types2"] })
   })
 
   it("takes the first selected mode as the base without the default mode", () => {
@@ -62,20 +62,20 @@ describe("compareMode columns", () => {
   })
 
   it("compares the modes when a single branch is selected", () => {
-    expect(pickCompareColumns(["master"], ["legacy_and_new", "default"])).toStrictEqual({
+    expect(pickCompareColumns(["master"], ["types2", "default"])).toStrictEqual({
       base: "default",
-      compared: ["legacy_and_new"],
-      branches: ["default", "legacy_and_new"],
+      compared: ["types2"],
+      branches: ["default", "types2"],
       modes: [],
     })
   })
 
   it("takes every branch in every mode as a column, with the base branch in the base mode as the base", () => {
-    expect(pickCompareColumns(["master", "261"], ["legacy_and_new", "default"])).toStrictEqual({
+    expect(pickCompareColumns(["master", "261"], ["types2", "default"])).toStrictEqual({
       base: "261 – default",
-      compared: ["261 – legacy_and_new", "master – default", "master – legacy_and_new"],
+      compared: ["261 – types2", "master – default", "master – types2"],
       branches: ["261", "master"],
-      modes: ["default", "legacy_and_new"],
+      modes: ["default", "types2"],
     })
   })
 

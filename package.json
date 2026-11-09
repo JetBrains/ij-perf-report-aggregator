@@ -31,14 +31,14 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^26.8.2",
+      "version": "^26.13.0",
       "onFail": "error"
     }
   },
   "engines": {
     "pnpm": ">=12"
   },
-  "packageManager": "pnpm@12.9.1",
+  "packageManager": "pnpm@12.18.0",
   "ignorePatterns": [
     "**/node_modules/**/*.*"
   ]

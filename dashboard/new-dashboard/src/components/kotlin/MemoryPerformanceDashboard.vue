@@ -9,7 +9,7 @@
       <MeasureSelect
         :configurator="measureConfigurator"
         title="Measure"
-        :label-formatter="metricsSelectLabelFormat"
+        :selected-label="metricsSelectLabelFormat"
       >
         <template #icon>
           <ChartBarIcon class="w-4 h-4" />

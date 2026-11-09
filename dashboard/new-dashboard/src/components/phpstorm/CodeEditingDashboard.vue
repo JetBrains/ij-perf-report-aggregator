@@ -21,7 +21,6 @@
           :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
           :aggregated-measure="'test#average_awt_delay'"
           :title="'UI responsiveness during typing'"
-          :chart-color="'#F2994A'"
         />
       </div>
     </section>

@@ -24,7 +24,6 @@
           :aggregated-measure="'typing#latency#max'"
           :is-like="true"
           :title="'Typing latency(max)'"
-          :chart-color="'#F2994A'"
         />
       </div>
     </section>

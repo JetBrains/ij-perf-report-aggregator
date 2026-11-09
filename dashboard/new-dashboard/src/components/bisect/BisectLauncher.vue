@@ -109,7 +109,7 @@
                   </div>
                   <div class="flex items-center mb-4 mt-4">
                     <Checkbox
-                      id="targetJpsCompile"
+                      input-id="targetJpsCompile"
                       v-model="model.targetJpsCompile"
                       binary
                     />

@@ -18,7 +18,7 @@
           Project
         </label>
         <Select
-          id="yt-project"
+          input-id="yt-project"
           v-model="selectedProject"
           :options="ytProjects"
           option-label="name"

@@ -45,7 +45,7 @@
         <div class="text-sm">{{ misclickWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
-            id="acknowledgeMisclick"
+            input-id="acknowledgeMisclick"
             v-model="acknowledgedMisclick"
             binary
           />

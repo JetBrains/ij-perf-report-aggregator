@@ -13,7 +13,6 @@
           :configurators="averagesConfigurators"
           :aggregated-measure="'processingSpeedAvg#Rust'"
           :title="'Indexing Rust (kB/s)'"
-          :chart-color="'#219653'"
           :value-unit="'counter'"
         />
       </div>

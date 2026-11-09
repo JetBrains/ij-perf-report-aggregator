@@ -12,7 +12,6 @@
           :configurators="averagesConfigurators"
           :aggregated-measure="'processingSpeed#Python'"
           :title="'Indexing Python (kB/s)'"
-          :chart-color="'#219653'"
           :value-unit="'counter'"
         />
       </div>

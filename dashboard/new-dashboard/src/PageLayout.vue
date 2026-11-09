@@ -2,10 +2,7 @@
   <div class="new-dashboard">
     <header class="flex flex-col gap-y-0.5">
       <PageHeader />
-      <NavigationTabs
-        :items="tabs"
-        :current-path="currentPath"
-      />
+      <NavigationTabs :items="tabs" />
     </header>
     <div class="px-7 py-5">
       <slot />

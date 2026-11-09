@@ -23,9 +23,8 @@
       <AccordionPanel :value="0">
         <AccordionHeader>Indexing</AccordionHeader>
         <AccordionContent>
-          <section>
+          <section id="index">
             <GroupProjectsChart
-              id="index"
               label="Indexing"
               measure="vcs-log-indexing"
               :projects="indexingProjects"
@@ -65,9 +64,8 @@
       <AccordionPanel :value="1">
         <AccordionHeader>Show file history</AccordionHeader>
         <AccordionContent>
-          <section>
+          <section id="history">
             <GroupProjectsChart
-              id="history"
               label="Show file history (test metric)"
               measure="showFileHistory"
               :projects="showFileHistoryProjects"
@@ -108,9 +106,8 @@
       <AccordionPanel :value="3">
         <AccordionHeader>Checkout</AccordionHeader>
         <AccordionContent>
-          <section>
+          <section id="checkout">
             <GroupProjectsChart
-              id="checkout"
               label="Checkout time"
               measure="git-checkout"
               :projects="checkoutProjects"

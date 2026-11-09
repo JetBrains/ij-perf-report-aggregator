@@ -17,9 +17,8 @@
       <AccordionPanel :value="0">
         <AccordionHeader>Indexing</AccordionHeader>
         <AccordionContent>
-          <section>
+          <section id="index">
             <GroupProjectsChart
-              id="index"
               label="Indexing"
               measure="vcs-log-indexing"
               :projects="indexingProjects"

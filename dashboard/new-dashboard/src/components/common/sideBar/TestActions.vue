@@ -4,7 +4,6 @@
     :label="testActions[0].label"
     :model="testActions.slice(1)"
     size="small"
-    link
     icon="pi pi-external-link"
     @click="testActions[0].command"
   />

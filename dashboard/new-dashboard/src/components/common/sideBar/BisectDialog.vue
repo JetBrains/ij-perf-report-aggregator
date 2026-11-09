@@ -39,7 +39,7 @@
       </div>
       <FloatLabel>
         <Select
-          id="direction"
+          input-id="direction"
           v-model="direction"
           :options="['OPTIMIZATION', 'DEGRADATION']"
         >
@@ -78,7 +78,7 @@
         </div>
         <div class="flex items-center mt-3">
           <Checkbox
-            id="acknowledgeGap"
+            input-id="acknowledgeGap"
             v-model="acknowledgedGap"
             binary
           />
@@ -96,7 +96,7 @@
         <div class="text-sm">{{ misclickWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
-            id="acknowledgeMisclick"
+            input-id="acknowledgeMisclick"
             v-model="acknowledgedMisclick"
             binary
           />
@@ -114,7 +114,7 @@
         <div class="text-sm">{{ stabilityWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
-            id="acknowledgeStability"
+            input-id="acknowledgeStability"
             v-model="acknowledgedStability"
             binary
           />
@@ -132,7 +132,7 @@
         <div class="text-sm">{{ targetValueWarning.detail }}</div>
         <div class="flex items-center mt-3">
           <Checkbox
-            id="acknowledgeTargetValue"
+            input-id="acknowledgeTargetValue"
             v-model="acknowledgedTargetValue"
             binary
           />
@@ -194,7 +194,7 @@
             </div>
             <div class="flex items-center mb-4 mt-4">
               <Checkbox
-                id="targetJpsCompile"
+                input-id="targetJpsCompile"
                 v-model="targetJpsCompile"
                 binary
               />

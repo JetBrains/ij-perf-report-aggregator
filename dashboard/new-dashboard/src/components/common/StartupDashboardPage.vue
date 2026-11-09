@@ -3,7 +3,6 @@
     <DashboardToolbar
       :branch-configurator="branchConfigurator"
       :machine-configurator="machineConfigurator"
-      :on-change-range="onChangeRange"
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
       :test-mode-configurator="testModeConfigurator"
@@ -44,7 +43,7 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { selectedStartupProjectsFilter, startupProjectConfigurator } from "../../configurators/StartupProjectConfigurator"
 import { nightly, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Chart } from "../charts/DashboardCharts"
@@ -146,10 +145,6 @@ if (testModeConfigurator != null) {
 }
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
 
 const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)

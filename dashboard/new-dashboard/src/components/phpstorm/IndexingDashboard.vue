@@ -13,7 +13,6 @@
           :configurators="averagesConfigurators"
           :aggregated-measure="'processingSpeedAvg#PHP'"
           :title="'Indexing PHP (kB/s)'"
-          :chart-color="'#219653'"
           :value-unit="'counter'"
         />
       </div>

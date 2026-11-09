@@ -4,7 +4,6 @@
       :branch-configurator="branchConfigurator"
       :machine-configurator="machineConfigurator"
       :release-configurator="releaseNightlyConfigurator"
-      :on-change-range="onChangeRange"
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
       :test-mode-configurator="testModeConfigurator"
@@ -62,7 +61,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import {
   accidentsConfiguratorKey,
@@ -215,10 +214,6 @@ watch(canCompare, (allowed) => {
     renderMode.value = "charts"
   }
 })
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
 
 const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)

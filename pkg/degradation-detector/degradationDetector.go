@@ -3,6 +3,7 @@ package degradation_detector
 import (
 	"log/slog"
 	"math"
+	"time"
 
 	"github.com/AndreyAkinshin/pragmastat/go/v4"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
@@ -26,6 +27,7 @@ type analysisSettings interface {
 	GetMedianDifferenceThreshold() float64
 	GetEffectSizeThreshold() float64
 	GetDaysToCheckMissing() int
+	GetIgnoreChangesBefore() time.Time
 
 	GetAnalysisKind() AnalysisKind
 	GetThresholdMode() ThresholdMode

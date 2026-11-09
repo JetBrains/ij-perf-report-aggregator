@@ -3,6 +3,7 @@ package degradation_detector
 import (
 	"testing"
 	"testing/synctest"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -33,6 +34,32 @@ func TestInferDegradations(t *testing.T) {
 		require.Len(t, degradations, 1)
 		assert.Equal(t, degraded, degradations[0].Settings)
 		assert.Equal(t, int64(5), degradations[0].Details.timestamp)
+	})
+}
+
+func TestInferDegradationsIgnoresChangesBeforeTheSetTime(t *testing.T) {
+	t.Parallel()
+	synctest.Test(t, func(t *testing.T) {
+		values := []int{101, 99, 101, 99, 101, 201, 202, 201, 202, 201, 201, 201}
+		// The change starts at timestamp 5.
+		for _, tc := range []struct {
+			ignoreBefore int64
+			wantChanges  int
+		}{
+			{ignoreBefore: 5, wantChanges: 1},
+			{ignoreBefore: 6, wantChanges: 0},
+		} {
+			settings := PerformanceSettings{Metric: "degraded", MinimumSegmentLength: 3, IgnoreChangesBefore: time.UnixMilli(tc.ignoreBefore)}
+			data := make(chan QueryResultWithSettings, 1)
+			data <- QueryResultWithSettings{queryResult: queryResultOf(values), Settings: settings}
+			close(data)
+
+			var degradations []DegradationWithSettings
+			for degradation := range InferDegradations(data) {
+				degradations = append(degradations, degradation)
+			}
+			assert.Len(t, degradations, tc.wantChanges, "ignore before %d", tc.ignoreBefore)
+		}
 	})
 }
 

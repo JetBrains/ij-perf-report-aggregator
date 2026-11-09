@@ -1,5 +1,7 @@
 package degradation_detector
 
+import "time"
+
 type ReportType int
 
 const (
@@ -40,6 +42,9 @@ type AnalysisSettings struct {
 	// Number of days to check for missing data.
 	// The default value is -3 (3 days ago).
 	DaysToCheckMissing int
+	// The detector does not report a change that starts before this time.
+	// The zero value reports every change.
+	IgnoreChangesBefore time.Time
 
 	AnalysisKind   AnalysisKind
 	ThresholdMode  ThresholdMode
@@ -67,6 +72,10 @@ func (s AnalysisSettings) GetDaysToCheckMissing() int {
 		return -3
 	}
 	return s.DaysToCheckMissing
+}
+
+func (s AnalysisSettings) GetIgnoreChangesBefore() time.Time {
+	return s.IgnoreChangesBefore
 }
 
 // GetAnalysisKind returns the analysis kind setting.

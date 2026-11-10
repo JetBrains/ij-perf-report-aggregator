@@ -8,11 +8,11 @@ const LOG_TICKS = Array.from({ length: 16 }, (_, index) => index - 3).flatMap((e
 const PADDING = 1.1
 
 // undefined = no usable bound (no data yet, or nothing positive): leave the axis autoscaled.
-export function logTickAtOrBelow(value: number): number | undefined {
+function logTickAtOrBelow(value: number): number | undefined {
   return Number.isFinite(value) && value > 0 ? LOG_TICKS.findLast((tick) => tick <= value) : undefined
 }
 
-export function logTickAtOrAbove(value: number): number | undefined {
+function logTickAtOrAbove(value: number): number | undefined {
   return Number.isFinite(value) && value > 0 ? LOG_TICKS.find((tick) => tick >= value) : undefined
 }
 

@@ -197,6 +197,12 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     "typing#latency",
     metricInfo("Average time in ms to insert a letter in the editor, measured during typing — approximates the delay from key press to the letter appearing.", "milliseconds"),
   ],
+  [
+    "typing#latency#mean_value",
+    metricInfo("Mean time to insert a letter in the editor during typing — approximates the delay from key press to the letter appearing.", "milliseconds"),
+  ],
+  ["typing#latency#p90", metricInfo("90th percentile of the time to insert a letter in the editor during typing.", "milliseconds")],
+  ["typing#latency#max", metricInfo("Maximum time to insert a letter in the editor during typing.", "milliseconds")],
   //refactorings
   ["performInlineRename#mean_value", metricInfo("Mean time to perform an inline rename. Find usages is not included.", "milliseconds")],
   ["startInlineRename#mean_value", metricInfo("Mean time to prepare rename template in the current file.", "milliseconds")],
@@ -208,6 +214,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["moveDeclarations_back#mean_value", metricInfo("Mean time to restore the project after move declarations.", "milliseconds")],
 
   //editor actions
+  ["openEditor", metricInfo("Time to open a file in the editor.", "milliseconds")],
   ["execute_editor_optimizeimports", metricInfo("Time to execute optimize imports action in the editor.", "milliseconds")],
   ["execute_editor_paste", metricInfo("Time to execute paste action in the editor.", "milliseconds")],
   ["convertJavaToKotlin", metricInfo("Time to execute J2K action in the editor.", "milliseconds")],

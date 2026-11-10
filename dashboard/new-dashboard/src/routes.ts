@@ -6,6 +6,7 @@ import { CLION_MAIN_METRICS } from "./components/clion/clionMetrics"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 import type { PerformanceTestsProps } from "./components/common/PerformanceTests.props"
 import type { PerformanceUnitTestsProps } from "./components/common/PerformanceUnitTests.vue"
+import type { ModeComparisonFamily } from "./components/ijLight/modeComparisonTests"
 
 const COMPONENTS = {
   perfTests: () => import("./components/common/PerformanceTests.vue"),
@@ -247,6 +248,8 @@ enum ROUTES {
   GoLSPDashboard = `${ROUTE_PREFIX.GoLSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
   IJLightPluginLoadDashboard = `${ROUTE_PREFIX.IJLight}/pluginLoad`,
+  IJLightTypingLatencyDashboard = `${ROUTE_PREFIX.IJLight}/typingLatency`,
+  IJLightOpenEditorDashboard = `${ROUTE_PREFIX.IJLight}/openEditor`,
   AirTests = `${ROUTE_PREFIX.Air}/${DEV_TEST_ROUTE}`,
   AirDashboard = `${ROUTE_PREFIX.Air}/${DASHBOARD_ROUTE}`,
   ReportDegradations = "/degradations/report",
@@ -319,6 +322,11 @@ function compareBranches(
 
 function compareModes(path: ROUTES, props: { dbName: string; table: string }, pageTitle: string = COMPARE_MODES_LABEL): RouteRecordRaw {
   return { path, component: COMPONENTS.compareModes, props, meta: { pageTitle } }
+}
+
+// IJ Light page comparing monolith / light / light-upgraded for one test family.
+function ijLightModeComparison(path: ROUTES, family: ModeComparisonFamily, pageTitle: string): RouteRecordRaw {
+  return dashboard(path, () => import("./components/ijLight/ModeComparisonDashboard.vue"), pageTitle, { family })
 }
 
 const IDEA: Product = {
@@ -812,7 +820,12 @@ const IJ_LIGHT: Product = {
     {
       url: ROUTE_PREFIX.IJLight,
       label: "",
-      tabs: [tab(ROUTES.IJLightStartupDashboard, STARTUP_LABEL), tab(ROUTES.IJLightPluginLoadDashboard, "Plugin Load")],
+      tabs: [
+        tab(ROUTES.IJLightStartupDashboard, STARTUP_LABEL),
+        tab(ROUTES.IJLightPluginLoadDashboard, "Plugin Load"),
+        tab(ROUTES.IJLightTypingLatencyDashboard, "Typing Latency"),
+        tab(ROUTES.IJLightOpenEditorDashboard, "Open Editor"),
+      ],
     },
   ],
 }
@@ -1249,6 +1262,8 @@ const ijLightRoutes = [
     "IJ Light Startup dashboard"
   ),
   dashboard(ROUTES.IJLightPluginLoadDashboard, () => import("./components/ijLight/PluginLoadDashboard.vue"), "IJ Light Plugin Load dashboard"),
+  ijLightModeComparison(ROUTES.IJLightTypingLatencyDashboard, "typingLatency", "IJ Light Typing Latency dashboard"),
+  ijLightModeComparison(ROUTES.IJLightOpenEditorDashboard, "openEditor", "IJ Light Open Editor dashboard"),
 ]
 
 const airRoutes = [

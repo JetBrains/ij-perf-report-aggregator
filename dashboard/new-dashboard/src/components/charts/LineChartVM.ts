@@ -22,6 +22,7 @@ import { HoverFadeController } from "./hoverFade"
 import { activateIntervalSelection } from "./intervalSelection"
 import { exportChartMetricsAsYaml } from "./chartExport"
 import { getMinYAxisTop } from "./yAxisRange"
+import { logYAxis, YAxisScale } from "./yAxisScale"
 
 class ClickedValue {
   constructor(
@@ -251,6 +252,7 @@ export class LineChartVM {
     accidentsConfigurator: AccidentsConfigurator | null,
     private readonly legendFormatter: (name: string) => string,
     chartTitle: string,
+    yAxisScale: YAxisScale,
     hasDataCallback?: (hasData: boolean) => void
   ) {
     this.accidentsConfigurator = accidentsConfigurator
@@ -377,21 +379,25 @@ export class LineChartVM {
             backgroundColor: useDarkModeStore().darkMode ? "#121212" : "#6E7079",
           },
         },
-        min(value) {
-          return useSettingsStore().flexibleYZero ? value.min * 0.9 : 0
-        },
-        max(value) {
-          // While scaling, the values are baseline ratios rather than the metric's own unit, so the floor
-          // does not apply and null leaves the axis autoscaled.
-          if (minYAxisTop == null || useSettingsStore().scaling) {
-            return null
-          }
-          return Math.max(minYAxisTop, value.max)
-        },
-        type: "value",
         splitLine: {
           show: false,
         },
+        ...(yAxisScale === "log"
+          ? logYAxis()
+          : {
+              min(value) {
+                return useSettingsStore().flexibleYZero ? value.min * 0.9 : 0
+              },
+              max(value) {
+                // While scaling, the values are baseline ratios rather than the metric's own unit, so the floor
+                // does not apply and null leaves the axis autoscaled.
+                if (minYAxisTop == null || useSettingsStore().scaling) {
+                  return null
+                }
+                return Math.max(minYAxisTop, value.max)
+              },
+              type: "value",
+            }),
       },
     })
   }

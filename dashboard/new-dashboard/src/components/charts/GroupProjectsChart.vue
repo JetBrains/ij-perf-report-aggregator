@@ -10,6 +10,7 @@
     :can-be-closed="canBeClosed"
     :description="description"
     :better-direction="betterDirectionProp"
+    :y-axis-scale="yAxisScale"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -25,6 +26,7 @@ import { BetterDirection } from "../../shared/changeDetector/algorithm"
 import LineChart from "./LineChart.vue"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { CompareSectionConfig, RenderMode } from "./compareMode"
+import { YAxisScale } from "./yAxisScale"
 
 interface Props {
   label: string
@@ -37,6 +39,7 @@ interface Props {
   canBeClosed?: boolean
   description?: string
   betterDirection?: BetterDirection
+  yAxisScale?: YAxisScale
 }
 
 const {
@@ -50,6 +53,7 @@ const {
   canBeClosed = false,
   description,
   betterDirection: betterDirectionProp,
+  yAxisScale = "linear",
 } = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

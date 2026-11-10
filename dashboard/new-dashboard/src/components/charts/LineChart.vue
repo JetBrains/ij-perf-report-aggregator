@@ -8,7 +8,7 @@
       @mouseover="labelHovered = true"
       @mouseleave="labelHovered = false"
     >
-      {{ title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
+      {{ title + (yAxisScale === "log" ? " (log scale)" : "") + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <i
         v-if="resolvedDescription"
         role="button"
@@ -93,6 +93,7 @@ import { getMetricDescription } from "../../shared/metricsDescription"
 import { SeriesNameConfigurator } from "../../configurators/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
+import { YAxisScale } from "./yAxisScale"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 interface LineChartProps {
@@ -108,6 +109,7 @@ interface LineChartProps {
   canBeClosed?: boolean
   description?: string
   betterDirection?: BetterDirection
+  yAxisScale?: YAxisScale
 }
 
 const {
@@ -123,6 +125,7 @@ const {
   canBeClosed = false,
   description,
   betterDirection: betterDirectionProp,
+  yAxisScale = "linear",
 } = defineProps<LineChartProps>()
 
 // One central lookup feeds both the trend-direction rule and the header info popup; the matching prop
@@ -244,7 +247,7 @@ function createChart() {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, measures, accidentsConfigurator, legendFormatter, title, (hasDataValue: boolean) => {
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, measures, accidentsConfigurator, legendFormatter, title, yAxisScale, (hasDataValue: boolean) => {
       // If transitioning from no data to having data, recreate the chart, otherwise empty chart is shown
       if (!previousHasData.value && hasDataValue) {
         setTimeout(() => {

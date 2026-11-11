@@ -14,6 +14,17 @@ var (
 	airNoisy  = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 25, EffectSizeThreshold: 3}
 )
 
+// airOver alerts when the latest value is over limitMs. A metric of a few frames moves by one frame from night to night,
+// which is 30-80 % of its value, so a step of its median says nothing. A value over the limit is what a user notices.
+func airOver(limitMs float64) detector.AnalysisSettings {
+	return detector.AnalysisSettings{
+		ReportType:     detector.DegradationEvent,
+		AnalysisKind:   detector.ThresholdAnalysis,
+		ThresholdMode:  detector.ThresholdGreaterThan,
+		ThresholdValue: limitMs,
+	}
+}
+
 func GenerateAirSettings() []detector.PerformanceSettings {
 	type metric struct {
 		name     string
@@ -21,24 +32,23 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 	}
 	longSession := []metric{
 		{"open.%s.coverRemovedMs", airStable},
-		{"open.%s.gestureToSettledMs", airStable},
-		{"continue.%s.sendToPromptMs", airStable},
-		{"answer.%s.streamEndToSettledMs", airNoisy},
+		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airStable},
+		{"continue.%s.loadAnsweredToPromptMs", airOver(300)},
+		{"answer.%s.streamLagP95Ms", airNoisy},
+		{"answer.%s.streamEndToSettledMs", airOver(300)},
 		{"heap.%s.heapLive.MiB", airStable},
-		{"prompt.%s.codeP95Ms", airNoisy},
-		{"scroll.%s.wheelP95Ms", airNoisy},
-		// A jump to the start and to 0.4 of the history shows rows far from the bottom, whose text the transcript builds
-		// only near the visible area. The time runs to the frame that shows the built text, so it is noisy until the
-		// nights show otherwise.
-		{"scroll.%s.jump0.settledMs", airNoisy},
-		{"scroll.%s.jump40.settledMs", airNoisy},
+		{"prompt.%s.codeP95Ms", airOver(50)},
+		{"scroll.%s.wheelP95Ms", airOver(50)},
+		// A jump to the start and to 0.4 of the history lands on rows that are not built yet. A blank screen of 200 ms
+		// after a drag is what a user notices.
+		{"scroll.%s.jump0.settledMs", airOver(200)},
+		{"scroll.%s.jump40.settledMs", airOver(200)},
 	}
 	metrics := map[string][]metric{
 		"air/many-agents": {
 			{"manyAgents.heapLive.MiB", airStable},
-			{"manyAgents.openTabLagMaxMs", airStable},
-			{"manyAgents.focusedTabLagMs", airNoisy},
-			{"manyAgents.edtP95Ms", airNoisy},
+			{"manyAgents.focusedContentLagP95Ms", airNoisy},
+			{"manyAgents.edtMaxMs", airOver(50)},
 		},
 		"air/session-list": {
 			{"sessionList.heapLive.MiB", airStable},

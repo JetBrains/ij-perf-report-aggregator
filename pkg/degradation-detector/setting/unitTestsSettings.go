@@ -137,6 +137,7 @@ var teamConfigs = []teamConfig{
 		AdditionalTestMetrics: map[string][]string{
 			"com.intellij.debugger.impl.PacketsNumberTest":                                                      {"%.expected.%"},
 			"org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": {"%.expected.%"},
+			"com.intellij.debugger.MethodExitBreakpointPerformanceTest":                                         {"unrelated.work.median.ms"},
 		},
 	},
 }

@@ -83,7 +83,7 @@ interface AirGroup {
  * The first day of the points that the charts show. The tests changed how they measure on that day, and the earlier
  * points are not comparable.
  */
-const historyStart = "2026-11-02"
+const historyStart = "2026-11-12"
 
 const sizes = [
   {

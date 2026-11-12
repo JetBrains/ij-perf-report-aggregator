@@ -14,6 +14,7 @@ func TestGroupName(t *testing.T) {
 	cases := map[string]string{
 		"intellij-linux-performance-aws-i-08aec6c8ee5a71bba":        "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
 		"intellij-linux-performance-aws-lt-a-i-045667485579a157a":   "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+		"intellij-linux-performance-aws-od-i-0e8ba6e1a6969600d":     "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
 		"intellij-linux-performance-tiny-aws-on-demand-i-0abc12345": "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)",
 		"intellij-windows-performance-aws-i-0deadbeef0011":          "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
 		"intellij-windows-performance-mem-aws-i-0deadbeef0022":      "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",

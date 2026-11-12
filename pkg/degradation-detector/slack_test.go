@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 	"github.com/slack-go/slack"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -47,6 +48,18 @@ func TestGetDateLink(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestChartLinkMachineGroup(t *testing.T) {
+	t.Parallel()
+	for pattern, group := range machineGroupMap {
+		assert.True(t, machine.IsGroup(group), "pattern %q maps to %q, which is not a machine group", pattern, group)
+	}
+
+	link := PerformanceSettings{Db: "perfintDev", Machine: "intellij-linux-hw-de-unit-%", Branch: "master"}.ChartLink(Degradation{})
+	assert.Contains(t, link, "/testsDev?mode=default&machine=Linux+Munich+i7-13700%2C+64+Gb&branch=master")
+	link = PerformanceSettings{Db: "perfintDev", Machine: "intellij-windows-hw-de-%", Branch: "master"}.ChartLink(Degradation{})
+	assert.Contains(t, link, "&machine=Windows+Munich+i7-13700%2C+64+Gb&")
 }
 
 // newSlackStub answers chat.postMessage with a 429 carrying retryAfter for the first rateLimitedCalls calls,

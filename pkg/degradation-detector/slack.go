@@ -216,18 +216,23 @@ func sendSlackMessage(ctx context.Context, api *slack.Client, slackMessage Slack
 	}
 }
 
+var machineGroupMap = map[string]string{
+	"intellij-linux-performance-aws-%":   "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+	"intellij-linux-performance-aws%":    "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+	"intellij-windows-performance-%":     "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
+	"intellij-windows-performance-aws-%": "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
+	"intellij-linux-hw-hetzner%":         "linux-blade-hetzner",
+	"intellij-linux-%-hetzner-%":         "linux-blade-hetzner",
+	"ij-linux-x64-perf-hw-blade-%":       "linux-unit-perf-blade",
+	"intellij-linux-hw-munit-%":          "Linux Munich i7-3770, 32 Gb",
+	"intellij-windows-hw-munit-%":        "Windows Munich i7-3770, 32 Gb",
+	"intellij-linux-hw-de-unit-%":        "Linux Munich i7-13700, 64 Gb",
+	"intellij-windows-hw-de-%":           "Windows Munich i7-13700, 64 Gb",
+	"intellij-macos-perf-eqx-%":          "Apple M4 Pro (13 vCPU, 64 GB)",
+	"intellij-macos-hw-munit-%":          "macMini M1, 16 Gb",
+}
+
 func getMachineGroup(pattern string) string {
-	machineGroupMap := map[string]string{
-		"intellij-linux-performance-aws-%": "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-		"intellij-windows-performance-%":   "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)",
-		"intellij-linux-hw-hetzner%":       "linux-blade-hetzner",
-		"intellij-linux-%-hetzner-%":       "linux-blade-hetzner",
-		"ij-linux-x64-perf-hw-blade-%":     "linux-unit-perf-blade",
-		"intellij-linux-hw-munit-%":        "Linux Munich i7-3770, 32 Gb",
-		"intellij-windows-hw-munit-%":      "Windows Munich i7-3770, 32 Gb",
-		"intellij-macos-perf-eqx-%":        "Apple M4 Pro (13 vCPU, 64 GB)",
-		"intellij-macos-hw-munit-%":        "macMini M1, 16 Gb",
-	}
 	return machineGroupMap[pattern]
 }
 

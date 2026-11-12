@@ -36,6 +36,7 @@ Distinguish absent documentation from unavailable essential evidence. Try altern
 Read every changed file; inspect generators or dependency changes behind generated output. Trace affected paths through producers, storage, queries, APIs, UI, and downstream actions as relevant. Use the domain checks in the context reference selectively.
 
 Prioritize:
+
 - Collection completion, persisted checkpoints, retries, duplicates, and cancellation.
 - Benchmark identity, units, aggregation, chronological alignment, and comparison populations.
 - Regression detection, thresholds, missing-data semantics, and notifications.
@@ -68,11 +69,11 @@ Drop style, naming, formatting, low-impact refactors, arbitrary abstractions, ge
 
 For a completed, eligible review, use exactly one outcome:
 
-| Outcome | Meaning | GitHub action |
-| --- | --- | --- |
-| Clean | No finding meets the reporting bar. | `APPROVE` |
-| Concerns | Material, proven issues merit attention, but none require resolution before merge. | `APPROVE` |
-| Blocking | At least one proven issue must be addressed before merge. | `REQUEST_CHANGES` |
+| Outcome  | Meaning                                                                            | GitHub action     |
+| -------- | ---------------------------------------------------------------------------------- | ----------------- |
+| Clean    | No finding meets the reporting bar.                                                | `APPROVE`         |
+| Concerns | Material, proven issues merit attention, but none require resolution before merge. | `APPROVE`         |
+| Blocking | At least one proven issue must be addressed before merge.                          | `REQUEST_CHANGES` |
 
 Use **Blocking** for broken primary functionality, materially wrong performance conclusions on a supported path, data loss/corruption, exploitable security failures, broken system-wide invariants, unrecoverable rollout errors, or another concrete regression that makes merging unsafe. Catastrophic impact is not required. Reserve "critical" wording for exceptionally severe consequences; do not inflate every bug.
 
@@ -96,6 +97,7 @@ Suggested fix: <smallest practical correction>
 Omit `Blocking:` for non-blocking findings; use a plain short title. Keep each part to one or two sentences. State the problem directly and politely; avoid rhetorical questions and praise. Include a focused regression-test suggestion only when it strengthens the fix.
 
 The submitted review body is exactly one short, friendly sentence stating only the outcome:
+
 - Approve: `I'm approving this PR.`
 - Request changes: `Please address the blocking findings before merging.`
 

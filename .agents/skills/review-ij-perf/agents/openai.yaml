@@ -1,0 +1,12 @@
+interface:
+  display_name: IJ Perf Code Review
+  short_description: Evidence-based PR reviews for the ij-perf service
+  default_prompt: Use $review-ij-perf to review this ij-perf pull request and submit
+    a verdict with inline comments.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

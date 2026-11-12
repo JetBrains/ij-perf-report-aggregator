@@ -57,7 +57,7 @@ var rules = []rule{
 		"intellij-linux-aws-amd-lt", "intellij-linux-aws-amd-2-lt",
 		"intellij-linux-aws-3-lt", "intellij-linux-aws-lt",
 	}, group: "Linux C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"},
-	{prefixes: []string{"intellij-linux-performance-aws-i-", "intellij-linux-performance-aws-lt"}, group: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"},
+	{prefixes: []string{"intellij-linux-performance-aws-i-", "intellij-linux-performance-aws-od-i-", "intellij-linux-performance-aws-lt"}, group: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"},
 	{prefixes: []string{"intellij-linux-performance-tiny-aws-i-", "intellij-linux-performance-tiny-aws-on-demand-i-"}, group: "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"},
 	{prefixes: []string{"default-linux-aws-large-disk-"}, group: "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"},
 	// Same 4 vCPU / 8 GB hardware as "Linux EC2 c5.xlarge (4 vCPU, 8 GB)" (metric values within

@@ -6,15 +6,15 @@ Contents: navigation; measurement meaning; collection/recovery; detector semanti
 
 ## Navigation
 
-| Area | Starting paths | Relationship to inspect |
-| --- | --- | --- |
-| Collection | `cmd/tc-collector/`, `pkg/analyzer/`, `pkg/sql-util/` | TeamCity artifacts → reports → inserts → checkpoint |
-| Storage/query | `db-schema/`, `pkg/data-query/`, `pkg/server/clickhouse.go`, `pkg/server/comparison.go` | Schema/query DSL → column-oriented results → dashboard/detector |
-| Detection | `pkg/degradation-detector/`, its `setting/` and `statistic/`, `cmd/degradation-analyzer/` | Ordered observations → analysis → accidents/notifications |
-| Metadata/actions | `pkg/server/meta/`, `db-schema/meta/`, `openapi/meta.yaml` | PostgreSQL → analysis runs, ownership, TeamCity, YouTrack |
-| API/cache/MCP | `pkg/server/server.go`, `responseCache.go`, `compression.go`, `pkg/server/mcp/` | HTTP/auth → SQL → cached/compressed response |
-| Dashboard | `dashboard/new-dashboard/src/components/`, `src/configurators/`, `dashboard/app/` | Configurator state → queries → series → point actions |
-| Restore/rollout | `BACKUP.md`, `cmd/clickhouse/`, `pkg/clickhouse-backup/`, `deployment/`, `.ko.yaml` | Images → restore-on-start → backups/readiness |
+| Area             | Starting paths                                                                            | Relationship to inspect                                         |
+| ---------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Collection       | `cmd/tc-collector/`, `pkg/analyzer/`, `pkg/sql-util/`                                     | TeamCity artifacts → reports → inserts → checkpoint             |
+| Storage/query    | `db-schema/`, `pkg/data-query/`, `pkg/server/clickhouse.go`, `pkg/server/comparison.go`   | Schema/query DSL → column-oriented results → dashboard/detector |
+| Detection        | `pkg/degradation-detector/`, its `setting/` and `statistic/`, `cmd/degradation-analyzer/` | Ordered observations → analysis → accidents/notifications       |
+| Metadata/actions | `pkg/server/meta/`, `db-schema/meta/`, `openapi/meta.yaml`                                | PostgreSQL → analysis runs, ownership, TeamCity, YouTrack       |
+| API/cache/MCP    | `pkg/server/server.go`, `responseCache.go`, `compression.go`, `pkg/server/mcp/`           | HTTP/auth → SQL → cached/compressed response                    |
+| Dashboard        | `dashboard/new-dashboard/src/components/`, `src/configurators/`, `dashboard/app/`         | Configurator state → queries → series → point actions           |
+| Restore/rollout  | `BACKUP.md`, `cmd/clickhouse/`, `pkg/clickhouse-backup/`, `deployment/`, `.ko.yaml`       | Images → restore-on-start → backups/readiness                   |
 
 Read README, CLAUDE.md, current manifests, and relevant tests. Some deployed settings, including collected TeamCity configurations, live outside this repository; the README links the deployment repository. Do not infer production policy solely from example Helm values.
 
@@ -91,14 +91,14 @@ At the verified revision, `analyses` is PostgreSQL metadata. Starting analysis i
 
 Read current `.github/workflows/lint-and-test.yml`, `package.json`, `go.mod`, and `CLAUDE.md` before choosing commands/runtime versions.
 
-| Change | Useful checks when safe and available |
-| --- | --- |
-| Go logic | `go test ./pkg/<affected-package>` or `./cmd/<affected-command>`; `-race` for changed concurrency |
-| Backend cross-package | `go test ./cmd/... ./pkg/...` |
-| Dashboard logic | `pnpm exec vitest run <relevant-test-path>` |
-| Vue/type contract | `pnpm vue-tsc --noEmit -p dashboard/new-dashboard`; `pnpm build` when relevant |
-| SQL/schema | Representative queries/rows in a disposable database at the applicable version |
-| Detector math | Boundary/representative series, unchanged controls, expected build attribution |
-| Cache/concurrency | Vary inputs/schedule order and assert response identity, not implementation details |
+| Change                | Useful checks when safe and available                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| Go logic              | `go test ./pkg/<affected-package>` or `./cmd/<affected-command>`; `-race` for changed concurrency |
+| Backend cross-package | `go test ./cmd/... ./pkg/...`                                                                     |
+| Dashboard logic       | `pnpm exec vitest run <relevant-test-path>`                                                       |
+| Vue/type contract     | `pnpm vue-tsc --noEmit -p dashboard/new-dashboard`; `pnpm build` when relevant                    |
+| SQL/schema            | Representative queries/rows in a disposable database at the applicable version                    |
+| Detector math         | Boundary/representative series, unchanged controls, expected build attribution                    |
+| Cache/concurrency     | Vary inputs/schedule order and assert response identity, not implementation details               |
 
 CI creates `cmd/frontend/resources/make-typecheck-happy.txt` for embedded resources when needed. Inspect that setup before reproducing it. Current formatting/linting uses oxfmt/oxlint; do not introduce Prettier or reformat during review. Tests live in `pkg/`, `cmd/`, and `dashboard/new-dashboard/tests/`. An environment setup failure is not proof the PR is broken.

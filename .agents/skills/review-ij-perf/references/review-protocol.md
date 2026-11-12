@@ -3,6 +3,7 @@
 ## Evidence ledger
 
 Keep a private, lightweight ledger:
+
 - Repository/PR, base/head SHAs, eligibility, preview/posting mode.
 - Latest completed review by this workflow and its reviewed SHA.
 - Issue/doc links and materially unavailable evidence.
@@ -39,6 +40,7 @@ Do not post this ledger.
 ## Submit once and verify
 
 Prefer the GitHub connector; discover capabilities. A single review submission should carry:
+
 - Repository and PR number.
 - Full reviewed head SHA as commit_id.
 - APPROVE or REQUEST_CHANGES.
@@ -48,6 +50,7 @@ Prefer the GitHub connector; discover capabilities. A single review submission s
 Use add_review_to_pr when available, otherwise an authorized equivalent API/CLI. Use structured arguments or a body file to preserve Markdown/newlines.
 
 Immediately before submission:
+
 1. Re-read metadata and recent discussion.
 2. Stop if the PR became draft, WIP, closed, or merged.
 3. If base/head moved during this run, refresh affected context and anchors; never attach stale approval.

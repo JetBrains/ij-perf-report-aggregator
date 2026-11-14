@@ -4,7 +4,7 @@
       v-if="!bothEnginesSelected"
       class="text-sm text-gray-500 py-3 px-5 border border-solid rounded-md"
     >
-      Select both <span class="font-semibold">LEGACY</span> and <span class="font-semibold">NEW_ONLY</span> engines to see the comparison.
+      Select both <span class="font-semibold">LEGACY</span> and <span class="font-semibold">{{ candidate.id }}</span> engines to see the comparison.
     </div>
     <div
       v-else-if="selectedMetricTypes.length === 0"
@@ -33,13 +33,18 @@
         :mode="mode"
         :run-label="currentRunLabel"
         :quantity="quantity"
+        :candidate="candidate.id"
       />
       <EngineCompareHeatmap
         :rows="rows"
         :selected-metric-types="selectedMetricTypes"
         :mode="mode"
+        :candidate="candidate.id"
       />
-      <EngineCompareBars :rows="rows" />
+      <EngineCompareBars
+        :rows="rows"
+        :candidate="candidate.id"
+      />
       <div
         v-if="loading && rows.length === 0"
         class="text-sm text-gray-500"
@@ -52,16 +57,18 @@
 
 <script setup lang="ts">
 import { computed, ref, toRef } from "vue"
-import { Quantity } from "./highlightingMetrics"
+import { Engine, Quantity } from "./highlightingMetrics"
 import { EngineComparisonMode, useEngineComparison } from "./useEngineComparison"
 import EngineCompareSummary from "./EngineCompareSummary.vue"
 import EngineCompareHeatmap from "./EngineCompareHeatmap.vue"
 import EngineCompareBars from "./EngineCompareBars.vue"
 import RunTimeline from "./RunTimeline.vue"
 
-const { selectedMetricTypes, quantity, bothEnginesSelected } = defineProps<{
+const { selectedMetricTypes, quantity, candidate, bothEnginesSelected } = defineProps<{
   selectedMetricTypes: string[]
   quantity: Quantity
+  // The engine compared with LEGACY; the `new` runs of the comparison are its runs.
+  candidate: Engine
   // The comparison needs both engines; the Engine toolbar selector gates it (and the drill-down charts).
   bothEnginesSelected: boolean
 }>()
@@ -80,6 +87,7 @@ const modeOptions = [
 const { rows, aggregates, runs, loading } = useEngineComparison({
   selectedMetricTypes: toRef(() => selectedMetricTypes),
   quantity: toRef(() => quantity),
+  candidateSuffix: toRef(() => candidate.suffix),
   mode,
   selectedRun,
 })

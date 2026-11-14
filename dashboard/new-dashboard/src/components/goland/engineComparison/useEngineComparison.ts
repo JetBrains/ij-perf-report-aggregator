@@ -5,7 +5,7 @@ import { defaultModeName, TestModeConfigurator } from "../../../configurators/Te
 import { injectOrError } from "../../../shared/injectionKeys"
 import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey, testModeConfiguratorKey } from "../../../shared/keys"
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
-import { DataQueryExecutor, DataQueryResult } from "../../common/DataQueryExecutor"
+import { DataQueryExecutor, DataQueryResult, SERIES_NAME_SEPARATOR } from "../../common/DataQueryExecutor"
 import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
 import { indexSeriesRuns, SeriesRun, seriesKey } from "../../charts/compareQuery"
 import { BaseStats, BranchStats } from "../../charts/compareStats"
@@ -47,6 +47,8 @@ interface EngineComparisonOptions {
   selectedMetricTypes: Readonly<Ref<string[]>>
   // The quantity to plot (duration or a JVM sub-metric).
   quantity: Readonly<Ref<Quantity>>
+  // Project-name suffix of the engine compared with LEGACY (GoHighlightingTest.Engine.suffix).
+  candidateSuffix: Readonly<Ref<string>>
   // Aggregated vs single-run view.
   mode: Readonly<Ref<EngineComparisonMode>>
   // In single-run mode, the build timestamp to show; null means the newest build in any project.
@@ -74,14 +76,15 @@ interface BaseEntry {
   project: HighlightingProject
   legacyProject: string
   newProject: string
+  scenario: DimensionConfigurator
   measures: Ref<string[]>
   unsubscribe: () => void
 }
 
 // Drives the LEGACY-vs-NEW comparison: builds its own executors (independent of the lazy drill-down
 // accordion's mount state), indexes each result by (branch, project variant, measure), and derives one
-// row per (base, metric type). The engine variants are fixed (both are always queried); the Engine
-// toolbar selector gates only the drill-down charts and the comparison's own render, not this query.
+// row per (base, metric type). It queries LEGACY and the candidate engine; the Engine toolbar selector
+// gates only the drill-down charts and the comparison's own render, not this query.
 export function useEngineComparison(opts: EngineComparisonOptions): EngineComparison {
   const serverConfigurator = injectOrError(serverConfiguratorKey)
   const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey) as DataQueryConfigurator[]
@@ -123,6 +126,12 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     triggerRef(loadingByBase)
   }
 
+  // The executor fixes the measures and series names of a result when it builds the query, so they
+  // tell whether the result was queried for the current measures and candidate project of the entry.
+  function isCurrent(entry: BaseEntry, configuration: DataQueryExecutorConfiguration): boolean {
+    return configuration.measures === entry.measures.value && configuration.seriesNames.some((name) => name.split(SERIES_NAME_SEPARATOR).includes(entry.newProject))
+  }
+
   function storeCells(entry: BaseEntry, data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
     const branches = selectedBranches()
     const measures = measuresFor(entry.project)
@@ -141,16 +150,19 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
 
   for (const project of projects) {
     const legacyProject = `${project.base}/highlighting`
-    const newProject = `${project.base}-types2/highlighting`
+    const newProject = `${project.base}${opts.candidateSuffix.value}/highlighting`
     const scenario = new DimensionConfigurator("project", true)
     scenario.selected.value = [legacyProject, newProject]
     const measures = shallowRef<string[]>(measuresFor(project))
     // "auto" value unit — declared units (sub-metrics) and the stored type (duration) resolve formatting.
     const measureConfigurator = new PredefinedMeasureConfigurator(measures, shallowRef(false), "line", "auto", {}, null, "item")
     const executor = new DataQueryExecutor([...queryConfigurators, scenario, serverConfigurator, measureConfigurator])
-    const entry: BaseEntry = { project, legacyProject, newProject, measures, unsubscribe: () => {} }
+    const entry: BaseEntry = { project, legacyProject, newProject, scenario, measures, unsubscribe: () => {} }
     setLoading(project.base, true)
     entry.unsubscribe = executor.subscribe((data, configuration, loading) => {
+      // A result queried before the last candidate or measures change arrives within the executor's
+      // debounce; its replacement is already queued, so it neither ends the loading nor stores cells.
+      if (!loading && data != null && !isCurrent(entry, configuration)) return
       setLoading(project.base, loading)
       if (loading || data == null) return
       storeCells(entry, data, configuration)
@@ -178,6 +190,15 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     },
     { flush: "post" }
   )
+
+  // Another candidate swaps the second project of each base query, which re-queries it.
+  watch(opts.candidateSuffix, (suffix) => {
+    for (const entry of entries.values()) {
+      entry.newProject = `${entry.project.base}${suffix}/highlighting`
+      entry.scenario.selected.value = [entry.legacyProject, entry.newProject]
+      setLoading(entry.project.base, true)
+    }
+  })
 
   onUnmounted(() => {
     for (const entry of entries.values()) entry.unsubscribe()

@@ -30,7 +30,7 @@
         <div class="flex flex-col gap-2 text-sm max-w-md">
           <span class="font-semibold">How this verdict is computed</span>
           <hr class="w-full border-gray-200 dark:border-gray-600" />
-          <p>The geometric mean of NEW ÷ LEGACY over all cells, equally weighted. A cell's ratio is the center of its per-build ratios.</p>
+          <p>The geometric mean of {{ candidate }} ÷ LEGACY over all cells, equally weighted. A cell's ratio is the center of its per-build ratios.</p>
           <p>A cell is significant when it moves by ≥5% and lies outside the build-to-build spread of its ratio.</p>
           <p>
             The headline is flagged as unconfirmed when the move is under 5%, a bucket or phase moves the other way, or the significant cells against the move are at least as many
@@ -113,7 +113,7 @@
       :key="line.engine"
       class="text-sm"
     >
-      <span class="font-medium text-red-600 dark:text-red-400">{{ line.engine }} missing:</span>
+      <span class="font-medium text-red-600 dark:text-red-400">{{ line.label }} missing:</span>
       <span class="ml-1">{{ line.cells.join(", ") }}</span>
     </div>
   </div>
@@ -127,12 +127,19 @@ import { EngineComparisonMode } from "./useEngineComparison"
 import { bucketLabel, metricTypeLabel, phaseLabel, Quantity } from "./highlightingMetrics"
 import { formatSignedPercent } from "../../charts/compareStats"
 
-const { aggregates, mode, runLabel, quantity } = defineProps<{ aggregates: EngineAggregates; mode: EngineComparisonMode; runLabel: string; quantity: Quantity }>()
+const { aggregates, mode, runLabel, quantity, candidate } = defineProps<{
+  aggregates: EngineAggregates
+  mode: EngineComparisonMode
+  runLabel: string
+  quantity: Quantity
+  // The id of the engine compared with LEGACY, shown where the data says NEW.
+  candidate: string
+}>()
 
 type Tone = "better" | "worse" | "same" | "none"
 
 const eyebrow = computed(() => {
-  const what = quantity.suffix === "" ? "NEW vs LEGACY" : `NEW vs LEGACY — ${quantity.label}`
+  const what = quantity.suffix === "" ? `${candidate} vs LEGACY` : `${candidate} vs LEGACY — ${quantity.label}`
   return mode === "single" ? `${what} — ${runLabel || "single run"}` : `${what} — overall`
 })
 
@@ -145,7 +152,7 @@ function gapText(gap: EngineGap): string {
 
 const gapLines = computed(() =>
   (["NEW", "LEGACY"] as const)
-    .map((engine) => ({ engine, cells: aggregates.gaps.filter((gap) => gap.engine === engine).map((gap) => gapText(gap)) }))
+    .map((engine) => ({ engine, label: engine === "NEW" ? candidate : engine, cells: aggregates.gaps.filter((gap) => gap.engine === engine).map((gap) => gapText(gap)) }))
     .filter((line) => line.cells.length > 0)
 )
 
@@ -172,11 +179,14 @@ const overall = computed<{ headline: string; tone: Tone; caveat: string }>(() =>
     case "noData":
       return { headline: "No data", tone: "none", caveat: "" }
     case "incomplete": {
-      const parts = [verdict.newGaps > 0 ? `NEW missing in ${cellCount(verdict.newGaps)}` : "", verdict.legacyGaps > 0 ? `LEGACY missing in ${cellCount(verdict.legacyGaps)}` : ""]
+      const parts = [
+        verdict.newGaps > 0 ? `${candidate} missing in ${cellCount(verdict.newGaps)}` : "",
+        verdict.legacyGaps > 0 ? `LEGACY missing in ${cellCount(verdict.legacyGaps)}` : "",
+      ]
       return { headline: `No verdict: ${parts.filter((part) => part !== "").join(", ")}`, tone: verdict.newGaps > 0 ? "worse" : "none", caveat: "" }
     }
   }
-  const headline = tone === "same" ? "About the same" : `NEW is ${label}`
+  const headline = tone === "same" ? "About the same" : `${candidate} is ${label}`
   if (verdict.kind === "mixed") return { headline, tone, caveat: "not in every bucket, phase or cell" }
   if (verdict.kind === "same" && tone !== "same") return { headline, tone, caveat: "under the 5% threshold" }
   return { headline, tone, caveat: "" }

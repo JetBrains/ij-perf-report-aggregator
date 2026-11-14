@@ -16,6 +16,12 @@ export interface HighlightingProject {
   files: string[]
 }
 
+// A type-system engine of GoHighlightingTest.Engine; `suffix` follows the base in the project name.
+export interface Engine {
+  id: string
+  suffix: string
+}
+
 // Base project names and per-project file labels mirror the ScenarioFile lists in GoHighlightingTest.kt.
 export const projects: HighlightingProject[] = [
   { title: "kubernetes", base: "kubernetes", files: ["fast_clientTest", "medium_validation", "slow_generatedPb"] },

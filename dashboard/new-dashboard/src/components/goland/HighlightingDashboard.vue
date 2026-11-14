@@ -8,6 +8,14 @@
   >
     <template #configurator>
       <DimensionSelect
+        label="Compare"
+        :dimension="candidateConfigurator"
+      >
+        <template #icon>
+          <ArrowsRightLeftIcon class="w-4 h-4" />
+        </template>
+      </DimensionSelect>
+      <DimensionSelect
         label="Engine"
         :dimension="engineConfigurator"
       >
@@ -34,10 +42,11 @@
       </DimensionSelect>
     </template>
 
-    <!-- LEGACY-vs-NEW verdict is the primary content; the per-project line charts are demoted below. -->
+    <!-- LEGACY-vs-candidate verdict is the primary content; the per-project line charts are demoted below. -->
     <EngineComparison
       :selected-metric-types="selectedMetricTypes"
       :quantity="selectedQuantity"
+      :candidate="selectedCandidate"
       :both-engines-selected="bothEnginesSelected"
     />
 
@@ -103,24 +112,21 @@ import AccordionHeader from "openvue/accordionheader"
 import AccordionContent from "openvue/accordioncontent"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import EngineComparison from "./engineComparison/EngineComparison.vue"
-import { buildMeasure, metricTypeLabel, PHASES, projects, Quantity } from "./engineComparison/highlightingMetrics"
+import { buildMeasure, Engine, metricTypeLabel, PHASES, projects, Quantity } from "./engineComparison/highlightingMetrics"
 
 // Dashboard-only chart settings: which engines and metric types the toolbar offers, the quantity
 // choices, and how a project base expands into its per-engine DB variants. The shared highlighting
 // config (phases, projects, measure building, labels) lives in engineComparison/highlightingMetrics.
 
-// The two type-system engines the test compares. The engine is not a `mode` column value — it is
-// encoded in the project name via GoHighlightingTest.Engine.suffix: LEGACY has no suffix, NEW_ONLY
-// appends "-types2" (e.g. "caddy/highlighting" vs "caddy-types2/highlighting").
-interface Engine {
-  id: string
-  suffix: string
-}
-
-const ENGINES: Engine[] = [
-  { id: "LEGACY", suffix: "" },
+// The type-system engines the test runs. The engine is not a `mode` column value — it is encoded in
+// the project name via GoHighlightingTest.Engine.suffix: LEGACY has no suffix, NEW_ONLY appends
+// "-types2", LEGACY_AND_NEW "-legacy-and-new" (e.g. "caddy/highlighting" vs "caddy-types2/highlighting").
+const LEGACY: Engine = { id: "LEGACY", suffix: "" }
+const CANDIDATES: Engine[] = [
+  { id: "LEGACY_AND_NEW", suffix: "-legacy-and-new" },
   { id: "NEW_ONLY", suffix: "-types2" },
 ]
+const ENGINES: Engine[] = [LEGACY, ...CANDIDATES]
 
 // Highlighting-cost buckets each project measures one file at (ordered fast -> slow).
 const BUCKETS = ["fast", "medium", "slow"]
@@ -136,6 +142,14 @@ const QUANTITIES: Quantity[] = [
   { id: "gcTime", label: "GC time", suffix: "#jvm.gc.time.ms" },
   { id: "gcCount", label: "GC count", suffix: "#jvm.gc.count" },
 ]
+
+// The engine the comparison sets against LEGACY (single-select). Client-side like the pickers below.
+const candidateConfigurator = new DimensionConfigurator("candidate", false)
+candidateConfigurator.values.value = CANDIDATES.map((engine) => engine.id)
+candidateConfigurator.selected.value = CANDIDATES[0].id
+candidateConfigurator.state.disabled = false
+
+const selectedCandidate = computed<Engine>(() => CANDIDATES.find((engine) => engine.id === candidateConfigurator.selected.value) ?? CANDIDATES[0])
 
 // The engine variants of a project, e.g. ["caddy/highlighting", "caddy-types2/highlighting"],
 // in the order of the supplied engines.
@@ -154,12 +168,12 @@ engineConfigurator.state.disabled = false
 
 const selectedEngines = computed<Engine[]>(() => {
   const ids = selectedToArray(engineConfigurator.selected.value)
-  // Keep the canonical LEGACY-before-NEW_ONLY order regardless of the order they were clicked.
+  // Keep the canonical ENGINES order regardless of the order they were clicked.
   return ENGINES.filter((engine) => ids.includes(engine.id))
 })
 
-// The comparison contrasts both engines; when either is deselected it shows a hint instead.
-const bothEnginesSelected = computed(() => ENGINES.every((engine) => selectedEngines.value.some((selected) => selected.id === engine.id)))
+// The comparison contrasts LEGACY with the candidate; when either is deselected it shows a hint instead.
+const bothEnginesSelected = computed(() => [LEGACY, selectedCandidate.value].every((engine) => selectedEngines.value.some((selected) => selected.id === engine.id)))
 
 // Legend label for each engine series, parallel (same order) to projectVariants().
 const engineAliases = computed(() => selectedEngines.value.map((engine) => engine.id))

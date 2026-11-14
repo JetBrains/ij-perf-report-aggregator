@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-2 py-3 px-5 border border-solid rounded-md overflow-x-auto">
-    <div class="text-sm font-semibold">Δ% by scenario <span class="font-normal text-gray-500">(NEW vs LEGACY; red = slower, green = faster; hover for exact values)</span></div>
+    <div class="text-sm font-semibold">
+      Δ% by scenario <span class="font-normal text-gray-500">({{ candidate }} vs LEGACY; red = slower, green = faster; hover for exact values)</span>
+    </div>
     <table class="border-collapse text-sm">
       <thead>
         <tr>
@@ -57,7 +59,13 @@ import { EngineCompareRow, EngineComparisonMode, formatEngineCell } from "./useE
 import { phaseLabel, phaseOf, projects, bucketOf, bucketLabel } from "./highlightingMetrics"
 import "../../charts/compareCells.css"
 
-const { rows, selectedMetricTypes, mode } = defineProps<{ rows: EngineCompareRow[]; selectedMetricTypes: string[]; mode: EngineComparisonMode }>()
+const { rows, selectedMetricTypes, mode, candidate } = defineProps<{
+  rows: EngineCompareRow[]
+  selectedMetricTypes: string[]
+  mode: EngineComparisonMode
+  // The id of the engine compared with LEGACY, shown where the data says NEW.
+  candidate: string
+}>()
 
 // (base, metric type) -> row, so a cell lookup is O(1) across the 9 × up-to-9 grid.
 const rowByCell = computed(() => {
@@ -103,7 +111,7 @@ function buildCell(base: string, type: string): CellData {
   return {
     text: formatSignedPercent(row.diffPercent, 0),
     class: severityCellClass(row.diffPercent) ?? "",
-    tooltip: `LEGACY ${centers}${before} → NEW ${centers}${after} · per-build Δ ${formatSignedPercent(row.diffPercent)}${counts}`,
+    tooltip: `LEGACY ${centers}${before} → ${candidate} ${centers}${after} · per-build Δ ${formatSignedPercent(row.diffPercent)}${counts}`,
   }
 }
 

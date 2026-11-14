@@ -196,7 +196,7 @@ if (testModeConfigurator != null) {
 }
 
 if (historyStart != null) {
-  dashboardConfigurators.push(new HistoryStartConfigurator(historyStart))
+  dashboardConfigurators.push(new HistoryStartConfigurator(historyStart, timeRangeConfigurator))
 }
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)

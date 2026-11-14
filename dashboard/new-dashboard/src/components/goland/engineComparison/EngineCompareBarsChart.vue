@@ -35,7 +35,12 @@ use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
 const SLOWER_COLOR = "#dc2626"
 const FASTER_COLOR = "#16a34a"
 
-const { rows, title } = defineProps<{ rows: EngineCompareRow[]; title: string }>()
+const { rows, title, candidate } = defineProps<{
+  rows: EngineCompareRow[]
+  title: string
+  // The id of the engine compared with LEGACY, shown where the data says NEW.
+  candidate: string
+}>()
 
 // Ascending by Δ% so the most negative (best improvement) sits at the bottom and the largest positive
 // (worst regression) at the top — ECharts places category index 0 at the bottom of a horizontal bar.
@@ -49,7 +54,7 @@ let chartManager: ChartManagerHelper | null = null
 
 function tooltipFor(row: EngineCompareRow): string {
   const { before, after } = formatEngineCell(row)
-  return `${row.title} · ${bucketLabel(row.bucket)}<br/>LEGACY ${before} → NEW ${after}<br/>per-build Δ ${formatSignedPercent(row.diffPercent)}`
+  return `${row.title} · ${bucketLabel(row.bucket)}<br/>LEGACY ${before} → ${candidate} ${after}<br/>per-build Δ ${formatSignedPercent(row.diffPercent)}`
 }
 
 function renderChart(): void {

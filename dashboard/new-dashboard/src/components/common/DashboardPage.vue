@@ -144,7 +144,7 @@ const persistenceForDashboard = new PersistentStateManager(
   router
 )
 
-const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard, historyStart)
 
 const compareRegistry = new CompareSectionsRegistry()
 // Most dashboards declare their projects inline on the charts in the slot rather than through the
@@ -196,7 +196,7 @@ if (testModeConfigurator != null) {
 }
 
 if (historyStart != null) {
-  dashboardConfigurators.push(new HistoryStartConfigurator(historyStart, timeRangeConfigurator))
+  dashboardConfigurators.push(new HistoryStartConfigurator(historyStart))
 }
 
 provide(dashboardConfiguratorsKey, dashboardConfigurators)

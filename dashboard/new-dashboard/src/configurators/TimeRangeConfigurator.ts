@@ -27,7 +27,14 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     { label: this.customRange, value: "custom" },
   ])
 
-  constructor(persistentStateManager: PersistentStateManager) {
+  /**
+   * [historyStart] is the first day, `YYYY-MM-DD`, whose points the dashboard shows, see `HistoryStartConfigurator`. The x
+   * axis starts on that day when the time range starts earlier, so a chart has no empty part before its first point.
+   */
+  constructor(
+    persistentStateManager: PersistentStateManager,
+    private readonly historyStart: string | null = null
+  ) {
     provide(timeRangeKey, this.value)
     persistentStateManager.add("timeRange", this.value)
     persistentStateManager.add("customRange", this.customRange)
@@ -57,10 +64,18 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
     const timeRange = this.value.value
     if (this.customRange.value == "") {
-      return Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
+      return Promise.resolve({ xAxis: { min: this.notBeforeHistoryStart(getStartTime(timeRange)), max: getEndTime(timeRange) } })
     }
     const between = this.customRange.value.split(":")
-    return Promise.resolve({ xAxis: { min: between[0], max: between[1] } })
+    return Promise.resolve({ xAxis: { min: this.notBeforeHistoryStart(between[0]), max: between[1] } })
+  }
+
+  private notBeforeHistoryStart(start: Date | string | null): Date | string | null {
+    if (this.historyStart == null) {
+      return start
+    }
+    const historyStart = new Date(`${this.historyStart}T00:00:00`)
+    return start == null || new Date(start).getTime() < historyStart.getTime() ? historyStart : start
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration | null): boolean {

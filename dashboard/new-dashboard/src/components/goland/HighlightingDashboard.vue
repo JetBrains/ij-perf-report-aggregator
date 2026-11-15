@@ -2,27 +2,13 @@
   <DashboardPage
     :with-installer="false"
     db-name="perfintDev"
+    history-start="2026-11-15"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :initial-mode="['default', 'types2']"
     persistent-id="goland_highlighting_dashboard"
     table="goland"
   >
     <template #configurator>
-      <DimensionSelect
-        label="Compare"
-        :dimension="candidateConfigurator"
-      >
-        <template #icon>
-          <ArrowsRightLeftIcon class="w-4 h-4" />
-        </template>
-      </DimensionSelect>
-      <DimensionSelect
-        label="Engine"
-        :dimension="engineConfigurator"
-      >
-        <template #icon>
-          <AdjustmentsVerticalIcon class="w-4 h-4" />
-        </template>
-      </DimensionSelect>
       <DimensionSelect
         label="Metric"
         :dimension="metricConfigurator"
@@ -46,8 +32,6 @@
     <EngineComparison
       :selected-metric-types="selectedMetricTypes"
       :quantity="selectedQuantity"
-      :candidate="selectedCandidate"
-      :both-engines-selected="bothEnginesSelected"
     />
 
     <ChartAccordion :lazy="true">
@@ -84,8 +68,7 @@
                       v-if="isTypeSelected(phase, bucket)"
                       :label="metricTypeLabel(`${phase}_${bucket}`)"
                       :measure="buildMeasure(project, `${phase}_${bucket}`, selectedQuantity.suffix)"
-                      :projects="projectVariants(project.base, selectedEngines)"
-                      :aliases="engineAliases"
+                      :projects="[dbProject(project.base)]"
                     />
                   </div>
                 </template>
@@ -112,21 +95,11 @@ import AccordionHeader from "openvue/accordionheader"
 import AccordionContent from "openvue/accordioncontent"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import EngineComparison from "./engineComparison/EngineComparison.vue"
-import { buildMeasure, Engine, metricTypeLabel, PHASES, projects, Quantity } from "./engineComparison/highlightingMetrics"
+import { buildMeasure, metricTypeLabel, PHASES, projects, Quantity } from "./engineComparison/highlightingMetrics"
 
-// Dashboard-only chart settings: which engines and metric types the toolbar offers, the quantity
-// choices, and how a project base expands into its per-engine DB variants. The shared highlighting
-// config (phases, projects, measure building, labels) lives in engineComparison/highlightingMetrics.
-
-// The type-system engines the test runs. The engine is not a `mode` column value — it is encoded in
-// the project name via GoHighlightingTest.Engine.suffix: LEGACY has no suffix, NEW_ONLY appends
-// "-types2", LEGACY_AND_NEW "-legacy-and-new" (e.g. "caddy/highlighting" vs "caddy-types2/highlighting").
-const LEGACY: Engine = { id: "LEGACY", suffix: "" }
-const CANDIDATES: Engine[] = [
-  { id: "LEGACY_AND_NEW", suffix: "-legacy-and-new" },
-  { id: "NEW_ONLY", suffix: "-types2" },
-]
-const ENGINES: Engine[] = [LEGACY, ...CANDIDATES]
+// Dashboard-only chart settings: which metric types the toolbar offers and the quantity choices. The engine is the
+// ij-perf mode of the dashboard mode switch (see engineOfMode). The shared highlighting config (phases, projects,
+// measure building, labels) lives in engineComparison/highlightingMetrics.
 
 // Highlighting-cost buckets each project measures one file at (ordered fast -> slow).
 const BUCKETS = ["fast", "medium", "slow"]
@@ -143,44 +116,13 @@ const QUANTITIES: Quantity[] = [
   { id: "gcCount", label: "GC count", suffix: "#jvm.gc.count" },
 ]
 
-// The engine the comparison sets against LEGACY (single-select). Client-side like the pickers below.
-const candidateConfigurator = new DimensionConfigurator("candidate", false)
-candidateConfigurator.values.value = CANDIDATES.map((engine) => engine.id)
-candidateConfigurator.selected.value = CANDIDATES[0].id
-candidateConfigurator.state.disabled = false
-
-const selectedCandidate = computed<Engine>(() => CANDIDATES.find((engine) => engine.id === candidateConfigurator.selected.value) ?? CANDIDATES[0])
-
-// The engine variants of a project, e.g. ["caddy/highlighting", "caddy-types2/highlighting"],
-// in the order of the supplied engines.
-function projectVariants(base: string, engines: Engine[]): string[] {
-  return engines.map((engine) => `${base}${engine.suffix}/highlighting`)
+function dbProject(base: string): string {
+  return `${base}/highlighting`
 }
 
-// Engine picker rendered in the toolbar next to branch/machine (same DimensionSelect combobox). It is
-// driven entirely client-side: its selection chooses which project variants each drill-down chart plots
-// and gates the comparison (which always needs both engines), so it is never added to a query.
-const engineConfigurator = new DimensionConfigurator("engine", true)
-engineConfigurator.values.value = ENGINES.map((engine) => engine.id)
-engineConfigurator.selected.value = ENGINES.map((engine) => engine.id)
-// createComponentState() starts disabled (it normally waits for a server load); enable it right away.
-engineConfigurator.state.disabled = false
+const allEnabledProjects = projects.map((project) => dbProject(project.base))
 
-const selectedEngines = computed<Engine[]>(() => {
-  const ids = selectedToArray(engineConfigurator.selected.value)
-  // Keep the canonical ENGINES order regardless of the order they were clicked.
-  return ENGINES.filter((engine) => ids.includes(engine.id))
-})
-
-// The comparison contrasts LEGACY with the candidate; when either is deselected it shows a hint instead.
-const bothEnginesSelected = computed(() => [LEGACY, selectedCandidate.value].every((engine) => selectedEngines.value.some((selected) => selected.id === engine.id)))
-
-// Legend label for each engine series, parallel (same order) to projectVariants().
-const engineAliases = computed(() => selectedEngines.value.map((engine) => engine.id))
-
-const allEnabledProjects = computed(() => projects.flatMap((project) => projectVariants(project.base, selectedEngines.value)))
-
-// Metric-type picker (second toolbar combobox, same DimensionSelect as Engine). Also client-side: its
+// Metric-type picker (toolbar combobox). Client-side: its
 // selection chooses which of the 9 phase x bucket metric types the comparison and charts plot.
 const metricConfigurator = new DimensionConfigurator("metric", true)
 metricConfigurator.values.value = METRIC_TYPES

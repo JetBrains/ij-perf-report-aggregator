@@ -1,10 +1,11 @@
 <template>
   <div class="flex flex-col gap-4">
     <div
-      v-if="!bothEnginesSelected"
+      v-if="candidateMode == null"
       class="text-sm text-gray-500 py-3 px-5 border border-solid rounded-md"
     >
-      Select both <span class="font-semibold">LEGACY</span> and <span class="font-semibold">{{ candidate.id }}</span> engines to see the comparison.
+      Select the mode <span class="font-semibold">default</span> (LEGACY) and the mode <span class="font-semibold">types2</span> (LEGACY_AND_NEW) or
+      <span class="font-semibold">new_only</span> (NEW_ONLY) to see the comparison.
     </div>
     <div
       v-else-if="selectedMetricTypes.length === 0"
@@ -33,17 +34,17 @@
         :mode="mode"
         :run-label="currentRunLabel"
         :quantity="quantity"
-        :candidate="candidate.id"
+        :candidate="candidate"
       />
       <EngineCompareHeatmap
         :rows="rows"
         :selected-metric-types="selectedMetricTypes"
         :mode="mode"
-        :candidate="candidate.id"
+        :candidate="candidate"
       />
       <EngineCompareBars
         :rows="rows"
-        :candidate="candidate.id"
+        :candidate="candidate"
       />
       <div
         v-if="loading && rows.length === 0"
@@ -56,22 +57,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRef } from "vue"
-import { Engine, Quantity } from "./highlightingMetrics"
+import { computed, inject, ref, toRef } from "vue"
+import { selectedToArray } from "../../../configurators/DimensionConfigurator"
+import { defaultModeName } from "../../../configurators/TestModeConfigurator"
+import { testModeConfiguratorKey } from "../../../shared/keys"
+import { engineOfMode, Quantity } from "./highlightingMetrics"
 import { EngineComparisonMode, useEngineComparison } from "./useEngineComparison"
 import EngineCompareSummary from "./EngineCompareSummary.vue"
 import EngineCompareHeatmap from "./EngineCompareHeatmap.vue"
 import EngineCompareBars from "./EngineCompareBars.vue"
 import RunTimeline from "./RunTimeline.vue"
 
-const { selectedMetricTypes, quantity, candidate, bothEnginesSelected } = defineProps<{
+const { selectedMetricTypes, quantity } = defineProps<{
   selectedMetricTypes: string[]
   quantity: Quantity
-  // The engine compared with LEGACY; the `new` runs of the comparison are its runs.
-  candidate: Engine
-  // The comparison needs both engines; the Engine toolbar selector gates it (and the drill-down charts).
-  bothEnginesSelected: boolean
 }>()
+
+// LEGACY publishes under the default mode; the first other mode of the dashboard mode switch is the candidate.
+const modeConfigurator = inject(testModeConfiguratorKey, null)
+const candidateMode = computed<string | null>(() => {
+  const modes = selectedToArray(modeConfigurator?.selected.value)
+  return modes.includes(defaultModeName) ? (modes.find((mode) => mode !== defaultModeName) ?? null) : null
+})
+const candidate = computed(() => engineOfMode(candidateMode.value ?? ""))
 
 // Single run is the default view: it shows one build's exact before/after, so a real improvement is
 // visible rather than smeared by the across-runs median. Toggle to Aggregated for the SPEC-style verdict.
@@ -87,7 +95,7 @@ const modeOptions = [
 const { rows, aggregates, runs, loading } = useEngineComparison({
   selectedMetricTypes: toRef(() => selectedMetricTypes),
   quantity: toRef(() => quantity),
-  candidateSuffix: toRef(() => candidate.suffix),
+  candidateMode: toRef(() => candidateMode.value ?? defaultModeName),
   mode,
   selectedRun,
 })

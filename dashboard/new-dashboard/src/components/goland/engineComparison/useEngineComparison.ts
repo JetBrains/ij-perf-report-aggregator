@@ -7,7 +7,7 @@ import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 import { DataQueryExecutor, DataQueryResult, SERIES_NAME_SEPARATOR } from "../../common/DataQueryExecutor"
 import { formatMeasureValue, resolveMeasureUnit } from "../../common/formatter"
-import { indexSeriesRuns, SeriesRun, seriesKey } from "../../charts/compareQuery"
+import { columnName, indexSeriesRuns, SeriesRun, seriesKey } from "../../charts/compareQuery"
 import { BaseStats, BranchStats } from "../../charts/compareStats"
 import { bucketOf, buildMeasure, HighlightingProject, phaseOf, projects, Quantity } from "./highlightingMetrics"
 import { computeEngineAggregates, EngineAggregates, EngineComparePoint, EngineGap } from "./engineCompareAggregates"
@@ -47,8 +47,8 @@ interface EngineComparisonOptions {
   selectedMetricTypes: Readonly<Ref<string[]>>
   // The quantity to plot (duration or a JVM sub-metric).
   quantity: Readonly<Ref<Quantity>>
-  // Project-name suffix of the engine compared with LEGACY (GoHighlightingTest.Engine.suffix).
-  candidateSuffix: Readonly<Ref<string>>
+  // The ij-perf mode of the engine compared with LEGACY, which publishes under the default mode.
+  candidateMode: Readonly<Ref<string>>
   // Aggregated vs single-run view.
   mode: Readonly<Ref<EngineComparisonMode>>
   // In single-run mode, the build timestamp to show; null means the newest build in any project.
@@ -74,33 +74,24 @@ interface CellRuns {
 // names embed the project's scenario file, so the bases cannot share a single executor.
 interface BaseEntry {
   project: HighlightingProject
-  legacyProject: string
-  newProject: string
-  scenario: DimensionConfigurator
+  dbProject: string
   measures: Ref<string[]>
   unsubscribe: () => void
 }
 
 // Drives the LEGACY-vs-NEW comparison: builds its own executors (independent of the lazy drill-down
 // accordion's mount state), indexes each result by (branch, project variant, measure), and derives one
-// row per (base, metric type). It queries LEGACY and the candidate engine; the Engine toolbar selector
-// gates only the drill-down charts and the comparison's own render, not this query.
+// row per (base, metric type). It queries the default mode (LEGACY) and the candidate mode, whatever the dashboard
+// mode switch selects besides them.
 export function useEngineComparison(opts: EngineComparisonOptions): EngineComparison {
   const serverConfigurator = injectOrError(serverConfiguratorKey)
   const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey) as DataQueryConfigurator[]
   const branchConfigurator = injectOrError(branchConfiguratorKey)
   const dashboardModeConfigurator = inject(testModeConfiguratorKey, null)
 
-  // The two engines are compared within one test mode: the default mode when it is selected, else the first selected
-  // mode. Without the filter, the runs of every mode join the series of the engine project they publish under.
-  const modeConfigurator = new TestModeConfigurator(false)
-  watch(
-    () => selectedToArray(dashboardModeConfigurator?.selected.value),
-    (modes) => {
-      modeConfigurator.selected.value = modes.length === 0 || modes.includes(defaultModeName) ? defaultModeName : modes[0]
-    },
-    { immediate: true }
-  )
+  const comparedModes = (): string[] => [defaultModeName, opts.candidateMode.value]
+  const modeConfigurator = new TestModeConfigurator(true)
+  modeConfigurator.selected.value = comparedModes()
   const queryConfigurators = [...dashboardConfigurators.filter((configurator) => configurator !== dashboardModeConfigurator), modeConfigurator]
 
   // Replaced on each result, so a narrower time range or another branch drops the builds it no longer has.
@@ -127,37 +118,36 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   }
 
   // The executor fixes the measures and series names of a result when it builds the query, so they
-  // tell whether the result was queried for the current measures and candidate project of the entry.
+  // tell whether the result was queried for the current measures and candidate mode.
   function isCurrent(entry: BaseEntry, configuration: DataQueryExecutorConfiguration): boolean {
-    return configuration.measures === entry.measures.value && configuration.seriesNames.some((name) => name.split(SERIES_NAME_SEPARATOR).includes(entry.newProject))
+    return configuration.measures === entry.measures.value && configuration.seriesNames.some((name) => name.split(SERIES_NAME_SEPARATOR).includes(opts.candidateMode.value))
   }
 
   function storeCells(entry: BaseEntry, data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
     const branches = selectedBranches()
     const measures = measuresFor(entry.project)
-    const indexed = indexSeriesRuns(data, configuration, branches, [entry.legacyProject, entry.newProject], measures)
-    const runsOf = (variant: string, measure: string) => branches.flatMap((branch) => indexed.get(seriesKey(branch, variant, measure)) ?? [])
+    const indexed = indexSeriesRuns(data, configuration, branches, [entry.dbProject], measures, comparedModes())
+    const runsOf = (mode: string, measure: string) => branches.flatMap((branch) => indexed.get(seriesKey(columnName(branch, mode), entry.dbProject, measure)) ?? [])
     // types[i] and measures[i] are parallel (measuresFor maps the former to the latter).
     const cells = opts.selectedMetricTypes.value.map((type, i) => ({
       type,
       measure: measures[i],
-      legacy: runsOf(entry.legacyProject, measures[i]),
-      new: runsOf(entry.newProject, measures[i]),
+      legacy: runsOf(defaultModeName, measures[i]),
+      new: runsOf(opts.candidateMode.value, measures[i]),
     }))
     cellsByBase.value.set(entry.project.base, cells)
     triggerRef(cellsByBase)
   }
 
   for (const project of projects) {
-    const legacyProject = `${project.base}/highlighting`
-    const newProject = `${project.base}${opts.candidateSuffix.value}/highlighting`
-    const scenario = new DimensionConfigurator("project", true)
-    scenario.selected.value = [legacyProject, newProject]
+    const dbProject = `${project.base}/highlighting`
+    const scenario = new DimensionConfigurator("project", false)
+    scenario.selected.value = dbProject
     const measures = shallowRef<string[]>(measuresFor(project))
     // "auto" value unit — declared units (sub-metrics) and the stored type (duration) resolve formatting.
     const measureConfigurator = new PredefinedMeasureConfigurator(measures, shallowRef(false), "line", "auto", {}, null, "item")
     const executor = new DataQueryExecutor([...queryConfigurators, scenario, serverConfigurator, measureConfigurator])
-    const entry: BaseEntry = { project, legacyProject, newProject, scenario, measures, unsubscribe: () => {} }
+    const entry: BaseEntry = { project, dbProject, measures, unsubscribe: () => {} }
     setLoading(project.base, true)
     entry.unsubscribe = executor.subscribe((data, configuration, loading) => {
       // A result queried before the last candidate or measures change arrives within the executor's
@@ -191,13 +181,10 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     { flush: "post" }
   )
 
-  // Another candidate swaps the second project of each base query, which re-queries it.
-  watch(opts.candidateSuffix, (suffix) => {
-    for (const entry of entries.values()) {
-      entry.newProject = `${entry.project.base}${suffix}/highlighting`
-      entry.scenario.selected.value = [entry.legacyProject, entry.newProject]
-      setLoading(entry.project.base, true)
-    }
+  // Another candidate swaps the second mode of every base query, which re-queries it.
+  watch(opts.candidateMode, () => {
+    modeConfigurator.selected.value = comparedModes()
+    for (const base of entries.keys()) setLoading(base, true)
   })
 
   onUnmounted(() => {

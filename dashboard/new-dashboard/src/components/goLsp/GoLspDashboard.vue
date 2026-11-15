@@ -24,12 +24,10 @@
 import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import { GO_LSP_REQUESTS, GO_LSP_SCENARIOS } from "./goLspMetrics"
 
 const projects = ["kubernetes-goland-server/codeSearch", "kubernetes-gopls/codeSearch"]
 const aliases = ["GoLand server", "gopls"]
-
-const requests = ["definition", "references", "implementation", "workspaceSymbol"]
-const scenarios = ["first", "warm", "edit.nearbyBody", "edit.nearbyFunction", "edit.coreLibraryFunction"]
 
 const chartsDeclaration: ChartDefinition[] = [
   {
@@ -38,9 +36,9 @@ const chartsDeclaration: ChartDefinition[] = [
     projects,
     aliases,
   },
-  ...requests.map((request) => ({
-    labels: scenarios.map((scenario) => `${request} - ${scenario}`),
-    measures: scenarios.map((scenario) => `${request}.${scenario}`),
+  ...GO_LSP_REQUESTS.map((request) => ({
+    labels: GO_LSP_SCENARIOS.map((scenario) => `${request} - ${scenario}`),
+    measures: GO_LSP_SCENARIOS.map((scenario) => `${request}.${scenario}`),
     projects,
     aliases,
   })),

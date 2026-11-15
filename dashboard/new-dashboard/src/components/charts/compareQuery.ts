@@ -99,10 +99,13 @@ export function indexSeriesRuns(
   configuration: DataQueryExecutorConfiguration,
   branches: readonly string[],
   projects: readonly string[],
-  measures: readonly string[]
+  measures: readonly string[],
+  // As in indexSeries: two or more modes key each series by columnName(branch, mode).
+  modes: readonly string[] = []
 ): Map<string, SeriesRun[]> {
   const byKey = new Map<string, SeriesRun[]>()
   const dims = makeDimensions(branches, projects, measures)
+  const modesSet = new Set(modes)
   for (let i = 0; i < data.length; i++) {
     const seriesData = data[i]
     // Column 0 is the timestamp array, column 1 the value array (MeasureConfigurator forces this order).
@@ -113,6 +116,12 @@ export function indexSeriesRuns(
     const measureName = configuration.measureNames[i] ?? ""
     const resolved = resolveSeriesKey(seriesName, measureName, dims)
     if (resolved.branch === "" || resolved.project === "" || resolved.metric === "") continue
+    let column = resolved.branch
+    if (modesSet.size > 0) {
+      const mode = seriesName.split(SERIES_NAME_SEPARATOR).find((part) => modesSet.has(part))
+      if (mode == null) continue
+      column = columnName(resolved.branch, mode)
+    }
 
     const runs: SeriesRun[] = []
     for (let k = 0; k < values.length; k++) {
@@ -125,7 +134,7 @@ export function indexSeriesRuns(
     if (runs.length === 0) continue
     runs.sort((a, b) => a.t - b.t)
 
-    const key = seriesKey(resolved.branch, resolved.project, resolved.metric)
+    const key = seriesKey(column, resolved.project, resolved.metric)
     const existing = byKey.get(key)
     if (existing == null) {
       byKey.set(key, runs)

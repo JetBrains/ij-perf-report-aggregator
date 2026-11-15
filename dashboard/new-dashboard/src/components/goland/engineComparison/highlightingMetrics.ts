@@ -10,16 +10,19 @@ export const PHASES = ["coldStartHighlighting", "warmStartHighlighting", "typing
 export interface HighlightingProject {
   // Chart title.
   title: string
-  // DB project base, before the engine suffix and the "/highlighting" scenario segment.
+  // DB project base, before the "/highlighting" scenario segment.
   base: string
   // The three scenario files (fast -> medium -> slow), as their metric-name labels ("<bucket>_<name>").
   files: string[]
 }
 
-// A type-system engine of GoHighlightingTest.Engine; `suffix` follows the base in the project name.
-export interface Engine {
-  id: string
-  suffix: string
+// The type-system engines of GoHighlightingTest.Engine by the ij-perf mode they publish under. LEGACY is the default
+// mode, and `types2` is `legacy_and_new`, as in the other GoLand perf builds.
+const ENGINE_BY_MODE: Record<string, string> = { default: "LEGACY", types2: "LEGACY_AND_NEW", new_only: "NEW_ONLY" }
+
+// The engine name of an ij-perf mode, or the mode itself for a mode the highlighting test does not publish.
+export function engineOfMode(mode: string): string {
+  return ENGINE_BY_MODE[mode] ?? mode
 }
 
 // Base project names and per-project file labels mirror the ScenarioFile lists in GoHighlightingTest.kt.

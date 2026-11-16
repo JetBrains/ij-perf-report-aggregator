@@ -178,6 +178,10 @@
         "kotlin_synthetic_files/highlight/repro1_with_library_cache",
         "kotlin_synthetic_files/highlight/repro2_with_library_cache",
         "kotlin_synthetic_files/highlight/many_library_dependencies/Usage_with_library_cache"
+      ],
+      "aggregatorModule": [
+        "kotlin_aggregator_module_exported_dependencies_3200/highlight/Foo0000_with_library_cache",
+        "kotlin_aggregator_module_exported_dependencies_3200/highlight/Aggregator_with_library_cache"
       ]
     },
     "moveFiles": {

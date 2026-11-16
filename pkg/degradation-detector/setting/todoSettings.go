@@ -18,25 +18,19 @@ func GenerateTODOSettings() []detector.PerformanceSettings {
 			for _, test := range testMetric.test {
 				for _, metric := range testMetric.metric {
 					settings = append(settings, detector.PerformanceSettings{
-						BaseSettings: detector.BaseSettings{
-							SlackSettings: detector.SlackSettings{
-								Channel:     "rd-qa-perf-test-alerts",
-								ProductLink: "intellij",
-							},
-							AnalysisSettings: detector.AnalysisSettings{
-								ReportType:                detector.DegradationEvent,
-								MinimumSegmentLength:      8,
-								MedianDifferenceThreshold: 1,
-								EffectSizeThreshold:       2,
-							},
-							Metric:  metric,
-							Branch:  "master",
-							Machine: "intellij-linux-performance-aws-%",
-						},
-						Db:      "perfintDev",
-						Table:   "idea",
-						Project: test,
-						Mode:    mode,
+						Db:                        "perfintDev",
+						Table:                     "idea",
+						Project:                   test,
+						Mode:                      mode,
+						Machine:                   "intellij-linux-performance-aws-%",
+						Metric:                    metric,
+						Branch:                    "master",
+						Channel:                   "rd-qa-perf-test-alerts",
+						ProductLink:               "intellij",
+						ReportType:                detector.DegradationEvent,
+						MinimumSegmentLength:      8,
+						MedianDifferenceThreshold: 1,
+						EffectSizeThreshold:       2,
 					})
 				}
 			}

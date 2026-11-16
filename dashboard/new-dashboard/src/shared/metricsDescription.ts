@@ -1,5 +1,6 @@
 import { BetterDirection } from "./changeDetector/algorithm"
 import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
+import { AIR_METRICS } from "../components/air/airMetrics"
 import { GO_LSP_METRICS } from "../components/goLsp/goLspMetrics"
 import type { MeasureUnit } from "../components/common/formatter"
 import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
@@ -428,6 +429,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     ),
   ],
   ...GRADLE_METRICS_NEW_DASHBOARD,
+  ...AIR_METRICS,
   ...GO_LSP_METRICS,
 
   // Workspace Model

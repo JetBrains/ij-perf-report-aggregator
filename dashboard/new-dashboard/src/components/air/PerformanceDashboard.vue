@@ -49,7 +49,9 @@
           :description="chart.description"
           :measure="chart.measure"
           :projects="chart.projects"
+          :aliases="chart.projects.map(acpAgentLabel)"
           :legend-formatter="acpLegend"
+          :y-axis-scale="chart.yAxisScale ?? 'linear'"
         />
       </section>
     </template>
@@ -80,6 +82,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { SERIES_NAME_SEPARATOR } from "../common/DataQueryExecutor"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import { YAxisScale } from "../charts/yAxisScale"
 
 interface AirChart {
   label: string
@@ -335,6 +338,14 @@ const acpAgents = [
   { project: "air/acp/junie", label: "junie" },
 ]
 const acpAgentLabels = new Map(acpAgents.map((agent) => [agent.project, agent.label]))
+/**
+ * The name of an adapter in the legend. A chart takes it as the alias of the project, because without an alias the
+ * chart removes the common segment `acp` from the projects.
+ */
+function acpAgentLabel(project: string): string {
+  return acpAgentLabels.get(project) ?? project
+}
+const acpLabels = new Set(acpAgents.map((agent) => agent.label))
 const acpAllProjects = acpAgents.map((agent) => agent.project)
 /** junie shows only the final answer of a turn, so it has no delay of the text parts of the steps. */
 const acpStreamingProjects = acpAgents.filter((agent) => agent.label != "junie").map((agent) => agent.project)
@@ -367,8 +378,8 @@ const acpMeasureLabels: Record<string, string> = {
 /** A line of an ACP chart is one adapter, with the size or the step that its measure names. */
 function acpLegend(name: string): string {
   const parts = name.split(SERIES_NAME_SEPARATOR)
-  const agent = parts.map((part) => acpAgentLabels.get(part)).find((label) => label != undefined) ?? name
-  const measure = parts.find((part) => !acpAgentLabels.has(part)) ?? ""
+  const agent = parts.find((part) => acpLabels.has(part)) ?? name
+  const measure = parts.find((part) => !acpLabels.has(part)) ?? ""
   const size = sizes.find((it) => measure.includes(`.${it.id}.`))
   const step = size == undefined ? acpMeasureLabels[measure] : size.short
   return step == undefined ? agent : `${agent}, ${step}`
@@ -376,6 +387,8 @@ function acpLegend(name: string): string {
 
 interface AcpChart extends AirChart {
   projects: string[]
+  /** A logarithmic axis for a chart whose adapters differ by orders of magnitude, so each line stays readable. */
+  yAxisScale?: YAxisScale
 }
 
 /** One chart of an ACP step with one line for each adapter and size. `%s` in [template] is the size of the metric name. */
@@ -405,8 +418,8 @@ const acpGroups: { title: string; charts: AcpChart[] }[] = [
         "continue.%s.toModelMs"
       ),
       acpBySize(
-        "Continue a session: the size of the request to the model",
-        "The body of the request of the continued turn, in bytes. It grows with the history that the adapter sends.",
+        "Continue a session: the bytes that the adapter sends to the model",
+        "The size of the request body of the continued turn. The adapter sends the whole history of the session to the model again, so the size grows with the session.",
         "continue.%s.requestBytes"
       ),
     ],
@@ -417,9 +430,10 @@ const acpGroups: { title: string; charts: AcpChart[] }[] = [
       {
         label: "Live turn: the time of the adapter",
         description:
-          "20 000 text parts, 200 file reads, 20 outputs of 300 000 characters and 20 images, then a second turn in the same session. The time of the turn without the time of the mock model.",
+          "20 000 text parts, 200 file reads, 20 outputs of 300 000 characters and 20 images, then a second turn in the same session. The time of the turn without the time of the mock model. The axis is logarithmic, because junie takes about 15 minutes and the others take much less (JUNIE-6219).",
         measure: ["live.agentMs", "live.second.agentMs"],
         projects: acpAllProjects,
+        yAxisScale: "log",
       },
       {
         label: "Live turn: the delay of a text part",
@@ -429,9 +443,11 @@ const acpGroups: { title: string; charts: AcpChart[] }[] = [
       },
       {
         label: "Live turn: the time of the adapter between two steps",
-        description: "From the answer of the mock model to one step until the request of the next step: the adapter reads the answer, runs the tool and builds the next request.",
+        description:
+          "From the answer of the mock model to one step until the request of the next step: the adapter reads the answer, runs the tool and builds the next request. The axis is logarithmic, as for the time of the turn.",
         measure: ["live.stepGapP50Ms", "live.stepGapP95Ms"],
         projects: acpAllProjects,
+        yAxisScale: "log",
       },
       {
         label: "Live turn: background requests of the adapter",
@@ -458,8 +474,9 @@ const acpGroups: { title: string; charts: AcpChart[] }[] = [
         projects: acpAllProjects,
       },
       {
-        label: "Session list: the first start after the index is gone",
-        description: "The initialize of an adapter on a store of 61 000 sessions without its index, as after an update. Codex builds its state database here.",
+        label: "Session list: the first start on a store of 61 000 sessions",
+        description:
+          "The initialize of a new adapter process on a store of 61 000 sessions. Before it, the test deletes the state database of codex-acp, as after an update, so codex-acp builds it again from all the session files. claude-acp and junie keep no such database.",
         measure: ["list.initialize.coldMs"],
         projects: acpAllProjects,
       },

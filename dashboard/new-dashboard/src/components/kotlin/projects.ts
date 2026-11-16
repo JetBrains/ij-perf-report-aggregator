@@ -113,6 +113,7 @@ const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   springFramework: buildCategory("Spring framework", "spring-framework/"),
   rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
   syntheticFiles: buildCategory("Synthetic files", "kotlin_synthetic_files/"),
+  aggregatorModule: buildCategory("Aggregator module with cyclic exported dependencies", "kotlin_aggregator_module_exported_dependencies_"),
   sqliter: buildCategory("SQLiter", "SQLiter/"),
   sqliter_slow: buildCategory("SQLiter (slow)", "SQLiter/"),
   ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),

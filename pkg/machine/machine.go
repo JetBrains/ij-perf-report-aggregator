@@ -49,7 +49,7 @@ var rules = []rule{
 	{prefixes: []string{"intellij-windows-hw-hetzner"}, group: "windows-blade-hetzner"},
 	{prefixes: []string{"intellij-windows-hw-munit-"}, group: "Windows Munich i7-3770, 32 Gb"},
 	{prefixes: []string{"intellij-windows-hw-de-unit"}, group: "Windows Munich i7-13700, 64 Gb"},
-	{prefixes: []string{"intellij-windows-performance-aws-i-", "intellij-windows-performance-mem-aws-i"}, group: "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"},
+	{prefixes: []string{"intellij-windows-performance-aws-i-", "intellij-windows-performance-aws-od-i-", "intellij-windows-performance-mem-aws-i"}, group: "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"},
 	{prefixes: []string{"intellij-windows-aws-i"}, group: "windows aws"},
 	{regex: regexp.MustCompile(`ij-w.*-azr.*`), group: "windows-azure"},
 

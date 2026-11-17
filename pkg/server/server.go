@@ -115,6 +115,8 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Get("/codeOwnerChannels", meta.CreateGetCodeOwnerChannelsHandler())
 		r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
 		r.Post("/missingData", meta.CreatePostMissingDataRequestHandler(dbpool))
+		r.Post("/grafanaViews", meta.CreatePostGrafanaViewHandler(dbpool))
+		r.Get("/grafanaViews/uniqueUsers", meta.CreateGetGrafanaUniqueUsersHandler(dbpool))
 		r.Route("/youtrack", func(r chi.Router) {
 			r.Post("/createIssue", meta.CreatePostCreateIssueByAccident(dbpool))
 			r.Post("/uploadAttachments", meta.CreatePostYoutrackUploadAttachments())

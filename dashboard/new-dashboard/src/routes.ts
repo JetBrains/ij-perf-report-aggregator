@@ -244,6 +244,7 @@ enum ROUTES {
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
+  LSPBuildToolsImportDashboard = `${ROUTE_PREFIX.LSP}/buildToolsImport`,
   GoLSPTests = `${ROUTE_PREFIX.GoLSP}/${TEST_ROUTE}`,
   GoLSPDashboard = `${ROUTE_PREFIX.GoLSP}/${DASHBOARD_ROUTE}`,
   IJLightStartupDashboard = `${ROUTE_PREFIX.IJLight}/${STARTUP_ROUTE}`,
@@ -796,7 +797,7 @@ const LSP: Product = {
     {
       url: ROUTE_PREFIX.LSP,
       label: "",
-      tabs: [tab(ROUTES.LSPDashboard, "Dashboard"), tab(ROUTES.LSPTests, "Tests")],
+      tabs: [tab(ROUTES.LSPDashboard, "Dashboard"), tab(ROUTES.LSPBuildToolsImportDashboard, "Build Tools Import"), tab(ROUTES.LSPTests, "Tests")],
     },
   ],
 }
@@ -1235,6 +1236,7 @@ const lspRoutes = [
     meta: { pageTitle: "LSP Tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
   dashboard(ROUTES.LSPDashboard, () => import("./components/lsp/LSPDashboard.vue"), "LSP Dashboard"),
+  dashboard(ROUTES.LSPBuildToolsImportDashboard, () => import("./components/lsp/LSPBuildToolsImportDashboard.vue"), "LSP Build Tools Import"),
 ]
 
 const goLspRoutes = [

@@ -1,7 +1,7 @@
 import { computed, inject, onUnmounted, Ref, shallowRef, triggerRef, watch } from "vue"
 import { DimensionConfigurator, selectedToArray } from "../../../configurators/DimensionConfigurator"
 import { PredefinedMeasureConfigurator } from "../../../configurators/MeasureConfigurator"
-import { defaultModeName, TestModeConfigurator } from "../../../configurators/TestModeConfigurator"
+import { TestModeConfigurator } from "../../../configurators/TestModeConfigurator"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { branchConfiguratorKey, dashboardConfiguratorsKey, serverConfiguratorKey, testModeConfiguratorKey } from "../../../shared/keys"
 import { DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
@@ -47,8 +47,10 @@ interface EngineComparisonOptions {
   selectedMetricTypes: Readonly<Ref<string[]>>
   // The quantity to plot (duration or a JVM sub-metric).
   quantity: Readonly<Ref<Quantity>>
-  // The ij-perf mode of the engine compared with LEGACY, which publishes under the default mode.
+  // The ij-perf mode of the engine compared with LEGACY.
   candidateMode: Readonly<Ref<string>>
+  // The ij-perf mode of the LEGACY run the candidate is compared with; it follows the candidate (see baseModeOf).
+  baseMode: Readonly<Ref<string>>
   // Aggregated vs single-run view.
   mode: Readonly<Ref<EngineComparisonMode>>
   // In single-run mode, the build timestamp to show; null means the newest build in any project.
@@ -81,7 +83,7 @@ interface BaseEntry {
 
 // Drives the LEGACY-vs-NEW comparison: builds its own executors (independent of the lazy drill-down
 // accordion's mount state), indexes each result by (branch, project variant, measure), and derives one
-// row per (base, metric type). It queries the default mode (LEGACY) and the candidate mode, whatever the dashboard
+// row per (base, metric type). It queries the base mode (LEGACY) and the candidate mode, whatever the dashboard
 // mode switch selects besides them.
 export function useEngineComparison(opts: EngineComparisonOptions): EngineComparison {
   const serverConfigurator = injectOrError(serverConfiguratorKey)
@@ -89,7 +91,7 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
   const branchConfigurator = injectOrError(branchConfiguratorKey)
   const dashboardModeConfigurator = inject(testModeConfiguratorKey, null)
 
-  const comparedModes = (): string[] => [defaultModeName, opts.candidateMode.value]
+  const comparedModes = (): string[] => [opts.baseMode.value, opts.candidateMode.value]
   const modeConfigurator = new TestModeConfigurator(true)
   modeConfigurator.selected.value = comparedModes()
   const queryConfigurators = [...dashboardConfigurators.filter((configurator) => configurator !== dashboardModeConfigurator), modeConfigurator]
@@ -132,7 +134,7 @@ export function useEngineComparison(opts: EngineComparisonOptions): EngineCompar
     const cells = opts.selectedMetricTypes.value.map((type, i) => ({
       type,
       measure: measures[i],
-      legacy: runsOf(defaultModeName, measures[i]),
+      legacy: runsOf(opts.baseMode.value, measures[i]),
       new: runsOf(opts.candidateMode.value, measures[i]),
     }))
     cellsByBase.value.set(entry.project.base, cells)

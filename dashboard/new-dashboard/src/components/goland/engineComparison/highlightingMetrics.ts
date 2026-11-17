@@ -3,6 +3,8 @@
 // labels. Dashboard-only chart settings (the engine list, the metric-type grid, the quantity choices,
 // and project-variant expansion) live in HighlightingDashboard.vue, which imports what it needs here.
 
+import { defaultModeName } from "../../../configurators/TestModeConfigurator"
+
 // Highlighting phases published per file by GoHighlightingTest (see runGoHighlightingScenario). Each is
 // a duration in ms; the file label ("<bucket>_<name>") is appended to build the full metric name.
 export const PHASES = ["coldStartHighlighting", "warmStartHighlighting", "typingHighlighting"]
@@ -18,11 +20,25 @@ export interface HighlightingProject {
 
 // The type-system engines of GoHighlightingTest.Engine by the ij-perf mode they publish under. LEGACY is the default
 // mode, and `types2` is `legacy_and_new`, as in the other GoLand perf builds.
-const ENGINE_BY_MODE: Record<string, string> = { default: "LEGACY", types2: "LEGACY_AND_NEW", new_only: "NEW_ONLY" }
+const ENGINE_BY_MODE: Record<string, string> = {
+  default: "LEGACY",
+  types2: "LEGACY_AND_NEW",
+  annotator_only: "LEGACY_ANNOTATOR_ONLY",
+  new_only: "NEW_ONLY",
+}
+
+// The mode each candidate is compared with: the legacy_only run with the same inspection profile, the default one for
+// `types2` and the annotator-only one for `new_only`.
+const BASE_MODE_BY_CANDIDATE: Record<string, string> = { types2: defaultModeName, new_only: "annotator_only" }
 
 // The engine name of an ij-perf mode, or the mode itself for a mode the highlighting test does not publish.
 export function engineOfMode(mode: string): string {
   return ENGINE_BY_MODE[mode] ?? mode
+}
+
+// The mode a candidate mode is compared with, or undefined for a mode that is no candidate.
+export function baseModeOf(candidateMode: string): string | undefined {
+  return BASE_MODE_BY_CANDIDATE[candidateMode]
 }
 
 // Base project names and per-project file labels mirror the ScenarioFile lists in GoHighlightingTest.kt.

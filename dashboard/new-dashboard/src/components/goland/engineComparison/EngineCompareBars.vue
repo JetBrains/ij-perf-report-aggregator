@@ -19,6 +19,7 @@
         :title="group.label"
         :rows="group.rows"
         :candidate="candidate"
+        :base="base"
       />
     </div>
   </div>
@@ -30,10 +31,12 @@ import { EngineCompareRow } from "./useEngineComparison"
 import { phaseLabel, PHASES } from "./highlightingMetrics"
 import EngineCompareBarsChart from "./EngineCompareBarsChart.vue"
 
-const { rows, candidate } = defineProps<{
+const { rows, candidate, base } = defineProps<{
   rows: EngineCompareRow[]
-  // The id of the engine compared with LEGACY, shown where the data says NEW.
+  // The id of the engine compared with the base engine, shown where the data says NEW.
   candidate: string
+  // The id of the base engine, shown where the data says LEGACY.
+  base: string
 }>()
 
 // One ranked chart per phase (Cold / Warm / Typing), in the canonical phase order, dropping phases with

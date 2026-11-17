@@ -35,11 +35,13 @@ use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
 const SLOWER_COLOR = "#dc2626"
 const FASTER_COLOR = "#16a34a"
 
-const { rows, title, candidate } = defineProps<{
+const { rows, title, candidate, base } = defineProps<{
   rows: EngineCompareRow[]
   title: string
-  // The id of the engine compared with LEGACY, shown where the data says NEW.
+  // The id of the engine compared with the base engine, shown where the data says NEW.
   candidate: string
+  // The id of the base engine, shown where the data says LEGACY.
+  base: string
 }>()
 
 // Ascending by Δ% so the most negative (best improvement) sits at the bottom and the largest positive
@@ -54,7 +56,7 @@ let chartManager: ChartManagerHelper | null = null
 
 function tooltipFor(row: EngineCompareRow): string {
   const { before, after } = formatEngineCell(row)
-  return `${row.title} · ${bucketLabel(row.bucket)}<br/>LEGACY ${before} → ${candidate} ${after}<br/>per-build Δ ${formatSignedPercent(row.diffPercent)}`
+  return `${row.title} · ${bucketLabel(row.bucket)}<br/>${base} ${before} → ${candidate} ${after}<br/>per-build Δ ${formatSignedPercent(row.diffPercent)}`
 }
 
 function renderChart(): void {

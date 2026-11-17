@@ -4,8 +4,8 @@
       v-if="candidateMode == null"
       class="text-sm text-gray-500 py-3 px-5 border border-solid rounded-md"
     >
-      Select the mode <span class="font-semibold">default</span> (LEGACY) and the mode <span class="font-semibold">types2</span> (LEGACY_AND_NEW) or
-      <span class="font-semibold">new_only</span> (NEW_ONLY) to see the comparison.
+      Select the mode <span class="font-semibold">types2</span> (LEGACY_AND_NEW, compared with <span class="font-semibold">default</span>) or
+      <span class="font-semibold">new_only</span> (NEW_ONLY, compared with <span class="font-semibold">annotator_only</span>) to see the comparison.
     </div>
     <div
       v-else-if="selectedMetricTypes.length === 0"
@@ -35,16 +35,19 @@
         :run-label="currentRunLabel"
         :quantity="quantity"
         :candidate="candidate"
+        :base="base"
       />
       <EngineCompareHeatmap
         :rows="rows"
         :selected-metric-types="selectedMetricTypes"
         :mode="mode"
         :candidate="candidate"
+        :base="base"
       />
       <EngineCompareBars
         :rows="rows"
         :candidate="candidate"
+        :base="base"
       />
       <div
         v-if="loading && rows.length === 0"
@@ -61,7 +64,7 @@ import { computed, inject, ref, toRef } from "vue"
 import { selectedToArray } from "../../../configurators/DimensionConfigurator"
 import { defaultModeName } from "../../../configurators/TestModeConfigurator"
 import { testModeConfiguratorKey } from "../../../shared/keys"
-import { engineOfMode, Quantity } from "./highlightingMetrics"
+import { baseModeOf, engineOfMode, Quantity } from "./highlightingMetrics"
 import { EngineComparisonMode, useEngineComparison } from "./useEngineComparison"
 import EngineCompareSummary from "./EngineCompareSummary.vue"
 import EngineCompareHeatmap from "./EngineCompareHeatmap.vue"
@@ -73,13 +76,15 @@ const { selectedMetricTypes, quantity } = defineProps<{
   quantity: Quantity
 }>()
 
-// LEGACY publishes under the default mode; the first other mode of the dashboard mode switch is the candidate.
+// The first mode of the dashboard mode switch that has a base mode is the candidate; the comparison selects its base mode.
 const modeConfigurator = inject(testModeConfiguratorKey, null)
 const candidateMode = computed<string | null>(() => {
   const modes = selectedToArray(modeConfigurator?.selected.value)
-  return modes.includes(defaultModeName) ? (modes.find((mode) => mode !== defaultModeName) ?? null) : null
+  return modes.find((mode) => baseModeOf(mode) != null) ?? null
 })
 const candidate = computed(() => engineOfMode(candidateMode.value ?? ""))
+const baseMode = computed(() => baseModeOf(candidateMode.value ?? "") ?? defaultModeName)
+const base = computed(() => engineOfMode(baseMode.value))
 
 // Single run is the default view: it shows one build's exact before/after, so a real improvement is
 // visible rather than smeared by the across-runs median. Toggle to Aggregated for the SPEC-style verdict.
@@ -96,6 +101,7 @@ const { rows, aggregates, runs, loading } = useEngineComparison({
   selectedMetricTypes: toRef(() => selectedMetricTypes),
   quantity: toRef(() => quantity),
   candidateMode: toRef(() => candidateMode.value ?? defaultModeName),
+  baseMode,
   mode,
   selectedRun,
 })

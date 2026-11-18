@@ -14,14 +14,21 @@ var (
 	airNoisy  = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 25, EffectSizeThreshold: 3}
 )
 
-// airOver alerts when the latest value is over limitMs. A metric of a few frames moves by one frame from night to night,
-// which is 30-80 % of its value, so a step of its median says nothing. A value over the limit is what a user notices.
+// airOverWindow is the number of nights whose median airOver compares to the limit. One slow night of a run that
+// measures once a night is noise, so it alone does not cross the limit.
+const airOverWindow = 3
+
+// airOver alerts when the median of the latest airOverWindow nights crosses limitMs. A metric of a few frames moves by
+// one frame from night to night, which is 30-80 % of its value, so a step of its median says nothing. A value over the
+// limit is what a user notices. The alert comes once, on the night of the crossing, not on each night over the limit.
 func airOver(limitMs float64) detector.AnalysisSettings {
 	return detector.AnalysisSettings{
-		ReportType:     detector.DegradationEvent,
-		AnalysisKind:   detector.ThresholdAnalysis,
-		ThresholdMode:  detector.ThresholdGreaterThan,
-		ThresholdValue: limitMs,
+		ReportType:          detector.DegradationEvent,
+		AnalysisKind:        detector.ThresholdAnalysis,
+		ThresholdMode:       detector.ThresholdGreaterThan,
+		ThresholdValue:      limitMs,
+		ThresholdWindow:     airOverWindow,
+		ThresholdOnCrossing: true,
 	}
 }
 
@@ -35,7 +42,9 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airStable},
 		{"continue.%s.loadAnsweredToPromptMs", airOver(300)},
 		{"answer.%s.streamLagP95Ms", airNoisy},
-		{"answer.%s.streamEndToSettledMs", airOver(300)},
+		// The settle after the long answer takes 350-600 ms by the size, so a limit of 300 ms reported each night. A night
+		// moves it by up to 15 %, and a step of its median is the change to find.
+		{"answer.%s.streamEndToSettledMs", airNoisy},
 		{"heap.%s.heapLive.MiB", airStable},
 		{"prompt.%s.codeP95Ms", airOver(50)},
 		{"scroll.%s.wheelP95Ms", airOver(50)},
@@ -48,7 +57,8 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		"air/many-agents": {
 			{"manyAgents.heapLive.MiB", airStable},
 			{"manyAgents.focusedContentLagP95Ms", airNoisy},
-			{"manyAgents.edtMaxMs", airOver(50)},
+			// The longest EDT wait of the run is about 50 ms on a usual night, so the limit is twice that: 6 frames.
+			{"manyAgents.edtMaxMs", airOver(100)},
 		},
 		"air/session-list": {
 			{"sessionList.heapLive.MiB", airStable},

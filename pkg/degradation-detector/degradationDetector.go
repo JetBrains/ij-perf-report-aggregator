@@ -14,6 +14,14 @@ type Degradation struct {
 	timestamp     int64
 	medianValues  CenterValues
 	IsDegradation bool
+	// threshold is set when a threshold analysis found the degradation: newValue of medianValues is over it.
+	threshold *Threshold
+}
+
+// Threshold is the limit that a threshold analysis compared, and the number of the latest values of its median.
+type Threshold struct {
+	value  float64
+	window int
 }
 
 type CenterValues struct {
@@ -32,6 +40,7 @@ type analysisSettings interface {
 	GetAnalysisKind() AnalysisKind
 	GetThresholdMode() ThresholdMode
 	GetThresholdValue() float64
+	GetThresholdWindowing() (window int, onCrossing bool)
 }
 
 func (v CenterValues) PercentageChange() float64 {
@@ -125,40 +134,47 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	return degradations
 }
 
-// detectThresholdExceed emits a degradation when the latest value crosses the configured threshold
-// according to the selected ThresholdMode. For GreaterThan mode, strictly greater (>) is used; for
-// LessThan mode, strictly less (<) is used.
+// detectThresholdExceed emits a degradation when the median of the latest values of the window of
+// GetThresholdWindowing crosses the configured threshold according to the selected ThresholdMode. For GreaterThan
+// mode, strictly greater (>) is used; for LessThan mode, strictly less (<) is used. The previous value of the
+// degradation is the median of the same number of values one run earlier. When the analysis reports only the
+// crossing, a run whose previous median already crossed the threshold emits nothing.
 func detectThresholdExceed(values []int, builds []string, timestamps []int64, s analysisSettings) []Degradation {
 	result := make([]Degradation, 0, 1)
-	if len(values) == 0 || len(builds) == 0 || len(timestamps) == 0 {
+	window, onCrossing := s.GetThresholdWindowing()
+	if len(values) < window || len(builds) == 0 || len(timestamps) == 0 {
 		return result
 	}
 	lastIdx := len(values) - 1
-	last := float64(values[lastIdx])
 	threshold := s.GetThresholdValue()
-
-	meets := false
-	switch s.GetThresholdMode() {
-	case ThresholdGreaterThan:
-		meets = last > threshold
-	case ThresholdLessThan:
-		meets = last < threshold
+	exceeds := func(value float64) bool {
+		switch s.GetThresholdMode() {
+		case ThresholdGreaterThan:
+			return value > threshold
+		case ThresholdLessThan:
+			return value < threshold
+		}
+		return false
 	}
-	if !meets {
+
+	current := statistic.Median(values[len(values)-window:])
+	if !exceeds(current) {
 		return result
 	}
 	// Treat exceeding threshold as degradation event; consumer can filter by ReportType if needed
-	var previous float64
-	if lastIdx > 0 {
-		previous = float64(values[lastIdx-1])
-	} else {
-		previous = threshold
+	previous := threshold
+	if len(values) > window {
+		previous = statistic.Median(values[len(values)-window-1 : lastIdx])
+		if onCrossing && exceeds(previous) {
+			return result
+		}
 	}
 	result = append(result, Degradation{
 		Build:         builds[lastIdx],
 		timestamp:     timestamps[lastIdx],
-		medianValues:  CenterValues{previousValue: previous, newValue: last},
+		medianValues:  CenterValues{previousValue: previous, newValue: current},
 		IsDegradation: true,
+		threshold:     &Threshold{value: threshold, window: window},
 	})
 	return result
 }

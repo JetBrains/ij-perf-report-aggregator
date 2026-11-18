@@ -48,7 +48,7 @@ const completionCharts: ChartDef[] = [
   { key: "median", label: "Duration (median)", measure: "completion#median_value" },
   { key: "mean", label: "Duration (mean)", measure: "completion#mean_value" },
   { key: "timeToShow90", label: "Time to show 90p", measure: "fus_time_to_show_90p" },
-  { key: "timeToShowCold", label: "Time to show (cold)", measure: "completion_1#firstElementShown" },
+  { key: "timeToShowCold", label: "Time to show (cold)", measure: ["completion_1#firstElementShown", "completion#firstElementShown_1"] },
   { key: "timeToShowMean", label: "Time to show (mean)", measure: "completion#firstElementShown#mean_value" },
   { key: "resolveCold", label: "Resolve (cold)", measure: "performCompletion_1" },
   { key: "resolveMean", label: "Resolve (mean)", measure: "performCompletion#mean_value" },

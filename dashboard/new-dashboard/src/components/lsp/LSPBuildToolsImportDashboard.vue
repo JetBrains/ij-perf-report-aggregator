@@ -25,21 +25,31 @@ import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 
-const TEST_CLASS = "com.jetbrains.ls.performanceTest.buildToolsImport.MavenImportPerformanceTest"
+const TEST_PACKAGE = "com.jetbrains.ls.performanceTest.buildToolsImport"
 
-const projects = [`${TEST_CLASS}.logback`, `${TEST_CLASS}.mybatisDynamicSql`]
-const aliases = ["logback", "mybatis-dynamic-sql"]
-
-const phases = [
-  { phase: "total", label: "Maven import - total", description: "initialize, to intellij/ready-for-test" },
-  { phase: "import", label: "Maven import - import", description: "the Maven tool run, importLog started to succeeded" },
-  { phase: "indexing", label: "Maven import - indexing", description: "importLog succeeded, to the FINISHED import state" },
+const tools = [
+  {
+    tool: "Maven",
+    projects: [`${TEST_PACKAGE}.MavenImportPerformanceTest.logback`, `${TEST_PACKAGE}.MavenImportPerformanceTest.mybatisDynamicSql`],
+    aliases: ["logback", "mybatis-dynamic-sql"],
+  },
+  {
+    tool: "Gradle",
+    projects: [`${TEST_PACKAGE}.GradleImportPerformanceTest.ehcache3`, `${TEST_PACKAGE}.GradleImportPerformanceTest.springAmqp`],
+    aliases: ["ehcache3", "spring-amqp"],
+  },
 ]
 
-const chartsDeclaration: ChartDefinition[] = phases.map(({ phase, label, description }) => ({
-  labels: [label],
-  measures: [`${phase}.ms`],
-  descriptions: [description],
+const phases = [
+  { phase: "total", label: "total", description: "initialize, to intellij/ready-for-test" },
+  { phase: "import", label: "import", description: "the build tool run, importLog started to succeeded" },
+  { phase: "indexing", label: "indexing", description: "importLog succeeded, to the FINISHED import state" },
+]
+
+const chartsDeclaration: ChartDefinition[] = tools.map(({ tool, projects, aliases }) => ({
+  labels: phases.map(({ label }) => `${tool} import - ${label}`),
+  measures: phases.map(({ phase }) => `${phase}.ms`),
+  descriptions: phases.map(({ description }) => description),
   projects,
   aliases,
 }))

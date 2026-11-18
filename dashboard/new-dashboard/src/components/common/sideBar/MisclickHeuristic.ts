@@ -5,6 +5,10 @@ const NO_CHANGE_THRESHOLD = 0.005
 const NEIGHBOR_DOMINANCE_RATIO = 3
 const LOOKAHEAD_WINDOW = 5
 const LOOKAHEAD_LARGE_CHANGE_THRESHOLD = 0.07
+// How many points before the selected one describe the usual noise, and how many
+// of them are needed before the noise is judged at all.
+const NOISE_WINDOW = 10
+const MIN_NOISE_POINTS = 5
 
 export interface MisclickWarning {
   title: string
@@ -49,6 +53,29 @@ export function detectPossibleMisclick(data: InfoData | null, kind: string): Mis
         `The selected point has a ${value > prev ? "higher" : "lower"} value than the previous point ` +
         `(${percent(relDeltaPrev)} change), which would be ${withArticle(actualKind)}. ` +
         `Please verify the correct point and event type are selected.`,
+    }
+  }
+
+  // A change above the fixed threshold can still be ordinary noise: on a metric that
+  // swings by tens of percent, a point inside the range of the points before it
+  // doesn't stand out, whatever its delta to the immediate predecessor.
+  const noise = findNoiseRangeBefore(data)
+  if (noise != null && value >= noise.min && value <= noise.max) {
+    const noiseDetail =
+      `The selected point changed by ${percent(relDeltaPrev)} from the previous one, ` +
+      `but the ${noise.count} points before it already vary by ${percent(relativeChange(noise.max, noise.min))} and its value lies within their range`
+    if (lookahead != null) {
+      return {
+        title: "The selected point doesn't look like the actual event",
+        detail:
+          `${noiseDetail}. ` +
+          `A ${percent(lookahead.relChange)} change matching this ${kind.toLowerCase()} occurs ${lookahead.offset} point${lookahead.offset == 1 ? "" : "s"} later. ` +
+          `Did you mean to click that point?`,
+      }
+    }
+    return {
+      title: "The selected point doesn't stand out from the noise",
+      detail: `${noiseDetail}, so there is no clear change to attribute to ${withArticle(kind.toLowerCase())}.`,
     }
   }
 
@@ -97,6 +124,24 @@ function findDominantLookaheadChange(data: InfoData, value: number, kind: string
     }
   }
   return best
+}
+
+interface NoiseRange {
+  min: number
+  max: number
+  count: number
+}
+
+// findNoiseRangeBefore returns the range of up to NOISE_WINDOW finite values right
+// before the selected point, or null when the series context is missing or too
+// short to tell noise from a change.
+function findNoiseRangeBefore(data: InfoData): NoiseRange | null {
+  const values = data.seriesValues
+  const index = data.pointIndex
+  if (!values || index == null || index < 0) return null
+  const before = values.slice(Math.max(0, index - NOISE_WINDOW), index).filter((v) => Number.isFinite(v))
+  if (before.length < MIN_NOISE_POINTS) return null
+  return { min: Math.min(...before), max: Math.max(...before), count: before.length }
 }
 
 function relativeChange(a: number, b: number): number {

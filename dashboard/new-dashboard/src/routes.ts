@@ -239,6 +239,7 @@ enum ROUTES {
   KMTDashboard = `${ROUTE_PREFIX.KMT}/${DASHBOARD_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
   DiogenDashboard = `${ROUTE_PREFIX.Diogen}/${DASHBOARD_ROUTE}`,
+  DiogenGeneration = `${ROUTE_PREFIX.Diogen}/generation`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
@@ -761,7 +762,7 @@ const DIOGEN: Product = {
     {
       url: ROUTE_PREFIX.Diogen,
       label: "",
-      tabs: [tab(ROUTES.DiogenDashboard, "Pipeline"), tab(ROUTES.DiogenTests, "All")],
+      tabs: [tab(ROUTES.DiogenDashboard, "Pipeline"), tab(ROUTES.DiogenGeneration, "Generation"), tab(ROUTES.DiogenTests, "All")],
     },
   ],
 }
@@ -1193,6 +1194,7 @@ const kmtRoutes = [
 const diogenRoutes = [
   perfTests(ROUTES.DiogenTests, { dbName: "diogen", table: "report", withInstaller: false, branch: "refs/heads/main", initialMachine: null, withoutAccidents: true }, "Diogen"),
   dashboard(ROUTES.DiogenDashboard, () => import("./components/diogen/DiogenPipelineDashboard.vue"), "Diogen Pipeline"),
+  dashboard(ROUTES.DiogenGeneration, () => import("./components/diogen/DiogenGenerationDashboard.vue"), "Diogen Generation"),
 ]
 
 const perfUnitTestsRoutes = [

@@ -129,7 +129,7 @@ func newHookEvent(s PerformanceSettings, d Degradation) HookEvent {
 		PreviousValue: d.medianValues.previousValue,
 		NewValue:      d.medianValues.newValue,
 		ChangePercent: d.medianValues.PercentageChange(),
-		Reason:        getMessageBasedOnMedianChange(d.medianValues),
+		Reason:        getReason(d),
 		ChartURL:      slackLinkURL(s.ChartLink(d)),
 		ReportURL:     slackLinkURL(eventLink(s.Project, d.Build, d.timestamp)),
 	}

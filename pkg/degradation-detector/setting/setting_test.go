@@ -1,6 +1,7 @@
 package setting
 
 import (
+	"strings"
 	"testing"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
@@ -46,5 +47,20 @@ func TestGenerateAIATestTokenSettings(t *testing.T) {
 		assert.Equal(t, detector.ThresholdAnalysis, setting.AnalysisSettings.AnalysisKind)
 		assert.Equal(t, detector.ThresholdGreaterThan, setting.AnalysisSettings.ThresholdMode)
 		assert.InEpsilon(t, 95.0, setting.AnalysisSettings.ThresholdValue, 0.0001)
+	}
+}
+
+func TestAirSetting(t *testing.T) {
+	t.Parallel()
+	for _, s := range GenerateAirSettings() {
+		analysis := s.AnalysisSettings
+		assert.Equal(t, detector.DegradationEvent, analysis.ReportType, s.Metric)
+		if analysis.AnalysisKind == detector.ThresholdAnalysis {
+			assert.Equal(t, airOverWindow, analysis.ThresholdWindow, "%s compares the median of a few nights", s.Metric)
+			assert.True(t, analysis.ThresholdOnCrossing, "%s reports the crossing only", s.Metric)
+		}
+		if strings.Contains(s.Metric, "streamEndToSettledMs") {
+			assert.Equal(t, detector.ChangePointAnalysis, analysis.AnalysisKind, "%s is always over 300 ms, so it looks for a step", s.Metric)
+		}
 	}
 }

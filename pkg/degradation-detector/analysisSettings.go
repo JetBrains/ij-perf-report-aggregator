@@ -49,6 +49,12 @@ type AnalysisSettings struct {
 	AnalysisKind   AnalysisKind
 	ThresholdMode  ThresholdMode
 	ThresholdValue float64
+	// The number of the latest values whose median a threshold analysis compares to ThresholdValue. A value of a single
+	// noisy run then does not cross the threshold alone. The default value is 1: the latest value.
+	ThresholdWindow int
+	// A threshold analysis reports only the run at which the median crosses the threshold, not each later run that
+	// stays over it. The default value reports each run over the threshold.
+	ThresholdOnCrossing bool
 }
 
 func (s AnalysisSettings) GetReportType() ReportType {
@@ -86,3 +92,9 @@ func (s AnalysisSettings) GetThresholdMode() ThresholdMode { return s.ThresholdM
 
 // GetThresholdValue returns the threshold value.
 func (s AnalysisSettings) GetThresholdValue() float64 { return s.ThresholdValue }
+
+// GetThresholdWindowing returns the number of the latest values whose median the threshold analysis compares, at
+// least 1, and whether it reports only the crossing of the threshold.
+func (s AnalysisSettings) GetThresholdWindowing() (int, bool) {
+	return max(s.ThresholdWindow, 1), s.ThresholdOnCrossing
+}

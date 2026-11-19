@@ -62,7 +62,7 @@ func eventLink(tests string, build string, timestamp int64) string {
 }
 
 func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
-	reason := getMessageBasedOnMedianChange(d.medianValues)
+	reason := getReason(d)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
 	link := s.ChartLink(d)
 	tests := strings.ReplaceAll(s.Project, ",", "\n")
@@ -87,7 +87,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 }
 
 func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
-	reason := getMessageBasedOnMedianChange(d.medianValues)
+	reason := getReason(d)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
 	link := s.ChartLink(d)
 
@@ -234,6 +234,19 @@ var machineGroupMap = map[string]string{
 
 func getMachineGroup(pattern string) string {
 	return machineGroupMap[pattern]
+}
+
+// getReason says why the detector reported d: the step of the median, or the median of the latest values over a threshold.
+func getReason(d Degradation) string {
+	if d.threshold == nil {
+		return getMessageBasedOnMedianChange(d.medianValues)
+	}
+	latest := "The latest value"
+	if d.threshold.window > 1 {
+		latest = fmt.Sprintf("The median of the latest %d values", d.threshold.window)
+	}
+	return fmt.Sprintf("Threshold exceeded. %s is %.2f, and the limit is %.2f. One run earlier it was %.2f.",
+		latest, d.medianValues.newValue, d.threshold.value, d.medianValues.previousValue)
 }
 
 func getMessageBasedOnMedianChange(medianValues CenterValues) string {

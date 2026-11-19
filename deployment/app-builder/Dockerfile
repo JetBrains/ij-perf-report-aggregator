@@ -1,8 +1,8 @@
 FROM buildpack-deps:curl
 
 # Keep in sync with devEngines.runtime in package.json (deployment/check-node-version.sh)
-ENV NODE_VERSION 26.13.0
-ENV GOLANG_VERSION 1.27.3
+ENV NODE_VERSION 26.13.1
+ENV GOLANG_VERSION 1.27.4
 
 RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*
 
@@ -13,7 +13,7 @@ RUN cd /usr/local/bin && \
 RUN cd /usr/local && \
   curl -fL https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
   mkdir -p /usr/local/lib/pnpm && \
-  curl -fsSL https://github.com/pnpm/pnpm/releases/download/v12.18.0/pnpm-linux-x64.tar.gz | tar xz -C /usr/local/lib/pnpm && \
+  curl -fsSL https://github.com/pnpm/pnpm/releases/download/v12.21.0/pnpm-linux-x64.tar.gz | tar xz -C /usr/local/lib/pnpm && \
   chmod +x /usr/local/lib/pnpm/pnpm && ln -s /usr/local/lib/pnpm/pnpm /usr/local/bin/pnpm
 
 ENV GOPATH /go

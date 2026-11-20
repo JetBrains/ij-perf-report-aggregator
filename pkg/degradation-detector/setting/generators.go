@@ -25,7 +25,6 @@ func Generators() []Generator {
 		withBackend("unitTests", GenerateAllUnitTestsSettings),
 		withBackend("goland", GenerateGolandPerfSettings),
 		withBackend("rust", GenerateRustPerfSettings),
-		withBackend("fleetPerformance", GenerateFleetPerformanceSettings),
 		withBackend("ruby", GenerateRubyPerfSettings),
 		withBackend("java", GenerateJavaSettings),
 		withBackend("ultimate", GenerateUltimateSettings),
@@ -41,7 +40,6 @@ func Generators() []Generator {
 		withBackend("startupIdea", GenerateStartupSettingsForIDEA),
 		withBackend("startupGoland", GenerateStartupSettingsForGoland),
 		withBackend("startupPhpStorm", GenerateStartupSettingsForPhpStorm),
-		static("fleetStartup", GenerateFleetStartupSettings),
 	}
 }
 

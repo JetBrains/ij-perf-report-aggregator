@@ -186,12 +186,11 @@ func TestSendDegradationsToHooksSendsOnlyMatchingAndConfigured(t *testing.T) {
 		hookTestHook("TEST_HOOK_UNSET"),
 	}
 
-	degradations := make(chan DegradationWithSettings, 3)
+	degradations := make(chan DegradationWithSettings, 2)
 	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: hookTestSettings("air/long-session/XL")}
 	otherTeam := hookTestSettings("idea/indexing")
 	otherTeam.Channel = "ij-idea-perf"
 	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: otherTeam}
-	degradations <- DegradationWithSettings{Details: hookTestDegradation(), Settings: FleetStartupSettings{}}
 	close(degradations)
 
 	SendDegradationsToHooks(degradations, server.Client(), hooks)

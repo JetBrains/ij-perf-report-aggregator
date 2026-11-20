@@ -42,10 +42,6 @@ func (s PerformanceSettings) DBTestName() string {
 	return s.Project + "/" + s.Metric
 }
 
-func (s FleetStartupSettings) DBTestName() string {
-	return "fleet" + "/" + s.Metric
-}
-
 type accidentState struct {
 	mu                   sync.Mutex
 	posted               bool // true if POST attempt was made

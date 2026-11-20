@@ -27,7 +27,3 @@ type PerformanceSettings struct {
 	MetricAlias string
 	Mode        string
 }
-
-type FleetStartupSettings struct {
-	BaseSettings
-}

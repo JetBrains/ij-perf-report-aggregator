@@ -47,15 +47,6 @@ func (s PerformanceSettings) GetProject() string {
 	return s.Project
 }
 
-func (s FleetStartupSettings) GetProject() string {
-	return "fleet"
-}
-
-func (s FleetStartupSettings) MergeAnother(settings Settings) Settings {
-	s.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
-	return s
-}
-
 func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {
 	c := make(chan DegradationWithSettings, 100)
 	go func() {

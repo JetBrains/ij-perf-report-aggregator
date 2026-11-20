@@ -61,25 +61,9 @@ type metricsMerger interface {
 	MergeMetrics(settings Settings) Settings
 }
 
-func mergeMetricsHelper(settings Settings, newSettings Settings) Settings {
-	switch s := settings.(type) {
-	case FleetStartupSettings:
-		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
-		return s
-	case PerformanceSettings:
-		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
-		return s
-	default:
-		return settings
-	}
-}
-
-func (s FleetStartupSettings) MergeMetrics(settings Settings) Settings {
-	return mergeMetricsHelper(s, settings)
-}
-
 func (s PerformanceSettings) MergeMetrics(settings Settings) Settings {
-	return mergeMetricsHelper(s, settings)
+	s.Metric = fmt.Sprintf("%s, %s", s.Metric, settings.GetMetric())
+	return s
 }
 
 type MissingDataMerged map[string]map[string]map[string]MissingData

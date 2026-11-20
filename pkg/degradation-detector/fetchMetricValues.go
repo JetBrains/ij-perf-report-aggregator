@@ -8,7 +8,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"strings"
 	"time"
 
 	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
@@ -106,34 +105,6 @@ func getValuesFromServer(ctx context.Context, client *http.Client, backendURL st
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 	return body, err
-}
-
-func (s FleetStartupSettings) query() dataQuery.Query {
-	fields := []dataQuery.QueryDimension{
-		{Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
-	}
-	filters := []dataQuery.QueryFilter{
-		{Field: "branch", Value: s.Branch},
-		{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-		{Field: "project", Value: "fleet"},
-		{Field: "machine", Value: s.Machine, Operator: "like"},
-		{Field: "triggeredBy", Value: ""},
-	}
-	if strings.HasSuffix(s.Metric, ".end") {
-		metricName, _ := strings.CutSuffix(s.Metric, ".end")
-		filters = append(filters, dataQuery.QueryFilter{Field: "measures.name", Value: metricName})
-		fields = append(fields, dataQuery.QueryDimension{Name: "measures", SubName: "end", Sql: "(measures.start+measures.value)"})
-	}
-	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString" + dataQuery.CorrectedBuildC1 + ",'.',toString(build_c2),'.',toString(build_c3))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
-
-	query := dataQuery.Query{
-		Database: "fleet",
-		Table:    "report",
-		Fields:   fields,
-		Filters:  filters,
-		Order:    []string{"t"},
-	}
-	return query
 }
 
 func (s PerformanceSettings) query() dataQuery.Query {

@@ -33,8 +33,6 @@ type SlackSettings struct {
 	ProductLink string
 	// Mention is an optional Slack mention prepended to PerformanceSettings messages for this channel.
 	// Use the raw Slack syntax, e.g. "<@U01ABC2DEF>" for a user or "<!subteam^S01ABC2DEF>" for a user group.
-	// Note: only PerformanceSettings.CreateSlackMessage renders it today; wire mentionPrefix() into the
-	// Startup/Fleet builders if those paths ever need mentions.
 	Mention string
 }
 
@@ -84,36 +82,6 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 		Text:    text,
 		Channel: s.Channel,
 	}
-}
-
-func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
-	reason := getReason(d)
-	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
-	link := s.ChartLink(d)
-
-	text := fmt.Sprintf(
-		"%sMetric: `%s`\n"+
-			"Build: %s\n"+
-			"Branch: %s\n"+
-			"Date: %s\n"+
-			"Reason: %s\n"+
-			"%s\n", icon(d.medianValues), s.Metric, d.Build, s.Branch, date, reason, link)
-	return SlackMessage{
-		Text:    text,
-		Channel: s.Channel,
-	}
-}
-
-func (s FleetStartupSettings) ChartLink(d TimeRangeProvider) string {
-	machineGroup := getMachineGroup(s.Machine)
-	measurements := strings.Split(s.Metric, ",")
-	escapedMeasurements := make([]string, 0, len(measurements))
-	for _, m := range measurements {
-		escapedMeasurements = append(escapedMeasurements, url.QueryEscape(m))
-	}
-	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&%s|See charts>",
-		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure, getCustomRange(d.GetRangeStartTime(), time.Now()))
 }
 
 func getCustomRange(start, end time.Time) string {

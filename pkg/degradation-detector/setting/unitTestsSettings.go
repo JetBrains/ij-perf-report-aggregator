@@ -138,7 +138,7 @@ var teamConfigs = []teamConfig{
 			"com.intellij.debugger.impl.PacketsNumberTest":                                                      {"%.expected.%"},
 			"org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": {"%.expected.%"},
 			"com.intellij.debugger.MethodExitBreakpointPerformanceTest":                                         {"unrelated.work.median.ms"},
-			"com.intellij.debugger.impl.SteppingPerformanceTest":                                                {"median_step.duration_us", "median_step.sent_packets", "median_step.wait_packets"},
+			"com.intellij.debugger.impl.SteppingPerformanceTest":                                                {"step.%"},
 		},
 	},
 }

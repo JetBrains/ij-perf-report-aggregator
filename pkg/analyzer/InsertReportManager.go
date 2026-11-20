@@ -174,8 +174,6 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
 
 //goland:noinspection SpellCheckingInspection
 var projectIdToName = map[string]string{
-	"Fleet": "fleet",
-
 	// IJ simple project - project v3
 	"Mc92Qmj3NY0xxdIiX9ayVbbEZ7s": "simple for IJ",
 	// IJ simple project - project v2

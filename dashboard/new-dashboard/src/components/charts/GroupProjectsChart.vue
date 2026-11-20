@@ -11,6 +11,8 @@
     :description="description"
     :better-direction="betterDirectionProp"
     :y-axis-scale="yAxisScale"
+    :stack="stack"
+    :stacked-measures="stackedMeasures"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -40,6 +42,8 @@ interface Props {
   description?: string
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
+  stack?: string
+  stackedMeasures?: string[]
 }
 
 const {
@@ -54,6 +58,8 @@ const {
   description,
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
+  stack,
+  stackedMeasures = [],
 } = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

@@ -213,7 +213,11 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     readonly toolTipTrigger: TooltipTrigger,
     private readonly betterDirection: BetterDirection = "lower",
     // Comparison consumers do not need deviation data.
-    private readonly withStdDevInterval: boolean = false
+    private readonly withStdDevInterval: boolean = false,
+    // Non-null turns the measures into one stacked area (phases of a total).
+    private readonly stack: string | null = null,
+    // Measures to stack, bottom to top; anything else is a plain reference line over the stack.
+    private readonly stackedMeasures: readonly string[] = []
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -235,7 +239,18 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator, this.toolTipTrigger, this.betterDirection)
+    return configureChart(
+      configuration,
+      data,
+      this.chartType,
+      this.valueUnit,
+      this.symbolOptions,
+      this.accidentsConfigurator,
+      this.toolTipTrigger,
+      this.betterDirection,
+      this.stack,
+      this.stackedMeasures
+    )
   }
 }
 
@@ -548,7 +563,9 @@ async function configureChart(
   symbolOptions: SymbolOptions = {},
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item",
-  betterDirection: BetterDirection = "lower"
+  betterDirection: BetterDirection = "lower",
+  stack: string | null = null,
+  stackedMeasures: readonly string[] = []
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
 
@@ -651,6 +668,15 @@ async function configureChart(
         name: seriesName,
         ...styleOptions,
         type: settings.smoothing ? "scatter" : chartType,
+        // ponytail: ECharts stacks by point index here, so phases must come from the same builds;
+        // switch to an explicit timestamp join if series ever get holes.
+        ...(stack == null
+          ? {}
+          : // measureName also carries machine/branch/project parts, so ask the split for the plotted measure.
+            stackedMeasures.includes(seriesSplits[dataIndex]?.measure ?? measureName)
+            ? { stack, areaStyle: {}, lineStyle: { width: 0 } }
+            : // Reference line over the stack: never filled, so it cannot hide the bands below it.
+              { areaStyle: undefined, lineStyle: { width: 2 }, z: 10 }),
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
@@ -731,6 +757,14 @@ async function configureChart(
       source: seriesData,
       sourceHeader: false,
     })
+  }
+
+  // ECharts takes both the stacking order (bottom to top) and the legend order from the series order:
+  // reference lines first, then the phases as the caller declared them.
+  if (stack != null && stackedMeasures.length > 0) {
+    const rank = (series: LineSeriesOption | ScatterSeriesOption): number =>
+      series.stack == null ? -1 : stackedMeasures.findIndex((measure) => (series.id as string).includes(measure))
+    series.sort((a, b) => rank(a) - rank(b))
   }
 
   // While scaling, axis values are baseline ratios, so they render as plain numbers.

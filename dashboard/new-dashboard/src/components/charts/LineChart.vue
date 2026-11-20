@@ -110,7 +110,6 @@ interface LineChartProps {
   description?: string
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
-  stack?: string
   stackedMeasures?: string[]
 }
 
@@ -128,7 +127,6 @@ const {
   description,
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
-  stack,
   stackedMeasures = [],
 } = defineProps<LineChartProps>()
 
@@ -233,7 +231,6 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   tooltipTrigger,
   resolvedBetterDirection.value,
   true,
-  stack ?? null,
   stackedMeasures
 )
 

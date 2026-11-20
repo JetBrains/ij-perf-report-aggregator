@@ -7,7 +7,7 @@ import { debounce } from "rxjs/debounce"
 import { distinctUntilChanged } from "rxjs/distinct-until-changed"
 import { switchMap } from "rxjs/switch-map"
 import { ref, Ref, shallowRef, toRef } from "vue"
-import { DataQueryResult, SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
+import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
 import {
@@ -214,9 +214,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly betterDirection: BetterDirection = "lower",
     // Comparison consumers do not need deviation data.
     private readonly withStdDevInterval: boolean = false,
-    // Non-null turns the measures into one stacked area (phases of a total).
-    private readonly stack: string | null = null,
-    // Measures to stack, bottom to top; anything else is a plain reference line over the stack.
+    // Non-empty turns these measures into a stacked area (phases of a total), bottom to top; any other measure is a
+    // plain reference line over the stack.
     private readonly stackedMeasures: readonly string[] = []
   ) {}
 
@@ -248,7 +247,6 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
       this.accidentsConfigurator,
       this.toolTipTrigger,
       this.betterDirection,
-      this.stack,
       this.stackedMeasures
     )
   }
@@ -372,20 +370,6 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-/** The measure a series plots, taken from its raw name ("<measure> - <project>", "<branch> - <measure>", ...). */
-function findStackedMeasure(rawSeriesName: string, stackedMeasures: readonly string[]): string | null {
-  return rawSeriesName.split(SERIES_NAME_SEPARATOR).find((part) => stackedMeasures.includes(part)) ?? null
-}
-
-/** Phases of one project/branch/machine share a stack; the remaining name parts identify that group. */
-function stackKey(stack: string, rawSeriesName: string, measure: string): string {
-  const group = rawSeriesName
-    .split(SERIES_NAME_SEPARATOR)
-    .filter((part) => part !== measure)
-    .join(SERIES_NAME_SEPARATOR)
-  return group.length === 0 ? stack : `${stack}:${group}`
-}
-
 /**
  * ECharts sums stacked series by point index, so a phase missing in one build (or an outlier removed from one
  * series only) would otherwise be added to another build's value. Pads every stacked series of a stack to the
@@ -395,33 +379,37 @@ function alignStackedDatasets(series: readonly (LineSeriesOption | ScatterSeries
   const datasetIndexesByStack = new Map<string, number[]>()
   for (const it of series) {
     if (typeof it.stack !== "string" || typeof it.datasetIndex !== "number") continue
-    datasetIndexesByStack.set(it.stack, [...(datasetIndexesByStack.get(it.stack) ?? []), it.datasetIndex])
+    let datasetIndexes = datasetIndexesByStack.get(it.stack)
+    if (datasetIndexes == undefined) {
+      datasetIndexes = []
+      datasetIndexesByStack.set(it.stack, datasetIndexes)
+    }
+    datasetIndexes.push(it.datasetIndex)
   }
 
   for (const datasetIndexes of datasetIndexesByStack.values()) {
     if (datasetIndexes.length < 2) continue
-    const sources = datasetIndexes.map((index) => (dataset[index].source ?? []) as (string | number | null)[][])
-    if (sources.some((source) => source[0] == undefined)) continue
-    const keysPerSeries = sources.map((source) => getPointKeys(source as (string | number)[][]))
+    const sources = datasetIndexes.map((index) => (dataset[index].source ?? []) as (string | number)[][])
+    const keysPerSeries = sources.map((source) => getPointKeys(source))
     // Repeated measurements share a build and a timestamp; pairing them is ambiguous, so leave such a stack alone.
-    if (keysPerSeries.some((keys) => new Set(keys).size !== keys.length)) continue
+    if (keysPerSeries.some((keys) => keys.length === 0 || new Set(keys).size !== keys.length)) continue
 
     const timestampByKey = new Map<PointKey, number>()
     for (const [seriesIndex, keys] of keysPerSeries.entries()) {
       const timestamps = sources[seriesIndex][0] as number[]
       for (const [pointIndex, key] of keys.entries()) timestampByKey.set(key, timestamps[pointIndex])
     }
-    const allKeys = [...timestampByKey.keys()].toSorted((a, b) => (timestampByKey.get(a) as number) - (timestampByKey.get(b) as number))
+    const points = [...timestampByKey].toSorted(([, a], [, b]) => a - b)
+    const timestamps = points.map(([, timestamp]) => timestamp)
 
     for (const [seriesIndex, source] of sources.entries()) {
-      if (keysPerSeries[seriesIndex].length === allKeys.length) continue
+      if (keysPerSeries[seriesIndex].length === points.length) continue
       const pointIndexByKey = new Map(keysPerSeries[seriesIndex].map((key, pointIndex) => [key, pointIndex]))
-      dataset[datasetIndexes[seriesIndex]].source = source.map((row, rowIndex) =>
-        allKeys.map((key) => {
-          const pointIndex = pointIndexByKey.get(key)
-          return pointIndex == undefined ? (rowIndex === 0 ? (timestampByKey.get(key) as number) : null) : row[pointIndex]
-        })
-      )
+      const pointIndexes = points.map(([key]) => pointIndexByKey.get(key))
+      dataset[datasetIndexes[seriesIndex]].source = [
+        timestamps,
+        ...source.slice(1).map((row) => pointIndexes.map((pointIndex) => (pointIndex == undefined ? null : row[pointIndex]))),
+      ]
     }
   }
 }
@@ -618,7 +606,6 @@ async function configureChart(
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item",
   betterDirection: BetterDirection = "lower",
-  stack: string | null = null,
   stackedMeasures: readonly string[] = []
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
@@ -629,8 +616,9 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
+  const stacked = stackedMeasures.length > 0
   // Smoothing turns lines into scatter plus a derived line, which a stack cannot fill; a stacked chart keeps raw values.
-  const smoothing = settings.smoothing && stack == null
+  const smoothing = settings.smoothing && !stacked
   // Only measured values determine staleness.
   const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.filter((_, index) => !mergeResults.isCompanion(index)).map((seriesData) => (seriesData[0] ?? []) as number[]))
   const measureUnits: MeasureUnit[] = []
@@ -639,7 +627,7 @@ async function configureChart(
     mergeResults.isCompanion(index) || configuration.measures.length < 2 ? null : splitSeriesName(mergeResults.getRawSeriesName(index), configuration.measures)
   )
   const seriesStyles = resolveSeriesStyles(seriesSplits, configuration.measures, useDarkModeStore().darkMode)
-  // Where each series goes in the stack; a reference line (total) keeps -1 and leads the legend.
+  // Where each stacked series goes in the stack; a reference line (total) has no rank and leads the legend.
   const stackRankBySeriesId = new Map<string, number>()
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
@@ -673,10 +661,19 @@ async function configureChart(
       ...(hoverGroup == undefined ? {} : { [HOVER_GROUP_KEY]: hoverGroup }),
       ...(seriesStyle == null ? {} : { color: seriesStyle.color, lineStyle: { type: seriesStyle.lineType } }),
     }
-    // One stack per project/branch/machine: phases of different groups must never be summed together.
-    const stackedMeasure = stack == null ? null : findStackedMeasure(mergeResults.getRawSeriesName(dataIndex), stackedMeasures)
-    const stackGroup = stackedMeasure == null ? null : stackKey(stack as string, mergeResults.getRawSeriesName(dataIndex), stackedMeasure)
-    stackRankBySeriesId.set(seriesId, stackedMeasure == null ? -1 : stackedMeasures.indexOf(stackedMeasure))
+    let stackOptions: LineSeriesOption = {}
+    if (stacked) {
+      const split = seriesSplits[dataIndex]
+      const stackRank = split == null ? -1 : stackedMeasures.indexOf(split.measure)
+      if (split == null || stackRank === -1) {
+        // Reference line over the stack: never filled, so it cannot hide the bands below it.
+        stackOptions = { lineStyle: { ...styleOptions.lineStyle, width: 2 }, z: 10 }
+      } else {
+        stackRankBySeriesId.set(seriesId, stackRank)
+        // One stack per project/branch/machine: phases of different groups must never be summed together.
+        stackOptions = { stack: `stack:${split.group}`, areaStyle: {}, lineStyle: { ...styleOptions.lineStyle, width: 0 } }
+      }
+    }
 
     let stdDevs = resolveStdDevsPerPoint(seriesData, stdDevByOwnerSeriesId.get(seriesId))
 
@@ -731,12 +728,7 @@ async function configureChart(
         name: seriesName,
         ...styleOptions,
         type: smoothing ? "scatter" : chartType,
-        ...(stack == null
-          ? {}
-          : stackGroup == null
-            ? // Reference line over the stack: never filled, so it cannot hide the bands below it.
-              { areaStyle: undefined, lineStyle: { width: 2 }, z: 10 }
-            : { stack: stackGroup, areaStyle: {}, lineStyle: { width: 0 } }),
+        ...stackOptions,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
@@ -823,7 +815,7 @@ async function configureChart(
 
   // ECharts takes both the stacking order (bottom to top) and the legend order from the series order:
   // reference lines first, then the phases as the caller declared them.
-  if (stack != null && stackedMeasures.length > 0) {
+  if (stacked) {
     const rank = (series: LineSeriesOption | ScatterSeriesOption): number => stackRankBySeriesId.get(parseSeriesId(series.id as string).ownerSeriesId) ?? -1
     series.sort((a, b) => rank(a) - rank(b))
   }

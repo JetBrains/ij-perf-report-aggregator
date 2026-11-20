@@ -11,7 +11,6 @@
     :description="description"
     :better-direction="betterDirectionProp"
     :y-axis-scale="yAxisScale"
-    :stack="stack"
     :stacked-measures="stackedMeasures"
     @chart-closed="onChartClosed"
   />
@@ -42,7 +41,6 @@ interface Props {
   description?: string
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
-  stack?: string
   stackedMeasures?: string[]
 }
 
@@ -58,7 +56,6 @@ const {
   description,
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
-  stack,
   stackedMeasures = [],
 } = defineProps<Props>()
 

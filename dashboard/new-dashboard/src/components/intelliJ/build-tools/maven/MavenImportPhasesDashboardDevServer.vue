@@ -23,7 +23,6 @@
         :label="project"
         :measure="MAVEN_SYNC_PHASES_WITH_TOTAL"
         :projects="[project]"
-        stack="sync"
         :stacked-measures="MAVEN_SYNC_PHASES"
         :legend-formatter="(name: string) => (name === MAVEN_SYNC_TOTAL ? `${name} (= Total)` : name)"
       />

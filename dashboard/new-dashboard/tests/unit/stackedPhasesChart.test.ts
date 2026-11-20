@@ -32,22 +32,24 @@ function configure(measures: string[], stacked: string[], projects: string[]) {
   const query = new DataQuery()
   query.db = "perfintDev"
   query.table = "idea"
-  const configurator = new PredefinedMeasureConfigurator(shallowRef(measures), shallowRef(true), "line", "auto", {}, null, "item", "lower", false, "sync", stacked)
-  configurator.configureQuery(query, configuration)
-  // A second producer makes the series measure name composite ("project - metric"), as on a real dashboard.
+  // As in the app, the project producer runs before the measure one, so a series name is "<project> - <measure>".
   const aliases = projects.length === 1 ? new Map([[projects[0], ""]]) : undefined
   configureQueryProducer(configuration, { f: "project" }, projects, aliases)
+  const configurator = new PredefinedMeasureConfigurator(shallowRef(measures), shallowRef(true), "line", "auto", {}, null, "item", "lower", false, stacked)
+  configurator.configureQuery(query, configuration)
   generateQueries(query, configuration)
   return { configurator, configuration }
 }
 
-async function chart(measures: string[], stacked: string[]) {
-  const { configurator, configuration } = configure(measures, stacked, [PROJECT])
-  // Query producers run measure by measure; the chart data must come back in the same order.
-  const data: DataQueryResult = [...configuration.measureNames].map((measure) => queryResult([10, 20, 30], measure))
-  const options = (await configurator.configureChart(data, configuration)) as unknown as { series: LineSeriesOption[] }
-  // The series id is "<measureName>@<seriesName>"; the series name is the measure on a one-project chart.
-  return new Map(options.series.map((series) => [(series.id as string).split("@")[1], series.stack]))
+interface StackedChartOptions {
+  series: LineSeriesOption[]
+  dataset: { source: (number | null)[][] }[]
+}
+
+/** `data` gets the measure names in query order: query producers run measure by measure, and so does the result. */
+async function chart(measures: string[], stacked: string[], projects: string[], data: (measureNames: string[]) => DataQueryResult): Promise<StackedChartOptions> {
+  const { configurator, configuration } = configure(measures, stacked, projects)
+  return (await configurator.configureChart(data(configuration.measureNames), configuration)) as unknown as StackedChartOptions
 }
 
 describe("stacked phases chart", () => {
@@ -58,9 +60,11 @@ describe("stacked phases chart", () => {
   })
 
   it("stacks phases but leaves the reported total as a plain line", async () => {
-    const stacks = await chart([PHASE_A, PHASE_B, TOTAL], [PHASE_B, PHASE_A])
-    expect(stacks.get(PHASE_A)).toBe("sync")
-    expect(stacks.get(PHASE_B)).toBe("sync")
+    const options = await chart([PHASE_A, PHASE_B, TOTAL], [PHASE_B, PHASE_A], [PROJECT], (measureNames) => measureNames.map((measure) => queryResult([10, 20, 30], measure)))
+    // The series id is "<measureName>@<seriesName>"; the series name is the measure on a one-project chart.
+    const stacks = new Map(options.series.map((series) => [(series.id as string).split("@")[1], series.stack]))
+    expect(stacks.get(PHASE_A)).toBeTypeOf("string")
+    expect(stacks.get(PHASE_B)).toBe(stacks.get(PHASE_A))
     expect(stacks.get(TOTAL)).toBeUndefined()
     // Reference line first, then the phases in the declared (not alphabetical) order.
     expect([...stacks.keys()]).toStrictEqual([TOTAL, PHASE_B, PHASE_A])
@@ -68,21 +72,16 @@ describe("stacked phases chart", () => {
 
   it("keeps one stack per project, so projects are not summed together", async () => {
     const other = "project-import-maven-1000-modules/fastInstaller"
-    const { configurator, configuration } = configure([PHASE_A, PHASE_B], [PHASE_A, PHASE_B], [PROJECT, other])
-    const data: DataQueryResult = [...configuration.measureNames].map((_, index) => queryResult([10, 20, 30], configuration.measureNames[index], [PROJECT, other][index % 2]))
-    const options = (await configurator.configureChart(data, configuration)) as unknown as { series: LineSeriesOption[] }
+    const options = await chart([PHASE_A, PHASE_B], [PHASE_A, PHASE_B], [PROJECT, other], (measureNames) =>
+      measureNames.map((measure, index) => queryResult([10, 20, 30], measure, [PROJECT, other][index % 2]))
+    )
     const stacks = options.series.map((series) => series.stack)
     expect(new Set(stacks).size).toBe(2)
   })
 
   it("aligns stacked phases on the build, so a missing point is not added to another build", async () => {
-    const { configurator, configuration } = configure([PHASE_A, PHASE_B], [PHASE_A, PHASE_B], [PROJECT])
     // PHASE_B misses the middle build: without alignment its 1000 would land on build 1 and sum to 1003.
-    const data: DataQueryResult = [queryResult([1, 2, 3], PHASE_A), queryResult([10, 1000], PHASE_B, PROJECT, [0, 2])]
-    const options = (await configurator.configureChart(data, configuration)) as unknown as {
-      series: LineSeriesOption[]
-      dataset: { source: (number | null)[][] }[]
-    }
+    const options = await chart([PHASE_A, PHASE_B], [PHASE_A, PHASE_B], [PROJECT], () => [queryResult([1, 2, 3], PHASE_A), queryResult([10, 1000], PHASE_B, PROJECT, [0, 2])])
     const sourceOf = (measure: string) => options.dataset[options.series.find((series) => (series.id as string).includes(measure))?.datasetIndex as number].source
     expect(sourceOf(PHASE_A)[0]).toStrictEqual([1000, 1001, 1002])
     expect(sourceOf(PHASE_B)[0]).toStrictEqual([1000, 1001, 1002])

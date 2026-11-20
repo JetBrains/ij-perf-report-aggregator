@@ -87,6 +87,7 @@ enum ROUTES {
   IntelliJGradleDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDev`,
   IntelliJMavenDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardDev`,
   IntelliJMavenImportersConfiguratorsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboardDev`,
+  IntelliJMavenPhasesDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenPhasesDashboardDev`,
   IntelliJJpsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboardDev`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
@@ -359,6 +360,7 @@ const IDEA: Product = {
         tab(ROUTES.IntelliJGradleDashboardDev, "Gradle Import DevServer"),
         tab(ROUTES.IntelliJMavenDashboardDev, "Maven Import DevServer"),
         tab(ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev, "Maven Importers and Configurators DevServer"),
+        tab(ROUTES.IntelliJMavenPhasesDashboardDev, "Maven Sync Phases DevServer"),
         tab(ROUTES.IntelliJJpsDashboardDev, "JPS Import DevServer"),
         tab(ROUTES.IntelliJGradleBenchmarks, "Gradle Benchmark"),
         tab(ROUTES.IntelliJBuildTests, TESTS_LABEL),
@@ -899,6 +901,11 @@ const intellijRoutes = [
     ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
     () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
     "Maven Importers And Configurators dashboard DevServer"
+  ),
+  dashboard(
+    ROUTES.IntelliJMavenPhasesDashboardDev,
+    () => import("./components/intelliJ/build-tools/maven/MavenImportPhasesDashboardDevServer.vue"),
+    "Maven Sync Phases dashboard DevServer"
   ),
   dashboard(ROUTES.IntelliJJpsDashboardDev, () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"), "JPS Import dashboard DevServer"),
   {

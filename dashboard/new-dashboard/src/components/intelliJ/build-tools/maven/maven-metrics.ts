@@ -1,3 +1,20 @@
+// Phases that sum up to maven.import.stats.sync.project.task.
+// maven.import.stats.plugins.resolving.task runs in parallel with applying.model, so it is not stacked here.
+// Ordered as the import runs them; the chart stacks them bottom to top in this order.
+export const MAVEN_SYNC_PHASES = [
+  // Static sync preimport; it can overlap read/resolve, so the stack may slightly exceed the total.
+  "import_project.fast_model_read",
+  "maven.projects.processor.reading.task",
+  "maven.projects.processor.resolving.task",
+  "maven.import.stats.applying.model.task",
+  "maven.import.configure.post.process",
+]
+
+export const MAVEN_SYNC_TOTAL = "maven.import.stats.sync.project.task"
+
+// Reported total drawn as a plain line over the stack: a gap means phases are missing or misaligned.
+export const MAVEN_SYNC_PHASES_WITH_TOTAL = [...MAVEN_SYNC_PHASES, MAVEN_SYNC_TOTAL]
+
 export const MAVEN_METRICS_DASHBOARD = [
   // Main flow
   "maven.import.stats.sync.project.task", // Full sync

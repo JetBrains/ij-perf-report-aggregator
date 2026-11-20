@@ -7,7 +7,7 @@ import { debounce } from "rxjs/debounce"
 import { distinctUntilChanged } from "rxjs/distinct-until-changed"
 import { switchMap } from "rxjs/switch-map"
 import { ref, Ref, shallowRef, toRef } from "vue"
-import { DataQueryResult } from "../components/common/DataQueryExecutor"
+import { DataQueryResult, SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
 import {
@@ -24,7 +24,7 @@ import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../components/charts/staleSeries"
-import { getSeriesId } from "../components/charts/seriesId"
+import { getSeriesId, parseSeriesId } from "../components/charts/seriesId"
 import { buildStdDevBand, getStdDevBandSeries, getStdDevMeasureName } from "../components/charts/stdDevInterval"
 import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
@@ -213,7 +213,11 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     readonly toolTipTrigger: TooltipTrigger,
     private readonly betterDirection: BetterDirection = "lower",
     // Comparison consumers do not need deviation data.
-    private readonly withStdDevInterval: boolean = false
+    private readonly withStdDevInterval: boolean = false,
+    // Non-null turns the measures into one stacked area (phases of a total).
+    private readonly stack: string | null = null,
+    // Measures to stack, bottom to top; anything else is a plain reference line over the stack.
+    private readonly stackedMeasures: readonly string[] = []
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -235,7 +239,18 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator, this.toolTipTrigger, this.betterDirection)
+    return configureChart(
+      configuration,
+      data,
+      this.chartType,
+      this.valueUnit,
+      this.symbolOptions,
+      this.accidentsConfigurator,
+      this.toolTipTrigger,
+      this.betterDirection,
+      this.stack,
+      this.stackedMeasures
+    )
   }
 }
 
@@ -355,6 +370,60 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
     throw new Error("order must be configured only by MetricLoader")
   }
   query.order = "t"
+}
+
+/** The measure a series plots, taken from its raw name ("<measure> - <project>", "<branch> - <measure>", ...). */
+function findStackedMeasure(rawSeriesName: string, stackedMeasures: readonly string[]): string | null {
+  return rawSeriesName.split(SERIES_NAME_SEPARATOR).find((part) => stackedMeasures.includes(part)) ?? null
+}
+
+/** Phases of one project/branch/machine share a stack; the remaining name parts identify that group. */
+function stackKey(stack: string, rawSeriesName: string, measure: string): string {
+  const group = rawSeriesName
+    .split(SERIES_NAME_SEPARATOR)
+    .filter((part) => part !== measure)
+    .join(SERIES_NAME_SEPARATOR)
+  return group.length === 0 ? stack : `${stack}:${group}`
+}
+
+/**
+ * ECharts sums stacked series by point index, so a phase missing in one build (or an outlier removed from one
+ * series only) would otherwise be added to another build's value. Pads every stacked series of a stack to the
+ * union of their build/timestamp keys, keeping gaps as nulls.
+ */
+function alignStackedDatasets(series: readonly (LineSeriesOption | ScatterSeriesOption)[], dataset: DatasetOption[]): void {
+  const datasetIndexesByStack = new Map<string, number[]>()
+  for (const it of series) {
+    if (typeof it.stack !== "string" || typeof it.datasetIndex !== "number") continue
+    datasetIndexesByStack.set(it.stack, [...(datasetIndexesByStack.get(it.stack) ?? []), it.datasetIndex])
+  }
+
+  for (const datasetIndexes of datasetIndexesByStack.values()) {
+    if (datasetIndexes.length < 2) continue
+    const sources = datasetIndexes.map((index) => (dataset[index].source ?? []) as (string | number | null)[][])
+    if (sources.some((source) => source[0] == undefined)) continue
+    const keysPerSeries = sources.map((source) => getPointKeys(source as (string | number)[][]))
+    // Repeated measurements share a build and a timestamp; pairing them is ambiguous, so leave such a stack alone.
+    if (keysPerSeries.some((keys) => new Set(keys).size !== keys.length)) continue
+
+    const timestampByKey = new Map<PointKey, number>()
+    for (const [seriesIndex, keys] of keysPerSeries.entries()) {
+      const timestamps = sources[seriesIndex][0] as number[]
+      for (const [pointIndex, key] of keys.entries()) timestampByKey.set(key, timestamps[pointIndex])
+    }
+    const allKeys = [...timestampByKey.keys()].toSorted((a, b) => (timestampByKey.get(a) as number) - (timestampByKey.get(b) as number))
+
+    for (const [seriesIndex, source] of sources.entries()) {
+      if (keysPerSeries[seriesIndex].length === allKeys.length) continue
+      const pointIndexByKey = new Map(keysPerSeries[seriesIndex].map((key, pointIndex) => [key, pointIndex]))
+      dataset[datasetIndexes[seriesIndex]].source = source.map((row, rowIndex) =>
+        allKeys.map((key) => {
+          const pointIndex = pointIndexByKey.get(key)
+          return pointIndex == undefined ? (rowIndex === 0 ? (timestampByKey.get(key) as number) : null) : row[pointIndex]
+        })
+      )
+    }
+  }
 }
 
 function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, DetectedChange>()) {
@@ -548,7 +617,9 @@ async function configureChart(
   symbolOptions: SymbolOptions = {},
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item",
-  betterDirection: BetterDirection = "lower"
+  betterDirection: BetterDirection = "lower",
+  stack: string | null = null,
+  stackedMeasures: readonly string[] = []
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
 
@@ -558,6 +629,8 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
+  // Smoothing turns lines into scatter plus a derived line, which a stack cannot fill; a stacked chart keeps raw values.
+  const smoothing = settings.smoothing && stack == null
   // Only measured values determine staleness.
   const chartLastTimestamp = getChartLastTimestamp(mergeResults.data.filter((_, index) => !mergeResults.isCompanion(index)).map((seriesData) => (seriesData[0] ?? []) as number[]))
   const measureUnits: MeasureUnit[] = []
@@ -566,6 +639,8 @@ async function configureChart(
     mergeResults.isCompanion(index) || configuration.measures.length < 2 ? null : splitSeriesName(mergeResults.getRawSeriesName(index), configuration.measures)
   )
   const seriesStyles = resolveSeriesStyles(seriesSplits, configuration.measures, useDarkModeStore().darkMode)
+  // Where each series goes in the stack; a reference line (total) keeps -1 and leads the legend.
+  const stackRankBySeriesId = new Map<string, number>()
   // eslint-disable-next-line prefer-const
   for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
     // A companion is drawn as a band around its mean rather than as a line.
@@ -598,6 +673,11 @@ async function configureChart(
       ...(hoverGroup == undefined ? {} : { [HOVER_GROUP_KEY]: hoverGroup }),
       ...(seriesStyle == null ? {} : { color: seriesStyle.color, lineStyle: { type: seriesStyle.lineType } }),
     }
+    // One stack per project/branch/machine: phases of different groups must never be summed together.
+    const stackedMeasure = stack == null ? null : findStackedMeasure(mergeResults.getRawSeriesName(dataIndex), stackedMeasures)
+    const stackGroup = stackedMeasure == null ? null : stackKey(stack as string, mergeResults.getRawSeriesName(dataIndex), stackedMeasure)
+    stackRankBySeriesId.set(seriesId, stackedMeasure == null ? -1 : stackedMeasures.indexOf(stackedMeasure))
+
     let stdDevs = resolveStdDevsPerPoint(seriesData, stdDevByOwnerSeriesId.get(seriesId))
 
     if (settings.removeOutliers) {
@@ -606,7 +686,7 @@ async function configureChart(
       if (stdDevs != undefined) stdDevs = seriesData.pop() as number[]
     }
 
-    if (settings.smoothing) {
+    if (smoothing) {
       const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])
       seriesData.push(smoothedData)
     }
@@ -650,7 +730,13 @@ async function configureChart(
         id: seriesId,
         name: seriesName,
         ...styleOptions,
-        type: settings.smoothing ? "scatter" : chartType,
+        type: smoothing ? "scatter" : chartType,
+        ...(stack == null
+          ? {}
+          : stackGroup == null
+            ? // Reference line over the stack: never filled, so it cannot hide the bands below it.
+              { areaStyle: undefined, lineStyle: { width: 2 }, z: 10 }
+            : { stack: stackGroup, areaStyle: {}, lineStyle: { width: 0 } }),
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
@@ -665,7 +751,7 @@ async function configureChart(
           if (isValueShouldBeMarkedAsException(accidents)) {
             return symbolSize * 1.2
           }
-          return settings.smoothing ? symbolSize / 3 : symbolSize
+          return smoothing ? symbolSize / 3 : symbolSize
         },
         symbolRotate(value: string[]): number {
           // The "arrow" symbol points up by default; rotate 180° to point down when the value fell.
@@ -693,7 +779,7 @@ async function configureChart(
         itemStyle: getItemStyleForSeries(accidentsConfigurator, detectedChanges),
         markLine: getStaleSeriesMarkLine(reportedTimestamps, chartLastTimestamp),
       })
-      if (settings.smoothing) {
+      if (smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
           id: seriesId + "smoothed",
@@ -731,6 +817,15 @@ async function configureChart(
       source: seriesData,
       sourceHeader: false,
     })
+  }
+
+  alignStackedDatasets(series, dataset)
+
+  // ECharts takes both the stacking order (bottom to top) and the legend order from the series order:
+  // reference lines first, then the phases as the caller declared them.
+  if (stack != null && stackedMeasures.length > 0) {
+    const rank = (series: LineSeriesOption | ScatterSeriesOption): number => stackRankBySeriesId.get(parseSeriesId(series.id as string).ownerSeriesId) ?? -1
+    series.sort((a, b) => rank(a) - rank(b))
   }
 
   // While scaling, axis values are baseline ratios, so they render as plain numbers.

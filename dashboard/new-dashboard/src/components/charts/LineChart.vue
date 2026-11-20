@@ -110,6 +110,8 @@ interface LineChartProps {
   description?: string
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
+  stack?: string
+  stackedMeasures?: string[]
 }
 
 const {
@@ -126,6 +128,8 @@ const {
   description,
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
+  stack,
+  stackedMeasures = [],
 } = defineProps<LineChartProps>()
 
 // One central lookup feeds both the trend-direction rule and the header info popup; the matching prop
@@ -228,7 +232,9 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   accidentsConfigurator,
   tooltipTrigger,
   resolvedBetterDirection.value,
-  true
+  true,
+  stack ?? null,
+  stackedMeasures
 )
 
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]

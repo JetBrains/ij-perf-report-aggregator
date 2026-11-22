@@ -39,6 +39,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
+import { jvmCostCharts } from "./jvmCostCharts"
 
 interface ChartDef {
   key: string
@@ -104,6 +105,7 @@ const allProjects = [...fileAnalysisProjects, ...globalInspectionProjects, ...go
 const fileAnalysisCharts: ChartDef[] = [
   { key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" },
   { key: "fusHighlighting", label: "Highlighting Duration (FUS)", measure: "fus_daemon_finished_full_duration_since_started_ms" },
+  ...jvmCostCharts("firstCodeAnalysis", "File Analysis on Open", "firstCodeAnalysis"),
 ]
 
 // Which highlighting pass moved the file analysis time, and whether the findings changed with it: a faster run
@@ -120,6 +122,7 @@ const globalInspectionCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code over the whole project — the offline run, not on-the-fly highlighting.",
   },
+  ...jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
 ]
 
 const golangciLintCharts: ChartDef[] = [
@@ -135,6 +138,8 @@ const golangciLintCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code with golangci-lint external linter over the whole project.",
   },
+  ...jvmCostCharts("localInspectionsGolangci", "Local Inspections (golangci-lint)", "localInspections"),
+  ...jvmCostCharts("globalInspectionsGolangci", "Global Inspections (golangci-lint)", "globalInspections"),
 ]
 
 const singleInspectionCharts: ChartDef[] = [

@@ -39,6 +39,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
+import { jvmCostCharts } from "./jvmCostCharts"
 
 interface ChartDef {
   key: string
@@ -75,6 +76,7 @@ const inspectionCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code over the whole project — baseline cost before DFA analysis.",
   },
+  ...jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
 ]
 
 const generalCharts: ChartDef[] = [

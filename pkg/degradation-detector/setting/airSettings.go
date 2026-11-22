@@ -6,12 +6,23 @@ import (
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
-// The Air performance tests run once a night on intellij-linux-performance-aws agents. A stable metric varies by up to
-// about 7 % from night to night, a noisy one by 10 % to 40 %. The thresholds keep a false alarm to a few percent of the
-// metrics a month: a stable metric reports a step of about 20 %, a noisy one a step of about 50 %, after 5 nights.
+// The Air performance tests run each scenario 5 times a night and report the median of the passes, so one value is one
+// stable measurement. airStep judges each night against the 10 nights before it and reports a step on the first slow
+// night, with the last fast build beside it. Its band is the largest of a relative change, an absolute change and 5
+// robust standard deviations of the baseline, so a noisy metric needs a larger change. Over the nights from 2026-10-12
+// to 2026-11-21 it reported each step that a person saw in the charts, the step of 2026-11-19 on its first night, and
+// no step that the charts do not show.
+func airStep(relative float64, absolute float64) detector.AnalysisSettings {
+	return detector.AnalysisSettings{
+		ReportType:   detector.DegradationEvent,
+		AnalysisKind: detector.StepAnalysis,
+		Step:         detector.StepSettings{Relative: relative, Absolute: absolute, Noise: 5},
+	}
+}
+
 var (
-	airStable = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 15, EffectSizeThreshold: 2}
-	airNoisy  = detector.AnalysisSettings{ReportType: detector.DegradationEvent, MedianDifferenceThreshold: 25, EffectSizeThreshold: 3}
+	airTime = airStep(25, 30)
+	airHeap = airStep(20, 50)
 )
 
 // airOverWindow is the number of nights whose median airOver compares to the limit. One slow night of a run that
@@ -38,14 +49,13 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		analysis detector.AnalysisSettings
 	}
 	longSession := []metric{
-		{"open.%s.coverRemovedMs", airStable},
-		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airStable},
+		{"open.%s.gestureToTabMs", airTime},
+		{"open.%s.coverRemovedMs", airTime},
+		{"checkpoint.%s.frontend_transcript_rows_applied.elapsedMs", airTime},
 		{"continue.%s.loadAnsweredToPromptMs", airOver(300)},
-		{"answer.%s.streamLagP95Ms", airNoisy},
-		// The settle after the long answer takes 350-600 ms by the size, so a limit of 300 ms reported each night. A night
-		// moves it by up to 15 %, and a step of its median is the change to find.
-		{"answer.%s.streamEndToSettledMs", airNoisy},
-		{"heap.%s.heapLive.MiB", airStable},
+		{"answer.%s.streamLagP95Ms", airTime},
+		{"answer.%s.streamEndToSettledMs", airTime},
+		{"heap.%s.heapLive.MiB", airHeap},
 		{"prompt.%s.codeP95Ms", airOver(50)},
 		{"scroll.%s.wheelP95Ms", airOver(50)},
 		// A jump to the start and to 0.4 of the history lands on rows that are not built yet. A blank screen of 200 ms
@@ -55,15 +65,15 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 	}
 	metrics := map[string][]metric{
 		"air/many-agents": {
-			{"manyAgents.heapLive.MiB", airStable},
-			{"manyAgents.focusedContentLagP95Ms", airNoisy},
+			{"manyAgents.heapLive.MiB", airHeap},
+			{"manyAgents.focusedContentLagP95Ms", airTime},
 			// The longest EDT wait of the run is about 50 ms on a usual night, so the limit is twice that: 6 frames.
 			{"manyAgents.edtMaxMs", airOver(100)},
 		},
 		"air/session-list": {
-			{"sessionList.heapLive.MiB", airStable},
-			{"sessionList.refreshMedianMs", airStable},
-			{"sessionList.firstShowMs", airNoisy},
+			{"sessionList.heapLive.MiB", airHeap},
+			{"sessionList.refreshMedianMs", airTime},
+			{"sessionList.firstShowMs", airTime},
 		},
 	}
 	for _, size := range []string{"M", "XL", "XXL"} {
@@ -73,7 +83,7 @@ func GenerateAirSettings() []detector.PerformanceSettings {
 		}
 	}
 
-	settings := make([]detector.PerformanceSettings, 0, 34)
+	settings := make([]detector.PerformanceSettings, 0, 37)
 	for test, metrics := range metrics {
 		for _, m := range metrics {
 			settings = append(settings, detector.PerformanceSettings{

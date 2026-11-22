@@ -44,17 +44,22 @@ type Hook struct {
 // HookEvent is the JSON body of a hook request.
 type HookEvent struct {
 	// EventID is the same for every delivery of one degradation, so the receiver can drop a repeated one.
-	EventID       string  `json:"eventId"`
-	Source        string  `json:"source"`
-	Kind          string  `json:"kind"`
-	Db            string  `json:"db"`
-	Table         string  `json:"table"`
-	Project       string  `json:"project"`
-	Metric        string  `json:"metric"`
-	Mode          string  `json:"mode"`
-	Branch        string  `json:"branch"`
-	Machine       string  `json:"machine"`
-	Build         string  `json:"build"`
+	EventID string `json:"eventId"`
+	Source  string `json:"source"`
+	Kind    string `json:"kind"`
+	Db      string `json:"db"`
+	Table   string `json:"table"`
+	Project string `json:"project"`
+	Metric  string `json:"metric"`
+	Mode    string `json:"mode"`
+	Branch  string `json:"branch"`
+	Machine string `json:"machine"`
+	Build   string `json:"build"`
+	// PreviousBuild is the last build with the old value, when the analysis knows it. Then the change came with the
+	// commits between PreviousBuild and Build.
+	PreviousBuild string `json:"previousBuild,omitempty"`
+	// Analysis names the check that found the change: "step", "drift", "threshold" or "change-point".
+	Analysis      string  `json:"analysis"`
 	Date          string  `json:"date"`
 	PreviousValue float64 `json:"previousValue"`
 	NewValue      float64 `json:"newValue"`
@@ -125,6 +130,8 @@ func newHookEvent(s PerformanceSettings, d Degradation) HookEvent {
 		Branch:        s.Branch,
 		Machine:       s.Machine,
 		Build:         d.Build,
+		PreviousBuild: d.PreviousBuild,
+		Analysis:      analysisName(d),
 		Date:          time.UnixMilli(d.timestamp).UTC().Format(time.RFC3339),
 		PreviousValue: d.medianValues.previousValue,
 		NewValue:      d.medianValues.newValue,
@@ -133,6 +140,18 @@ func newHookEvent(s PerformanceSettings, d Degradation) HookEvent {
 		ChartURL:      slackLinkURL(s.ChartLink(d)),
 		ReportURL:     slackLinkURL(eventLink(s.Project, d.Build, d.timestamp)),
 	}
+}
+
+func analysisName(d Degradation) string {
+	switch {
+	case d.step != nil && d.step.kind == StepDrift:
+		return "drift"
+	case d.step != nil:
+		return "step"
+	case d.threshold != nil:
+		return "threshold"
+	}
+	return "change-point"
 }
 
 // slackLinkURL returns the URL of a Slack link "<url|text>", or the text itself when it is no Slack link.

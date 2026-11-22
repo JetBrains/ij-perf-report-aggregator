@@ -10,12 +10,17 @@ import (
 )
 
 type Degradation struct {
-	Build         string
+	Build string
+	// PreviousBuild is the run before Build, when the analysis knows it: the last run with the old value. A step
+	// analysis sets it, so the change came with the commits between the two runs.
+	PreviousBuild string
 	timestamp     int64
 	medianValues  CenterValues
 	IsDegradation bool
 	// threshold is set when a threshold analysis found the degradation: newValue of medianValues is over it.
 	threshold *Threshold
+	// step is set when a step analysis found the degradation.
+	step *StepChange
 }
 
 // Threshold is the limit that a threshold analysis compared, and the number of the latest values of its median.
@@ -41,6 +46,7 @@ type analysisSettings interface {
 	GetThresholdMode() ThresholdMode
 	GetThresholdValue() float64
 	GetThresholdWindowing() (window int, onCrossing bool)
+	GetStepSettings() StepSettings
 }
 
 func (v CenterValues) PercentageChange() float64 {
@@ -50,8 +56,12 @@ func (v CenterValues) PercentageChange() float64 {
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
 	degradations := make([]Degradation, 0)
 
-	if analysisSettings.GetAnalysisKind() == ThresholdAnalysis {
+	switch analysisSettings.GetAnalysisKind() {
+	case ThresholdAnalysis:
 		return detectThresholdExceed(values, builds, timestamps, analysisSettings)
+	case StepAnalysis:
+		return detectSteps(values, builds, timestamps, analysisSettings.GetStepSettings(), analysisSettings.GetReportType())
+	case ChangePointAnalysis:
 	}
 
 	minimumSegmentLength := analysisSettings.GetMinimumSegmentLength()

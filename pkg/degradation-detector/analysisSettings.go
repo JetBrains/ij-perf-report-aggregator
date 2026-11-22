@@ -17,6 +17,8 @@ type AnalysisKind int
 const (
 	ChangePointAnalysis AnalysisKind = iota
 	ThresholdAnalysis
+	// StepAnalysis judges each run against the baseline of the runs before it. See detectSteps.
+	StepAnalysis
 )
 
 // ThresholdMode specifies how the latest value should be compared to the threshold.
@@ -55,6 +57,9 @@ type AnalysisSettings struct {
 	// A threshold analysis reports only the run at which the median crosses the threshold, not each later run that
 	// stays over it. The default value reports each run over the threshold.
 	ThresholdOnCrossing bool
+
+	// Step configures a StepAnalysis.
+	Step StepSettings
 }
 
 func (s AnalysisSettings) GetReportType() ReportType {
@@ -98,3 +103,6 @@ func (s AnalysisSettings) GetThresholdValue() float64 { return s.ThresholdValue 
 func (s AnalysisSettings) GetThresholdWindowing() (int, bool) {
 	return max(s.ThresholdWindow, 1), s.ThresholdOnCrossing
 }
+
+// GetStepSettings returns the settings of a step analysis.
+func (s AnalysisSettings) GetStepSettings() StepSettings { return s.Step }

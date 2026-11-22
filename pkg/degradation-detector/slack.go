@@ -206,6 +206,9 @@ func getMachineGroup(pattern string) string {
 
 // getReason says why the detector reported d: the step of the median, or the median of the latest values over a threshold.
 func getReason(d Degradation) string {
+	if d.step != nil {
+		return getStepReason(d)
+	}
 	if d.threshold == nil {
 		return getMessageBasedOnMedianChange(d.medianValues)
 	}
@@ -215,6 +218,23 @@ func getReason(d Degradation) string {
 	}
 	return fmt.Sprintf("Threshold exceeded. %s is %.2f, and the limit is %.2f. One run earlier it was %.2f.",
 		latest, d.medianValues.newValue, d.threshold.value, d.medianValues.previousValue)
+}
+
+func getStepReason(d Degradation) string {
+	change := "Degradation"
+	if !d.IsDegradation {
+		change = "Improvement"
+	}
+	ratio := ""
+	if d.medianValues.previousValue != 0 {
+		ratio = fmt.Sprintf(" (x%.2f)", d.medianValues.newValue/d.medianValues.previousValue)
+	}
+	if d.step.kind == StepDrift {
+		return fmt.Sprintf("%s: slow drift. The median of the latest %d runs is %.2f, the median of the %d runs before them is %.2f%s, and the noise band is ±%.2f.",
+			change, stepDriftWindow, d.medianValues.newValue, d.step.baseline, d.medianValues.previousValue, ratio, d.step.margin)
+	}
+	return fmt.Sprintf("%s in one run. The run is %.2f, the median of the %d runs before it is %.2f%s, and the noise band is ±%.2f. Changed between builds %s and %s.",
+		change, d.medianValues.newValue, d.step.baseline, d.medianValues.previousValue, ratio, d.step.margin, d.PreviousBuild, d.Build)
 }
 
 func getMessageBasedOnMedianChange(medianValues CenterValues) string {

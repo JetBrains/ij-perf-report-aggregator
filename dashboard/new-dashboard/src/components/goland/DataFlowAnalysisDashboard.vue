@@ -21,6 +21,25 @@
           :projects="group.projects"
         />
       </section>
+      <ChartAccordion
+        v-if="group.jvmCharts"
+        :lazy="true"
+      >
+        <AccordionPanel value="0">
+          <AccordionHeader>{{ group.title }}: JVM cost</AccordionHeader>
+          <AccordionContent>
+            <section>
+              <GroupProjectsChart
+                v-for="chart in group.jvmCharts"
+                :key="chart.key"
+                :label="`${group.prefix}: ${chart.label}`"
+                :measure="chart.measure"
+                :projects="group.projects"
+              />
+            </section>
+          </AccordionContent>
+        </AccordionPanel>
+      </ChartAccordion>
     </template>
 
     <PerProjectBreakdown
@@ -35,6 +54,10 @@
 
 <script lang="ts" setup>
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
+import AccordionPanel from "openvue/accordionpanel"
+import AccordionHeader from "openvue/accordionheader"
+import AccordionContent from "openvue/accordioncontent"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
@@ -55,6 +78,7 @@ interface GroupDef {
   prefix: string
   projects: string[]
   charts: ChartDef[]
+  jvmCharts?: ChartDef[]
 }
 
 const dfaProjects = [
@@ -76,7 +100,6 @@ const inspectionCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code over the whole project — baseline cost before DFA analysis.",
   },
-  ...jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
 ]
 
 const generalCharts: ChartDef[] = [
@@ -98,7 +121,14 @@ const stageBreakdown: BreakdownChart[] = [
 ]
 
 const allGroups: GroupDef[] = [
-  { value: "inspections", title: "Inspections", prefix: "Inspections", projects: dfaProjects, charts: inspectionCharts },
+  {
+    value: "inspections",
+    title: "Inspections",
+    prefix: "Inspections",
+    projects: dfaProjects,
+    charts: inspectionCharts,
+    jvmCharts: jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
+  },
   { value: "general", title: "General DFA Metrics", prefix: "General", projects: dfaProjects, charts: generalCharts },
 ]
 </script>

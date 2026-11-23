@@ -189,3 +189,13 @@ func TestStep_ANoisyMetricReportsItsStepOnce(t *testing.T) {
 	require.Len(t, reports, 1, "%v", reports)
 	assert.Equal(t, "b11", reports["b12"].PreviousBuild)
 }
+
+func TestStep_ASecondStepOfASmallMetricIsReported(t *testing.T) {
+	t.Parallel()
+	// The band of this metric is the absolute change of 30 ms, which is no noise to scale to the new level.
+	nights := []int{20, 22, 19, 21, 20, 18, 21, 20, 19, 22, 20, 100, 102, 240, 238}
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 2, "%v", reports)
+	assert.Equal(t, "b10", reports["b11"].PreviousBuild)
+	assert.Equal(t, "b12", reports["b13"].PreviousBuild)
+}

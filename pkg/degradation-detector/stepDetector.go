@@ -72,6 +72,8 @@ type StepChange struct {
 type band struct {
 	center float64
 	margin float64
+	// spread is the robust standard deviation of the baseline of the band.
+	spread float64
 	size   int
 }
 
@@ -87,7 +89,7 @@ func (s StepSettings) bandOf(baseline []int) (band, bool) {
 	}
 	spread := statistic.Median(deviations) * madToSigma
 	margin := max(s.Relative/100*math.Abs(center), s.Absolute, s.Noise*spread)
-	return band{center: center, margin: margin, size: len(baseline)}, true
+	return band{center: center, margin: margin, spread: spread, size: len(baseline)}, true
 }
 
 // direction returns 1 when value is over the band, -1 when it is under it, and 0 when it is in it.
@@ -127,9 +129,9 @@ func wanted(direction int, reportType ReportType) bool {
 
 // newStepAt tells whether the run at index is a new step, and returns the band that it left. A run out of the band of
 // its baseline is a new step, unless it continues an earlier step: the latest run of its baseline that was out of its
-// own band in the same direction, with every run since then near the level of that run. Near is the margin of the band
-// that the earlier run left, scaled to its level, so a noisy metric keeps its wide band at the new level, and at least
-// the relative or the absolute change of the settings. Then the run is a new step only when it also left that level in the same
+// own band in the same direction, with every run since then near the level of that run. Near is the relative or the
+// absolute change of the settings, or the noise of the baseline that the earlier run left, scaled to its level, so a
+// noisy metric keeps its wide band at the new level. Then the run is a new step only when it also left that level in the same
 // direction. So a level after a step is not reported again, also not after one quiet night near the band edge, and a
 // second step soon after the first is still reported. A run since the earlier step that is far from its level ends
 // that step: it was one outlier night, and the run is judged against its baseline alone.
@@ -161,12 +163,13 @@ func (s StepSettings) newStepAt(values []int, index int) (int, band) {
 	return 0, b
 }
 
-// levelOf returns the band of the level of one run that left the band left: the margin of left scaled to the run, and at
-// least the relative and the absolute change of the settings.
+// levelOf returns the band of the level of one run that left the band left: the relative and the absolute change of the
+// settings, or the noise part of the margin of left scaled to the run. The absolute change is not scaled, because it
+// is no noise of the metric.
 func (s StepSettings) levelOf(value float64, left band) band {
 	margin := max(s.Relative/100*math.Abs(value), s.Absolute)
 	if left.center != 0 {
-		margin = max(margin, left.margin/math.Abs(left.center)*math.Abs(value))
+		margin = max(margin, s.Noise*left.spread/math.Abs(left.center)*math.Abs(value))
 	}
 	return band{center: value, margin: margin, size: 1}
 }

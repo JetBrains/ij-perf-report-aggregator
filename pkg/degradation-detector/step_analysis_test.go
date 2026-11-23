@@ -153,3 +153,30 @@ func TestStep_ASecondStepSoonAfterTheFirstIsReportedToo(t *testing.T) {
 	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
 	assert.Equal(t, "b17", reports["b18"].PreviousBuild)
 }
+
+func TestStep_AnOutlierNightDoesNotHideALaterStep(t *testing.T) {
+	t.Parallel()
+	// One night of the flaky click of 10 s, one normal night, then a regression of 2x that stays.
+	nights := append(append([]int{}, coverRemovedBefore...), 12930, 2400, 5000, 5010, 4990, 5020, 4980)
+	reports := nightByNight(nights, stepAnalysis())
+	require.Contains(t, reports, "b21", "%v", reports)
+	assert.Equal(t, "b20", reports["b21"].PreviousBuild)
+	assert.InDelta(t, 5000, reports["b21"].medianValues.newValue, 0.0001)
+}
+
+func TestStep_ALevelThatSettlesBelowTheFirstSlowNightIsNotReportedAgain(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 2000, 1700, 1650, 1680, 1700)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_AnOutlierNightTwoNightsBeforeAStepDoesNotHideIt(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights[:14]...), 4679, 1051, 1380, 1367, 1390)
+	reports := nightByNight(nights, airTimeStep())
+	require.Contains(t, reports, "b16", "%v", reports)
+	assert.Equal(t, "b15", reports["b16"].PreviousBuild)
+	assert.Len(t, reports, 2, "the outlier and the step")
+}

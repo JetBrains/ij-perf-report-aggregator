@@ -21,6 +21,25 @@
           :projects="group.projects"
         />
       </section>
+      <ChartAccordion
+        v-if="group.jvmCharts"
+        :lazy="true"
+      >
+        <AccordionPanel value="0">
+          <AccordionHeader>{{ group.title }}: JVM cost</AccordionHeader>
+          <AccordionContent>
+            <section>
+              <GroupProjectsChart
+                v-for="chart in group.jvmCharts"
+                :key="chart.key"
+                :label="`${group.prefix}: ${chart.label}`"
+                :measure="chart.measure"
+                :projects="group.projects"
+              />
+            </section>
+          </AccordionContent>
+        </AccordionPanel>
+      </ChartAccordion>
     </template>
 
     <PerProjectBreakdown
@@ -35,6 +54,10 @@
 
 <script lang="ts" setup>
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import ChartAccordion from "../charts/ChartAccordion.vue"
+import AccordionPanel from "openvue/accordionpanel"
+import AccordionHeader from "openvue/accordionheader"
+import AccordionContent from "openvue/accordioncontent"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
@@ -55,6 +78,7 @@ interface GroupDef {
   prefix: string
   projects: string[]
   charts: ChartDef[]
+  jvmCharts?: ChartDef[]
 }
 
 const fileAnalysisProjects = [
@@ -105,7 +129,6 @@ const allProjects = [...fileAnalysisProjects, ...globalInspectionProjects, ...go
 const fileAnalysisCharts: ChartDef[] = [
   { key: "firstCodeAnalysis", label: "File Analysis on Open", measure: "firstCodeAnalysis" },
   { key: "fusHighlighting", label: "Highlighting Duration (FUS)", measure: "fus_daemon_finished_full_duration_since_started_ms" },
-  ...jvmCostCharts("firstCodeAnalysis", "File Analysis on Open", "firstCodeAnalysis"),
 ]
 
 // Which highlighting pass moved the file analysis time, and whether the findings changed with it: a faster run
@@ -122,7 +145,6 @@ const globalInspectionCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code over the whole project — the offline run, not on-the-fly highlighting.",
   },
-  ...jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
 ]
 
 const golangciLintCharts: ChartDef[] = [
@@ -138,8 +160,6 @@ const golangciLintCharts: ChartDef[] = [
     measure: "globalInspections",
     description: "Batch Inspect Code with golangci-lint external linter over the whole project.",
   },
-  ...jvmCostCharts("localInspectionsGolangci", "Local Inspections (golangci-lint)", "localInspections"),
-  ...jvmCostCharts("globalInspectionsGolangci", "Global Inspections (golangci-lint)", "globalInspections"),
 ]
 
 const singleInspectionCharts: ChartDef[] = [
@@ -152,9 +172,33 @@ const singleInspectionCharts: ChartDef[] = [
 ]
 
 const allGroups: GroupDef[] = [
-  { value: "fileAnalysis", title: "File Analysis on Open", prefix: "File Analysis", projects: fileAnalysisProjects, charts: fileAnalysisCharts },
-  { value: "globalInspections", title: "Global Inspections", prefix: "Global", projects: globalInspectionProjects, charts: globalInspectionCharts },
-  { value: "golangciLint", title: "golangci-lint", prefix: "golangci-lint", projects: [...golangciLintLocalProjects, ...golangciLintGlobalProjects], charts: golangciLintCharts },
+  {
+    value: "fileAnalysis",
+    title: "File Analysis on Open",
+    prefix: "File Analysis",
+    projects: fileAnalysisProjects,
+    charts: fileAnalysisCharts,
+    jvmCharts: jvmCostCharts("firstCodeAnalysis", "File Analysis on Open", "firstCodeAnalysis"),
+  },
+  {
+    value: "globalInspections",
+    title: "Global Inspections",
+    prefix: "Global",
+    projects: globalInspectionProjects,
+    charts: globalInspectionCharts,
+    jvmCharts: jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
+  },
+  {
+    value: "golangciLint",
+    title: "golangci-lint",
+    prefix: "golangci-lint",
+    projects: [...golangciLintLocalProjects, ...golangciLintGlobalProjects],
+    charts: golangciLintCharts,
+    jvmCharts: [
+      ...jvmCostCharts("localInspectionsGolangci", "Local Inspections (golangci-lint)", "localInspections"),
+      ...jvmCostCharts("globalInspectionsGolangci", "Global Inspections (golangci-lint)", "globalInspections"),
+    ],
+  },
   { value: "singleInspections", title: "Single Inspections: Code Style", prefix: "Code Style", projects: singleInspectionProjects, charts: singleInspectionCharts },
 ]
 </script>

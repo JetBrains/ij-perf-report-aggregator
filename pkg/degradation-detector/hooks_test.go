@@ -256,3 +256,31 @@ func TestADegradationOfANightlySeriesReachesTheHook(t *testing.T) {
 	assert.Equal(t, "1014", event.Build, "the first build after the step")
 	assert.InDelta(t, 50, event.ChangePercent, 3)
 }
+
+func TestAStepReachesTheHookOnItsFirstNight(t *testing.T) {
+	server, stub := newHookStub(t, 0, 0)
+	t.Setenv("TEST_STEP_HOOK_URL", server.URL)
+	t.Setenv("TEST_STEP_HOOK_URL_TOKEN", "secret")
+
+	result := queryResult{}
+	for i, value := range []int{560, 532, 548, 571, 540, 555, 566, 538, 549, 561, 11100} {
+		result.values = append(result.values, value)
+		result.builds = append(result.builds, strconv.Itoa(2000+i))
+		result.timestamps = append(result.timestamps, time.Date(2026, 11, 10+i, 3, 0, 0, 0, time.UTC).UnixMilli())
+	}
+	settings := hookTestSettings("air/long-session/XL")
+	settings.AnalysisSettings = AnalysisSettings{ReportType: DegradationEvent, AnalysisKind: StepAnalysis, Step: StepSettings{Relative: 25, Absolute: 30, Noise: 5}}
+	data := make(chan QueryResultWithSettings, 1)
+	data <- QueryResultWithSettings{queryResult: result, Settings: settings}
+	close(data)
+
+	SendDegradationsToHooks(MergeDegradations(InferDegradations(data)), server.Client(), []Hook{hookTestHook("TEST_STEP_HOOK_URL")})
+
+	require.Equal(t, 1, stub.count())
+	var event HookEvent
+	require.NoError(t, json.Unmarshal(stub.bodies[0], &event))
+	assert.Equal(t, "2010", event.Build, "the first slow night")
+	assert.Equal(t, "2009", event.PreviousBuild, "the last fast night")
+	assert.Equal(t, "step", event.Analysis)
+	assert.Contains(t, event.Reason, "x20")
+}

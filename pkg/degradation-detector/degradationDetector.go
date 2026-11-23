@@ -10,12 +10,17 @@ import (
 )
 
 type Degradation struct {
-	Build         string
+	Build string
+	// PreviousBuild is the run before Build, when the analysis knows it: the last run with the old value. A step
+	// analysis sets it, so the change came with the commits between the two runs.
+	PreviousBuild string
 	timestamp     int64
 	medianValues  CenterValues
 	IsDegradation bool
 	// threshold is set when a threshold analysis found the degradation: newValue of medianValues is over it.
 	threshold *Threshold
+	// step is set when a step analysis found the degradation.
+	step *StepChange
 }
 
 // Threshold is the limit that a threshold analysis compared, and the number of the latest values of its median.
@@ -43,6 +48,12 @@ type analysisSettings interface {
 	GetThresholdWindowing() (window int, onCrossing bool)
 }
 
+// stepSettingsProvider gives the settings of a step analysis. It stays apart from analysisSettings, so that a settings
+// type that has no step analysis needs no method for it.
+type stepSettingsProvider interface {
+	GetStepSettings() StepSettings
+}
+
 func (v CenterValues) PercentageChange() float64 {
 	return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
@@ -50,8 +61,16 @@ func (v CenterValues) PercentageChange() float64 {
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
 	degradations := make([]Degradation, 0)
 
-	if analysisSettings.GetAnalysisKind() == ThresholdAnalysis {
+	switch analysisSettings.GetAnalysisKind() {
+	case ThresholdAnalysis:
 		return detectThresholdExceed(values, builds, timestamps, analysisSettings)
+	case StepAnalysis:
+		var step StepSettings
+		if provider, ok := analysisSettings.(stepSettingsProvider); ok {
+			step = provider.GetStepSettings()
+		}
+		return detectSteps(values, builds, timestamps, step, analysisSettings.GetReportType())
+	case ChangePointAnalysis:
 	}
 
 	minimumSegmentLength := analysisSettings.GetMinimumSegmentLength()

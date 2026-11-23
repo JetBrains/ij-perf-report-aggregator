@@ -82,16 +82,8 @@ func MergeDegradations(degradations <-chan DegradationWithSettings) chan Degrada
 			slices.SortFunc(v.Details, func(a, b Degradation) int {
 				return int(b.medianValues.PercentageChange() - a.medianValues.PercentageChange())
 			})
-			highest := v.Details[0]
-			c <- DegradationWithSettings{
-				Details: Degradation{
-					Build:         highest.Build,
-					timestamp:     highest.timestamp,
-					medianValues:  highest.medianValues,
-					IsDegradation: highest.IsDegradation,
-				},
-				Settings: v.Settings,
-			}
+			// The whole degradation goes on, so its previous build and the analysis that found it reach the message.
+			c <- DegradationWithSettings{Details: v.Details[0], Settings: v.Settings}
 		}
 	}()
 

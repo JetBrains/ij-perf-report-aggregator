@@ -107,3 +107,49 @@ func TestStep_ReportsASlowDriftOnce(t *testing.T) {
 		assert.Equal(t, "drift", analysisName(d))
 	}
 }
+
+// airTime of the Air settings: 25 %, 30 and 5 robust standard deviations.
+func airTimeStep() AnalysisSettings {
+	return AnalysisSettings{ReportType: DegradationEvent, AnalysisKind: StepAnalysis, Step: StepSettings{Relative: 25, Absolute: 30, Noise: 5}}
+}
+
+// nightByNight runs the detector after each night, as the CronJob does, and keeps each report of a build once, as the
+// store of accidents does.
+func nightByNight(nights []int, settings AnalysisSettings) map[string]Degradation {
+	reports := map[string]Degradation{}
+	for end := stepMinimumBaseline + 1; end <= len(nights); end++ {
+		for _, d := range detectOverNights(nights[:end], settings) {
+			if _, known := reports[d.Build]; !known {
+				reports[d.Build] = d
+			}
+		}
+	}
+	return reports
+}
+
+var quietNights = []int{991, 1017, 949, 1005, 1057, 1026, 1012, 985, 994, 1011, 1030, 984, 983, 1023, 943}
+
+func TestStep_AStepIsNotReportedAgainAsADrift(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1523, 1430, 1500, 1469, 1473, 1529, 1546, 1419, 1559)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_AStepNearTheBandEdgeIsNotReportedAgainAfterAQuietNight(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1320, 1239, 1300)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_ASecondStepSoonAfterTheFirstIsReportedToo(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1310, 1290, 1305, 1700, 1720)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 2, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+	assert.Equal(t, "b17", reports["b18"].PreviousBuild)
+}

@@ -495,6 +495,20 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["editor.typing.latency#max", metricInfo("Keystroke latency of the slowest keystroke in the typing run.", "milliseconds")],
   ["ui.latency#max_value", metricInfo("Maximum UI latency during the run.", "milliseconds")],
   ["ui.lagging#max_value", metricInfo("Maximum UI-thread lag during the run — the longest stretch the EDT stayed blocked and unresponsive.", "milliseconds")],
+
+  // IJent — File Watcher (AI Agent)
+  [
+    "agent.applyPatch.create.idePickup",
+    metricInfo("Time from Codex apply_patch create tool call until IDE VFS and PSI pick up the new files.", "milliseconds", undefined, "lower"),
+  ],
+  [
+    "agent.applyPatch.update.idePickup",
+    metricInfo("Time from Codex apply_patch update tool call until the open Editor and PSI reload updated files.", "milliseconds", undefined, "lower"),
+  ],
+  [
+    "agent.shellBatch.idePickup",
+    metricInfo("Time from Codex shell batch tool call until IDE VFS and PSI pick up atomic rename and 25 batch files.", "milliseconds", undefined, "lower"),
+  ],
 ])
 
 export interface MetricInfo {

@@ -46,6 +46,11 @@ type analysisSettings interface {
 	GetThresholdMode() ThresholdMode
 	GetThresholdValue() float64
 	GetThresholdWindowing() (window int, onCrossing bool)
+}
+
+// stepSettingsProvider gives the settings of a step analysis. It stays apart from analysisSettings, so that a settings
+// type that has no step analysis needs no method for it.
+type stepSettingsProvider interface {
 	GetStepSettings() StepSettings
 }
 
@@ -60,7 +65,11 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	case ThresholdAnalysis:
 		return detectThresholdExceed(values, builds, timestamps, analysisSettings)
 	case StepAnalysis:
-		return detectSteps(values, builds, timestamps, analysisSettings.GetStepSettings(), analysisSettings.GetReportType())
+		var step StepSettings
+		if provider, ok := analysisSettings.(stepSettingsProvider); ok {
+			step = provider.GetStepSettings()
+		}
+		return detectSteps(values, builds, timestamps, step, analysisSettings.GetReportType())
 	case ChangePointAnalysis:
 	}
 

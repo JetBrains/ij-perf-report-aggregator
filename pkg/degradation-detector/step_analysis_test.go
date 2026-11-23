@@ -107,3 +107,95 @@ func TestStep_ReportsASlowDriftOnce(t *testing.T) {
 		assert.Equal(t, "drift", analysisName(d))
 	}
 }
+
+// airTime of the Air settings: 25 %, 30 and 5 robust standard deviations.
+func airTimeStep() AnalysisSettings {
+	return AnalysisSettings{ReportType: DegradationEvent, AnalysisKind: StepAnalysis, Step: StepSettings{Relative: 25, Absolute: 30, Noise: 5}}
+}
+
+// nightByNight runs the detector after each night, as the CronJob does, and keeps each report of a build once, as the
+// store of accidents does.
+func nightByNight(nights []int, settings AnalysisSettings) map[string]Degradation {
+	reports := map[string]Degradation{}
+	for end := stepMinimumBaseline + 1; end <= len(nights); end++ {
+		for _, d := range detectOverNights(nights[:end], settings) {
+			if _, known := reports[d.Build]; !known {
+				reports[d.Build] = d
+			}
+		}
+	}
+	return reports
+}
+
+var quietNights = []int{991, 1017, 949, 1005, 1057, 1026, 1012, 985, 994, 1011, 1030, 984, 983, 1023, 943}
+
+func TestStep_AStepIsNotReportedAgainAsADrift(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1523, 1430, 1500, 1469, 1473, 1529, 1546, 1419, 1559)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_AStepNearTheBandEdgeIsNotReportedAgainAfterAQuietNight(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1320, 1239, 1300)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_ASecondStepSoonAfterTheFirstIsReportedToo(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 1310, 1290, 1305, 1700, 1720)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 2, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+	assert.Equal(t, "b17", reports["b18"].PreviousBuild)
+}
+
+func TestStep_AnOutlierNightDoesNotHideALaterStep(t *testing.T) {
+	t.Parallel()
+	// One night of the flaky click of 10 s, one normal night, then a regression of 2x that stays.
+	nights := append(append([]int{}, coverRemovedBefore...), 12930, 2400, 5000, 5010, 4990, 5020, 4980)
+	reports := nightByNight(nights, stepAnalysis())
+	require.Contains(t, reports, "b21", "%v", reports)
+	assert.Equal(t, "b20", reports["b21"].PreviousBuild)
+	assert.InDelta(t, 5000, reports["b21"].medianValues.newValue, 0.0001)
+}
+
+func TestStep_ALevelThatSettlesBelowTheFirstSlowNightIsNotReportedAgain(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights...), 2000, 1700, 1650, 1680, 1700)
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b14", reports["b15"].PreviousBuild)
+}
+
+func TestStep_AnOutlierNightTwoNightsBeforeAStepDoesNotHideIt(t *testing.T) {
+	t.Parallel()
+	nights := append(append([]int{}, quietNights[:14]...), 4679, 1051, 1380, 1367, 1390)
+	reports := nightByNight(nights, airTimeStep())
+	require.Contains(t, reports, "b16", "%v", reports)
+	assert.Equal(t, "b15", reports["b16"].PreviousBuild)
+	assert.Len(t, reports, 2, "the outlier and the step")
+}
+
+func TestStep_ANoisyMetricReportsItsStepOnce(t *testing.T) {
+	t.Parallel()
+	// The band of this metric comes from its noise, about 10 % a night, not from the relative change.
+	nights := []int{1000, 1120, 890, 1060, 950, 1150, 880, 1010, 1090, 920, 1040, 970, 3000, 3800, 3300, 3100, 3500}
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b11", reports["b12"].PreviousBuild)
+}
+
+func TestStep_ASecondStepOfASmallMetricIsReported(t *testing.T) {
+	t.Parallel()
+	// The band of this metric is the absolute change of 30 ms, which is no noise to scale to the new level.
+	nights := []int{20, 22, 19, 21, 20, 18, 21, 20, 19, 22, 20, 100, 102, 240, 238}
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 2, "%v", reports)
+	assert.Equal(t, "b10", reports["b11"].PreviousBuild)
+	assert.Equal(t, "b12", reports["b13"].PreviousBuild)
+}

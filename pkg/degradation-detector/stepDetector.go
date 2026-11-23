@@ -72,6 +72,8 @@ type StepChange struct {
 type band struct {
 	center float64
 	margin float64
+	// spread is the robust standard deviation of the baseline of the band.
+	spread float64
 	size   int
 }
 
@@ -87,7 +89,7 @@ func (s StepSettings) bandOf(baseline []int) (band, bool) {
 	}
 	spread := statistic.Median(deviations) * madToSigma
 	margin := max(s.Relative/100*math.Abs(center), s.Absolute, s.Noise*spread)
-	return band{center: center, margin: margin, size: len(baseline)}, true
+	return band{center: center, margin: margin, spread: spread, size: len(baseline)}, true
 }
 
 // direction returns 1 when value is over the band, -1 when it is under it, and 0 when it is in it.
@@ -125,13 +127,59 @@ func wanted(direction int, reportType ReportType) bool {
 	return false
 }
 
-// detectSteps finds the changes of the latest runs. It reports a run as a step on the night it comes: the value is out
-// of the band of the baseline before it, and the run before it was not. So the build of the report is the first run
-// with the new value, and the run before it is the last run with the old one. A level that stays after a step is
-// not reported again: once the baseline holds it, the band moves with it.
+// newStepAt tells whether the run at index is a new step, and returns the band that it left. A run out of the band of
+// its baseline is a new step, unless it continues an earlier step: the latest run of its baseline that was out of its
+// own band in the same direction, with every run since then near the level of that run. Near is the relative or the
+// absolute change of the settings, or the noise of the baseline that the earlier run left, scaled to its level, so a
+// noisy metric keeps its wide band at the new level. Then the run is a new step only when it also left that level in the same
+// direction. So a level after a step is not reported again, also not after one quiet night near the band edge, and a
+// second step soon after the first is still reported. A run since the earlier step that is far from its level ends
+// that step: it was one outlier night, and the run is judged against its baseline alone.
+func (s StepSettings) newStepAt(values []int, index int) (int, band) {
+	direction, b := s.stepAt(values, index)
+	if direction == 0 {
+		return 0, b
+	}
+	latest := -1
+	var left band
+	for earlier := index - 1; earlier >= max(1, index-s.Baseline); earlier-- {
+		if before, earlierBand := s.stepAt(values, earlier); before == direction {
+			latest, left = earlier, earlierBand
+			break
+		}
+	}
+	if latest < 0 {
+		return direction, b
+	}
+	level := s.levelOf(float64(values[latest]), left)
+	for _, value := range values[latest+1 : index] {
+		if level.direction(float64(value)) != 0 {
+			return direction, b
+		}
+	}
+	if level.direction(float64(values[index])) == direction {
+		return direction, level
+	}
+	return 0, b
+}
+
+// levelOf returns the band of the level of one run that left the band left: the relative and the absolute change of the
+// settings, or the noise part of the margin of left scaled to the run. The absolute change is not scaled, because it
+// is no noise of the metric.
+func (s StepSettings) levelOf(value float64, left band) band {
+	margin := max(s.Relative/100*math.Abs(value), s.Absolute)
+	if left.center != 0 {
+		margin = max(margin, s.Noise*left.spread/math.Abs(left.center)*math.Abs(value))
+	}
+	return band{center: value, margin: margin, size: 1}
+}
+
+// detectSteps finds the changes of the latest runs. It reports a run as a step on the night it comes, see newStepAt. So
+// the build of the report is the first run with the new value, and the run before it is the last run with the old one.
 //
 // When no run of the latest runs was a step, it compares the median of those runs to the baseline before them, and
-// reports a drift at the run where that median left the band.
+// reports a drift at the run where that median left the band. A drift needs a window and a baseline with no step, so
+// a step is never reported again as a drift.
 func detectSteps(values []int, builds []string, timestamps []int64, s StepSettings, reportType ReportType) []Degradation {
 	s = s.withDefaults()
 	result := make([]Degradation, 0, 1)
@@ -141,11 +189,8 @@ func detectSteps(values []int, builds []string, timestamps []int64, s StepSettin
 	}
 
 	for index := max(1, last-stepLookback+1); index <= last; index++ {
-		direction, b := s.stepAt(values, index)
+		direction, b := s.newStepAt(values, index)
 		if !wanted(direction, reportType) {
-			continue
-		}
-		if before, _ := s.stepAt(values, index-1); before == direction {
 			continue
 		}
 		result = append(result, Degradation{
@@ -176,14 +221,14 @@ func detectSteps(values []int, builds []string, timestamps []int64, s StepSettin
 }
 
 // driftAt tells whether the median of the window that ends at index left the band of the baseline before the window at
-// that run, with no step inside the window.
+// that run, with no step inside the window or its baseline.
 func (s StepSettings) driftAt(values []int, index int, reportType ReportType) (band, bool) {
 	isDrift := func(end int) (band, bool) {
 		start := end - stepDriftWindow + 1
 		if start < 1 {
 			return band{}, false
 		}
-		for i := start; i <= end; i++ {
+		for i := max(1, start-s.Baseline); i <= end; i++ {
 			if direction, _ := s.stepAt(values, i); direction != 0 {
 				return band{}, false
 			}

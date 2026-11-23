@@ -127,8 +127,9 @@ func wanted(direction int, reportType ReportType) bool {
 
 // newStepAt tells whether the run at index is a new step, and returns the band that it left. A run out of the band of
 // its baseline is a new step, unless it continues an earlier step: the latest run of its baseline that was out of its
-// own band in the same direction, with every run since then near the level of that run, by the relative or the
-// absolute change of the settings. Then the run is a new step only when it also left that level in the same
+// own band in the same direction, with every run since then near the level of that run. Near is the margin of the band
+// that the earlier run left, scaled to its level, so a noisy metric keeps its wide band at the new level, and at least
+// the relative or the absolute change of the settings. Then the run is a new step only when it also left that level in the same
 // direction. So a level after a step is not reported again, also not after one quiet night near the band edge, and a
 // second step soon after the first is still reported. A run since the earlier step that is far from its level ends
 // that step: it was one outlier night, and the run is judged against its baseline alone.
@@ -138,16 +139,17 @@ func (s StepSettings) newStepAt(values []int, index int) (int, band) {
 		return 0, b
 	}
 	latest := -1
+	var left band
 	for earlier := index - 1; earlier >= max(1, index-s.Baseline); earlier-- {
-		if before, _ := s.stepAt(values, earlier); before == direction {
-			latest = earlier
+		if before, earlierBand := s.stepAt(values, earlier); before == direction {
+			latest, left = earlier, earlierBand
 			break
 		}
 	}
 	if latest < 0 {
 		return direction, b
 	}
-	level := s.levelOf(float64(values[latest]))
+	level := s.levelOf(float64(values[latest]), left)
 	for _, value := range values[latest+1 : index] {
 		if level.direction(float64(value)) != 0 {
 			return direction, b
@@ -159,9 +161,14 @@ func (s StepSettings) newStepAt(values []int, index int) (int, band) {
 	return 0, b
 }
 
-// levelOf returns the band of the level of one run: the relative and the absolute change of the settings around it.
-func (s StepSettings) levelOf(value float64) band {
-	return band{center: value, margin: max(s.Relative/100*math.Abs(value), s.Absolute), size: 1}
+// levelOf returns the band of the level of one run that left the band left: the margin of left scaled to the run, and at
+// least the relative and the absolute change of the settings.
+func (s StepSettings) levelOf(value float64, left band) band {
+	margin := max(s.Relative/100*math.Abs(value), s.Absolute)
+	if left.center != 0 {
+		margin = max(margin, left.margin/math.Abs(left.center)*math.Abs(value))
+	}
+	return band{center: value, margin: margin, size: 1}
 }
 
 // detectSteps finds the changes of the latest runs. It reports a run as a step on the night it comes, see newStepAt. So

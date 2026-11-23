@@ -180,3 +180,12 @@ func TestStep_AnOutlierNightTwoNightsBeforeAStepDoesNotHideIt(t *testing.T) {
 	assert.Equal(t, "b15", reports["b16"].PreviousBuild)
 	assert.Len(t, reports, 2, "the outlier and the step")
 }
+
+func TestStep_ANoisyMetricReportsItsStepOnce(t *testing.T) {
+	t.Parallel()
+	// The band of this metric comes from its noise, about 10 % a night, not from the relative change.
+	nights := []int{1000, 1120, 890, 1060, 950, 1150, 880, 1010, 1090, 920, 1040, 970, 3000, 3800, 3300, 3100, 3500}
+	reports := nightByNight(nights, airTimeStep())
+	require.Len(t, reports, 1, "%v", reports)
+	assert.Equal(t, "b11", reports["b12"].PreviousBuild)
+}

@@ -101,6 +101,8 @@ const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   kotlinLang_slow: buildCategory("Kotlin lang (slow)", "kotlin_lang/"),
   // Same kotlinLang. Need to avoid lot of lines on chart
   kotlinScript: buildCategory("Kotlin script", ""),
+  kotlinScriptExamples: buildCategory("Kotlin script examples", "kotlin-script-examples/"),
+  tbeScript: buildCategory("Toolbox Enterprise (TBE) scripts", "toolbox_enterprise_from_space/"),
 
   kotlinLanguageServer: buildCategory("Kotlin language server", "kotlin_language_server/"),
   tbe: buildCategory("Toolbox Enterprise (TBE)", "toolbox_enterprise/"),
@@ -380,21 +382,30 @@ const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
   },
 ])
 
-const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
+const scriptHighlight = {
+  kotlinEmptyScript: KOTLIN_PROJECTS.linux.highlighting.kotlinEmptyScript,
+  kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript,
+  kotlinScriptExamples: KOTLIN_PROJECTS.linux.highlighting.kotlinScriptExamples,
+  tbeScript: KOTLIN_PROJECTS.linux.highlighting.tbeScript,
+}
 
 export const scriptChartsDescription = "This category contains various kinds of performance tests that are performed on script files (.kts)."
 
 export const codeAnalysisScriptCharts = projectsToDefinition([
   {
     projects: scriptHighlight,
-    measures: MEASURES.codeAnalysisMeasures,
+    measures: [...MEASURES.codeAnalysisMeasures, { name: "firstCodeAnalysis", label: "First Code Analysis" }],
     machines: [MACHINES.linux],
   },
 ])
 
 export const scriptCompletionCharts = projectsToDefinition([
   {
-    projects: { kotlinScript: KOTLIN_PROJECTS.linux.completion.kotlinScript },
+    projects: {
+      kotlinEmptyScript: KOTLIN_PROJECTS.linux.completion.kotlinEmptyScript,
+      kotlinScript: KOTLIN_PROJECTS.linux.completion.kotlinScript,
+      kotlinScriptExamples: KOTLIN_PROJECTS.linux.completion.kotlinScriptExamples,
+    },
     measures: MEASURES.completionMeasures,
     machines: [MACHINES.linux],
   },
@@ -402,7 +413,7 @@ export const scriptCompletionCharts = projectsToDefinition([
 
 export const scriptFindUsagesCharts = projectsToDefinition([
   {
-    projects: { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript },
+    projects: { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript, kotlinScriptExamples: KOTLIN_PROJECTS.linux.findUsages.kotlinScriptExamples },
     measures: MEASURES.findUsagesMeasures,
     machines: [MACHINES.linux],
   },

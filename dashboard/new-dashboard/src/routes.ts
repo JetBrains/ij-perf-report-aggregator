@@ -174,6 +174,7 @@ enum ROUTES {
   RustRoverDebuggerDashboardDev = `${ROUTE_PREFIX.Rust}/debuggerDashboardDev`,
   RustRoverRefactoringDashboardDev = `${ROUTE_PREFIX.Rust}/refactoringDashboardDev`,
   RustRoverUnitTestsDashboardDev = `${ROUTE_PREFIX.Rust}/unitTestsDashboardDev`,
+  RustCodeServerBattleArenaDashboard = `${ROUTE_PREFIX.Rust}/codeServerBattleArena`,
   RustTestsDev = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}Dev`,
   RustCompareBranchesDev = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}Dev`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
@@ -554,6 +555,7 @@ const RUST: Product = {
         tab(ROUTES.RustRoverDebuggerDashboardDev, "Debugger"),
         tab(ROUTES.RustRoverRefactoringDashboardDev, "Refactoring"),
         tab(ROUTES.RustRoverUnitTestsDashboardDev, "Unit Tests"),
+        tab(ROUTES.RustCodeServerBattleArenaDashboard, "Code Server Battle Arena"),
         tab(ROUTES.RustTestsDev, TESTS_LABEL),
         tab(ROUTES.RustCompareBranchesDev, COMPARE_BRANCHES_LABEL),
       ],
@@ -1045,6 +1047,11 @@ const rustRoutes = [
   dashboard(ROUTES.RustRoverDebuggerDashboardDev, () => import("./components/rust/DebuggerDashboard.vue"), "RustRover Debugger dashboard"),
   dashboard(ROUTES.RustRoverRefactoringDashboardDev, () => import("./components/rust/RefactoringDashboard.vue"), "RustRover Refactoring dashboard"),
   dashboard(ROUTES.RustRoverUnitTestsDashboardDev, () => import("./components/rust/UnitTestsDashboard.vue"), "Rust Unit Tests dashboard"),
+  dashboard(
+    ROUTES.RustCodeServerBattleArenaDashboard,
+    () => import("./components/rust/CodeServerBattleArenaDashboard.vue"),
+    "RustRover vs rust-analyzer: Code Server Battle Arena"
+  ),
   perfTests(ROUTES.RustTestsDev, { dbName: "perfintDev", table: "rust", initialMachine: MACHINES.AWS_LINUX, withInstaller: false }, "Rust Performance tests"),
   compareBranches(ROUTES.RustCompareBranchesDev, { dbName: "perfintDev", table: "rust" }),
 ]

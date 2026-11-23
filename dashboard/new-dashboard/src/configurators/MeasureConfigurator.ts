@@ -336,14 +336,16 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         valueFieldName = "value"
       } else {
         field.n = "measures"
-        if (measure.endsWith(".end")) {
+        // The `rust` table has no `measures.start`, so a metric such as `rss.end` is a plain metric there, not the end of a span
+        const isSpanEnd = measure.endsWith(".end") && query.table !== "rust"
+        if (isSpanEnd) {
           field.subName = "end"
           field.sql = "(measures.start+measures.value)"
         } else {
           field.subName = "value"
         }
 
-        addFilter({ f: "measures.name", v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure })
+        addFilter({ f: "measures.name", v: isSpanEnd ? measure.slice(0, measure.length - ".end".length) : measure })
         valueFieldName = "measures.value"
       }
 

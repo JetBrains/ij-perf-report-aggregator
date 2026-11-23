@@ -9,10 +9,11 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/comparison"
+	degradation_detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/outlier-detection"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/bytebufferpool"
 )
@@ -47,33 +48,6 @@ func toJSONBuffer(data any) (*bytebufferpool.ByteBuffer, error) {
 	return buffer, nil
 }
 
-// machineCondition renders the WHERE condition for a machine selection mixing hardware-class
-// group names and raw agent names: groups match by the computed machine_group alias (ClickHouse
-// allows aliases in WHERE), raw names by exact machine. An empty selection matches everything.
-func machineCondition(selection []string) string {
-	var groups, names []string
-	for _, value := range selection {
-		quoted := "'" + sql_util.StringEscaper.Replace(value) + "'"
-		if machine.IsGroup(value) {
-			groups = append(groups, quoted)
-		} else {
-			names = append(names, quoted)
-		}
-	}
-
-	var conditions []string
-	if len(groups) > 0 {
-		conditions = append(conditions, "machine_group IN ("+strings.Join(groups, ", ")+")")
-	}
-	if len(names) > 0 {
-		conditions = append(conditions, "machine IN ("+strings.Join(names, ", ")+")")
-	}
-	if len(conditions) == 0 {
-		return "1"
-	}
-	return strings.Join(conditions, " OR ")
-}
-
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	type requestParams struct {
 		Table        string   `json:"table"`
@@ -99,9 +73,9 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		mode = ""
 	}
 
-	sql := groupedComparisonSQL("branch", params.Table, fmt.Sprintf(
+	sql := comparison.SQL("branch", params.Table, fmt.Sprintf(
 		"branch IN ('%s', '%s') AND measure_name IN (%s) AND (%s) AND mode = '%s'",
-		params.Branch1, params.Branch2, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines), mode))
+		params.Branch1, params.Branch2, quoteAndJoin(params.MeasureNames), machine.Condition(params.Machines), mode))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -110,14 +84,14 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	var queryResults []ownerQueryResult
+	var queryResults []comparison.Series
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {
 		return nil, false, err
 	}
 
-	response := buildGroupedComparisonResponse(queryResults, params.Branch1, params.Branch2)
+	response := comparison.Compare(queryResults, params.Branch1, params.Branch2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
 }
@@ -151,9 +125,9 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		mode2 = ""
 	}
 
-	sql := groupedComparisonSQL("mode", params.Table, fmt.Sprintf(
+	sql := comparison.SQL("mode", params.Table, fmt.Sprintf(
 		"mode IN ('%s', '%s') AND branch = '%s' AND measure_name IN (%s) AND (%s)",
-		mode1, mode2, params.Branch, quoteAndJoin(params.MeasureNames), machineCondition(params.Machines)))
+		mode1, mode2, params.Branch, quoteAndJoin(params.MeasureNames), machine.Condition(params.Machines)))
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -162,14 +136,14 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	var queryResults []ownerQueryResult
+	var queryResults []comparison.Series
 
 	err = db.Select(request.Context(), &queryResults, sql)
 	if err != nil {
 		return nil, false, err
 	}
 
-	response := buildGroupedComparisonResponse(queryResults, mode1, mode2)
+	response := comparison.Compare(queryResults, mode1, mode2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
 }
@@ -260,7 +234,7 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 		effectSizeThreshold := 2.0
 
 		// Filter change points based on median difference and effect size
-		validChangePoints := filterValidChangePoints(queryResult.MetricValues, changePoints, medianDifferenceThreshold, effectSizeThreshold)
+		validChangePoints := degradation_detector.FilterValidChangePoints(queryResult.MetricValues, changePoints, medianDifferenceThreshold, effectSizeThreshold)
 
 		// Get the segment to analyze for max value
 		// Strategy: use data after the last significant behavior change

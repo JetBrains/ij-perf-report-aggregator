@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/comparison"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -68,12 +69,6 @@ type comparisonResponseItem struct {
 	CompareBranchValue float64 `json:"compareBranchValue"`
 	Diff               float64 `json:"diff"`
 	Link               string  `json:"link"`
-}
-
-type ownerQueryResult struct {
-	measureQueryResult
-
-	Machine string
 }
 
 type projectOwnerEntry struct {
@@ -133,7 +128,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}(db)
 
 		var mu sync.Mutex
-		var allResults []ownerQueryResult
+		var allResults []comparison.Series
 		var wg sync.WaitGroup
 
 		// Group projects by db+table to query only relevant combinations
@@ -220,12 +215,12 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr string) ([]ownerQueryResult, error) {
-	sql := groupedComparisonSQL("branch", dbName+"."+table, fmt.Sprintf(
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr string) ([]comparison.Series, error) {
+	sql := comparison.SQL("branch", dbName+"."+table, fmt.Sprintf(
 		"branch IN ('%s', '%s') AND measure_name IN (%s) AND machine LIKE '%s' AND mode = '%s' AND project IN (%s)",
 		baseBranch, compareBranch, metricsStr, machineFilter, mode, projectsStr))
 
-	var queryResults []ownerQueryResult
+	var queryResults []comparison.Series
 
 	if err := db.Select(ctx, &queryResults, sql); err != nil {
 		return nil, err
@@ -234,8 +229,8 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 	return queryResults, nil
 }
 
-func buildComparisonResponse(results []ownerQueryResult, dbTableMap map[string]dbTableKey, baseBranch, compareBranch string) []comparisonResponseItem {
-	grouped := buildGroupedComparisonResponse(results, baseBranch, compareBranch)
+func buildComparisonResponse(results []comparison.Series, dbTableMap map[string]dbTableKey, baseBranch, compareBranch string) []comparisonResponseItem {
+	grouped := comparison.Compare(results, baseBranch, compareBranch)
 
 	response := make([]comparisonResponseItem, 0, len(grouped))
 	for _, item := range grouped {

@@ -217,3 +217,29 @@ func GroupSQLExpr(col string) string {
 	b.WriteString("'" + unknownGroup + "')")
 	return b.String()
 }
+
+// Condition renders the WHERE condition for a machine selection mixing hardware-class
+// group names and raw agent names: groups match by the computed machine_group alias (ClickHouse
+// allows aliases in WHERE), raw names by exact machine. An empty selection matches everything.
+func Condition(selection []string) string {
+	var groups, names []string
+	for _, value := range selection {
+		if IsGroup(value) {
+			groups = append(groups, value)
+		} else {
+			names = append(names, value)
+		}
+	}
+
+	var conditions []string
+	if len(groups) > 0 {
+		conditions = append(conditions, "machine_group IN ("+quoteList(groups)+")")
+	}
+	if len(names) > 0 {
+		conditions = append(conditions, "machine IN ("+quoteList(names)+")")
+	}
+	if len(conditions) == 0 {
+		return "1"
+	}
+	return strings.Join(conditions, " OR ")
+}

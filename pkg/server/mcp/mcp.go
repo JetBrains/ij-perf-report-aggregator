@@ -1,6 +1,6 @@
 // Package mcp exposes a Streamable HTTP MCP endpoint backed by the project's ClickHouse instance.
 // The Register function mounts the handler on a chi-style router along with a small set of tools
-// for discovering tables, projects, metric names, and metric values.
+// for discovering tables, projects, metric names, and metric values, and for comparing branches.
 package mcp
 
 import (
@@ -136,6 +136,16 @@ func (s *service) buildServer() *sdk.Server {
 			"data for. build_number matches FUS product_build and is empty for Dev Server runs. " +
 			"Use search_metric_values afterwards to fetch actual measurements for any project of interest.",
 	}, s.getBuild)
+
+	sdk.AddTool(server, &sdk.Tool{
+		Name: "compare_branches",
+		Description: "Compare a branch with a base branch over every project of one table, as the dashboard page compareBranches does. " +
+			"Per project, metric and machine group, the server takes the newest 50 values of the last month on each branch, " +
+			"cuts each series after its last change point, and computes the bounds of the shift with a misrate of 0.1%. " +
+			"A row is significant when the bounds exclude 0; only these rows are returned unless include_noise is set. " +
+			"Expect about one false significant row per thousand compared rows. " +
+			"The 50 newest values of a branch mix all its revisions, so compare two revisions on two branches.",
+	}, s.compareBranches)
 
 	return server
 }

@@ -1,4 +1,6 @@
-package server
+// Package comparison compares two series of runs, such as two branches or two modes, per project, metric and
+// machine group. The dashboard compare pages and the compare_branches MCP tool share it.
+package comparison
 
 import (
 	"fmt"
@@ -12,12 +14,12 @@ import (
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/machine"
 )
 
-// groupedComparisonSQL renders the query feeding buildGroupedComparisonResponse: the latest 50
+// SQL renders the query feeding Compare: the latest 50
 // values of each measure per project/machine group for both values of dimCol (branch or mode),
 // scanning the last month. The caller supplies only its own WHERE predicates.
 // groupArraySorted keeps at most 50 values per group (newest first) instead of sorting the whole
 // month: on perfUnitTests (~1k projects) the ORDER BY variant needed ~1.8 GiB, this one ~90 MiB.
-func groupedComparisonSQL(dimCol, table, where string) string {
+func SQL(dimCol, table, where string) string {
 	return fmt.Sprintf(
 		"SELECT %[1]s AS Branch, project AS Project, measure_name AS MeasureName, machine_group AS Machine, "+
 			"arrayMap(x -> x.2, groupArraySorted(50)((-toUnixTimestamp(generated_time), measure_value))) AS MeasureValues "+
@@ -32,7 +34,8 @@ func groupedComparisonSQL(dimCol, table, where string) string {
 // because a page compares hundreds of tests at once.
 const shiftBoundsMisrate = 1e-3
 
-type branchComparisonResponseItem struct {
+// Row is marshalled as is by /api/compareBranches and /api/compareModes: its field names are their JSON.
+type Row struct {
 	Project     string
 	MeasureName string
 	Machine     string
@@ -46,10 +49,10 @@ type branchComparisonResponseItem struct {
 	Significant bool
 }
 
-// buildGroupedComparisonResponse compares value1 against value2 per project/metric/machine
+// Compare compares value1 against value2 per project/metric/machine
 // group — runs from different hardware classes are never pooled into one median (AT-4930).
 // A project/metric pair therefore yields one row per group.
-func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 string) []branchComparisonResponseItem {
+func Compare(results []Series, value1, value2 string) []Row {
 	type key struct {
 		Project     string
 		MeasureName string
@@ -59,7 +62,7 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 	branch1Map := make(map[key][]int)
 	branch2Map := make(map[key][]int)
 
-	for _, item := range filterQueryResults(results) {
+	for _, item := range trimToLastChangePoint(results) {
 		k := key{Project: item.Project, MeasureName: item.MeasureName, Machine: item.Machine}
 		if item.Branch == value1 {
 			branch1Map[k] = item.MeasureValues
@@ -68,7 +71,7 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 		}
 	}
 
-	response := make([]branchComparisonResponseItem, 0)
+	response := make([]Row, 0)
 	for k, values1 := range branch1Map {
 		values2, ok := branch2Map[k]
 		if !ok {
@@ -91,7 +94,7 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 			diff = math.Round((center2/center1-1)*1000) / 10
 		}
 
-		item := branchComparisonResponseItem{
+		item := Row{
 			Project:     k.Project,
 			MeasureName: k.MeasureName,
 			Machine:     k.Machine,
@@ -114,16 +117,19 @@ func buildGroupedComparisonResponse(results []ownerQueryResult, value1, value2 s
 	return response
 }
 
-type measureQueryResult struct {
+// Series is one row of SQL: the newest values of one project, metric and machine group on one value of the
+// compared column. Branch holds that value, which is a mode for a mode comparison.
+type Series struct {
 	Branch        string
 	Project       string
 	MeasureName   string
+	Machine       string
 	MeasureValues []int
 }
 
-// filterQueryResults trims each series to the values after its last significant change point.
-func filterQueryResults(queryResults []ownerQueryResult) []ownerQueryResult {
-	resultChan := make(chan ownerQueryResult, len(queryResults))
+// trimToLastChangePoint trims each series to the values after its last significant change point.
+func trimToLastChangePoint(queryResults []Series) []Series {
+	resultChan := make(chan Series, len(queryResults))
 	var wg sync.WaitGroup
 
 	for _, result := range queryResults {
@@ -132,7 +138,7 @@ func filterQueryResults(queryResults []ownerQueryResult) []ownerQueryResult {
 			copy(values, result.MeasureValues)
 			slices.Reverse(values)
 			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
-			validIndexes := filterValidChangePoints(values, indexes, 3.0, 3.0)
+			validIndexes := degradation_detector.FilterValidChangePoints(values, indexes, 3.0, 3.0)
 			if len(validIndexes) == 0 {
 				result.MeasureValues = values
 			} else {
@@ -147,58 +153,9 @@ func filterQueryResults(queryResults []ownerQueryResult) []ownerQueryResult {
 		close(resultChan)
 	}()
 
-	items := make([]ownerQueryResult, 0, len(queryResults))
+	items := make([]Series, 0, len(queryResults))
 	for item := range resultChan {
 		items = append(items, item)
 	}
 	return items
-}
-
-// filterValidChangePoints filters change points based on median difference and effect size thresholds
-func filterValidChangePoints(values []int, changePoints []int, medianDifferenceThreshold float64, effectSizeThreshold float64) []int {
-	if len(changePoints) == 0 {
-		return changePoints
-	}
-
-	segments := degradation_detector.GetSegmentsBetweenChangePoints(changePoints, values)
-	if len(segments) < 2 {
-		return []int{}
-	}
-
-	validChangePoints := make([]int, 0)
-
-	for i := 1; i < len(segments); i++ {
-		prevSegment := segments[i-1]
-		currentSegment := segments[i]
-
-		ratio, err := pragmastat.Ratio(currentSegment, prevSegment)
-		if err != nil {
-			continue
-		}
-
-		currentCenter, err := pragmastat.Center(currentSegment)
-		if err != nil {
-			continue
-		}
-		previousCenter, err := pragmastat.Center(prevSegment)
-		if err != nil {
-			continue
-		}
-
-		percentageChange := math.Abs((ratio - 1) * 100)
-		absoluteChange := math.Abs(currentCenter - previousCenter)
-
-		if absoluteChange < 10 || percentageChange < medianDifferenceThreshold {
-			continue
-		}
-
-		effectSize := statistic.EffectSize(currentSegment, prevSegment)
-		if effectSize < effectSizeThreshold {
-			continue
-		}
-
-		validChangePoints = append(validChangePoints, changePoints[i-1])
-	}
-
-	return validChangePoints
 }

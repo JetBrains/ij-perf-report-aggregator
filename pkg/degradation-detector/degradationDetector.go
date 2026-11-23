@@ -88,7 +88,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	}
 
 	changePoints := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
-	segments := GetSegmentsBetweenChangePoints(changePoints, values)
+	segments := getSegmentsBetweenChangePoints(changePoints, values)
 	if len(segments) < 2 {
 		slog.Debug("no significant change points were detected")
 		return degradations
@@ -198,7 +198,7 @@ func detectThresholdExceed(values []int, builds []string, timestamps []int64, s 
 	return result
 }
 
-func GetSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
+func getSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
 	segments := make([][]int, 0, len(changePoints)+1)
 	prevChangePoint := 0
 	for _, changePoint := range changePoints {
@@ -211,4 +211,53 @@ func GetSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
 		segments = append(segments, segment)
 	}
 	return segments
+}
+
+// FilterValidChangePoints filters change points based on median difference and effect size thresholds
+func FilterValidChangePoints(values []int, changePoints []int, medianDifferenceThreshold float64, effectSizeThreshold float64) []int {
+	if len(changePoints) == 0 {
+		return changePoints
+	}
+
+	segments := getSegmentsBetweenChangePoints(changePoints, values)
+	if len(segments) < 2 {
+		return []int{}
+	}
+
+	validChangePoints := make([]int, 0)
+
+	for i := 1; i < len(segments); i++ {
+		prevSegment := segments[i-1]
+		currentSegment := segments[i]
+
+		ratio, err := pragmastat.Ratio(currentSegment, prevSegment)
+		if err != nil {
+			continue
+		}
+
+		currentCenter, err := pragmastat.Center(currentSegment)
+		if err != nil {
+			continue
+		}
+		previousCenter, err := pragmastat.Center(prevSegment)
+		if err != nil {
+			continue
+		}
+
+		percentageChange := math.Abs((ratio - 1) * 100)
+		absoluteChange := math.Abs(currentCenter - previousCenter)
+
+		if absoluteChange < 10 || percentageChange < medianDifferenceThreshold {
+			continue
+		}
+
+		effectSize := statistic.EffectSize(currentSegment, prevSegment)
+		if effectSize < effectSizeThreshold {
+			continue
+		}
+
+		validChangePoints = append(validChangePoints, changePoints[i-1])
+	}
+
+	return validChangePoints
 }

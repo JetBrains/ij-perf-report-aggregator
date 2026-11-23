@@ -3,12 +3,13 @@ package server
 import (
 	"testing"
 
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/comparison"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func ownerResult(branch, project, metric, machine string, values []int) ownerQueryResult {
-	return ownerQueryResult{
+func ownerResult(branch, project, metric, machine string, values []int) comparison.Series {
+	return comparison.Series{
 		Branch: branch, Project: project, MeasureName: metric, MeasureValues: values,
 		Machine: machine,
 	}
@@ -30,7 +31,7 @@ func TestBuildComparisonResponseComparesPerMachine(t *testing.T) {
 	fast := []int{100, 102, 98, 101, 99, 100}
 	slow := []int{400, 405, 398, 402, 401, 399}
 
-	results := []ownerQueryResult{
+	results := []comparison.Series{
 		ownerResult("261", project, metric, fastMachine, fast),
 		ownerResult("master", project, metric, fastMachine, fast),
 		ownerResult("261", project, metric, slowMachine, slow),
@@ -77,7 +78,7 @@ func TestBuildComparisonResponseSkipsSingleAgentBranch(t *testing.T) {
 	const metric = "m"
 	const machine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 
-	results := []ownerQueryResult{
+	results := []comparison.Series{
 		ownerResult("261", project, metric, machine, []int{100, 101, 99}),
 		// no "master" data on this machine
 	}

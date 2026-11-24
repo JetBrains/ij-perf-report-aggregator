@@ -28,14 +28,15 @@ export const timeFormat = new Intl.DateTimeFormat(undefined, {
 })
 
 // "auto" (the default) infers the unit from each series' stored metric type; "ms"/"ns"/"counter"
-// are explicit overrides that win over the stored type (some counts/durations are mis-typed).
-export type ValueUnit = "ms" | "ns" | "counter" | "auto"
+// are explicit overrides that win over the stored type (some counts/durations are mis-typed), as are
+// the rates of benchmarks that report them: frames, pixels and Java operations (SPECjbb's jOPS) per second.
+export type ValueUnit = "ms" | "ns" | "counter" | "fps" | "pixelsPerSecond" | "jOPS" | "auto"
 
 export const valueUnitParamName = "valueUnit"
 
 export function valueUnitFromUrl(value: unknown): ValueUnit | null {
   const single = Array.isArray(value) ? (value[0] as unknown) : value
-  return single === "ms" || single === "ns" || single === "counter" ? single : null
+  return single === "ms" || single === "ns" || single === "counter" || single === "fps" || single === "pixelsPerSecond" || single === "jOPS" ? single : null
 }
 
 type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"

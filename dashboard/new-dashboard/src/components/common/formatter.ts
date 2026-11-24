@@ -100,10 +100,29 @@ function isDurationFormatterApplicable(measureName: string): boolean {
 // The resolved rendering unit for a single value. Distinct from ValueUnit, the chart-level *request*.
 // Memory is binary (IEC): bytes/kibibytes/mebibytes render as B/KiB/MiB/GiB. File size and throughput
 // are decimal (SI): kilobytes/megabytes render as kB/MB/GB and kilobytesPerSecond as kB/s, MB/s.
-export type MeasureUnit = "nanoseconds" | "microseconds" | "milliseconds" | "counter" | "bytes" | "kibibytes" | "mebibytes" | "kilobytes" | "megabytes" | "kilobytesPerSecond"
+export type MeasureUnit =
+  | "nanoseconds"
+  | "microseconds"
+  | "milliseconds"
+  | "counter"
+  | "bytes"
+  | "kibibytes"
+  | "mebibytes"
+  | "kilobytes"
+  | "megabytes"
+  | "kilobytesPerSecond"
+  | "framesPerSecond"
+  | "pixelsPerSecond"
+  | "javaOperationsPerSecond"
+
+// The rates a chart can request by value unit; they win over the metric name, like "counter".
+const requestedRates: Partial<Record<ValueUnit, MeasureUnit>> = { fps: "framesPerSecond", pixelsPerSecond: "pixelsPerSecond", jOPS: "javaOperationsPerSecond" }
+const rateUnits: MeasureUnit[] = ["kilobytesPerSecond", "framesPerSecond", "pixelsPerSecond", "javaOperationsPerSecond"]
+// SI prefixes for pixel rates, which reach billions per second.
+const pixelUnits = ["pixels", "kpixels", "Mpixels", "Gpixels", "Tpixels"]
 
 // Units carrying a physical quantity (a size or a rate). While scaling these become a baseline ratio.
-const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", "kilobytesPerSecond"])
+const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "kibibytes", "mebibytes", "kilobytes", "megabytes", ...rateUnits])
 
 // Resolves how a value should be rendered. A unit declared in metricsDescription is authoritative.
 // Then the metric name is authoritative over both the chart value-unit and the stored type: "ms" is
@@ -117,11 +136,13 @@ const physicalUnits: ReadonlySet<MeasureUnit> = new Set<MeasureUnit>(["bytes", "
 export function resolveMeasureUnit(measureName: string, opts: { storedType?: string; valueUnit?: ValueUnit; scaling?: boolean } = {}): MeasureUnit {
   const { storedType, valueUnit = "auto", scaling = false } = opts
   const declared = getMeasureUnit(measureName)
-  if (scaling && (declared === undefined ? isMemoryMeasure(measureName) : physicalUnits.has(declared))) {
+  const requestedRate = requestedRates[valueUnit]
+  if (scaling && (declared === undefined ? requestedRate !== undefined || isMemoryMeasure(measureName) : physicalUnits.has(declared))) {
     return "counter"
   }
   if (declared !== undefined) return declared
   if (valueUnit === "counter") return "counter"
+  if (requestedRate !== undefined) return requestedRate
   if (isMemoryMeasure(measureName)) return isKilobyteMeasure(measureName) ? "kibibytes" : "mebibytes"
   if (!isDurationFormatterApplicable(measureName)) return "counter"
   if (valueUnit === "ns") return "nanoseconds"
@@ -151,6 +172,12 @@ export function formatMeasureValue(value: number, unit: MeasureUnit): string {
       return scaleBy(value, 1000, decimalUnits, 2)
     case "kilobytesPerSecond":
       return scaleBy(value, 1000, decimalUnits, 1, "/s")
+    case "framesPerSecond":
+      return `${value.toLocaleString(undefined, { maximumFractionDigits: 1 })} FPS`
+    case "pixelsPerSecond":
+      return scaleBy(value, 1000, pixelUnits, 0, "/s")
+    case "javaOperationsPerSecond":
+      return `${value.toLocaleString(undefined, { maximumFractionDigits: 0 })} jOPS`
     case "counter":
       return value.toLocaleString()
     default:
@@ -166,5 +193,5 @@ export function reduceToAxisUnit(units: MeasureUnit[]): MeasureUnit {
     return units.includes("nanoseconds") ? "nanoseconds" : units.includes("microseconds") ? "microseconds" : "milliseconds"
   }
   const firstOf = (...candidates: MeasureUnit[]): MeasureUnit | undefined => units.find((unit) => candidates.includes(unit))
-  return firstOf("kilobytesPerSecond") ?? firstOf("mebibytes", "kibibytes", "bytes") ?? firstOf("megabytes", "kilobytes") ?? "counter"
+  return firstOf(...rateUnits) ?? firstOf("mebibytes", "kibibytes", "bytes") ?? firstOf("megabytes", "kilobytes") ?? "counter"
 }

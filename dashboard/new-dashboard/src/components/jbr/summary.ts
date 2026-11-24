@@ -173,7 +173,7 @@ function groupByConfiguration(row: SummaryRow, values: readonly RunValue[]): Map
     if (!(Number.isFinite(value.value) && value.value > 0)) continue
     const scenario = row.measureSuffix == null ? value.measure : value.measure.slice(0, -row.measureSuffix.length)
     let scenarios = byConfiguration.get(configuration)
-    if (scenarios === undefined) byConfiguration.set(configuration, (scenarios = new Map()))
+    if (scenarios === undefined) byConfiguration.set(configuration, (scenarios = new Map<string, RunValue[]>()))
     let runs = scenarios.get(scenario)
     if (runs === undefined) scenarios.set(scenario, (runs = []))
     runs.push(value)

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"time"
 )
@@ -48,6 +49,8 @@ type coGroupsResponse struct {
 }
 
 type coGroupItem struct {
+	ID         string        `json:"id"`
+	ParentID   string        `json:"parentId"`
 	Name       string        `json:"name"`
 	Aliases    []coAlias     `json:"aliases"`
 	Attributes []coAttribute `json:"attributes"`
@@ -74,34 +77,12 @@ type coAttribute struct {
 // limit=-1 (REQUEST_ALL_LIMIT) tells the CodeOwners service to return every group in a single
 // response, so no pagination is needed.
 func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]string, error) {
-	if c.token == "" {
-		return nil, errors.New("no code-owners token configured (set CODEOWNERS_TOKEN or SPACE_TOKEN)")
-	}
-
 	params := url.Values{}
 	params.Set("fields", "aliases,attributes")
 	params.Set("limit", "-1")
-	requestURL := c.baseURL + "/app/rest/v1/groups?" + params.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
+	items, err := c.fetchGroups(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Authorization", "Bearer "+c.token)
-	req.Header.Set("Accept", "application/json")
-
-	httpResp, err := c.http.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
-	}
-	defer httpResp.Body.Close()
-	if httpResp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("code-owners request failed: %s", httpResp.Status)
-	}
-
-	var resp coGroupsResponse
-	if err := json.NewDecoder(httpResp.Body).Decode(&resp); err != nil {
-		return nil, fmt.Errorf("failed to decode code-owners response: %w", err)
+		return nil, err
 	}
 
 	// Collect canonical names and aliases separately, then merge with canonical names on top,
@@ -109,7 +90,7 @@ func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]s
 	// (a previous name reused after a rename) — independent of the service's response order.
 	aliasChannels := make(map[string]string)
 	canonicalChannels := make(map[string]string)
-	for _, item := range resp.Items {
+	for _, item := range items {
 		channel := slackChannelOf(item.Attributes)
 		if channel == "" {
 			continue
@@ -132,6 +113,77 @@ func (c *CodeOwnersClient) FetchOwnerChannels(ctx context.Context) (map[string]s
 	maps.Copy(channels, aliasChannels)
 	maps.Copy(channels, canonicalChannels)
 	return channels, nil
+}
+
+// CodeOwnerGroup is a group of the CodeOwners service with its place in the hierarchy.
+type CodeOwnerGroup struct {
+	Name string `json:"name"`
+	// Aliases are the previous names of the group. A test can still have one of them as its owner.
+	Aliases []string `json:"aliases"`
+	// Parent is the name of the group above this one, empty for a group at the top.
+	Parent string `json:"parent"`
+}
+
+// FetchGroups returns every group with its aliases and its parent, sorted by name. The parent is given by name,
+// so the caller needs no group ids. `recursive` makes the service list the subgroups as well, and limit=-1
+// returns all groups in one response.
+func (c *CodeOwnersClient) FetchGroups(ctx context.Context) ([]CodeOwnerGroup, error) {
+	params := url.Values{}
+	params.Set("fields", "aliases")
+	params.Set("recursive", "true")
+	params.Set("limit", "-1")
+	items, err := c.fetchGroups(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	nameByID := make(map[string]string, len(items))
+	for _, item := range items {
+		if item.ID != "" {
+			nameByID[item.ID] = item.Name
+		}
+	}
+	groups := make([]CodeOwnerGroup, 0, len(items))
+	for _, item := range items {
+		aliases := make([]string, 0, len(item.Aliases))
+		for _, alias := range item.Aliases {
+			aliases = append(aliases, alias.Name)
+		}
+		// A parent that the listing does not contain is the same as no parent for the caller.
+		groups = append(groups, CodeOwnerGroup{Name: item.Name, Aliases: aliases, Parent: nameByID[item.ParentID]})
+	}
+	slices.SortFunc(groups, func(a, b CodeOwnerGroup) int { return cmp.Compare(a.Name, b.Name) })
+	return groups, nil
+}
+
+// fetchGroups lists the groups of the CodeOwners service with the given query parameters.
+func (c *CodeOwnersClient) fetchGroups(ctx context.Context, params url.Values) ([]coGroupItem, error) {
+	if c.token == "" {
+		return nil, errors.New("no code-owners token configured (set CODEOWNERS_TOKEN or SPACE_TOKEN)")
+	}
+
+	requestURL := c.baseURL + "/app/rest/v1/groups?" + params.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("Accept", "application/json")
+
+	httpResp, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer httpResp.Body.Close()
+	if httpResp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("code-owners request failed: %s", httpResp.Status)
+	}
+
+	var resp coGroupsResponse
+	if err := json.NewDecoder(httpResp.Body).Decode(&resp); err != nil {
+		return nil, fmt.Errorf("failed to decode code-owners response: %w", err)
+	}
+	return resp.Items, nil
 }
 
 // slackChannelOf returns the notification channel for a group, picking the first populated
@@ -164,6 +216,31 @@ func CreateGetCodeOwnerChannelsHandler() http.HandlerFunc {
 		jsonBytes, err := json.Marshal(channels)
 		if err != nil {
 			slog.Error("unable to marshal code-owner channels", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		if _, err := writer.Write(jsonBytes); err != nil {
+			slog.Error("unable to write response", "error", err)
+		}
+	}
+}
+
+// CreateGetCodeOwnerGroupsHandler exposes the groups of the CodeOwners service with their aliases and parents.
+// The degradation-detector fetches this once per run to match a test whose owner is a subgroup, or has an old
+// name, of a group that a subscriber claims.
+func CreateGetCodeOwnerGroupsHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		groups, err := codeOwnersClient.FetchGroups(request.Context())
+		if err != nil {
+			slog.Error("unable to fetch code-owner groups", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		jsonBytes, err := json.Marshal(groups)
+		if err != nil {
+			slog.Error("unable to marshal code-owner groups", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -157,5 +158,48 @@ func TestFetchOwnerChannels_NonOKStatusReturnsError(t *testing.T) {
 		writer.WriteHeader(http.StatusInternalServerError)
 	})
 	_, err := client.FetchOwnerChannels(context.Background())
+	require.Error(t, err)
+}
+
+func TestFetchGroups_RequestContract(t *testing.T) {
+	t.Parallel()
+	var gotQuery url.Values
+	client := newTestCodeOwnersClient(t, func(writer http.ResponseWriter, request *http.Request) {
+		gotQuery = request.URL.Query()
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"items":[]}`))
+	})
+
+	groups, err := client.FetchGroups(context.Background())
+	require.NoError(t, err)
+	assert.Empty(t, groups)
+	assert.Equal(t, "aliases", gotQuery.Get("fields"))
+	assert.Equal(t, "true", gotQuery.Get("recursive"))
+	assert.Equal(t, "-1", gotQuery.Get("limit"))
+}
+
+func TestFetchGroups_ResolvesParentsAndAliases(t *testing.T) {
+	t.Parallel()
+	client := newTestCodeOwnersClient(t, serveJSON(`{"items":[
+		{"id":"g-2","name":"PyCharm Codeinsight","parentId":"g-1","aliases":[{"name":"PyCharm Code Insight"}]},
+		{"id":"g-1","name":"Python Ecosystem","parentId":""},
+		{"id":"g-3","name":"Orphan","parentId":"g-missing"},
+		{"name":"No Id"}
+	]}`))
+
+	groups, err := client.FetchGroups(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, []CodeOwnerGroup{
+		{Name: "No Id", Aliases: []string{}},
+		{Name: "Orphan", Aliases: []string{}},
+		{Name: "PyCharm Codeinsight", Aliases: []string{"PyCharm Code Insight"}, Parent: "Python Ecosystem"},
+		{Name: "Python Ecosystem", Aliases: []string{}},
+	}, groups)
+}
+
+func TestFetchGroups_NoTokenReturnsError(t *testing.T) {
+	t.Parallel()
+	client := &CodeOwnersClient{baseURL: "http://example.invalid", token: "", http: &http.Client{}}
+	_, err := client.FetchGroups(context.Background())
 	require.Error(t, err)
 }

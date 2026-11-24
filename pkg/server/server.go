@@ -113,6 +113,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Get("/ownerByProject", meta.CreateGetOwnerByProjectHandler(dbpool))
 		r.Get("/projectOwners", meta.CreateGetProjectOwnersHandler(dbpool))
 		r.Get("/codeOwnerChannels", meta.CreateGetCodeOwnerChannelsHandler())
+		r.Get("/codeOwnerGroups", meta.CreateGetCodeOwnerGroupsHandler())
 		r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
 		r.Post("/missingData", meta.CreatePostMissingDataRequestHandler(dbpool))
 		r.Post("/grafanaViews", meta.CreatePostGrafanaViewHandler(dbpool))

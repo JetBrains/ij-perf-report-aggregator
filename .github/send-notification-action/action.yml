@@ -8,30 +8,73 @@ inputs:
     description: 'Channel the notification will be sent to'
     required: true
     default: 'ij-perf-alerts'
-  text:
-    description: 'Notification text'
-    required: true
-    default: ':x: The *ij-perf-report-aggregator/${{ github.workflow }}* `${{ github.job }}` job failed on <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} }}>'
 
 
 runs:
   using: "composite"
   steps:
+    # The payload is built with jq straight from the event file: commit messages and PR titles are
+    # arbitrary text (quotes, newlines, Slack control characters), so interpolating them into the
+    # JSON template with ${{ }} breaks the payload.
+    - id: payload
+      shell: bash
+      env:
+        CHANNEL: ${{ inputs.channel }}
+      run: |
+        payload=$(jq -c -n \
+          --arg channel "$CHANNEL" \
+          --arg workflow "$GITHUB_WORKFLOW" \
+          --arg job "$GITHUB_JOB" \
+          --arg server "$GITHUB_SERVER_URL" \
+          --arg repo "$GITHUB_REPOSITORY" \
+          --arg runId "$GITHUB_RUN_ID" \
+          --arg refName "$GITHUB_REF_NAME" \
+          --arg sha "$GITHUB_SHA" \
+          --slurpfile event "$GITHUB_EVENT_PATH" '
+          def esc: gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;");
+          def link(url; text): "<\(url)|\(text | esc)>";
+          def user: link("\($server)/\(.)"; .);
+          # A commit author without a GitHub account linked to their email has no username.
+          def commitAuthor: if .username then .username | user else .name | esc end;
+          $event[0] as $e
+          | "\($server)/\($repo)" as $repoUrl
+          | if $e.pull_request then
+              {
+                branch: $e.pull_request.head.ref,
+                branchUrl: "\($e.pull_request.head.repo.html_url // $repoUrl)/tree/\($e.pull_request.head.ref)",
+                authors: ($e.pull_request.user.login | user),
+                subject: link($e.pull_request.html_url; "#\($e.pull_request.number) \($e.pull_request.title)")
+              }
+            else
+              ($e.commits // []) as $commits
+              | {
+                  branch: $refName,
+                  branchUrl: "\($repoUrl)/tree/\($refName)",
+                  authors: (
+                    if ($commits | length) > 0
+                    then reduce $commits[].author as $a ([]; if any(.[]; (.username // .name) == ($a.username // $a.name)) then . else . + [$a] end)
+                      | map(commitAuthor) | join(", ")
+                    else $e.sender.login | user
+                    end
+                  ),
+                  subject: (
+                    link($e.head_commit.url // "\($repoUrl)/commit/\($sha)"; ($e.head_commit.message // $sha) | split("\n")[0])
+                    + (
+                      (($commits | length) - 1) as $more
+                      | if $more > 0
+                        then " and \(link($e.compare; "\($more) more commit\(if $more > 1 then "s" else "" end)"))"
+                        else ""
+                        end
+                    )
+                  )
+                }
+            end
+          | ":x: The *ij-perf-report-aggregator/\($workflow)* `\($job)` job \(link("\($repoUrl)/actions/runs/\($runId)"; "failed")) on \(link(.branchUrl; .branch)) by \(.authors): \(.subject)" as $text
+          | {channel: $channel, text: $text, blocks: [{type: "section", text: {type: "mrkdwn", text: $text}}]}
+        ')
+        echo "payload=$payload" >> "$GITHUB_OUTPUT"
     - uses: slackapi/slack-github-action@v1.24.0
       with:
-        payload: |
-          {
-            "channel": "${{ inputs.channel }}",
-            "text": "${{ inputs.text }}",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "${{ inputs.text }}"
-                }
-              }
-            ]
-          }
+        payload: ${{ steps.payload.outputs.payload }}
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.secret }}

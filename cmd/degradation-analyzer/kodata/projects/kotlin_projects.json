@@ -277,8 +277,7 @@
         "kotlin_lang/findUsages/intellijVersionForIde_with_library_cache",
         "kotlin_lang/findUsages/JvmTestFramework_with_library_cache",
         "kotlin_lang/findUsages/SourceSet_with_library_cache"
-      ],
-      "kotlinScriptExamples": ["kotlin-script-examples/findUsages/sharedMainKtsVar_with_library_cache"]
+      ]
     },
     "findUsagesFirstUsage": {
       "intelliJ": [

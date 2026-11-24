@@ -413,7 +413,7 @@ export const scriptCompletionCharts = projectsToDefinition([
 
 export const scriptFindUsagesCharts = projectsToDefinition([
   {
-    projects: { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript, kotlinScriptExamples: KOTLIN_PROJECTS.linux.findUsages.kotlinScriptExamples },
+    projects: { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript },
     measures: MEASURES.findUsagesMeasures,
     machines: [MACHINES.linux],
   },

@@ -8,6 +8,8 @@ const PROJECT_NAMES = [
   "project-import-maven-5000-modules-maven-3.9.16/",
   "project-import-maven-5000-modules-maven-3.10.0/",
   "project-import-maven-5000-modules-maven-4.0.0-rc-7/",
+  "project-import-maven-embabel/",
+  "project-import-maven-sakai/",
   "project-import-maven-keycloak/",
   "project-import-maven-javaee7/",
   "project-import-maven-javaee8/",

@@ -181,6 +181,7 @@ enum ROUTES {
   ScalaCompare = `${ROUTE_PREFIX.Scala}/${COMPARE_ROUTE}`,
   ScalaCompareBranches = `${ROUTE_PREFIX.Scala}/${COMPARE_BRANCHES_ROUTE}`,
   JBRTests = `${ROUTE_PREFIX.JBR}/${TEST_ROUTE}`,
+  JBRSummary = `${ROUTE_PREFIX.JBR}/summary`,
   MapBenchDashboard = `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
   DaCapoDashboard = `${ROUTE_PREFIX.JBR}/dacapoDashboard`,
   J2DBenchDashboard = `${ROUTE_PREFIX.JBR}/j2dDashboard`,
@@ -582,6 +583,7 @@ const JBR: Product = {
       url: ROUTE_PREFIX.JBR,
       label: "",
       tabs: [
+        tab(ROUTES.JBRSummary, "Summary"),
         tab(ROUTES.DaCapoDashboard, "DaCapo"),
         tab(ROUTES.J2DBenchDashboard, "J2DBench"),
         tab(ROUTES.JavaDrawDashboard, "JavaDraw"),
@@ -1089,6 +1091,7 @@ const scalaRoutes = [
 
 const jbrRoutes = [
   dashboard(ROUTES.JBRTests, () => import("./components/jbr/PerformanceTests.vue"), "JBR Performance tests"),
+  dashboard(ROUTES.JBRSummary, () => import("./components/jbr/JbrSummaryDashboard.vue"), "JBR Summary"),
   dashboard(ROUTES.MapBenchDashboard, () => import("./components/jbr/MapBenchDashboard.vue"), "MapBench Dashboard"),
   dashboard(ROUTES.DaCapoDashboard, () => import("./components/jbr/DaCapoDashboard.vue"), "DaCapo Dashboard"),
   dashboard(ROUTES.J2DBenchDashboard, () => import("./components/jbr/J2DBenchDashboard.vue"), "J2DBench Dashboard"),

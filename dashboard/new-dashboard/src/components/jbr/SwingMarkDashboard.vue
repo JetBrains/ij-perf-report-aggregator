@@ -1,23 +1,14 @@
 <template>
-  <DashboardPage
-    db-name="jbr"
-    table="report"
-    persistent-id="jbr_team_dashboard"
-    :with-installer="false"
-    :is-build-number-exists="true"
-  >
-    <JbrPlatformCharts
-      v-for="metric in metricsNames"
-      :key="metric"
-      :measure="metric"
-      benchmark="SwingMark"
-    />
-  </DashboardPage>
+  <JbrBenchmarkDashboard
+    benchmark="SwingMark"
+    :groups="[{ title: null, scenarios }]"
+    description="SwingMark's score: the total milliseconds of its run, lower is better."
+    :default-configurations="['macOS15aarch64Metal', 'Ubuntu2404x86_64MM_Wayland', 'Windows11x86_64']"
+  />
 </template>
 
 <script setup lang="ts">
-import DashboardPage from "../common/DashboardPage.vue"
-import JbrPlatformCharts from "./JbrPlatformCharts.vue"
+import JbrBenchmarkDashboard from "./JbrBenchmarkDashboard.vue"
 
-const metricsNames = ["Default"]
+const scenarios = ["Default"]
 </script>

@@ -1,25 +1,18 @@
 <template>
-  <DashboardPage
-    db-name="jbr"
-    table="report"
-    persistent-id="jbr_team_dashboard"
-    :with-installer="false"
-    :is-build-number-exists="true"
-  >
-    <JbrPlatformCharts
-      v-for="metric in metricsNames"
-      :key="metric"
-      :measure="metric"
-      benchmark="JavaDraw"
-    />
-  </DashboardPage>
+  <JbrBenchmarkDashboard
+    benchmark="JavaDraw"
+    :groups="[{ title: null, scenarios }]"
+    value-unit="fps"
+    better-direction="higher"
+    description="Frames per second, higher is better."
+    :default-configurations="['macOS15aarch64Metal', 'Ubuntu2404x86_64MM_Wayland', 'Windows11x86_64']"
+  />
 </template>
 
 <script setup lang="ts">
-import DashboardPage from "../common/DashboardPage.vue"
-import JbrPlatformCharts from "./JbrPlatformCharts.vue"
+import JbrBenchmarkDashboard from "./JbrBenchmarkDashboard.vue"
 
-const metricsNames = [
+const scenarios = [
   "Display_PNG_Bitmap_Twice_Pass_1",
   "Display_PNG_Bitmap_Twice_Pass_2",
   "Plus_2_SweepGradient_Circles",

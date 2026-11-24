@@ -1,25 +1,16 @@
 <template>
-  <DashboardPage
-    db-name="jbr"
-    table="report"
-    persistent-id="jbr_team_dashboard"
-    :with-installer="false"
-    :is-build-number-exists="true"
-  >
-    <JbrPlatformCharts
-      v-for="metric in metricsNames"
-      :key="metric"
-      :measure="metric"
-      benchmark="Dacapo"
-    />
-  </DashboardPage>
+  <JbrBenchmarkDashboard
+    benchmark="Dacapo"
+    :groups="[{ title: null, scenarios }]"
+    description="Milliseconds per iteration of each DaCapo benchmark, lower is better."
+    :default-configurations="['macOS15aarch64', 'Ubuntu2404x86_64', 'Windows11x86_64']"
+  />
 </template>
 
 <script setup lang="ts">
-import DashboardPage from "../common/DashboardPage.vue"
-import JbrPlatformCharts from "./JbrPlatformCharts.vue"
+import JbrBenchmarkDashboard from "./JbrBenchmarkDashboard.vue"
 
-const metricsNames = [
+const scenarios = [
   "avrora",
   "batik",
   "biojava",

@@ -1,25 +1,18 @@
 <template>
-  <DashboardPage
-    db-name="jbr"
-    table="report"
-    persistent-id="jbr_team_dashboard"
-    :with-installer="false"
-    :is-build-number-exists="true"
-  >
-    <JbrPlatformCharts
-      v-for="metric in metricsNames"
-      :key="metric"
-      :measure="metric"
-      benchmark="Mapbench"
-    />
-  </DashboardPage>
+  <JbrBenchmarkDashboard
+    benchmark="Mapbench"
+    :groups="[{ title: null, scenarios }]"
+    value-unit="fps"
+    better-direction="higher"
+    description="Frames per second of drawing each recorded MapBench file, higher is better."
+    :default-configurations="['macOS15aarch64Metal', 'Ubuntu2404x86_64MM_Wayland', 'Windows11x86_64']"
+  />
 </template>
 
 <script setup lang="ts">
-import DashboardPage from "../common/DashboardPage.vue"
-import JbrPlatformCharts from "./JbrPlatformCharts.vue"
+import JbrBenchmarkDashboard from "./JbrBenchmarkDashboard.vue"
 
-const metricsNames = [
+const scenarios = [
   "CircleTests",
   "EllipseTests-fill-false",
   "EllipseTests-fill-true",
@@ -34,5 +27,5 @@ const metricsNames = [
   "spiralTest-dash-false",
   "spiralTest-fill",
   "test_z_625k",
-].map((metric) => metric + ".ser")
+].map((scenario) => scenario + ".ser")
 </script>

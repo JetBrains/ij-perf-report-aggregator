@@ -37,7 +37,6 @@ enum ROUTE_PREFIX {
   Rust = "/rust",
   Scala = "/scala",
   JBR = "/jbr",
-  Fleet = "/fleet",
   PyCharm = "/pycharm",
   WebStorm = "/webstorm",
   Bazel = "/bazel",
@@ -189,11 +188,6 @@ enum ROUTES {
   RenderDashboard = `${ROUTE_PREFIX.JBR}/renderDashboard`,
   SPECjbb2015Dashboard = `${ROUTE_PREFIX.JBR}/specDashboard`,
   SwingMarkDashboard = `${ROUTE_PREFIX.JBR}/swingmarkDashboard`,
-  FleetTest = `${ROUTE_PREFIX.Fleet}/${TEST_ROUTE}`,
-  FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
-  FleetPerfStartupComparisonDashboard = `${ROUTE_PREFIX.Fleet}/startupComparisonDashboard`,
-  FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
-  FleetStartupExplore = `${ROUTE_PREFIX.Fleet}/startupExplore`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
   BazelPluginDashboard = `${ROUTE_PREFIX.Bazel}/BazelPluginDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
@@ -596,23 +590,6 @@ const JBR: Product = {
     },
   ],
 }
-const FLEET: Product = {
-  url: ROUTE_PREFIX.Fleet,
-  label: "Fleet",
-  children: [
-    {
-      url: ROUTE_PREFIX.Fleet,
-      label: "",
-      tabs: [
-        tab(ROUTES.FleetStartupDashboard, "Startup Dashboard"),
-        tab(ROUTES.FleetStartupExplore, "Startup Explore"),
-        tab(ROUTES.FleetPerfDashboard, "Performance Dashboard"),
-        tab(ROUTES.FleetPerfStartupComparisonDashboard, "Startup Comparison Dashboard"),
-        tab(ROUTES.FleetTest, TESTS_LABEL),
-      ],
-    },
-  ],
-}
 
 const BAZEL: Product = {
   url: ROUTE_PREFIX.Bazel,
@@ -859,7 +836,6 @@ export const PRODUCTS = [
   CLION,
   DATAGRIP,
   DIOGEN,
-  FLEET,
   GO_LSP,
   GOLAND,
   IDEA,
@@ -1101,14 +1077,6 @@ const jbrRoutes = [
   dashboard(ROUTES.SwingMarkDashboard, () => import("./components/jbr/SwingMarkDashboard.vue"), "SwingMark Dashboard"),
 ]
 
-const fleetRoutes = [
-  perfTests(ROUTES.FleetTest, { dbName: "fleet", table: "measure_new", initialMachine: MACHINES.HETZNER, withInstaller: false }, "Fleet Performance tests"),
-  dashboard(ROUTES.FleetPerfDashboard, () => import("./components/fleet/PerformanceDashboard.vue"), "Fleet Performance dashboard"),
-  dashboard(ROUTES.FleetPerfStartupComparisonDashboard, () => import("./components/fleet/StartupComparisonDashboard.vue"), "Fleet Startup Comparison dashboard"),
-  dashboard(ROUTES.FleetStartupDashboard, () => import("./components/fleet/FleetDashboard.vue"), "Fleet Startup dashboard"),
-  dashboard(ROUTES.FleetStartupExplore, () => import("./components/fleet/FleetExplore.vue"), "Fleet Startup Explore", { withInstaller: true }),
-]
-
 const bazelRoutes = [
   perfTests(ROUTES.BazelTest, { dbName: "bazel", table: "report", initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)", withInstaller: false }, "Bazel Performance tests"),
   dashboard(ROUTES.BazelPluginDashboard, () => import("./components/bazel/BazelPluginDashboard.vue"), "Bazel Plugin Dashboard"),
@@ -1309,7 +1277,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...kotlinRoutes,
         ...scalaRoutes,
         ...jbrRoutes,
-        ...fleetRoutes,
         ...bazelRoutes,
         ...qodanaRoutes,
         ...clionRoutes,

@@ -26,7 +26,7 @@ function sidebarData(data: Partial<InfoData>): InfoData {
 describe("Navigate to test URL", () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    dbTypeStore().setDbType("perfintDev", "phpstorm")
+    dbTypeStore().setDbType("perfintDev")
   })
 
   it("carries the unit of the clicked chart", () => {

@@ -103,7 +103,7 @@ describe("hover fade by project", () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    dbTypeStore().setDbType("perfintDev", "goland")
+    dbTypeStore().setDbType("perfintDev")
     useSettingsStore().stdDevInterval = true
     useSettingsStore().fadeOnHover = true
 

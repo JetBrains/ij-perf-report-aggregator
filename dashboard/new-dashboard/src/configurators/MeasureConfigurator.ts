@@ -21,14 +21,13 @@ import {
 } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { formatMeasureValue, MeasureUnit, reduceToAxisUnit } from "../components/common/formatter"
-import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../components/charts/staleSeries"
 import { getSeriesId, parseSeriesId } from "../components/charts/seriesId"
 import { buildStdDevBand, getStdDevBandSeries, getStdDevMeasureName } from "../components/charts/stdDevInterval"
 import { BetterDirection, ChangeCriteria, ChangePointClassification, DEFAULT_CHANGE_CRITERIA, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
-import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
+import { resolveMeasureUnitForDb } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
@@ -102,11 +101,6 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     ).subscribe((data) => {
       if (data == null) {
         return
-      }
-
-      if (dbTypeStore().dbType == DBType.FLEET) {
-        data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
-        data = data.map((it) => it + ".end")
       }
 
       let filtered = data.filter(
@@ -287,15 +281,8 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   const field: DataQueryDimension = { n: "" }
   query.insertField(field, 1)
 
-  if (!(query.db === "fleet" && query.table === "report")) {
-    query.addField({ n: "measures", subName: "name" })
-    query.addField({ n: "measures", subName: "type" })
-  }
-
-  const metricNameField: DataQueryDimension = { n: "" }
-  if (dbTypeStore().isStartup()) {
-    query.insertField(metricNameField, 2)
-  }
+  query.addField({ n: "measures", subName: "name" })
+  query.addField({ n: "measures", subName: "type" })
 
   const prevFilters: DataQueryFilter[] = []
 
@@ -319,18 +306,6 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (dbTypeStore().isStartup()) {
-        delete metricNameField.sql
-        delete metricNameField.subName
-        if (measure.startsWith("metrics.")) {
-          metricNameField.n = "metrics"
-          metricNameField.subName = "name"
-        } else {
-          metricNameField.n = "metricName"
-          metricNameField.sql = `'${measure}'`
-        }
-      }
-
       let valueFieldName: string
       if (query.table === "measure") {
         field.n = "value"
@@ -339,16 +314,8 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         valueFieldName = "value"
       } else {
         field.n = "measures"
-        // The `rust` table has no `measures.start`, so a metric such as `rss.end` is a plain metric there, not the end of a span
-        const isSpanEnd = measure.endsWith(".end") && query.table !== "rust"
-        if (isSpanEnd) {
-          field.subName = "end"
-          field.sql = "(measures.start+measures.value)"
-        } else {
-          field.subName = "value"
-        }
-
-        addFilter({ f: "measures.name", v: isSpanEnd ? measure.slice(0, measure.length - ".end".length) : measure })
+        field.subName = "value"
+        addFilter({ f: "measures.name", v: measure })
         valueFieldName = "measures.value"
       }
 
@@ -525,10 +492,7 @@ export function mergeSeries(dataList: (string | number)[][][], configuration: Da
     }
     const measureName = configuration.measureNames[dataIndex]
     let seriesName = configuration.seriesNames[dataIndex]
-    //fleet
-    if (seriesName == "" && (seriesData.length == 6 || seriesData.length == 10)) {
-      seriesName = seriesData[4][0] as string
-    } else if (seriesName == "" && seriesData.length > 6) {
+    if (seriesName == "" && seriesData.length > 6) {
       // we take only the one project name, there can't be more
       seriesName = seriesData[6][0] as string
     }

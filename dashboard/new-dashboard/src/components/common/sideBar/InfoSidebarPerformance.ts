@@ -28,18 +28,8 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
 
   let buildId: number | undefined
 
-  if (
-    dbType == DBType.INTELLIJ_DEV ||
-    dbType == DBType.PERF_UNIT_TESTS ||
-    dbType == DBType.FLEET_PERF ||
-    dbType == DBType.DIOGEN ||
-    dbType == DBType.QODANA ||
-    dbType == DBType.TOOLBOX
-  ) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN || dbType == DBType.QODANA || dbType == DBType.TOOLBOX) {
     buildId = dataSeries[5] as number
-  }
-  if (dbType == DBType.FLEET) {
-    buildId = dataSeries[4] as number
   }
   if (dbType == DBType.JBR) {
     buildId = dataSeries[5] as number
@@ -58,11 +48,8 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
 
 function getAccidentBuild(params: CallbackDataParams): string | undefined {
   const dbType = dbTypeStore().dbType
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN || dbType == DBType.TOOLBOX) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN || dbType == DBType.TOOLBOX) {
     return getBuildId(params.value as number[])?.toString()
-  }
-  if (dbType == DBType.FLEET) {
-    return getFullBuildId(params)
   }
   if (dbType == DBType.INTELLIJ) {
     return getFullBuildId(params)
@@ -85,11 +72,6 @@ export function getFullBuildId(params: CallbackDataParams): string | undefined {
   let buildNum2: number | undefined
   let buildNumber: string | undefined
 
-  if (dbType == DBType.FLEET) {
-    buildVersion = dataSeries[7] as number
-    buildNum1 = dataSeries[8] as number
-    buildNum2 = dataSeries[9] as number
-  }
   if (dbType == DBType.JBR) {
     buildNumber = dataSeries[7] as string
   }
@@ -116,15 +98,6 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   let branch: string | undefined
   let mode: string | undefined
   const dbType = dbTypeStore().dbType
-  if (dbType == DBType.FLEET_PERF) {
-    metricName = dataSeries[2] as string
-    if (dataSeries[3] == "c") {
-      type = "counter"
-    }
-    machineName = dataSeries[4] as string
-    projectName = dataSeries[6] as string
-    branch = dataSeries[7] as string
-  }
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN || dbType == DBType.QODANA || dbType == DBType.TOOLBOX) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
@@ -136,13 +109,6 @@ export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
     if (dbType == DBType.INTELLIJ_DEV) {
       mode = dataSeries[8] as string
     }
-  }
-  if (dbType == DBType.FLEET) {
-    metricName = dataSeries[2] as string
-    machineName = dataSeries[3] as string
-    projectName = dataSeries[5] as string
-    installerId = dataSeries[6] as number
-    branch = dataSeries[10] as string
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string

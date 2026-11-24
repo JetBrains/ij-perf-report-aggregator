@@ -25,7 +25,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
     readonly table: string,
     serverUrlObservable: Observable<string> | null = null
   ) {
-    dbTypeStore().setDbType(db, table)
+    dbTypeStore().setDbType(db)
     serverUrlObservable ??= injectOrError(serverUrlObservableKey)
     serverUrlObservable.subscribe((url) => {
       this._serverUrl = url

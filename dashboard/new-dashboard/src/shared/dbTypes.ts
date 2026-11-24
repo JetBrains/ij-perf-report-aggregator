@@ -7,7 +7,7 @@ import { DBType } from "../components/common/sideBar/InfoSidebar"
 export const dbTypeStore = defineStore("dbTypeStore", () => {
   const dbType: Ref<DBType> = ref(DBType.UNKNOWN)
 
-  function setDbType(dbName: string, table: string): void {
+  function setDbType(dbName: string): void {
     if (dbName == "perfint") {
       dbType.value = DBType.INTELLIJ
     }
@@ -16,12 +16,6 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     }
     if (dbName == "perfintDev" || dbName == "mlEvaluation") {
       dbType.value = DBType.INTELLIJ_DEV
-    }
-    if (dbName == "fleet" && table == "measure_new") {
-      dbType.value = DBType.FLEET_PERF
-    }
-    if (dbName == "fleet" && table == "report") {
-      dbType.value = DBType.FLEET
     }
     if (dbName == "qodana") {
       dbType.value = DBType.QODANA
@@ -40,10 +34,6 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     }
   }
 
-  function isStartup(): boolean {
-    return dbType.value == DBType.FLEET
-  }
-
   function isModeSupported(): boolean {
     return (
       dbType.value == DBType.INTELLIJ ||
@@ -54,7 +44,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     )
   }
 
-  return { dbType, setDbType, isStartup, isModeSupported }
+  return { dbType, setDbType, isModeSupported }
 })
 
 // resolveMeasureUnit for a stored type taken straight from a query row: ignores it for databases

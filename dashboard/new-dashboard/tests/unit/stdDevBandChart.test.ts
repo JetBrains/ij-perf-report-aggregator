@@ -73,7 +73,7 @@ describe("standard deviation band on a chart", () => {
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
-    dbTypeStore().setDbType("perfintDev", "goland")
+    dbTypeStore().setDbType("perfintDev")
     useSettingsStore().stdDevInterval = true
   })
   afterEach(() => {

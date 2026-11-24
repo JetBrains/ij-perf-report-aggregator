@@ -93,7 +93,7 @@ describe("standard deviation band as ECharts renders it", () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    dbTypeStore().setDbType("perfintDev", "goland")
+    dbTypeStore().setDbType("perfintDev")
     useSettingsStore().stdDevInterval = true
 
     container = document.createElement("div")

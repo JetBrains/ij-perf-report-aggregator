@@ -147,23 +147,12 @@ export abstract class AccidentsConfigurator {
       let build = ""
       let key = ""
       let keyWithMetric = ""
-      if (this.dbType == DBType.FLEET) {
-        build = value[9] == 0 ? `${value[7]}.${value[8]}` : `${value[7]}.${value[8]}.${value[9]}`
-        key = `${value[5]}_${build}`
-        keyWithMetric = `${value[5]}/${value[2]}_${build}`
-      }
       if (this.dbType == DBType.INTELLIJ) {
         build = value[10] == 0 ? `${value[8]}.${value[9]}` : `${value[8]}.${value[9]}.${value[10]}`
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`
       }
-      if (
-        this.dbType == DBType.INTELLIJ_DEV ||
-        this.dbType == DBType.PERF_UNIT_TESTS ||
-        this.dbType == DBType.BAZEL ||
-        this.dbType == DBType.FLEET_PERF ||
-        this.dbType == DBType.DIOGEN
-      ) {
+      if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS || this.dbType == DBType.BAZEL || this.dbType == DBType.DIOGEN) {
         build = `${value[5]}`
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`

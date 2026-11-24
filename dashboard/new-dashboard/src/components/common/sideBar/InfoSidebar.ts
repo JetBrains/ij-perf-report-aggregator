@@ -64,8 +64,6 @@ export interface DataSeries {
 }
 
 export enum DBType {
-  FLEET = "fleet",
-  FLEET_PERF = "fleet_perf",
   JBR = "jbr",
   INTELLIJ = "intellij",
   INTELLIJ_DEV = "intellij_dev",
@@ -119,12 +117,8 @@ export const majorBranch = (branch: string) => (/\d+\.\d+/.test(branch) ? branch
 
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
-  if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
-    parts = ["", "fleet", "startupExplore"]
-  } else {
-    parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  }
+  const parts = currentRoute.path.split("/")
+  parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   const mode = data?.mode ?? ""
   const testURL = parts.join("/")
 

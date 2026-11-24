@@ -17,7 +17,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses JBR data", () => {
-    dbTypeStore().setDbType("jbr", "report")
+    dbTypeStore().setDbType("jbr")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -55,7 +55,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses IntelliJ data", () => {
-    dbTypeStore().setDbType("perfint", "ruby")
+    dbTypeStore().setDbType("perfint")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -97,7 +97,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses IntelliJ Dev data", () => {
-    dbTypeStore().setDbType("perfintDev", "ruby")
+    dbTypeStore().setDbType("perfintDev")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -133,7 +133,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses Bazel data", () => {
-    dbTypeStore().setDbType("bazel", "report")
+    dbTypeStore().setDbType("bazel")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -170,7 +170,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses Qodana data", () => {
-    dbTypeStore().setDbType("qodana", "report")
+    dbTypeStore().setDbType("qodana")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -206,7 +206,7 @@ describe("InfoSideBar Test", () => {
   })
 
   it("parses unit test data", () => {
-    dbTypeStore().setDbType("perfUnitTests", "report")
+    dbTypeStore().setDbType("perfUnitTests")
     const result = getInfoDataFrom(
       {
         seriesName: "test",
@@ -246,7 +246,7 @@ describe("InfoSideBar Test", () => {
   // from a degradation notification) must still report the measure as the metric - bisect, accident
   // reports and drilldown links are launched from it.
   it("keeps the metric name when several project series are selected at once", () => {
-    dbTypeStore().setDbType("perfintDev", "ruby")
+    dbTypeStore().setDbType("perfintDev")
     const result = getInfoDataFrom(
       [
         devPoint("keycloak_release_20/completion/QuarkusRuntimePomXml", 1200, 1000),
@@ -272,47 +272,6 @@ describe("InfoSideBar Test", () => {
       deltaPrevious: "-200 ms (-16.7%)",
       previousValue: 1000,
       formattedCurrentValue: "1 s, 200 ms",
-    })
-  })
-
-  it("parses Fleet Startup data", () => {
-    dbTypeStore().setDbType("fleet", "report")
-    const result = getInfoDataFrom(
-      {
-        seriesName: "test",
-        value: [
-          1706075619000,
-          5669,
-          "editor appeared.end",
-          "intellij-linux-hw-munit-095",
-          435764822,
-          "fleet",
-          435755382,
-          1,
-          31,
-          4,
-          "master",
-          {
-            prev: 5669,
-            next: 4389,
-          },
-        ],
-      } as CallbackDataParams,
-      "ms",
-      null,
-      ""
-    )
-    expect(result).toMatchObject({
-      branch: "master",
-      seriesName: "test",
-      machineName: "intellij-linux-hw-munit-095",
-      buildId: 435764822,
-      installerId: 435755382,
-      build: "1.31.4",
-      deltaNext: "-1 s, 280 ms (-22.6%)",
-      deltaPrevious: "0 (0.0%)",
-      date: timeFormatWithoutSeconds.format(1706075619000),
-      projectName: "fleet",
     })
   })
 })

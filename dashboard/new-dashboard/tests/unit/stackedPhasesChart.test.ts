@@ -56,7 +56,7 @@ describe("stacked phases chart", () => {
   beforeEach(() => {
     localStorage.clear()
     setActivePinia(createPinia())
-    dbTypeStore().setDbType("perfintDev", "idea")
+    dbTypeStore().setDbType("perfintDev")
   })
 
   it("stacks phases but leaves the reported total as a plain line", async () => {

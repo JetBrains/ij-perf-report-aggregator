@@ -15,7 +15,7 @@ describe("mergeSeries()", () => {
 
     const configuration = new DataQueryExecutorConfiguration()
     configuration.seriesNames = ["wide tree", "wide tree"]
-    configuration.measureNames.push("fleet.test", "fleet.test")
+    configuration.measureNames.push("test", "test")
 
     const result = mergeSeries([newNameChunk, oldNameChunk], configuration)
 
@@ -32,7 +32,7 @@ describe("mergeSeries()", () => {
 
     const configuration = new DataQueryExecutorConfiguration()
     configuration.seriesNames = ["wide tree"]
-    configuration.measureNames.push("fleet.test")
+    configuration.measureNames.push("test")
 
     const result = mergeSeries([chunk], configuration)
 

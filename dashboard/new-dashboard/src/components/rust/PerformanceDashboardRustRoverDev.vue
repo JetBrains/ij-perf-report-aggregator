@@ -47,6 +47,14 @@
 
     <section>
       <GroupProjectsChart
+        label="Cargo.toml Inspections (metric 'localInspections')"
+        measure="localInspections"
+        :projects="cargoTomlInspectionCases"
+      />
+    </section>
+
+    <section>
+      <GroupProjectsChart
         label="Global Inspection execution time (metric 'globalInspections')"
         measure="globalInspections"
         :projects="rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
@@ -145,5 +153,5 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import { rustLocalInspectionCases, rustGlobalInspectionProjects, rustCompletionCases, rustFindUsagesCases, rustTypingCases } from "./RustTestCases"
+import { rustLocalInspectionCases, rustGlobalInspectionProjects, rustCompletionCases, rustFindUsagesCases, rustTypingCases, cargoTomlInspectionCases } from "./RustTestCases"
 </script>

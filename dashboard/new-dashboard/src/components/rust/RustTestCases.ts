@@ -246,6 +246,9 @@ export const rustRefactoringTestCases = {
   optimizeImportsFileTypeProject: ["refactoring/optimizeImportsFileType/optimizeImports/optimizeImportsBig"],
   optimizeImportsUseInsideMacro: ["refactoring/optimizeImportsTokioRtCommon/optimizeImports/optimizeImportsTokioRtCommon"],
 }
+
+export const cargoTomlInspectionCases = ["local-inspection/cargo-toml/Cargo.toml inspection"]
+
 export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
   {
     label: "Find Usages",

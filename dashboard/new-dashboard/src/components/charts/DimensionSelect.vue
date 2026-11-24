@@ -88,6 +88,7 @@
     :selection-limit="multiple ? undefined : 1"
     :max-selected-labels="1"
     :filter="hasManyElements"
+    :show-toggle-all="multiple && hasManyElements"
     :auto-filter-focus="true"
   >
     <template #value="slotProps">
@@ -176,8 +177,9 @@ const value = computed<string | string[] | null>({
   },
 })
 
+// Counts the values, not the groups of a grouped list, which are fewer.
 const hasManyElements = computed(() => {
-  return items.value.length > 3
+  return dimension.values.value.length > 3
 })
 
 const items = computed(() => {

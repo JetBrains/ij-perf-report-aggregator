@@ -15,7 +15,10 @@
     <div class="grow border-t" />
   </div>
   <!-- https://tailwindui.com/components/application-ui/layout/dividers -->
-  <div class="v-else relative">
+  <div
+    v-else
+    class="relative"
+  >
     <div
       class="absolute inset-0 flex items-center"
       aria-hidden="true"

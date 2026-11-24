@@ -1,4 +1,4 @@
-import { center, disparity, ratio, shift, Sample } from "pragmastat"
+import { center, compare2, ComparisonVerdict, disparity, Measurement, Metric, ratio, shift, Sample, Threshold } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -28,10 +28,29 @@ export interface DetectedChange {
   readonly direction: ChangeDirection
 }
 
-export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Map<string, DetectedChange> {
+/**
+ * When a change point counts as a change.
+ *
+ * `"default"` keeps the thresholds tuned for IDE metrics: a relative change of at least 5 % (2 % from 2000, 1 % from
+ * 10000), an absolute shift of at least 10 and a disparity of at least 2. They suit integer milliseconds and counters,
+ * but hide every change of small values such as frame times or frame rates.
+ *
+ * `"bounds"` is unit-free: the bounds of the Hodges–Lehmann ratio of the segments (after / before) at `misrate` must lie
+ * wholly beyond a change of `minRelativeChange` in either direction, so that the change is confidently at least that
+ * large (pragmastat's `compare2`). The values must be positive; others are left out.
+ */
+export type ChangeCriteria = { readonly kind: "default" } | { readonly kind: "bounds"; readonly misrate: number; readonly minRelativeChange: number }
+
+export const DEFAULT_CHANGE_CRITERIA: ChangeCriteria = { kind: "default" }
+
+export function detectChanges(
+  seriesData: (string | number)[][],
+  betterDirection: BetterDirection = "lower",
+  criteria: ChangeCriteria = DEFAULT_CHANGE_CRITERIA
+): Map<string, DetectedChange> {
   const dataset = seriesData[1] as number[] | undefined
   const changePointIndexes = getChangePointIndexes(dataset, 5)
-  const classifications = classifyChangePoint(changePointIndexes, dataset, betterDirection)
+  const classifications = classifyChangePoint(changePointIndexes, dataset, betterDirection, criteria)
   const resultMap = new Map<string, DetectedChange>()
 
   for (const [index, value] of changePointIndexes.entries()) {
@@ -59,7 +78,49 @@ const getSegmentCost = (partialSums: number[][], tau1: number, tau2: number, k: 
   return ((2 * -Math.log(2 * n - 1)) / k) * sum
 }
 
-export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined, betterDirection: BetterDirection = "lower") => {
+/**
+ * How a sample changed against an earlier one, both given as logarithms: the Hodges–Lehmann estimate of the ratio
+ * after / before as a relative change (0.05 is 5 % more), with its bounds at the misrate.
+ */
+export interface RelativeChange {
+  change: number
+  /** The bounds of the change; null when the samples are too small for the misrate. */
+  lower: number | null
+  upper: number | null
+  /** The bounds lie wholly beyond the minimum change in one direction: the change is confidently at least that large. */
+  significant: boolean
+}
+
+/**
+ * Compares two samples of logarithms (of positive values) with pragmastat's `compare2`: the shift of the logarithms is
+ * the logarithm of the Hodges–Lehmann ratio (exactly pragmastat's `ratio`), and its bounds are tested against the
+ * minimum change up and down, ±log(1 + minRelativeChange), so that a change and its inverse count alike.
+ */
+export function relativeChangeOfLogs(afterLogs: number[], beforeLogs: number[], misrate: number, minRelativeChange: number): RelativeChange {
+  if (afterLogs.length === 0 || beforeLogs.length === 0) return { change: 0, lower: null, upper: null, significant: false }
+  const minimum = Math.log1p(minRelativeChange)
+  const after = Sample.of(afterLogs)
+  const before = Sample.of(beforeLogs)
+  try {
+    const [up, down] = compare2(after, before, [new Threshold(Metric.Shift, new Measurement(minimum), misrate), new Threshold(Metric.Shift, new Measurement(-minimum), misrate)])
+    return {
+      change: Math.expm1(up.estimate.value),
+      lower: Math.expm1(up.bounds.lower),
+      upper: Math.expm1(up.bounds.upper),
+      significant: up.verdict === ComparisonVerdict.Greater || down.verdict === ComparisonVerdict.Less,
+    }
+  } catch {
+    // The samples are too small for the misrate: no pair of order statistics bounds the shift that tightly.
+    return { change: Math.expm1(shift(after, before).value), lower: null, upper: null, significant: false }
+  }
+}
+
+export const classifyChangePoint = (
+  changePointIndexes: number[],
+  dataset: number[] | undefined,
+  betterDirection: BetterDirection = "lower",
+  criteria: ChangeCriteria = DEFAULT_CHANGE_CRITERIA
+) => {
   if (dataset == undefined) return []
   const classifications: DetectedChange[] = []
 
@@ -74,6 +135,13 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
 
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
+
+    if (criteria.kind === "bounds") {
+      const { change, significant } = relativeChangeOfLogs(positiveLogs(segmentAfter), positiveLogs(segmentBefore), criteria.misrate, criteria.minRelativeChange)
+      const direction: ChangeDirection = change > 0 ? "up" : "down"
+      classifications.push({ classification: significant ? judge(betterDirection, change) : ChangePointClassification.NO_CHANGE, direction })
+      continue
+    }
 
     // ratio() requires strictly positive values; clamp zeros to 1
     const positiveSegmentBefore = segmentBefore.map((v) => Math.max(1, v))
@@ -109,13 +177,8 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
       classification = ChangePointClassification.NO_CHANGE
     } else if (effectSize < 2) {
       classification = ChangePointClassification.NO_CHANGE
-    } else if (betterDirection === "none") {
-      // A real change, but the metric has no good/bad direction: mark it without judging it.
-      classification = ChangePointClassification.NEUTRAL
     } else {
-      // "stable" flags any change as a regression; "higher" inverts the default lower-is-better rule.
-      const isRegression = betterDirection === "stable" ? true : betterDirection === "higher" ? shiftValue < 0 : shiftValue > 0
-      classification = isRegression ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
+      classification = judge(betterDirection, shiftValue)
     }
 
     // Arrow points the way the value actually moved, independent of whether that move is good or bad.
@@ -123,6 +186,20 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     classifications.push({ classification, direction })
   }
   return classifications
+}
+
+/** The logarithms of the positive values; the others have none. */
+function positiveLogs(values: number[]): number[] {
+  return values.filter((value) => value > 0).map((value) => Math.log(value))
+}
+
+/** Whether a real change of the given sign (positive is a rise) is good or bad for the metric. */
+function judge(betterDirection: BetterDirection, change: number): ChangePointClassification {
+  // A real change, but the metric has no good/bad direction: mark it without judging it.
+  if (betterDirection === "none") return ChangePointClassification.NEUTRAL
+  // "stable" flags any change as a regression; "higher" inverts the default lower-is-better rule.
+  const isRegression = betterDirection === "stable" ? true : betterDirection === "higher" ? change < 0 : change > 0
+  return isRegression ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
 }
 
 const getPartialSums = (data: number[], k: number): number[][] => {

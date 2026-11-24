@@ -1,9 +1,13 @@
-import { BetterDirection, DetectedChange } from "./algorithm"
+import { BetterDirection, ChangeCriteria, DEFAULT_CHANGE_CRITERIA, DetectedChange } from "./algorithm"
 import MyWorker from "./worker?worker&inline"
 
-export function detectChanges(seriesData: (string | number)[][], betterDirection: BetterDirection = "lower"): Promise<Map<string, DetectedChange>> {
+export function detectChanges(
+  seriesData: (string | number)[][],
+  betterDirection: BetterDirection = "lower",
+  criteria: ChangeCriteria = DEFAULT_CHANGE_CRITERIA
+): Promise<Map<string, DetectedChange>> {
   const worker = new MyWorker()
-  worker.postMessage({ seriesData, betterDirection })
+  worker.postMessage({ seriesData, betterDirection, criteria })
   return new Promise((resolve, reject) => {
     worker.addEventListener("error", (event) => {
       reject(event.error as Error)

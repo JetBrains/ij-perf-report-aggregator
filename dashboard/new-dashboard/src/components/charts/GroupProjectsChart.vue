@@ -12,6 +12,7 @@
     :better-direction="betterDirectionProp"
     :y-axis-scale="yAxisScale"
     :stacked-measures="stackedMeasures"
+    :change-criteria="changeCriteria"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -23,7 +24,7 @@ import { injectOrError } from "../../shared/injectionKeys"
 import { compareSectionsRegistryKey, dashboardConfiguratorsKey, renderModeKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
-import { BetterDirection } from "../../shared/changeDetector/algorithm"
+import { BetterDirection, ChangeCriteria } from "../../shared/changeDetector/algorithm"
 import LineChart from "./LineChart.vue"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { CompareSectionConfig, RenderMode } from "./compareMode"
@@ -42,6 +43,8 @@ interface Props {
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
   stackedMeasures?: string[]
+  /** When a detected change point counts as a change; LineChart's default unless set. */
+  changeCriteria?: ChangeCriteria
 }
 
 const {
@@ -57,6 +60,7 @@ const {
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
   stackedMeasures = [],
+  changeCriteria,
 } = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

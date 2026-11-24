@@ -26,7 +26,7 @@ import { useSettingsStore } from "../components/settings/settingsStore"
 import { getChartLastTimestamp, getStaleSeriesMarkLine } from "../components/charts/staleSeries"
 import { getSeriesId, parseSeriesId } from "../components/charts/seriesId"
 import { buildStdDevBand, getStdDevBandSeries, getStdDevMeasureName } from "../components/charts/stdDevInterval"
-import { BetterDirection, ChangePointClassification, DetectedChange } from "../shared/changeDetector/algorithm"
+import { BetterDirection, ChangeCriteria, ChangePointClassification, DEFAULT_CHANGE_CRITERIA, DetectedChange } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore, resolveMeasureUnitForDb } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
@@ -216,7 +216,9 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly withStdDevInterval: boolean = false,
     // Non-empty turns these measures into a stacked area (phases of a total), bottom to top; any other measure is a
     // plain reference line over the stack.
-    private readonly stackedMeasures: readonly string[] = []
+    private readonly stackedMeasures: readonly string[] = [],
+    // When a detected change point counts as a change; the default keeps the thresholds for IDE metrics.
+    private readonly changeCriteria: ChangeCriteria = DEFAULT_CHANGE_CRITERIA
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -247,7 +249,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
       this.accidentsConfigurator,
       this.toolTipTrigger,
       this.betterDirection,
-      this.stackedMeasures
+      this.stackedMeasures,
+      this.changeCriteria
     )
   }
 }
@@ -608,7 +611,8 @@ async function configureChart(
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item",
   betterDirection: BetterDirection = "lower",
-  stackedMeasures: readonly string[] = []
+  stackedMeasures: readonly string[] = [],
+  changeCriteria: ChangeCriteria = DEFAULT_CHANGE_CRITERIA
 ): Promise<LineChartOptions | ScatterChartOptions> {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
 
@@ -705,7 +709,7 @@ async function configureChart(
 
     let detectedChanges = new Map<string, DetectedChange>()
     if (settings.detectChanges) {
-      detectedChanges = await detectChanges(seriesData, betterDirection)
+      detectedChanges = await detectChanges(seriesData, betterDirection, changeCriteria)
     }
 
     let isNotEmpty = false

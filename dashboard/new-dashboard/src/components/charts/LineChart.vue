@@ -87,7 +87,7 @@ import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { resolveMeasureUnit } from "../common/formatter"
 import { useSettingsStore } from "../settings/settingsStore"
-import { BetterDirection } from "../../shared/changeDetector/algorithm"
+import { BetterDirection, ChangeCriteria, DEFAULT_CHANGE_CRITERIA } from "../../shared/changeDetector/algorithm"
 import { measureNameToLabel } from "../../shared/metricsMapping"
 import { getMetricDescription } from "../../shared/metricsDescription"
 import { SeriesNameConfigurator } from "../../configurators/SeriesNameConfigurator"
@@ -111,6 +111,8 @@ interface LineChartProps {
   betterDirection?: BetterDirection
   yAxisScale?: YAxisScale
   stackedMeasures?: string[]
+  /** When a detected change point counts as a change; the default keeps the thresholds for IDE metrics. */
+  changeCriteria?: ChangeCriteria
 }
 
 const {
@@ -128,6 +130,7 @@ const {
   betterDirection: betterDirectionProp,
   yAxisScale = "linear",
   stackedMeasures = [],
+  changeCriteria = DEFAULT_CHANGE_CRITERIA,
 } = defineProps<LineChartProps>()
 
 // One central lookup feeds both the trend-direction rule and the header info popup; the matching prop
@@ -231,7 +234,8 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   tooltipTrigger,
   resolvedBetterDirection.value,
   true,
-  stackedMeasures
+  stackedMeasures,
+  changeCriteria
 )
 
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]

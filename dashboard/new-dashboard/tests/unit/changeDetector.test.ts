@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { ChangePointClassification, classifyChangePoint, getChangePointIndexes } from "../../src/shared/changeDetector/algorithm"
+import { ChangeCriteria, ChangePointClassification, classifyChangePoint, getChangePointIndexes, relativeChangeOfLogs } from "../../src/shared/changeDetector/algorithm"
+
+function logs(values: number[]): number[] {
+  return values.map((value) => Math.log(value))
+}
 
 describe("changeDetector", () => {
   it("complex queries are not merged", () => {
@@ -71,6 +75,57 @@ describe("changeDetector", () => {
     it("a 'none'-direction metric still honours the no-change threshold", () => {
       const flat = [...Array.from({ length: 40 }, () => 100), ...Array.from({ length: 40 }, () => 102)]
       expect(classifyChangePoint([40], flat, "none")[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+    })
+  })
+
+  describe("bounds criteria", () => {
+    const bounds: ChangeCriteria = { kind: "bounds", misrate: 0.05, minRelativeChange: 0.01 }
+    // Frame times around 4 ms with a ±1 % pattern, then 3 % slower: far below the default absolute threshold of 10.
+    const noise = [1, 1.01, 0.99, 1.005, 0.995, 1.01, 0.99, 1, 1.004, 0.996, 1.008, 0.992]
+    const slower = [...noise.map((factor) => 4 * factor), ...noise.map((factor) => 4.12 * factor)]
+
+    it("finds a small change of small values that the default thresholds hide", () => {
+      expect(classifyChangePoint([12], slower, "lower")[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+      const [change] = classifyChangePoint([12], slower, "lower", bounds)
+      expect(change.classification).toBe(ChangePointClassification.DEGRADATION)
+      expect(change.direction).toBe("up")
+      expect(classifyChangePoint([12], slower, "higher", bounds)[0].classification).toBe(ChangePointClassification.OPTIMIZATION)
+      expect(classifyChangePoint([12], slower, "none", bounds)[0].classification).toBe(ChangePointClassification.NEUTRAL)
+    })
+
+    it("ignores a change below the minimum, however clear", () => {
+      const tiny = [...Array.from({ length: 12 }, () => 4), ...Array.from({ length: 12 }, () => 4.02)]
+      expect(classifyChangePoint([12], tiny, "lower", bounds)[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+    })
+
+    it("ignores a real change that is not confidently beyond the minimum", () => {
+      // 1.2 % slower in ±1 % noise: the interval excludes no change but reaches below 1 %.
+      const marginal = [...noise.map((factor) => 4 * factor), ...noise.map((factor) => 4.048 * factor)]
+      const change = relativeChangeOfLogs(logs(marginal.slice(12)), logs(marginal.slice(0, 12)), 0.05, 0.01)
+      expect(change.lower).toBeGreaterThan(0)
+      expect(change.lower).toBeLessThan(0.01)
+      expect(change).toMatchObject({ significant: false })
+      expect(classifyChangePoint([12], marginal, "lower", bounds)[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+    })
+
+    it("finds no change in noise", () => {
+      const flat = [...noise, ...noise].map((factor) => 4 * factor)
+      expect(classifyChangePoint([12], flat, "lower", bounds)[0].classification).toBe(ChangePointClassification.NO_CHANGE)
+    })
+
+    it("bounds the Hodges–Lehmann ratio", () => {
+      const change = relativeChangeOfLogs(logs([11, 12, 13, 14, 15]), logs([10, 10, 10, 10, 10]), 0.05, 0.01)
+      expect(change.change).toBeCloseTo(0.3, 10)
+      expect(change.lower).toBeGreaterThan(0)
+      expect(change.upper).toBeGreaterThanOrEqual(change.change)
+      expect(change).toMatchObject({ significant: true })
+    })
+
+    it("gives no bounds below the achievable misrate", () => {
+      // Five runs on each side cannot reach a misrate below 2 / C(10, 5) ≈ 0.008.
+      const change = relativeChangeOfLogs(logs([11, 12, 13, 14, 15]), logs([10, 10, 10, 10, 10]), 0.001, 0.01)
+      expect(change.lower).toBeNull()
+      expect(change).toMatchObject({ significant: false })
     })
   })
 })

@@ -85,10 +85,6 @@ var rules = []rule{
 	{prefixes: []string{"intellij-linux-2204-aws-c5ad-lt"}, group: "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"},
 	{prefixes: []string{"intellij-linux-2004-aws-r5dn"}, group: "Linux EC2 r5dn.xlarge (4 vCPU, 32 GB)"},
 
-	{prefixes: []string{"fleet-linux-aws-ui"}, group: "Linux Fleet AWS UI"},
-	{prefixes: []string{"fleet-windows-aws-r5d", "fleet-windows-aws-m5d"}, group: "Windows Fleet AWS UI"},
-	{prefixes: []string{"fleet-icri-ui-agent"}, group: "Mac Fleet AWS UI"},
-
 	{prefixes: []string{"qodana-linux-arm64-memory-optimised"}, group: "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"},
 	{prefixes: []string{"intellij-linux-2204-aws-i4i"}, group: "Linux EC2 i4i.xlarge (4 vCPU Xeon, 32 GB)"},
 	{prefixes: []string{"intellij-linux-2204-aws-r5d"}, group: "Linux EC2 r5d.xlarge (4 vCPU Xeon, 32 GB)"},

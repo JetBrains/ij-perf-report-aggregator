@@ -1,8 +1,3 @@
-ALTER TABLE fleet.report MODIFY SETTING storage_policy='s3';
-ALTER TABLE fleet.collector_state MODIFY SETTING storage_policy='s3';
-ALTER TABLE fleet.measure MODIFY SETTING storage_policy='s3';
-ALTER TABLE fleet.installer MODIFY SETTING storage_policy='s3';
-
 ALTER TABLE perfint.collector_state MODIFY SETTING storage_policy='s3';
 ALTER TABLE perfint.datagrip MODIFY SETTING storage_policy='s3';
 ALTER TABLE perfint.goland MODIFY SETTING storage_policy='s3';

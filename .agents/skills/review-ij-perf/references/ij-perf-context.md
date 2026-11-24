@@ -22,7 +22,7 @@ Read README, CLAUDE.md, current manifests, and relevant tests. Some deployed set
 
 - Trace database/table, project/test, metric, branch, machine/group, mode, build configuration, and personal/bisect status. Check that filters, groups, joins, caches, and links preserve the dimensions relevant to the feature.
 - Do not impose all dimensions on every query: aggregation and cross-chart matching can deliberately combine them. Establish which populations the feature promises to compare.
-- Distinguish TeamCity test build ID, installer build ID, IDE build number, and VCS revision. `PerformanceSettings.query()` uses IDE build numbers for `perfint` and TeamCity IDs elsewhere; Fleet also has its own build encoding. Numeric-looking strings are not interchangeable IDs.
+- Distinguish TeamCity test build ID, installer build ID, IDE build number, and VCS revision. `PerformanceSettings.query()` uses IDE build numbers for `perfint` and TeamCity IDs elsewhere. Numeric-looking strings are not interchangeable IDs.
 - Preserve aligned metric names/values/types, timestamps/build IDs, and column-oriented response order. Inspect `pkg/data-query/resultJsonEncoder.go`, `fetchMetricValues.go`, and dashboard consumers for shape changes.
 - Verify seconds/milliseconds, bytes/scaled units, integers/fractions, direction, overflow, and missing/null/zero distinctions. Missing data must not quietly become zero or "no regression."
 - For comparisons, inspect weighting, repeated runs, grouping, percent-change denominator, zero baseline, small samples, variation displays, and whether higher/lower means worse. Means, medians, and pooled statistics are not interchangeable.

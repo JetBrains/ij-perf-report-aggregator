@@ -201,7 +201,7 @@ type analysisRef struct {
 
 // findDegradationMatches returns regressions of the analysis metric, or a metric related to it, on charts without a
 // successful or running analysis at that build (a failed one explains nothing), whose build contains one of the commits.
-// build_number holds the TeamCity build id for all detector settings except perfint and fleet (IDE build number),
+// build_number holds the TeamCity build id for all detector settings except perfint (IDE build number),
 // those are skipped as their commits can't be resolved.
 func findDegradationMatches(ctx context.Context, metaDb *pgxpool.Pool, builds BuildStore, analysis analysisRef, commits []string) ([]LlmAnalysisDegradationMatch, bool, error) {
 	db, table := analysis.db, analysis.table

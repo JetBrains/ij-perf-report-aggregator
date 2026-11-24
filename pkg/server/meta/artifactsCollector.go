@@ -33,7 +33,6 @@ type UploadAttachmentsRequest struct {
 	TeamCityAttachmentInfo TeamCityAttachmentInfo `json:"teamcityAttachmentInfo"`
 	ProjectName            string                 `json:"projectName"`
 	TestType               string                 `json:"testType"`
-	MethodName             *string                `json:"methodName,omitempty"`
 }
 
 type teamCityArtifact struct {
@@ -59,42 +58,6 @@ type UploadConfig struct {
 type artifactCollector interface {
 	getArtifactsPaths(params UploadAttachmentsRequest) []string
 	checkArtifact(artifactName string) bool
-}
-
-type fleetStartupCollector struct{}
-
-func (f fleetStartupCollector) getArtifactsPaths(UploadAttachmentsRequest) []string {
-	return []string{""}
-}
-
-func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
-	return strings.HasSuffix(artifactName, "fleet.fahrplan.json")
-}
-
-type fleetPerfTestCollector struct{}
-
-func (f fleetPerfTestCollector) getArtifactsPaths(params UploadAttachmentsRequest) []string {
-	if params.MethodName == nil {
-		// fallback to situations when MethodName is not provided
-		return []string{""}
-	}
-	methodName := *params.MethodName
-	artifactPath := strings.ReplaceAll(methodName, "#", "/")
-	testMethodName := methodName
-	if _, after, ok := strings.Cut(methodName, "#"); ok {
-		testMethodName = after
-	}
-	return []string{"logs/" + artifactPath, "metrics/" + testMethodName}
-}
-
-func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
-	switch artifactName {
-	// logs.zip is fallback for situation when MethodName is not provided and we just download logs.zip from the root
-	case "logs.zip", "fsdaemon.log", "fleet.log", "spans.json", "fleet.test.json":
-		return true
-	default:
-		return false
-	}
 }
 
 type perfUnitTestCollector struct{}
@@ -133,12 +96,8 @@ func (f perfintCollector) checkArtifact(artifactName string) bool {
 
 func getArtifactCollector(testType string) artifactCollector {
 	switch testType {
-	case "fleet":
-		return fleetStartupCollector{}
 	case "intellij_dev", "intellij":
 		return perfintCollector{}
-	case "fleet_perf":
-		return fleetPerfTestCollector{}
 	case "perfUnitTests":
 		return perfUnitTestCollector{}
 	default:

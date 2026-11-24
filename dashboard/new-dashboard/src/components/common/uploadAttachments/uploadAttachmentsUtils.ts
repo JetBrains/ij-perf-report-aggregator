@@ -7,7 +7,6 @@ export interface UploadAttachmentsRequest {
   }
   projectName: string
   testType: string
-  methodName?: string
 }
 
 export interface YoutrackUploadAttachmentsRequest extends UploadAttachmentsRequest {

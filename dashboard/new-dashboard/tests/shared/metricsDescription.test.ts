@@ -33,3 +33,19 @@ describe("metricsDescription after-# sub-metric resolution", () => {
     expect(formatMeasureValue(26970, resolveMeasureUnit("coldStartHighlighting_slow_generatedPb#jvm.alloc.mb"))).toMatch(/GiB$/)
   })
 })
+
+describe("metricsDescription of the GoLand inspection runs", () => {
+  it("declares the time of an inspection in milliseconds, also when its name contains Count", () => {
+    expect(resolveMeasureUnit("globalInspections#GoStringsReplaceCount.ms")).toBe("milliseconds")
+  })
+
+  it("declares the problems of an inspection as a counter that should stay stable", () => {
+    const info = getMetricDescription("globalInspections#GoMaybeNil.problems")
+    expect(info?.unit).toBe("counter")
+    expect(info?.betterDirection).toBe("stable")
+  })
+
+  it("keeps the JVM cost of the run on its after-# entry", () => {
+    expect(getMetricDescription("globalInspections#jvm.cpu.time.ms")?.description).toBe(getMetricDescription("jvm.cpu.time.ms")?.description)
+  })
+})

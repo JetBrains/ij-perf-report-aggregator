@@ -10,7 +10,7 @@
     >
       {{ title + (yAxisScale === "log" ? " (log scale)" : "") + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <i
-        v-if="resolvedDescription"
+        v-if="infoEntries.some((entry) => entry.description)"
         role="button"
         tabindex="0"
         aria-label="Show metric details"
@@ -48,23 +48,37 @@
       @hide="infoOpen = false"
     >
       <div class="flex flex-col gap-1 text-sm w-fit max-w-md">
-        <span class="font-semibold whitespace-nowrap">{{ metricLabel }}</span>
-        <hr class="my-1 w-full border-gray-200 dark:border-gray-600" />
-        <span v-if="resolvedDescription">{{ resolvedDescription }}</span>
-        <span class="text-xs opacity-80">unit: {{ resolvedUnit }}</span>
-        <span
-          v-if="betterDirectionLabel"
-          class="text-xs opacity-80"
-          >{{ betterDirectionLabel.arrow }} {{ betterDirectionLabel.label }}</span
+        <template
+          v-for="(entry, index) in infoEntries"
+          :key="index"
         >
-        <a
-          v-if="metricInfo?.url"
-          :href="metricInfo.url"
-          target="_blank"
-          rel="noopener"
-          class="mt-1 text-xs underline decoration-dotted hover:no-underline"
-          >Open documentation ↗</a
-        >
+          <hr
+            v-if="index > 0"
+            class="my-2 w-full border-gray-300 dark:border-gray-500"
+          />
+          <span
+            v-for="label in entry.labels"
+            :key="label"
+            class="font-semibold whitespace-nowrap"
+            >{{ label }}</span
+          >
+          <hr class="my-1 w-full border-gray-200 dark:border-gray-600" />
+          <span v-if="entry.description">{{ entry.description }}</span>
+          <span class="text-xs opacity-80">unit: {{ entry.unit }}</span>
+          <span
+            v-if="describeBetterDirection(entry.betterDirection)"
+            class="text-xs opacity-80"
+            >{{ describeBetterDirection(entry.betterDirection)?.arrow }} {{ describeBetterDirection(entry.betterDirection)?.label }}</span
+          >
+          <a
+            v-if="entry.url"
+            :href="entry.url"
+            target="_blank"
+            rel="noopener"
+            class="mt-1 text-xs underline decoration-dotted hover:no-underline"
+            >Open documentation ↗</a
+          >
+        </template>
       </div>
     </Popover>
     <div
@@ -85,7 +99,6 @@ import { accidentsConfiguratorKey, containerKey, sidebarVmKey } from "../../shar
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
-import { resolveMeasureUnit } from "../common/formatter"
 import { useSettingsStore } from "../settings/settingsStore"
 import { BetterDirection, ChangeCriteria, DEFAULT_CHANGE_CRITERIA } from "../../shared/changeDetector/algorithm"
 import { measureNameToLabel } from "../../shared/metricsMapping"
@@ -93,6 +106,7 @@ import { getMetricDescription } from "../../shared/metricsDescription"
 import { SeriesNameConfigurator } from "../../configurators/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
+import { metricInfoEntries } from "./metricInfoEntries"
 import { YAxisScale } from "./yAxisScale"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
@@ -133,11 +147,10 @@ const {
   changeCriteria = DEFAULT_CHANGE_CRITERIA,
 } = defineProps<LineChartProps>()
 
-// One central lookup feeds both the trend-direction rule and the header info popup; the matching prop
-// stays an override so a chart can still state a context-specific direction or description.
+// The trend-direction rule follows the first measure; the matching prop stays an override so a chart can still state
+// a context-specific direction.
 const metricInfo = computed(() => getMetricDescription(measures[0]))
 const resolvedBetterDirection = computed<BetterDirection>(() => betterDirectionProp ?? metricInfo.value?.betterDirection ?? "lower")
-const resolvedDescription = computed(() => description ?? metricInfo.value?.description)
 
 const valueUnitFromMeasure: Ref<ValueUnit> = computed(() => {
   if (measures.every((m) => m.endsWith(".ms"))) {
@@ -164,9 +177,15 @@ function describeBetterDirection(direction: BetterDirection): { arrow: string; l
 
 // The structured info popup binds these directly in the template, so the panel content stays a real Vue
 // tree (reactive, escaped, keyboard-reachable) rather than an injected HTML string.
-const metricLabel = computed(() => measureNameToLabel(measures[0]))
-const resolvedUnit = computed(() => resolveMeasureUnit(measures[0], { valueUnit: valueUnitFromMeasure.value, scaling: false }))
-const betterDirectionLabel = computed(() => describeBetterDirection(resolvedBetterDirection.value))
+// The popup names the measures as the legend does (LineChartVM.renderChart).
+const infoEntries = computed(() =>
+  metricInfoEntries(measures, {
+    description,
+    betterDirection: betterDirectionProp,
+    valueUnit: valueUnitFromMeasure.value,
+    label: (measure) => (legendFormatter("test") == "" ? measureNameToLabel(measure) : legendFormatter(measureNameToLabel(measure))),
+  })
+)
 
 // A Popover (not a tooltip) holds the doc link: it is dismissable, so it stays open until the user clicks
 // away or presses Escape, which lets the link be clicked. toggle(event) aligns it to the clicked icon.

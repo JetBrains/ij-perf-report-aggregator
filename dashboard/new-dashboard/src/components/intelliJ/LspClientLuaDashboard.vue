@@ -24,13 +24,81 @@ import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 
-const projects = ["lua_lsp_completion/completion/imported_module", "lua_lsp_completion/completion/local_variables", "lua_lsp_completion/completion/table_fields"]
-
 const declaration: ChartDefinition[] = [
+  {
+    labels: ["Code Lens on File Open"],
+    measures: ["lspCodeLensOnFileOpen"],
+    projects: ["lua_lsp_code_lens/code_lens/file_open"],
+  },
   {
     labels: ["Completion", "Completion First Element Shown", "Completion Number"],
     measures: ["completion", "completion#firstElementShown", "completion#number"],
-    projects,
+    projects: ["lua_lsp_completion/completion/imported_module", "lua_lsp_completion/completion/local_variables", "lua_lsp_completion/completion/table_fields"],
+  },
+  {
+    labels: ["Diagnostics on First File Open", "Diagnostics on File Open"],
+    measures: ["lspDiagnosticsOnFirstFileOpen", "lspDiagnosticsOnFileOpen"],
+    projects: ["lua_lsp_diagnostics/diagnostics/file_open"],
+  },
+  {
+    labels: ["Diagnostics on Typing", "Diagnostics on Deleting"],
+    measures: ["lspDiagnosticsOnTyping", "lspDiagnosticsOnDeleting"],
+    projects: ["lua_lsp_diagnostics/diagnostics/typing"],
+  },
+  {
+    labels: ["Document Color on File Open"],
+    measures: ["lspDocumentColorOnFileOpen"],
+    projects: ["lua_lsp_document_color/document_color/file_open"],
+  },
+  {
+    labels: ["Document Highlight on First Caret Move", "Document Highlight on Caret Move"],
+    measures: ["lspDocumentHighlightOnFirstCaretMove", "lspDocumentHighlightOnCaretMove"],
+    projects: ["lua_lsp_document_highlights/document_highlights/caret_move"],
+  },
+  {
+    labels: ["Find References"],
+    measures: ["lspFindUsages"],
+    projects: ["lua_lsp_find_references/find_references/same_file", "lua_lsp_find_references/find_references/project"],
+  },
+  {
+    labels: ["Folding Range on File Open"],
+    measures: ["lspFoldingRangeOnFileOpen"],
+    projects: ["lua_lsp_folding_range/folding_range/file_open"],
+  },
+  {
+    labels: ["Formatting on Reformat Code"],
+    measures: ["lspFormattingOnReformatCode"],
+    projects: ["lua_lsp_formatting/formatting/reformat_code"],
+  },
+  {
+    labels: ["Go to Definition"],
+    measures: ["execute_editor_gotodeclaration"],
+    projects: ["lua_lsp_go_to_definition/go_to_definition/same_file", "lua_lsp_go_to_definition/go_to_definition/other_file"],
+  },
+  {
+    labels: ["Hover"],
+    measures: ["lspHover"],
+    projects: ["lua_lsp_hover/hover/function_of_other_file"],
+  },
+  {
+    labels: ["Inlay Hint on File Open"],
+    measures: ["lspInlayHintOnFileOpen"],
+    projects: ["lua_lsp_inlay_hint/inlay_hint/file_open"],
+  },
+  {
+    labels: ["On-Type Formatting on Enter"],
+    measures: ["lspOnTypeFormattingOnEnter"],
+    projects: ["lua_lsp_on_type_formatting/on_type_formatting/enter"],
+  },
+  {
+    labels: ["Prepare Rename on Start", "Rename on Enter"],
+    measures: ["lspPrepareRenameOnStart", "lspRenameOnEnter"],
+    projects: ["lua_lsp_rename/rename/same_file", "lua_lsp_rename/rename/project"],
+  },
+  {
+    labels: ["Semantic Tokens on File Open"],
+    measures: ["lspSemanticTokensOnFileOpen"],
+    projects: ["lua_lsp_semantic_tokens/semantic_tokens/file_open"],
   },
 ]
 

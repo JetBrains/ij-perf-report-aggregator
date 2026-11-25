@@ -40,6 +40,12 @@
           </AccordionContent>
         </AccordionPanel>
       </ChartAccordion>
+      <InspectionRunsBreakdown
+        v-if="group.inspectionRuns"
+        :title="`${group.title}: time and problems per inspection`"
+        :projects="group.inspectionRuns.projects"
+        :families="group.inspectionRuns.families"
+      />
     </template>
 
     <PerProjectBreakdown
@@ -63,6 +69,8 @@ import Divider from "../common/Divider.vue"
 import AdditionalMetrics from "./AdditionalMetrics.vue"
 import PerProjectBreakdown, { BreakdownChart } from "./PerProjectBreakdown.vue"
 import { jvmCostCharts } from "./jvmCostCharts"
+import InspectionRunsBreakdown from "./InspectionRunsBreakdown.vue"
+import { GO_INSPECTION_FAMILIES, GOLANGCI_LINT_FAMILY, InspectionFamily } from "./inspectionFamilies"
 
 interface ChartDef {
   key: string
@@ -79,6 +87,8 @@ interface GroupDef {
   projects: string[]
   charts: ChartDef[]
   jvmCharts?: ChartDef[]
+  // The projects that publish the time and the problem count of each inspection of Inspect Code, and their families.
+  inspectionRuns?: { projects: string[]; families: InspectionFamily[] }
 }
 
 const fileAnalysisProjects = [
@@ -187,6 +197,7 @@ const allGroups: GroupDef[] = [
     projects: globalInspectionProjects,
     charts: globalInspectionCharts,
     jvmCharts: jvmCostCharts("globalInspections", "Global Inspections", "globalInspections"),
+    inspectionRuns: { projects: globalInspectionProjects, families: GO_INSPECTION_FAMILIES },
   },
   {
     value: "golangciLint",
@@ -198,6 +209,7 @@ const allGroups: GroupDef[] = [
       ...jvmCostCharts("localInspectionsGolangci", "Local Inspections (golangci-lint)", "localInspections"),
       ...jvmCostCharts("globalInspectionsGolangci", "Global Inspections (golangci-lint)", "globalInspections"),
     ],
+    inspectionRuns: { projects: golangciLintGlobalProjects, families: [GOLANGCI_LINT_FAMILY, ...GO_INSPECTION_FAMILIES] },
   },
   { value: "singleInspections", title: "Single Inspections: Code Style", prefix: "Code Style", projects: singleInspectionProjects, charts: singleInspectionCharts },
 ]

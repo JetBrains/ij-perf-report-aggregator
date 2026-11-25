@@ -2,6 +2,7 @@ import { BetterDirection } from "./changeDetector/algorithm"
 import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
 import { AIR_METRICS } from "../components/air/airMetrics"
 import { GO_LSP_METRICS } from "../components/goLsp/goLspMetrics"
+import { GO_INSPECTION_RUN_METRICS } from "../components/goland/inspectionFamilies"
 import type { MeasureUnit } from "../components/common/formatter"
 import { SERIES_NAME_SEPARATOR } from "../components/common/DataQueryExecutor"
 
@@ -431,6 +432,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ...GRADLE_METRICS_NEW_DASHBOARD,
   ...AIR_METRICS,
   ...GO_LSP_METRICS,
+  ...GO_INSPECTION_RUN_METRICS,
 
   // Workspace Model
   ["workspaceModel.updates.count", "Total number of changes made to the project model, including modifying entities, changing configuration, and updating dependencies."],

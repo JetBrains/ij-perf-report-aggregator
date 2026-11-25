@@ -58,6 +58,14 @@
               project="zephyr_bap_broadcast_sink/indexing"
             />
           </section>
+
+          <section>
+            <CLionMemoryUsageChart
+              label="Abseil-cpp - After Indexing"
+              measure="afterIndexing"
+              project="abseil-cpp/indexing"
+            />
+          </section>
         </AccordionContent>
       </AccordionPanel>
       <AccordionPanel value="2">

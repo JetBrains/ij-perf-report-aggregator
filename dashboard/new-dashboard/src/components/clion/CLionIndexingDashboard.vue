@@ -77,6 +77,20 @@
         </section>
       </div>
     </section>
+
+    <Divider title="Bazel projects" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <section>
+          <GroupProjectsChart
+            :label="`Indexing Bazel projects`"
+            :measure="['backendIndexingTimeMs']"
+            :projects="['radler/abseil-cpp/indexing']"
+          />
+        </section>
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

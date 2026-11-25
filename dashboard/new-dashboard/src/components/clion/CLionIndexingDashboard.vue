@@ -86,7 +86,7 @@
           <GroupProjectsChart
             :label="`Indexing Bazel projects`"
             :measure="['backendIndexingTimeMs']"
-            :projects="['radler/abseil-cpp/indexing']"
+            :projects="['radler/abseil_cpp/indexing']"
           />
         </section>
       </div>

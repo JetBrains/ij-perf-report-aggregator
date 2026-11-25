@@ -63,7 +63,7 @@
             <CLionMemoryUsageChart
               label="Abseil-cpp - After Indexing"
               measure="afterIndexing"
-              project="abseil-cpp/indexing"
+              project="abseil_cpp/indexing"
             />
           </section>
         </AccordionContent>

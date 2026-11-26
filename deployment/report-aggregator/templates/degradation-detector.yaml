@@ -38,6 +38,14 @@ spec:
                       key: token
                 - name: BACKEND_URL
                   value: "http://backend:80"
+                # Reads the notification settings from the releases of JetBrains/ide-infrastructure-alerts. Without the
+                # secret the detector uses the settings that are built into its image.
+                - name: ALERTS_GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.degradationDetector.alertsGithubTokenSecret }}
+                      key: token
+                      optional: true
                 {{- with .Values.degradationDetector.healthSlackChannel }}
                 - name: HEALTH_SLACK_CHANNEL
                   value: {{ . | quote }}

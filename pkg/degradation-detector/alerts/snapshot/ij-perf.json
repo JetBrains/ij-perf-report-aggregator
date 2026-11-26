@@ -1,0 +1,3923 @@
+{
+  "formatVersion": 1,
+  "service": "ij-perf",
+  "version": "v53",
+  "commit": "7b4894123ebe418e5f89f593db88419bd3082574",
+  "generatedAt": "2026-11-26T10:52:39Z",
+  "notifications": {
+    "metric-degradation": {
+      "description": "A metric of a performance test changed significantly between builds. Change-point analysis splits the metric history into segments and reports when the median of the latest segment differs from the previous one by more than the threshold. A test that stops producing data is reported to the same target after `missingDataDays` days.",
+      "owners": false,
+      "eventFields": {
+        "branch": "Branch the tests ran on, e.g. master",
+        "db": "ClickHouse database of the test results, e.g. perfintDev or perfint",
+        "machine": "Machine name pattern, `*` matches any sequence, e.g. intellij-linux-hw-hetzner*",
+        "metric": "Metric name as shown on the dashboards, e.g. showFileHistory; `*` matches any sequence. Omit the field to let IJ Perf pick the metrics from each test's name (see `spec.metricRules`).",
+        "mode": "Test mode, e.g. split or with-aia; `default` (the default when omitted) selects runs without a mode",
+        "project": "Test name as shown on the dashboards, e.g. intellij_sources/git-commit; startup runs are tests too, named `<project>/measureStartup`. `*` matches any sequence and is resolved against the tests that ran on the block's branches and machines in the last 30 days, so `kotlin/*` is every kotlin test and `*` every test of the table.",
+        "table": "Table in the database, e.g. idea, kotlin, ml"
+      },
+      "spec": {
+        "reportType": "all",
+        "minimumSegmentLength": 5,
+        "medianDifferenceThreshold": 10,
+        "effectSizeThreshold": 2,
+        "missingDataDays": 3,
+        "metricRules": "common",
+        "onlyAnalyze": false,
+        "medianDifferenceThresholdByMetric": {},
+        "metricAliases": {}
+      },
+      "subscribers": {
+        "ai-assistant": {
+          "enabled": true,
+          "target": {
+            "channel": "#ai-assistant-autotest-notifications-all",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "callInlineCompletionOnCompletion#mean_value"
+                ],
+                "project": [
+                  "gradle-calculator_SimpleInlineCompletionTest/simple cloud completion"
+                ],
+                "table": [
+                  "ml"
+                ]
+              },
+              "target": {
+                "channel": "#ai-assistant-autotest-notifications-all",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "ai-generate-code#mean_value",
+                  "doGenerate#mean_value"
+                ],
+                "project": [
+                  "gradle-calculator_CodeGenerationPerformanceTest/generate code"
+                ],
+                "table": [
+                  "ml"
+                ]
+              },
+              "target": {
+                "channel": "#ai-assistant-autotest-notifications-all",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "contextPrivacyFilter.AiIgnoreContextPrivacyFilter.sum.ms",
+                  "contextPrivacyFilter.VcsUnversionedContextPrivacyFilter.sum.ms",
+                  "contextPrivacyFilter.VcsIgnoredContextPrivacyFilter.sum.ms",
+                  "ai-ignore.sum.ms"
+                ],
+                "project": [
+                  "kotlinx_coroutines_k2_dev_ContextPrivacyFiltersTest/coroutinesProject-context-privacy-filters-all-files"
+                ],
+                "table": [
+                  "ml"
+                ]
+              },
+              "target": {
+                "channel": "#ai-assistant-autotest-notifications-all",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "clion": {
+          "enabled": true,
+          "target": {
+            "channel": "#placeholder",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "clion",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "253",
+                  "261",
+                  "262",
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "clion/*"
+                ],
+                "table": [
+                  "clion"
+                ]
+              },
+              "target": {
+                "channel": "#cidr-clion-perf-test",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "clion",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "253",
+                  "261",
+                  "262",
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "radler/*"
+                ],
+                "table": [
+                  "clion"
+                ]
+              },
+              "target": {
+                "channel": "#cidr-radler-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "clion",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "clouds": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-clouds-team-performance-issues-check",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 8,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "cloud",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "json_schema_modes_comparison/*",
+                  "json_azure/*",
+                  "swagger_indexing/*"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-clouds-team-performance-issues-check",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "cloud",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "editor": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-editor-tests-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 7,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "typingCodeAnalyzing"
+                ],
+                "project": [
+                  "toolbox_enterprise/ultimateCase/SecurityTests"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "globalInspections"
+                ],
+                "project": [
+                  "spring_boot_maven/inspection"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "typing_}_duration",
+                  "typing_EditorBackSpace_duration"
+                ],
+                "project": [
+                  "intellij_commit/editor-highlighting",
+                  "intellij_commit/editor-kotlin-highlighting"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "localInspections",
+                  "firstCodeAnalysis"
+                ],
+                "project": [
+                  "kotlin_coroutines/localInspection",
+                  "intellij_commit/localInspection/java_file"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "localInspections"
+                ],
+                "project": [
+                  "intellij_commit/localInspection/java_file_ContentManagerImpl",
+                  "json_schema_modes_comparison/localInspection/NewSchema",
+                  "keycloak_release_20/localInspection/ClientEntity",
+                  "kotlin/localInspection",
+                  "toolbox_enterprise/ultimateCase/ToolService"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "editor.typing.latency#90"
+                ],
+                "project": [
+                  "keycloak_release_20/typing/ClientEntity",
+                  "typingInJavaFile_16Threads/typing",
+                  "typingInJavaFile_4Threads/typing",
+                  "typingInKotlinFile_16Threads/typing",
+                  "typingInKotlinFile_4Threads/typing"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "reopenFileAfterIdeRestart"
+                ],
+                "project": [
+                  "idea/measureStartup"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-editor-tests-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "goland": {
+          "enabled": true,
+          "target": {
+            "channel": "#goland-qa-duty",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-windows-hw-de-*",
+                  "intellij-linux-hw-de-unit-*",
+                  "intellij-macos-perf-eqx-*"
+                ],
+                "metric": [
+                  "fus_reopen_startup_code_loaded_and_visible_in_editor",
+                  "fus_reopen_startup_first_ui_shown",
+                  "fus_reopen_startup_frame_became_interactive",
+                  "fus_reopen_startup_frame_became_visible",
+                  "fus_startup_totalDuration",
+                  "fus_daemon_finished_full_duration_since_started_ms",
+                  "progressMetric/Progress: Updating Go modules dependencies",
+                  "progressMetric/Progress: Updating Go modules dependencies#mean_value"
+                ],
+                "project": [
+                  "*/measureStartup"
+                ],
+                "table": [
+                  "goland"
+                ]
+              },
+              "target": {
+                "channel": "#goland-qa-duty",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 12,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "goland"
+                ]
+              },
+              "target": {
+                "channel": "#goland-qa-duty",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "gradle": {
+          "enabled": true,
+          "target": {
+            "channel": "#gradle-perf-tests-notifications",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "degradation",
+            "minimumSegmentLength": 10,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "ExternalSystemSyncProjectTask",
+                  "GradleExecution",
+                  "GradleConnection",
+                  "GradleCall",
+                  "ExternalSystemSyncResultProcessing",
+                  "ProjectDataServices",
+                  "GradleProjectResolverDataProcessing",
+                  "fus_gradle.sync"
+                ],
+                "project": [
+                  "grazie-platform-project-import-gradle/fastInstaller",
+                  "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/fastInstaller",
+                  "project-import-gradle-micronaut/fastInstaller",
+                  "project-import-gradle-hibernate-orm/fastInstaller",
+                  "project-import-gradle-cas/fastInstaller",
+                  "project-reimport-gradle-cas/fastInstaller",
+                  "project-import-from-cache-gradle-cas/fastInstaller",
+                  "project-import-gradle-1000-modules/fastInstaller",
+                  "project-import-gradle-1000-modules-limited-ram/fastInstaller",
+                  "project-import-gradle-5000-modules/fastInstaller",
+                  "project-import-gradle-android-extra-large/fastInstaller",
+                  "project-import-android-500-modules/fastInstaller",
+                  "project-reimport-space/fastInstaller",
+                  "project-import-space/fastInstaller",
+                  "project-import-open-telemetry/fastInstaller",
+                  "project-import-gradle-ktor/fastInstaller",
+                  "project-import-gradle-ide-services-server/fastInstaller",
+                  "project-import-gradle-bytechef/fastInstaller"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#gradle-perf-tests-notifications",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 10,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "java": {
+          "enabled": true,
+          "target": {
+            "channel": "#idea-java-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 8,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "java",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "grails/*",
+                  "java/*",
+                  "spring_boot/*",
+                  "spring_boot_maven/*",
+                  "intellij_commit/*",
+                  "hadoop_commit/*"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#idea-java-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "java",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "kotlin": {
+          "enabled": true,
+          "target": {
+            "channel": "#kotlin-plugin-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 8,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "kotlin-idea",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "project": [
+                  "intellij_commit/createKotlinClass",
+                  "intellij_commit/editor-kotlin-highlighting",
+                  "intellij_commit/red-code-kotlin",
+                  "kotlin/*",
+                  "kotlin_coroutines/*"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#kotlin-plugin-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "kotlin-idea",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "completion#mean_value",
+                  "findUsages#mean_value",
+                  "localInspections#mean_value",
+                  "completion#firstElementShown#mean_value",
+                  "evaluateExpression#mean_value",
+                  "performInlineRename#mean_value",
+                  "startInlineRename#mean_value",
+                  "prepareForRename#mean_value",
+                  "fus_refactoring_usages_searched",
+                  "execute_editor_optimizeimports",
+                  "execute_editor_optimizeimports#mean_value",
+                  "localInspections_cold#mean_value",
+                  "localInspections_hot#mean_value",
+                  "execute_editor_gotodeclaration_cold#mean_value",
+                  "execute_editor_gotodeclaration_hot#mean_value",
+                  "convertJavaToKotlin",
+                  "moveFiles#mean_value",
+                  "moveFiles_back#mean_value",
+                  "moveDeclarations#mean_value",
+                  "moveDeclarations_back#mean_value",
+                  "codeTyping#mean_value"
+                ],
+                "project": [
+                  "*_k2"
+                ],
+                "table": [
+                  "kotlin"
+                ]
+              },
+              "target": {
+                "channel": "#kotlin-plugin-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 1,
+                "metricRules": "kotlin-idea",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {
+                  "completion#mean_value": "completion",
+                  "completion#firstElementShown#mean_value": "completion",
+                  "findUsages#mean_value": "findUsages",
+                  "localInspections#mean_value": "highlighting",
+                  "performInlineRename#mean_value": "rename",
+                  "prepareForRename#mean_value": "rename",
+                  "startInlineRename#mean_value": "rename",
+                  "fus_refactoring_usages_searched": "rename",
+                  "execute_editor_optimizeimports": "optimizeimports",
+                  "execute_editor_optimizeimports#mean_value": "optimizeimports",
+                  "evaluateExpression#mean_value": "debugger",
+                  "execute_editor_gotodeclaration_hot#mean_value": "gotodeclaration_hot_cache",
+                  "execute_editor_gotodeclaration_cold#mean_value": "gotodeclaration_cold_cache",
+                  "localInspections_cold#mean_value": "highlighting_cold_cache",
+                  "localInspections_hot#mean_value": "highlighting_hot_cache",
+                  "convertJavaToKotlin": "J2K",
+                  "moveFiles#mean_value": "moveFiles",
+                  "codeTyping#mean_value": "codeTyping"
+                }
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "kt-master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "completion#mean_value",
+                  "findUsages#mean_value",
+                  "localInspections#mean_value",
+                  "completion#firstElementShown#mean_value",
+                  "evaluateExpression#mean_value",
+                  "performInlineRename#mean_value",
+                  "startInlineRename#mean_value",
+                  "prepareForRename#mean_value",
+                  "fus_refactoring_usages_searched",
+                  "execute_editor_optimizeimports",
+                  "execute_editor_optimizeimports#mean_value",
+                  "localInspections_cold#mean_value",
+                  "localInspections_hot#mean_value",
+                  "execute_editor_gotodeclaration_cold#mean_value",
+                  "execute_editor_gotodeclaration_hot#mean_value",
+                  "convertJavaToKotlin",
+                  "moveFiles#mean_value",
+                  "moveFiles_back#mean_value",
+                  "moveDeclarations#mean_value",
+                  "moveDeclarations_back#mean_value",
+                  "codeTyping#mean_value"
+                ],
+                "project": [
+                  "*_k2"
+                ],
+                "table": [
+                  "kotlin"
+                ]
+              },
+              "target": {
+                "channel": "#kotlin-plugin-perf-tests-kt-master",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "kotlin-idea",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {
+                  "completion#mean_value": "completion",
+                  "completion#firstElementShown#mean_value": "completion",
+                  "findUsages#mean_value": "findUsages",
+                  "localInspections#mean_value": "highlighting",
+                  "performInlineRename#mean_value": "rename",
+                  "prepareForRename#mean_value": "rename",
+                  "startInlineRename#mean_value": "rename",
+                  "fus_refactoring_usages_searched": "rename",
+                  "execute_editor_optimizeimports": "optimizeimports",
+                  "execute_editor_optimizeimports#mean_value": "optimizeimports",
+                  "evaluateExpression#mean_value": "debugger",
+                  "execute_editor_gotodeclaration_hot#mean_value": "gotodeclaration_hot_cache",
+                  "execute_editor_gotodeclaration_cold#mean_value": "gotodeclaration_cold_cache",
+                  "localInspections_cold#mean_value": "highlighting_cold_cache",
+                  "localInspections_hot#mean_value": "highlighting_hot_cache",
+                  "convertJavaToKotlin": "J2K",
+                  "moveFiles#mean_value": "moveFiles",
+                  "codeTyping#mean_value": "codeTyping"
+                }
+              }
+            }
+          ]
+        },
+        "kotlin-build-tools": {
+          "enabled": true,
+          "target": {
+            "channel": "#kotlin-build-tools-build-notifications",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "ExternalSystemSyncProjectTask"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "kotlinBuildTools"
+                ]
+              },
+              "target": {
+                "channel": "#kotlin-build-tools-build-notifications",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "kotlin-multiplatform-tooling": {
+          "enabled": true,
+          "target": {
+            "channel": "#kmt-infrastructure-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "cidr.performance.appcode.osx*"
+                ],
+                "metric": [
+                  "Create KMP Run Configurations",
+                  "Progress: Generating Xcode files…",
+                  "globalInspections",
+                  "SourceKitDiagnosticsPass#mean_value",
+                  "SourceKitSemanticHighlightingPass#mean_value",
+                  "completion",
+                  "XCodeBuild",
+                  "IosAppStartup",
+                  "IosAppStartupDebug",
+                  "KmpIosConfigurationRun"
+                ],
+                "mode": [
+                  "intellij-idea"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "kmt"
+                ]
+              },
+              "target": {
+                "channel": "#kmt-infrastructure-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "maven": {
+          "enabled": true,
+          "target": {
+            "channel": "#maven-perf-tests-notifications",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "degradation",
+            "minimumSegmentLength": 10,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "maven.sync.duration",
+                  "maven.projects.processor.resolving.task",
+                  "maven.projects.processor.reading.task",
+                  "maven.import.stats.plugins.resolving.task",
+                  "maven.import.stats.applying.model.task",
+                  "maven.import.stats.sync.project.task",
+                  "maven.import.after.import.configuration",
+                  "maven.import.configure.post.process",
+                  "maven.project.importer.base.refreshing.files.task",
+                  "maven.project.importer.post.importing.task.marker",
+                  "post_import_tasks_run.total_duration_ms",
+                  "workspace_commit.attempts",
+                  "workspace_commit.duration_in_background_ms",
+                  "workspace_commit.duration_in_write_action_ms",
+                  "workspace_commit.duration_of_workspace_update_call_ms",
+                  "workspace_import.commit.duration_ms",
+                  "workspace_import.duration_ms",
+                  "workspace_import.legacy_importers.duration_ms",
+                  "workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms",
+                  "workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms",
+                  "workspace_import.populate.duration_ms"
+                ],
+                "project": [
+                  "project-import-maven-quarkus/fastInstaller",
+                  "project-reimport-maven-quarkus/fastInstaller",
+                  "project-import-from-cache-maven-quarkus/fastInstaller",
+                  "project-import-maven-1000-modules/fastInstaller",
+                  "project-import-maven-5000-modules/fastInstaller",
+                  "project-import-maven-5000-modules-incremental/fastInstaller",
+                  "project-import-maven-5000-modules-maven-3.9.16/fastInstaller",
+                  "project-import-maven-5000-modules-maven-3.10.0/fastInstaller",
+                  "project-import-maven-5000-modules-maven-4.0.0-rc-7/fastInstaller",
+                  "project-import-maven-keycloak/fastInstaller",
+                  "project-import-maven-javaee7/fastInstaller",
+                  "project-import-maven-javaee8/fastInstaller",
+                  "project-import-maven-jersey/fastInstaller",
+                  "project-import-maven-flink/fastInstaller",
+                  "project-import-maven-drill/fastInstaller",
+                  "project-import-maven-azure-sdk-java/fastInstaller",
+                  "project-import-maven-hive/fastInstaller",
+                  "project-import-maven-quarkus-to-legacy-model/fastInstaller",
+                  "project-import-maven-1000-modules-to-legacy-model/fastInstaller"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#maven-perf-tests-notifications",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 10,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "phpstorm": {
+          "enabled": true,
+          "target": {
+            "channel": "#phpstorm-performance-degradations",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-windows-hw-de-*",
+                  "intellij-linux-hw-de-unit-*",
+                  "intellij-macos-perf-eqx-*"
+                ],
+                "metric": [
+                  "fus_reopen_startup_code_loaded_and_visible_in_editor",
+                  "fus_reopen_startup_first_ui_shown",
+                  "fus_reopen_startup_frame_became_interactive",
+                  "fus_reopen_startup_frame_became_visible",
+                  "fus_startup_totalDuration",
+                  "fus_daemon_finished_full_duration_since_started_ms"
+                ],
+                "project": [
+                  "*/measureStartup"
+                ],
+                "table": [
+                  "phpstorm"
+                ]
+              },
+              "target": {
+                "channel": "#phpstorm-performance-degradations",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 12,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "phpstorm"
+                ]
+              },
+              "target": {
+                "channel": "#phpstorm-performance-degradations",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "rubymine": {
+          "enabled": true,
+          "target": {
+            "channel": "#rubymine-performance-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "degradation",
+            "minimumSegmentLength": 14,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "ruby",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {
+              "gcPause": 20,
+              "freedMemoryByGC": 20
+            },
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master",
+                  "253"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "ruby"
+                ]
+              },
+              "target": {
+                "channel": "#rubymine-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 14,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "ruby",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {
+                  "gcPause": 20,
+                  "freedMemoryByGC": 20
+                },
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "rust": {
+          "enabled": true,
+          "target": {
+            "channel": "#rust-perf-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "rust",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "rust"
+                ]
+              },
+              "target": {
+                "channel": "#rust-perf-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "rust",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "ui": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-ui-performance-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 8,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": true,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "%expandProjectMenu"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/expandProjectMenu"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "%expandMainMenu"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/expandMainMenu"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "%expandEditorMenu"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/expandEditorMenu"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "scrollEditor#max_awt_delay",
+                  "scrollEditor#average_awt_delay",
+                  "scrollEditor#max_cpu_load",
+                  "scrollEditor#average_cpu_load"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/scrollEditor/java_file_ContentManagerImpl"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "projectViewInit",
+                  "projectViewInit#cachedNodesLoaded"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/projectView",
+                  "kotlin_petclinic/projectView"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "findInFiles#openDialog",
+                  "findInFiles#search: newInstance",
+                  "findInFiles#search: intellij-ide-starter"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/find-in-files",
+                  "intellij_commit/find-in-files-old"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "popupShown#EditorContextMenu",
+                  "popupShown#ProjectViewContextMenu",
+                  "popupShown#ProjectWidget",
+                  "popupShown#RunConfigurations",
+                  "popupShown#VcsLogBranchFilter",
+                  "popupShown#VcsLogDateFilter",
+                  "popupShown#VcsLogPathFilter",
+                  "popupShown#VcsLogUserFilter",
+                  "popupShown#VcsWidget",
+                  "afterShow#GitBranchesTreePopup",
+                  "afterShow#GitDefaultBranchesPopup"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "popups-performance-test/test-popups"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "FileStructurePopup"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/FileStructureDialog/java_file",
+                  "intellij_commit/FileStructureDialog/kotlin_file"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "showQuickFixes"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "grails/showIntentions/Find cause",
+                  "kotlin/showIntention/Import",
+                  "kotlin/showIntention/OldDarkScheme/Import",
+                  "spring_boot/showIntentions"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "findUsage_popup"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "intellij_commit/findUsages/PsiManager_getInstance_firstCall",
+                  "intellij_commit/findUsages/Library_getName"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "searchEverywhere_dialog_shown"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "community/go-to-all/Runtime/typingLetterByLetter",
+                  "community/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all-with-warmup/Runtime/typingLetterByLetter"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "metric": [
+                  "searchEverywhere",
+                  "searchEverywhere_first_elements_added"
+                ],
+                "mode": [
+                  "default",
+                  "split",
+                  "with-aia"
+                ],
+                "project": [
+                  "community/go-to-action/Kotlin/typingLetterByLetter",
+                  "community/go-to-action/Editor/typingLetterByLetter",
+                  "community/go-to-action/Runtime/typingLetterByLetter",
+                  "community/go-to-action-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-action/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-action/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-action/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-action/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-action-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action/Runtime/typingLetterByLetter",
+                  "community/go-to-action-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-action-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-action-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-action-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-action-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-action-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-action-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-action-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-action-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-action-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-class/Kotlin/typingLetterByLetter",
+                  "community/go-to-class/Editor/typingLetterByLetter",
+                  "community/go-to-class/Runtime/typingLetterByLetter",
+                  "community/go-to-class-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-class/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-class/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-class/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-class/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-class-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class/Runtime/typingLetterByLetter",
+                  "community/go-to-class-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-class-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-class-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-class-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-class-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-class-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-class-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-class-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-class-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-class-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-file/Editor/typingLetterByLetter",
+                  "community/go-to-file/Kotlin/typingLetterByLetter",
+                  "community/go-to-file/Runtime/typingLetterByLetter",
+                  "community/go-to-file-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-file/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-file/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-file/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-file/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-file-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file/Runtime/typingLetterByLetter",
+                  "community/go-to-file-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-file-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-file-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-file-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-file-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-file-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-file-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-file-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-file-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-file-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-all/Editor/typingLetterByLetter",
+                  "community/go-to-all/Kotlin/typingLetterByLetter",
+                  "community/go-to-all/Runtime/typingLetterByLetter",
+                  "community/go-to-all-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-all/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-all/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-all/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all/Runtime/typingLetterByLetter",
+                  "community/go-to-all-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-all-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-all-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-all-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-all-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-all-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-symbol/Editor/typingLetterByLetter",
+                  "community/go-to-symbol/Kotlin/typingLetterByLetter",
+                  "community/go-to-symbol/Runtime/typingLetterByLetter",
+                  "community/go-to-symbol-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-symbol/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol/Runtime/typingLetterByLetter",
+                  "community/go-to-symbol-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-symbol-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-symbol-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-symbol-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-symbol-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-symbol-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-symbol-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-text/Editor/typingLetterByLetter",
+                  "community/go-to-text/Kotlin/typingLetterByLetter",
+                  "community/go-to-text/Runtime/typingLetterByLetter",
+                  "community/go-to-text-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-text/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-text/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-text/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-text/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-text-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text/Runtime/typingLetterByLetter",
+                  "community/go-to-text-with-warmup/Editor/typingLetterByLetter",
+                  "community/go-to-text-with-warmup/Kotlin/typingLetterByLetter",
+                  "community/go-to-text-with-warmup/Runtime/typingLetterByLetter",
+                  "community/go-to-text-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "java/go-to-text-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-text-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/go-to-text-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/go-to-text-with-warmup/Runtime/typingLetterByLetter",
+                  "intellij_commit/go-to-text-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text-with-warmup/Kotlin/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text-with-warmup/Editor/typingLetterByLetter",
+                  "intellij_commit/new-se-go-to-text-with-warmup/Runtime/typingLetterByLetter"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-ui-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.open.treeReady"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/open",
+                  "todo_many_items/todo/open"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.edit.add.treeReady"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/edit",
+                  "todo_many_items/todo/edit"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.currentFile.switch.items500"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/currentFile",
+                  "todo_many_items/todo/currentFile"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.scope.narrow.treeReady"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/scope",
+                  "todo_many_items/todo/scope"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.filter.apply.treeReady"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/filter",
+                  "todo_many_items/todo/filter"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "todo.preview.enable",
+                  "todo.navigate.nextFile"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "todo_many_files/todo/preview",
+                  "todo_many_items/todo/preview"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#rd-qa-perf-test-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 1,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "ultimate": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-u-team-performance-issues-check",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 8,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "ultimate",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*",
+                  "intellij-windows-performance-*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "keycloak_release_20/*",
+                  "train-ticket/*",
+                  "toolbox_enterprise/*"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-u-team-performance-issues-check",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 8,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "ultimate",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-windows-hw-de-*",
+                  "intellij-linux-hw-de-unit-*",
+                  "intellij-macos-perf-eqx-*"
+                ],
+                "metric": [
+                  "appInit_d",
+                  "app initialization.end",
+                  "bootstrap_d",
+                  "classLoadingLoadedCount",
+                  "classLoadingPreparedCount",
+                  "editorRestoring",
+                  "fus_daemon_finished_full_duration_since_started_ms",
+                  "runDaemon/executionTime",
+                  "fus_startup_totalDuration",
+                  "exitMetrics/application.exit",
+                  "fus_reopen_startup_code_loaded_and_visible_in_editor",
+                  "fus_reopen_startup_first_ui_shown",
+                  "fus_reopen_startup_frame_became_interactive",
+                  "fus_reopen_startup_frame_became_visible"
+                ],
+                "project": [
+                  "*/measureStartup"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-u-team-performance-issues-check",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 12,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "ultimate",
+                "onlyAnalyze": true,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "vcs": {
+          "enabled": true,
+          "target": {
+            "channel": "#vcs-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 7,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "vcs-log-indexing"
+                ],
+                "project": [
+                  "intellij_clone_specific_commit/gitLogIndexing",
+                  "intellij_sources/gitLogIndexing"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "showFileHistory",
+                  "showFirstPack"
+                ],
+                "project": [
+                  "intellij_sources/EditorImpl-phm",
+                  "intellij_sources/EditorImpl-noindex",
+                  "intellij_sources/showFileHistory/EditorImpl",
+                  "intellij_sources/showFileHistory/EditorImpl-instant-git",
+                  "intellij_commit/showFileHistory/EditorImpl",
+                  "intellij_commit/showFileHistory/EditorImpl-instant-git"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "vcs-log-filtering"
+                ],
+                "project": [
+                  "intellij_sources/filterVcsLogTab-phm",
+                  "intellij_sources/filterVcsLogTab-noindex",
+                  "intellij_sources/filterVcsLogTab-path-phm",
+                  "intellij_sources/filterVcsLogTab-path-noindex",
+                  "intellij_sources/filterVcsLogTab-date-phm",
+                  "intellij_sources/filterVcsLogTab-date-noindex"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "fus_vcs_commit_duration",
+                  "vcs-log-refreshing"
+                ],
+                "project": [
+                  "intellij_sources/git-commit"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "gitShowBranchWidget"
+                ],
+                "project": [
+                  "intellij_sources/git-branch-widget",
+                  "vcs_100k_branches/git-branch-widget"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            },
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws-*"
+                ],
+                "metric": [
+                  "showFileAnnotation",
+                  "git-open-annotation"
+                ],
+                "project": [
+                  "intellij_sources/vcs-annotate-instant-git",
+                  "intellij_sources/vcs-annotate"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 7,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "webstorm": {
+          "enabled": true,
+          "target": {
+            "channel": "#webstorm-test-degradations",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-performance-aws*"
+                ],
+                "mode": [
+                  "default",
+                  "split"
+                ],
+                "project": [
+                  "*"
+                ],
+                "table": [
+                  "webstorm"
+                ]
+              },
+              "target": {
+                "channel": "#webstorm-test-degradations",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        },
+        "workspace-model": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-workspace-model-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 5,
+            "medianDifferenceThreshold": 10,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "metricRules": "common",
+            "onlyAnalyze": false,
+            "medianDifferenceThresholdByMetric": {},
+            "metricAliases": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfint"
+                ],
+                "machine": [
+                  "intellij-linux-hw-hetzner*"
+                ],
+                "metric": [
+                  "project.opening",
+                  "jps.apply.loaded.storage.ms",
+                  "jps.load.project.to.empty.storage.ms",
+                  "jps.project.serializers.load.ms"
+                ],
+                "project": [
+                  "project-import-jps-kotlin-50_000-modules/measureStartup"
+                ],
+                "table": [
+                  "idea"
+                ]
+              },
+              "target": {
+                "channel": "#ij-workspace-model-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 5,
+                "medianDifferenceThreshold": 10,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "metricRules": "common",
+                "onlyAnalyze": false,
+                "medianDifferenceThresholdByMetric": {},
+                "metricAliases": {}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "metric-threshold": {
+      "description": "The latest value of a metric crossed a fixed threshold, for example a quota reached 95 %. No change-point analysis, so it also fires on the very first build over the threshold.",
+      "owners": false,
+      "eventFields": {
+        "branch": "Branch the tests ran on, e.g. master",
+        "db": "ClickHouse database of the test results, e.g. perfintDev or perfint",
+        "machine": "Machine name pattern, `*` matches any sequence, e.g. intellij-linux-*-aws-*",
+        "metric": "Metric name as shown on the dashboards, e.g. currentPercents",
+        "mode": "Test mode, e.g. split or with-aia; `default` (the default when omitted) selects runs without a mode",
+        "project": "Test name as shown on the dashboards, e.g. \"prod: tokenQuota\"",
+        "table": "Table in the database, e.g. idea, kotlin, ml"
+      },
+      "spec": {
+        "comparison": "greaterThan",
+        "missingDataDays": 3
+      },
+      "subscribers": {
+        "ai-assistant": {
+          "enabled": true,
+          "target": {
+            "channel": "#ai-assistant-autotest-notifications",
+            "mention": []
+          },
+          "spec": {
+            "comparison": "greaterThan",
+            "missingDataDays": 3,
+            "value": 95
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "branch": [
+                  "master"
+                ],
+                "db": [
+                  "perfintDev"
+                ],
+                "machine": [
+                  "intellij-linux-*-aws-*"
+                ],
+                "metric": [
+                  "currentPercents"
+                ],
+                "project": [
+                  "stage: tokenQuota",
+                  "prod: tokenQuota"
+                ],
+                "table": [
+                  "ml"
+                ]
+              },
+              "target": {
+                "channel": "#ai-assistant-autotest-notifications",
+                "mention": []
+              },
+              "spec": {
+                "comparison": "greaterThan",
+                "missingDataDays": 3,
+                "value": 95
+              }
+            }
+          ]
+        }
+      }
+    },
+    "unit-test-degradation": {
+      "description": "A performance unit test (perfUnitTests) got slower or faster between builds. Every unit test is an event: a subscriber receives the tests whose code owner it claims in subscriber.yaml, plus the tests its match blocks select by name. IJ Perf resolves the owner from the CodeOwners metadata of the test and knows no group hierarchy, so a claim matches the group name exactly.",
+      "owners": true,
+      "eventFields": {
+        "test": "Fully qualified test name, e.g. \"com.intellij.java.codeInsight.PerfTest.testFoo - foo\"; `*` matches any sequence, so \"com.intellij.java.*\" is every test of that package."
+      },
+      "fallback": "#ij-perf-unit-tests-alerts",
+      "spec": {
+        "reportType": "all",
+        "minimumSegmentLength": 30,
+        "medianDifferenceThreshold": 20,
+        "effectSizeThreshold": 2,
+        "missingDataDays": 3,
+        "additionalMetrics": {}
+      },
+      "subscribers": {
+        "build-tools": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-build-tools-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "org.jetbrains.osgi.maven.*",
+                  "org.jetbrains.plugins.gradle.*"
+                ]
+              },
+              "target": {
+                "channel": "#ij-build-tools-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "clion": {
+          "enabled": true,
+          "target": {
+            "channel": "#placeholder",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "CLion",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "clouds": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-clouds-team-performance-issues-check",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.kubernetes.*",
+                  "org.jetbrains.yaml.*"
+                ]
+              },
+              "target": {
+                "channel": "#kubernetes-ui-tests-failures",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            },
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.performance.json.*"
+                ]
+              },
+              "target": {
+                "channel": "#ij-clouds-team-performance-issues-check",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "datagrip": {
+          "enabled": true,
+          "target": {
+            "channel": "#dbe-failed-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.sql.*"
+                ]
+              },
+              "target": {
+                "channel": "#dbe-failed-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "debugger": {
+          "enabled": true,
+          "target": {
+            "channel": "#debugger-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {
+              "com.intellij.debugger.impl.PacketsNumberTest": [
+                "*.expected.*"
+              ],
+              "org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": [
+                "*.expected.*"
+              ],
+              "com.intellij.debugger.MethodExitBreakpointPerformanceTest": [
+                "unrelated.work.median.ms"
+              ],
+              "com.intellij.debugger.impl.SteppingPerformanceTest": [
+                "step.*"
+              ]
+            }
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.debugger.*",
+                  "org.jetbrains.kotlin.idea.k2.debugger.*"
+                ]
+              },
+              "target": {
+                "channel": "#debugger-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {
+                  "com.intellij.debugger.impl.PacketsNumberTest": [
+                    "*.expected.*"
+                  ],
+                  "org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": [
+                    "*.expected.*"
+                  ],
+                  "com.intellij.debugger.MethodExitBreakpointPerformanceTest": [
+                    "unrelated.work.median.ms"
+                  ],
+                  "com.intellij.debugger.impl.SteppingPerformanceTest": [
+                    "step.*"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "devenv": {
+          "enabled": false,
+          "target": {
+            "channel": "#todo-devenv-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL DevEnv",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "editor": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-editor-tests-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL Editor & Highlighting",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ides-infrastructure": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-perf-unit-tests-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "Functional Automation",
+              "subgroups": true
+            },
+            {
+              "name": "Quality Tools & Automation",
+              "subgroups": true
+            },
+            {
+              "name": "Performance Infrastructure",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ijpl-nlp": {
+          "enabled": true,
+          "target": {
+            "channel": "#nlp-team-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL NLP",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ijpl-remote-development-technology": {
+          "enabled": false,
+          "target": {
+            "channel": "#todo-ijpl-remote-development-technology-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL Remote Development Technology",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ijpl-ui": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-ui-performance-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL UI",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ijpl-unified-ide": {
+          "enabled": true,
+          "target": {
+            "channel": "#todo-ijpl-unified-ide-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL Unified IDE",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "java": {
+          "enabled": true,
+          "target": {
+            "channel": "#idea-java-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "Java",
+              "subgroups": true
+            }
+          ],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.java.*",
+                  "org.jetbrains.plugins.groovy.*",
+                  "org.jetbrains.uast.test.java.*",
+                  "com.intellij.lang.properties.*",
+                  "com.intellij.structuralsearch.*",
+                  "org.jetbrains.java.*",
+                  "org.jetbrains.plugins.cucumber.java.*"
+                ]
+              },
+              "target": {
+                "channel": "#idea-java-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "java-build-tools": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-build-tools-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "Java Build tools",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "js-ts-engineering": {
+          "enabled": true,
+          "target": {
+            "channel": "#webstorm-test-degradations",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "JS/TS Engineering",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "kotlin": {
+          "enabled": true,
+          "target": {
+            "channel": "#kotlin-plugin-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IntelliJ Kotlin Plugin",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "lsp": {
+          "enabled": true,
+          "target": {
+            "channel": "#kotlin-lsp-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.jetbrains.ls.*"
+                ]
+              },
+              "target": {
+                "channel": "#kotlin-lsp-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "phpstorm": {
+          "enabled": true,
+          "target": {
+            "channel": "#phpstorm-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "degradation",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "PHP Engineering",
+              "subgroups": true
+            }
+          ],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.jetbrains.php.*"
+                ]
+              },
+              "target": {
+                "channel": "#phpstorm-performance-degradations",
+                "mention": [
+                  "<!subteam^S0BH689GW9G>"
+                ]
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "pycharm": {
+          "enabled": true,
+          "target": {
+            "channel": "#pycharm-dev",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "Python Ecosystem",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "rubymine": {
+          "enabled": true,
+          "target": {
+            "channel": "#rubymine-internal",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "degradation",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "RubyMine",
+              "subgroups": true
+            }
+          ],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "org.jetbrains.plugins.ruby.*"
+                ]
+              },
+              "target": {
+                "channel": "#rubymine-performance-alerts",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "degradation",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "rust": {
+          "enabled": true,
+          "target": {
+            "channel": "#rust-alerts",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "Rust Engineering",
+              "subgroups": false
+            },
+            {
+              "name": "Rust AI",
+              "subgroups": true
+            },
+            {
+              "name": "Rust Debugger",
+              "subgroups": true
+            },
+            {
+              "name": "Rust Project Model",
+              "subgroups": true
+            },
+            {
+              "name": "Rust Solana",
+              "subgroups": true
+            },
+            {
+              "name": "Rust Toml",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "threading": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-threading",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [
+            {
+              "name": "IJPL Threading Model",
+              "subgroups": true
+            }
+          ],
+          "match": []
+        },
+        "ultimate": {
+          "enabled": true,
+          "target": {
+            "channel": "#ij-u-team-performance-issues-check",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.freemarker.*",
+                  "com.intellij.reactivestreams.*",
+                  "com.intellij.httpClient.*",
+                  "com.intellij.spring.*",
+                  "com.intellij.swagger.*",
+                  "com.intellij.util.xml.*",
+                  "com.intellij.grpc.*",
+                  "com.intellij.guice.*",
+                  "com.intellij.helidon.*",
+                  "com.intellij.hibernate.*",
+                  "com.intellij.jdbi.*",
+                  "com.intellij.ktor.*",
+                  "com.intellij.micronaut.*",
+                  "com.intellij.openRewrite.*",
+                  "com.intellij.quarkus.*",
+                  "com.intellij.frameworks.thymeleaf.*",
+                  "com.intellij.wiremock.*",
+                  "com.intellij.ee.*",
+                  "com.intellij.jsp.*",
+                  "com.jetbrains.jsonSchema.*"
+                ]
+              },
+              "target": {
+                "channel": "#ij-u-team-performance-issues-check",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "vcs": {
+          "enabled": true,
+          "target": {
+            "channel": "#vcs-perf-tests",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.diff.*",
+                  "com.intellij.openapi.vcs.*",
+                  "git4idea.*"
+                ]
+              },
+              "target": {
+                "channel": "#vcs-perf-tests",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        },
+        "webstorm": {
+          "enabled": true,
+          "target": {
+            "channel": "#webstorm-test-degradations",
+            "mention": []
+          },
+          "spec": {
+            "reportType": "all",
+            "minimumSegmentLength": 30,
+            "medianDifferenceThreshold": 20,
+            "effectSizeThreshold": 2,
+            "missingDataDays": 3,
+            "additionalMetrics": {}
+          },
+          "owners": [],
+          "match": [
+            {
+              "fields": {
+                "test": [
+                  "com.intellij.lang.javascript.*",
+                  "com.intellij.html.*",
+                  "org.angular2.lang.*",
+                  "css.*",
+                  "org.jetbrains.vuejs.*",
+                  "org.angularjs.performance.*",
+                  "com.intellij.flex.completion.*",
+                  "com.intellij.htmltools.*",
+                  "org.jetbrains.plugins.sass.*",
+                  "org.jetbrains.plugins.scss.*",
+                  "org.jetbrains.astro.lang.*",
+                  "com.intellij.psi.html.*",
+                  "com.intellij.plugins.watcher.*",
+                  "com.intellij.javascript.*"
+                ]
+              },
+              "target": {
+                "channel": "#webstorm-test-degradations",
+                "mention": []
+              },
+              "spec": {
+                "reportType": "all",
+                "minimumSegmentLength": 30,
+                "medianDifferenceThreshold": 20,
+                "effectSizeThreshold": 2,
+                "missingDataDays": 3,
+                "additionalMetrics": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

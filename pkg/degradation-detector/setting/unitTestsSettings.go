@@ -1,149 +1,22 @@
 package setting
 
 import (
+	"errors"
 	"log/slog"
-	"net/http"
+	"reflect"
 	"slices"
 	"strings"
 	"time"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/alerts"
 )
 
-// teamConfig represents the configuration for a team
-type teamConfig struct {
-	Team             string
-	Packages         []string
-	SlackChannel     string
-	AnalysisSettings *detector.AnalysisSettings
-	// AdditionalTestMetrics maps a test class name to extra metrics to assert alongside the
-	// default attempt.mean.ms. Values may be SQL LIKE patterns (e.g. "%.expected.%").
-	AdditionalTestMetrics map[string][]string
-	// Mention is an optional Slack mention prepended to this team's degradation messages.
-	// It only fires when the alert lands in this team's own SlackChannel (owner routing can send an
-	// alert elsewhere, in which case the ping is dropped). Use the raw Slack syntax, e.g.
-	// "<@U01ABC2DEF>" for a user or "<!subteam^S01ABC2DEF>" for a user group.
-	Mention string
-}
-
-var defaultUnitTestAnalysisSettings = detector.AnalysisSettings{
-	MinimumSegmentLength:      30,
-	MedianDifferenceThreshold: 20,
-	EffectSizeThreshold:       2,
-}
-
-func degradationOnlyAnalysisSettings() *detector.AnalysisSettings {
-	s := defaultUnitTestAnalysisSettings
-	s.ReportType = detector.DegradationEvent
-	return &s
-}
-
-var teamConfigs = []teamConfig{
-	{
-		Team:         "ultimate",
-		SlackChannel: "ij-u-team-performance-issues-check",
-		Packages: []string{
-			"com.intellij.freemarker", "com.intellij.reactivestreams", "com.intellij.httpClient", "com.intellij.spring",
-			"com.intellij.swagger", "com.intellij.util.xml", "com.intellij.grpc", "com.intellij.guice",
-			"com.intellij.helidon", "com.intellij.hibernate", "com.intellij.jdbi", "com.intellij.ktor",
-			"com.intellij.micronaut", "com.intellij.openRewrite", "com.intellij.quarkus", "com.intellij.frameworks.thymeleaf",
-			"com.intellij.wiremock", "com.intellij.ee", "com.intellij.jsp", "com.jetbrains.jsonSchema",
-		},
-	},
-	{
-		Team:         "vcs",
-		SlackChannel: "vcs-perf-tests",
-		Packages: []string{
-			"com.intellij.diff", "com.intellij.openapi.vcs", "git4idea",
-		},
-	},
-	{
-		Team:         "java",
-		SlackChannel: "idea-java-alerts",
-		Packages: []string{
-			"com.intellij.java", "org.jetbrains.plugins.groovy", "org.jetbrains.uast.test.java",
-			"com.intellij.lang.properties", "com.intellij.structuralsearch", "org.jetbrains.java",
-			"org.jetbrains.plugins.cucumber.java",
-		},
-	},
-	{
-		Team:         "cloudsAndDeployment",
-		SlackChannel: "kubernetes-ui-tests-failures",
-		Packages: []string{
-			"com.intellij.kubernetes", "org.jetbrains.yaml",
-		},
-	},
-	{
-		Team:         "cloudsAndDeployment",
-		SlackChannel: "ij-clouds-team-performance-issues-check",
-		Packages: []string{
-			"com.intellij.performance.json",
-		},
-	},
-	{
-		Team:         "datagrip",
-		SlackChannel: "dbe-failed-tests",
-		Packages: []string{
-			"com.intellij.sql",
-		},
-	},
-	{
-		Team:         "webstorm",
-		SlackChannel: "webstorm-test-degradations",
-		Packages: []string{
-			"com.intellij.lang.javascript", "com.intellij.html", "org.angular2.lang", "css", "org.jetbrains.vuejs",
-			"org.angularjs.performance", "com.intellij.flex.completion", "com.intellij.htmltools",
-			"org.jetbrains.plugins.sass", "org.jetbrains.plugins.scss", "org.jetbrains.astro.lang", "com.intellij.psi.html",
-			"com.intellij.plugins.watcher", "com.intellij.javascript",
-		},
-	},
-	{
-		Team:         "buildTools",
-		SlackChannel: "ij-build-tools-perf-tests",
-		Packages: []string{
-			"org.jetbrains.osgi.maven", "org.jetbrains.plugins.gradle",
-		},
-	},
-	{
-		Team:         "rubymine",
-		SlackChannel: "rubymine-performance-alerts",
-		Packages: []string{
-			"org.jetbrains.plugins.ruby",
-		},
-		AnalysisSettings: degradationOnlyAnalysisSettings(),
-	},
-	{
-		Team:         "phpstorm",
-		SlackChannel: "phpstorm-performance-degradations",
-		Packages: []string{
-			"com.jetbrains.php",
-		},
-		AnalysisSettings: degradationOnlyAnalysisSettings(),
-		Mention:          "<!subteam^S0BH689GW9G>", // @phpstorm-dev-duty
-	},
-	{
-		Team:         "lsp",
-		SlackChannel: "kotlin-lsp-alerts",
-		Packages: []string{
-			"com.jetbrains.ls",
-		},
-	},
-	{
-		Team:         "debugger",
-		SlackChannel: "debugger-perf-tests",
-		Packages: []string{
-			"com.intellij.debugger", "org.jetbrains.kotlin.idea.k2.debugger",
-		},
-		AdditionalTestMetrics: map[string][]string{
-			"com.intellij.debugger.impl.PacketsNumberTest":                                                      {"%.expected.%"},
-			"org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": {"%.expected.%"},
-			"com.intellij.debugger.MethodExitBreakpointPerformanceTest":                                         {"unrelated.work.median.ms"},
-			"com.intellij.debugger.impl.SteppingPerformanceTest":                                                {"step.%"},
-		},
-	},
-}
-
-const catchAllUnitTestsChannel = "ij-perf-unit-tests-alerts"
+const (
+	unitTestsDb    = "perfUnitTests"
+	unitTestsTable = "report"
+	unitTestMetric = "attempt.mean.ms"
+)
 
 // The unit performance tests run on the Blade agents. Some tests, such as the Go LSP tests,
 // run only on the Hetzner agents, so the detector keeps the Hetzner series for them.
@@ -180,176 +53,207 @@ func splitUnitTestsByMachine(bladeTests, hetznerTests []string) []unitTestsMachi
 	}
 }
 
-func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	settings := make([]detector.PerformanceSettings, 0, 1000)
-
-	mainSettings := detector.PerformanceSettings{
-		Db:     "perfUnitTests",
-		Table:  "report",
-		Branch: "master",
-		Metric: "attempt.mean.ms",
+// generateUnitTestSettings returns the settings of unit-test-degradation: every performance unit test is analyzed,
+// and the subscribers of the notification decide who gets its messages.
+func generateUnitTestSettings(notification alerts.Notification, backend Backend) []detector.Settings {
+	base := detector.PerformanceSettings{
+		Db: unitTestsDb, Table: unitTestsTable, Branch: "master", Metric: unitTestMetric,
 	}
-
-	testsOnMachine := func(machine string) ([]string, error) {
-		machineSettings := mainSettings
-		machineSettings.Machine = machine
-		return detector.FetchAllTests(backendUrl, client, machineSettings)
-	}
-	bladeTests, err := testsOnMachine(bladeUnitTestsMachine)
+	bladeTests, err := backend.Tests(base.Db, base.Table, base.Branch, bladeUnitTestsMachine)
 	if err != nil {
 		slog.Error("error while getting tests", "error", err, "machine", bladeUnitTestsMachine)
-		return settings
+		return nil
 	}
-	hetznerTests, err := testsOnMachine(hetznerUnitTestsMachine)
+	hetznerTests, err := backend.Tests(base.Db, base.Table, base.Branch, hetznerUnitTestsMachine)
 	if err != nil {
 		slog.Error("error while getting tests", "error", err, "machine", hetznerUnitTestsMachine)
-		return settings
+		return nil
 	}
 
-	// Code owner is the primary attribution key: a test's owner (from project_owner metadata)
-	// is resolved to a Slack channel via the CodeOwners service. Either fetch failing degrades
-	// to package-based routing rather than dropping notifications entirely.
-	projectOwners, err := detector.FetchProjectOwners(backendUrl, client, mainSettings.Db, mainSettings.Table)
+	// Without the owners a test still reaches the subscribers that select it by name, or the fallback channel.
+	owners, err := backend.ProjectOwners(base.Db, base.Table)
 	if err != nil {
-		slog.Error("error while fetching project owners; falling back to package-based routing", "error", err)
-		projectOwners = map[string]string{}
+		slog.Error("error while fetching project owners, the unit tests are routed by name only", "error", err)
 	}
-	ownerChannels, err := detector.FetchCodeOwnerChannels(backendUrl, client)
+	// Without the groups a subscriber gets the tests of an owner only when it claims the exact name of the owner.
+	groups, err := backend.OwnerGroups()
 	if err != nil {
-		slog.Error("error while fetching code-owner channels; falling back to package-based routing", "error", err)
-		ownerChannels = map[string]string{}
-		// Without the channel map every owned test would look "owned but unrouted" and be sent to
-		// the catch-all; dropping the owners keeps package-based routing working on this error path.
-		projectOwners = map[string]string{}
+		slog.Error("error while fetching code-owner groups, a claim does not cover subgroups and old names", "error", err)
+	}
+	router, err := newUnitTestRouter(notification, groups)
+	if err != nil {
+		slog.Error("invalid spec in the alerts config", "notification", unitTestDegradation, "error", err)
+		return nil
 	}
 
+	var result []detector.Settings
 	for _, series := range splitUnitTestsByMachine(bladeTests, hetznerTests) {
-		machineSettings := mainSettings
-		machineSettings.Machine = series.machine
+		base.Machine = series.machine
 		for _, test := range series.tests {
-			route := resolveRoute(test, projectOwners, ownerChannels, teamConfigs)
-			analysis := route.analysisSettings
-			analysis.IgnoreChangesBefore = series.ignoreChangesBefore
-			metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, machineSettings, test, route.additionalTestMetrics)...)
-			for _, metric := range metrics {
-				settings = append(settings, detector.PerformanceSettings{
-					Project: test,
-					Db:      mainSettings.Db,
-					Table:   mainSettings.Table,
-					Branch:  mainSettings.Branch,
-					Machine: series.machine,
-					Metric:  metric,
-					Channel: route.channel, ProductLink: "perfUnit", Mention: route.mention,
-					AnalysisSettings: analysis,
-				})
+			base.Project = test
+			for _, route := range router.resolve(test, owners[test]) {
+				metrics := append([]string{unitTestMetric}, additionalMetrics(route.spec.AdditionalMetrics, base, backend)...)
+				for _, metric := range metrics {
+					settings := base
+					settings.Metric = metric
+					settings.SlackSettings = route.slack
+					settings.AnalysisSettings = route.spec.analysis(unitTestDegradation, metric)
+					settings.IgnoreChangesBefore = series.ignoreChangesBefore
+					result = append(result, settings)
+				}
 			}
 		}
 	}
-
-	return settings
+	return result
 }
 
-// resolvedRoute is the notification destination chosen for a single test.
-type resolvedRoute struct {
-	channel               string
-	analysisSettings      detector.AnalysisSettings
-	additionalTestMetrics map[string][]string
-	mention               string
+// CheckUnitTestOwners returns an error when the owners of the unit tests or the code-owner groups are not available.
+// The unit tests are analyzed anyway, but their messages can go to the fallback channel instead of the owner.
+func CheckUnitTestOwners(backend Backend) error {
+	_, ownersErr := backend.ProjectOwners(unitTestsDb, unitTestsTable)
+	_, groupsErr := backend.OwnerGroups()
+	return errors.Join(ownersErr, groupsErr)
 }
 
-// resolveRoute determines where a test's notifications go and how it is analyzed.
-//
-// Channel precedence: the test's code owner resolved via the CodeOwners service (primary) ->
-// the first package-prefix match in teamConfigs (fallback) -> the catch-all channel.
-// The package fallback applies only to tests with no owner attribution at all: a test whose
-// owner is known but has no channel configured in CodeOwners goes to the catch-all channel,
-// not to the package team's channel — package prefixes are too coarse (one package can hold
-// tests of several owners), so routing such a test by package would ping the wrong team.
-//
-// Analysis settings and additional metrics always come from the matching package teamConfig
-// (so e.g. RubyMine/PhpStorm degradation-only analysis and debugger packet metrics are kept
-// regardless of which channel wins); they are independent of the channel decision.
-//
-// The mention also originates from the package teamConfig, but is a team-specific ping, so it is
-// dropped when owner routing redirects the alert away from that team's own channel.
-func resolveRoute(test string, projectOwners, ownerChannels map[string]string, configs []teamConfig) resolvedRoute {
-	teamCfg := matchTeamConfig(test, configs)
-
-	route := resolvedRoute{
-		channel:          catchAllUnitTestsChannel,
-		analysisSettings: defaultUnitTestAnalysisSettings,
-	}
-	if teamCfg != nil {
-		route.channel = teamCfg.SlackChannel
-		route.analysisSettings = analysisSettingsOrDefault(teamCfg.AnalysisSettings)
-		route.additionalTestMetrics = teamCfg.AdditionalTestMetrics
-		route.mention = teamCfg.Mention
-	}
-
-	// Owner-based channel takes precedence over the package fallback. An owned test whose
-	// owner has no configured channel goes to the catch-all rather than the package team's
-	// channel, so it doesn't land with a team that doesn't own it.
-	if owner := projectOwners[test]; owner != "" {
-		if channel := ownerChannels[owner]; channel != "" {
-			route.channel = channel
-		} else {
-			route.channel = catchAllUnitTestsChannel
-		}
-	}
-
-	// A mention pings a team-specific group, so only keep it when the alert actually lands in that
-	// team's own channel. If owner routing redirected the alert elsewhere, drop the ping.
-	if teamCfg != nil && route.channel != teamCfg.SlackChannel {
-		route.mention = ""
-	}
-
-	return route
-}
-
-// matchTeamConfig returns the first teamConfig whose packages match the test, or nil.
-func matchTeamConfig(test string, configs []teamConfig) *teamConfig {
-	for i := range configs {
-		if testMatchesPackages(test, configs[i].Packages) {
-			return &configs[i]
-		}
-	}
-	return nil
-}
-
-func analysisSettingsOrDefault(s *detector.AnalysisSettings) detector.AnalysisSettings {
-	if s == nil {
-		return defaultUnitTestAnalysisSettings
-	}
-	return *s
-}
-
-func expandAdditionalMetrics(backendUrl string, client *http.Client, mainSettings detector.PerformanceSettings, test string, additionalMetrics map[string][]string) []string {
-	probeSettings := mainSettings
-	probeSettings.Project = test
-	var expanded []string
-	for testPrefix, patterns := range additionalMetrics {
-		if !strings.HasPrefix(test, testPrefix) {
+// additionalMetrics returns the metrics that the spec adds for the test of the settings.
+func additionalMetrics(byTestPrefix map[string][]string, test detector.PerformanceSettings, backend Backend) []string {
+	var result []string
+	for prefix, patterns := range byTestPrefix {
+		if !strings.HasPrefix(test.Project, prefix) {
 			continue
 		}
 		for _, pattern := range patterns {
-			metrics, err := detector.FetchMetricNamesByPattern(backendUrl, client, probeSettings, pattern)
+			names, err := backend.MetricNames(test, like(pattern))
 			if err != nil {
-				slog.Error("error while fetching metric names by pattern", "error", err, "test", test, "pattern", pattern)
+				slog.Error("error while fetching metric names by pattern", "error", err, "test", test.Project, "pattern", pattern)
 				continue
 			}
-			expanded = append(expanded, metrics...)
+			result = append(result, names...)
 		}
 	}
-	return expanded
+	slices.Sort(result)
+	return result
 }
 
-// testMatchesPackages reports whether the test belongs to one of the given packages,
-// matched by test-class-name prefix.
-func testMatchesPackages(test string, packages []string) bool {
-	for _, pkg := range packages {
-		if strings.HasPrefix(test, pkg+".") {
+// unitTestRoute is one receiver of the messages about a test.
+type unitTestRoute struct {
+	slack detector.SlackSettings
+	spec  spec
+}
+
+type unitTestRouter struct {
+	subscribers []unitTestSubscriber
+	fallback    unitTestRoute
+	// canonical is the current name of a group by its current or previous name.
+	canonical map[string]string
+	parent    map[string]string
+}
+
+type unitTestSubscriber struct {
+	alerts.Subscriber
+
+	route  unitTestRoute
+	blocks []unitTestRoute
+}
+
+func newUnitTestRouter(notification alerts.Notification, groups []detector.CodeOwnerGroup) (*unitTestRouter, error) {
+	link := productLink(unitTestsTable)
+	fallbackSpec, err := parseSpec(notification.Spec)
+	if err != nil {
+		return nil, err
+	}
+	router := &unitTestRouter{
+		fallback:  unitTestRoute{slack: slack(alerts.Target{Channel: notification.Fallback}, false, link), spec: fallbackSpec},
+		canonical: map[string]string{},
+		parent:    map[string]string{},
+	}
+	for _, group := range groups {
+		router.parent[group.Name] = group.Parent
+		router.canonical[group.Name] = group.Name
+		for _, alias := range group.Aliases {
+			router.canonical[alias] = group.Name
+		}
+	}
+	for _, name := range notification.SubscriberNames() {
+		subscriber := unitTestSubscriber{Subscriber: notification.Subscribers[name]}
+		s, err := parseSpec(subscriber.Spec)
+		if err != nil {
+			return nil, err
+		}
+		subscriber.route = unitTestRoute{slack: slack(subscriber.Target, !subscriber.Enabled, link), spec: s}
+		for _, block := range subscriber.Match {
+			blockSpec, err := parseSpec(block.Spec)
+			if err != nil {
+				return nil, err
+			}
+			subscriber.blocks = append(subscriber.blocks, unitTestRoute{slack: slack(block.Target, !subscriber.Enabled, link), spec: blockSpec})
+		}
+		router.subscribers = append(router.subscribers, subscriber)
+	}
+	return router, nil
+}
+
+// resolve returns who gets the messages about the test, as the README of the alerts repository tells: each
+// subscriber whose block selects the test by name or who claims the owner of the test, and the fallback channel when
+// there is no such subscriber. A disabled subscriber gets no message, but its test does not go to the fallback.
+//
+// Subscribers with the same channel and the same spec give one route: the channel gets one message.
+func (r *unitTestRouter) resolve(test string, owner string) []unitTestRoute {
+	var routes []unitTestRoute
+	add := func(route unitTestRoute) {
+		for _, existing := range routes {
+			if reflect.DeepEqual(existing, route) {
+				return
+			}
+		}
+		routes = append(routes, route)
+	}
+	for _, subscriber := range r.subscribers {
+		if index := slices.IndexFunc(subscriber.Match, func(block alerts.Block) bool {
+			return alerts.Matches(block.Fields["test"], test)
+		}); index >= 0 {
+			add(subscriber.blocks[index])
+		} else if r.claims(subscriber.Owners, owner) {
+			add(subscriber.route)
+		}
+	}
+	if len(routes) == 0 {
+		return []unitTestRoute{r.fallback}
+	}
+	// One analysis is enough for the dashboards, so a route without a channel is needed only when it is alone.
+	if withChannel := slices.DeleteFunc(slices.Clone(routes), func(route unitTestRoute) bool { return route.slack.Channel == "" }); len(withChannel) > 0 {
+		return withChannel
+	}
+	return routes[:1]
+}
+
+// claims reports whether one of the claims covers the owner: it names the owner, or with `subgroups` a group above it.
+func (r *unitTestRouter) claims(claims []alerts.Owner, owner string) bool {
+	if owner == "" {
+		return false
+	}
+	owner = r.currentName(owner)
+	for _, claim := range claims {
+		claimed := r.currentName(claim.Name)
+		if claimed == owner {
 			return true
+		}
+		if !claim.Subgroups {
+			continue
+		}
+		// The limit protects from a cycle in the groups.
+		for group, depth := r.parent[owner], 0; group != "" && depth < 20; group, depth = r.parent[group], depth+1 {
+			if group == claimed {
+				return true
+			}
 		}
 	}
 	return false
+}
+
+func (r *unitTestRouter) currentName(group string) string {
+	if name, ok := r.canonical[group]; ok {
+		return name
+	}
+	return group
 }

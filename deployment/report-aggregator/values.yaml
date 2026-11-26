@@ -11,6 +11,10 @@ collector:
   buildConfigurations: []
 degradationDetector:
   healthSlackChannel: ""
+  # Kubernetes secret with the key `token`: a GitHub token that can read the releases of
+  # JetBrains/ide-infrastructure-alerts. It is optional: without it the detector uses the settings of the release that
+  # is built into its image and reports that to healthSlackChannel on each run.
+  alertsGithubTokenSecret: ide-infrastructure-alerts-github-token
   # One Kubernetes secret per degradation hook, see setting.Hooks. Each one is optional: a missing secret disables
   # only its hook.
   hookSecrets:

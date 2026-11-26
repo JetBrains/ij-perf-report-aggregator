@@ -34,6 +34,7 @@ func Generators() []Generator {
 		withBackend("kotlinBuildTools", GenerateKotlinBuildToolsSettings),
 		withBackend("kotlinMultiplatformTooling", GenerateKotlinMultiplatformToolingSettings),
 		static("ui", GenerateUISettings),
+		static("todo", GenerateTODOSettings),
 		static("editor", GenerateEditorSettings),
 		withBackend("webstorm", GenerateWebStormSettings),
 		withBackend("cloud", GenerateCloudSettings),

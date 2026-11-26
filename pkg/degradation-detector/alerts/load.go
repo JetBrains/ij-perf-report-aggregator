@@ -14,11 +14,18 @@ import (
 const (
 	// ConfigFileEnv names a local ij-perf.json to use instead of the published one, for a local run.
 	ConfigFileEnv = "ALERTS_CONFIG_FILE"
-	// GithubTokenEnv names a GitHub token that can read the releases of the alerts repository.
+	// GithubAppIDEnv and GithubAppKeyEnv name the id and the PEM private key of the GitHub App that reads the alerts
+	// repository. This is what the deployment uses.
+	GithubAppIDEnv  = "ALERTS_GITHUB_APP_ID"
+	GithubAppKeyEnv = "ALERTS_GITHUB_APP_KEY"
+	// GithubTokenEnv names a GitHub token that can read the releases of the alerts repository, for a local run:
+	// ALERTS_GITHUB_TOKEN=$(gh auth token). It wins over the app.
 	GithubTokenEnv = "ALERTS_GITHUB_TOKEN"
 
-	latestReleaseURL = "https://api.github.com/repos/JetBrains/ide-infrastructure-alerts/releases/latest"
-	assetName        = "ij-perf.json"
+	githubAPI  = "https://api.github.com"
+	repository = "JetBrains/ide-infrastructure-alerts"
+	assetName  = "ij-perf.json"
+	githubJSON = "application/vnd.github+json"
 )
 
 // The config that a run uses when it cannot download the latest one. Refresh it with `make update-alerts-snapshot`.
@@ -38,7 +45,7 @@ func Load(ctx context.Context, client *http.Client) (*Config, error) {
 		}
 		return Parse(data)
 	}
-	config, err := download(ctx, client, latestReleaseURL, os.Getenv(GithubTokenEnv))
+	config, err := download(ctx, client, githubAPI, credentialsFromEnv())
 	if err == nil {
 		return config, nil
 	}
@@ -49,11 +56,37 @@ func Load(ctx context.Context, client *http.Client) (*Config, error) {
 	return builtIn, err
 }
 
-func download(ctx context.Context, client *http.Client, releaseURL string, token string) (*Config, error) {
-	if token == "" {
-		return nil, errors.New(GithubTokenEnv + " is not set")
+// credentials is how the download proves its right to read the repository: a token, or the app that gets one.
+type credentials struct {
+	token  string
+	appID  string
+	appKey string
+}
+
+func credentialsFromEnv() credentials {
+	return credentials{token: os.Getenv(GithubTokenEnv), appID: os.Getenv(GithubAppIDEnv), appKey: os.Getenv(GithubAppKeyEnv)}
+}
+
+func (c credentials) accessToken(ctx context.Context, client *http.Client, apiURL string) (string, error) {
+	if c.token != "" {
+		return c.token, nil
 	}
-	release, err := get(ctx, client, releaseURL, token, "application/vnd.github+json")
+	if c.appID == "" || c.appKey == "" {
+		return "", errors.New(GithubAppIDEnv + " and " + GithubAppKeyEnv + " are not set")
+	}
+	app, err := newGithubApp(c.appID, c.appKey)
+	if err != nil {
+		return "", err
+	}
+	return app.token(ctx, client, apiURL, repository)
+}
+
+func download(ctx context.Context, client *http.Client, apiURL string, credentials credentials) (*Config, error) {
+	token, err := credentials.accessToken(ctx, client, apiURL)
+	if err != nil {
+		return nil, err
+	}
+	release, err := get(ctx, client, apiURL+"/repos/"+repository+"/releases/latest", token, githubJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the latest release of the alerts config: %w", err)
 	}

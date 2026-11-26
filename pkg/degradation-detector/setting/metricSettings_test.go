@@ -234,6 +234,8 @@ func TestDisabledSubscriberHasNoGenerator(t *testing.T) {
 // otherwise show up only as a subscriber without alerts.
 func TestBuiltInConfigIsUnderstood(t *testing.T) {
 	t.Setenv(alerts.GithubTokenEnv, "")
+	t.Setenv(alerts.GithubAppIDEnv, "")
+	t.Setenv(alerts.GithubAppKeyEnv, "")
 	t.Setenv(alerts.ConfigFileEnv, "")
 	config, _ := alerts.Load(t.Context(), nil)
 	require.NotNil(t, config)

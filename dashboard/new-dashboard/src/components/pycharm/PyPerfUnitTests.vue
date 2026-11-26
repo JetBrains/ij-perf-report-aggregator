@@ -109,6 +109,26 @@
       </div>
     </section>
 
+    <Divider label="SWE-Gym edit traces" />
+    <section
+      v-for="corpus in sweGymCorpora"
+      :key="corpus"
+      class="flex gap-6"
+    >
+      <div
+        v-for="axis in sweGymAxes"
+        :key="axis.id"
+        class="flex-1 min-w-0"
+      >
+        <GroupProjectsWithClientChart
+          :label="`${axis.label}: ${corpus}`"
+          measure="corpus.median.sum.ms"
+          :projects="sweGymTotals(axis, corpus)"
+          :legend-formatter="legendFormatter"
+        />
+      </div>
+    </section>
+
     <Divider label="Other" />
     <section>
       <GroupProjectsWithClientChart
@@ -131,6 +151,16 @@
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
+
+// Both engines publish under the base class name, so one prefix covers PyCharm and Pyrefly.
+const sweGymTest = "com.intellij.python.junit5Tests.performance.PySweGymTraceReplayPerformanceTest"
+const sweGymCorpora = ["mypy", "pandas", "moto"]
+const sweGymAxes = [
+  { id: "highlighting", method: "testHighlightingOverEditTraces", label: "Highlighting" },
+  { id: "type inference", method: "testTypeInferenceOverEditTraces", label: "Type inference" },
+]
+const sweGymTotals = (axis: (typeof sweGymAxes)[number], corpus: string) =>
+  ["PyCharm", "Pyrefly"].map((engine) => `${sweGymTest}.${axis.method} - ${engine} - ${axis.id} - ${corpus} - total`)
 
 const legendFormatter = (name: string) => {
   if (name.includes("- Pyrefly")) return "Pyrefly"

@@ -15,8 +15,11 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		Branch:  "master",
 		Machine: "intellij-linux-hw-de-unit-%",
 	}
+	// Notifications are off for now: the IntelliJ Ultimate team does not want startup alerts in
+	// ij-u-team-performance-issues-check. With no channel, degradations are still detected and stored,
+	// but neither degradation nor missing-data messages are sent.
 	slackSettings := detector.SlackSettings{
-		Channel:     "ij-u-team-performance-issues-check",
+		Channel:     "",
 		ProductLink: "intellij",
 	}
 	projects, err := fetchStartupProjects(backendUrl, client, mainSettings)

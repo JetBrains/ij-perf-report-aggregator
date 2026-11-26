@@ -91,7 +91,7 @@ export abstract class AccidentsConfigurator {
     const id = Number(idString)
     this.value.value ??= new Map<string, Accident[]>()
     const updatedMap = new Map(this.value.value)
-    updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind, stacktrace, userName }])
+    updatedMap.set(`${affected_test}_${build_number}`, [new Accident(id, affected_test, date, reason, build_number, kind, stacktrace, userName)])
     this.value.value = updatedMap //we need to update value in reference to trigger the change
     return id
   }

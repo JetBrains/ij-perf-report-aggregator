@@ -42,7 +42,7 @@ export function privateBuildConfigurator(
   serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
   filters: FilterConfigurator[] = []
-): DimensionConfigurator {
+): PrivateBuildConfigurator {
   const configurator = new PrivateBuildConfigurator()
   const name = "triggeredBy"
   persistentStateManager?.add(name, configurator.selected)

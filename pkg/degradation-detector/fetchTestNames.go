@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -13,23 +12,6 @@ import (
 
 	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 )
-
-func ExpandTestsByPattern(backendUrl string, client *http.Client, tests []string, baseSettings PerformanceSettings) []string {
-	testsExpanded := make([]string, 0, len(tests)*5)
-	for _, test := range tests {
-		if strings.Contains(test, "%") {
-			matchingTests, err := fetchTestsByPattern(backendUrl, client, baseSettings, test)
-			if err != nil {
-				slog.Error("error while fetching tests by pattern", "error", err, "pattern", test)
-				continue
-			}
-			testsExpanded = append(testsExpanded, matchingTests...)
-		} else {
-			testsExpanded = append(testsExpanded, test)
-		}
-	}
-	return testsExpanded
-}
 
 func fetchTestsByPattern(backendUrl string, client *http.Client, settings PerformanceSettings, pattern string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -83,36 +65,52 @@ func FetchProjectOwners(backendUrl string, client *http.Client, db, table string
 	return getJSONMap(ctx, client, requestURL, "project owners")
 }
 
-// FetchCodeOwnerChannels returns a map from code-owner group name (and each alias) to its
-// Slack channel, resolved by the backend via the CodeOwners service. Owners without a
-// configured channel are absent from the map.
-func FetchCodeOwnerChannels(backendUrl string, client *http.Client) (map[string]string, error) {
+// CodeOwnerGroup is a group of the CodeOwners service with its place in the hierarchy.
+type CodeOwnerGroup struct {
+	Name string `json:"name"`
+	// Aliases are the previous names of the group. A test can still have one of them as its owner.
+	Aliases []string `json:"aliases"`
+	// Parent is the name of the group above this one, empty for a group at the top.
+	Parent string `json:"parent"`
+}
+
+// FetchCodeOwnerGroups returns every code-owner group with its previous names and its parent.
+func FetchCodeOwnerGroups(backendUrl string, client *http.Client) ([]CodeOwnerGroup, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	return getJSONMap(ctx, client, backendUrl+"/api/meta/codeOwnerChannels", "code-owner channels")
+	var groups []CodeOwnerGroup
+	err := getJSON(ctx, client, backendUrl+"/api/meta/codeOwnerGroups", "code-owner groups", &groups)
+	return groups, err
 }
 
 // getJSONMap issues a GET request to requestURL and decodes the JSON response body into a
 // string->string map. description identifies the call in error messages (e.g. "project owners").
 func getJSONMap(ctx context.Context, client *http.Client, requestURL, description string) (map[string]string, error) {
+	result := make(map[string]string)
+	if err := getJSON(ctx, client, requestURL, description, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func getJSON(ctx context.Context, client *http.Client, requestURL, description string, result any) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request for %s: %w", description, err)
+		return fmt.Errorf("failed to create request for %s: %w", description, err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send GET request for %s: %w", description, err)
+		return fmt.Errorf("failed to send GET request for %s: %w", description, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get %s: %v", description, resp.Status)
+		return fmt.Errorf("failed to get %s: %v", description, resp.Status)
 	}
-	result := make(map[string]string)
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("failed to decode %s: %w", description, err)
+	if err := json.NewDecoder(resp.Body).Decode(result); err != nil {
+		return fmt.Errorf("failed to decode %s: %w", description, err)
 	}
-	return result, nil
+	return nil
 }
 
 // FetchMetricNamesByPattern returns distinct measures.name values matching the given SQL LIKE

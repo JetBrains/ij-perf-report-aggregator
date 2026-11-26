@@ -23,6 +23,10 @@ lint:
 	pnpm knip
 
 
+# Refreshes the alerts config that the degradation detector uses when it cannot download the latest one.
+update-alerts-snapshot:
+	gh release download --repo JetBrains/ide-infrastructure-alerts --pattern ij-perf.json --clobber --dir pkg/degradation-detector/alerts/snapshot
+
 build-server:
 	go build -tags -ldflags='-s -w' -o dist/server ./cmd/backend
 

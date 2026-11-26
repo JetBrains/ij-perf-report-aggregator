@@ -1,69 +1,48 @@
 package setting
 
 import (
-	"net/http"
-
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/alerts"
 )
 
 type Generator struct {
 	Name     string
-	Static   bool
-	Generate func(backendUrl string, client *http.Client) []detector.Settings
+	Generate func() []detector.Settings
 }
 
-func Generators() []Generator {
-	return []Generator{
-		static("workspace", GenerateWorkspaceSettings),
-		static("kotlin", GenerateKotlinSettings),
-		withBackend("kotlinIdea", GenerateKotlinIdeaSettings),
-		static("maven", GenerateMavenSettings),
-		static("gradle", GenerateGradleSettings),
-		static("vcs", GenerateVCSSettings),
-		withBackend("phpstorm", GeneratePhpStormSettings),
-		withBackend("clion", GenerateClionSettings),
-		withBackend("unitTests", GenerateAllUnitTestsSettings),
-		withBackend("goland", GenerateGolandPerfSettings),
-		withBackend("rust", GenerateRustPerfSettings),
-		withBackend("ruby", GenerateRubyPerfSettings),
-		withBackend("java", GenerateJavaSettings),
-		withBackend("ultimate", GenerateUltimateSettings),
-		static("aia", GenerateAIASettings),
-		static("aiaTestToken", GenerateAIATestTokenSettings),
-		static("air", GenerateAirSettings),
-		withBackend("kotlinBuildTools", GenerateKotlinBuildToolsSettings),
-		withBackend("kotlinMultiplatformTooling", GenerateKotlinMultiplatformToolingSettings),
-		static("ui", GenerateUISettings),
-		static("editor", GenerateEditorSettings),
-		withBackend("webstorm", GenerateWebStormSettings),
-		withBackend("cloud", GenerateCloudSettings),
-		withBackend("startupIdea", GenerateStartupSettingsForIDEA),
-		withBackend("startupGoland", GenerateStartupSettingsForGoland),
-		withBackend("startupPhpStorm", GenerateStartupSettingsForPhpStorm),
+// Generators returns one generator per subscriber of a metric notification and one for the unit tests, so
+// that a subscriber whose settings select nothing is visible. Air is not in the alerts config: its settings are in Go.
+func Generators(config *alerts.Config, backend Backend) []Generator {
+	generators := []Generator{{Name: "air", Generate: func() []detector.Settings {
+		air := GenerateAirSettings()
+		settings := make([]detector.Settings, 0, len(air))
+		for _, s := range air {
+			settings = append(settings, s)
+		}
+		return settings
+	}}}
+	for _, id := range []string{metricDegradation, metricThreshold} {
+		notification, ok := config.Notifications[id]
+		if !ok {
+			// A notification that the config lost or renamed generates nothing, so it is reported as empty.
+			generators = append(generators, Generator{Name: id, Generate: func() []detector.Settings { return nil }})
+			continue
+		}
+		for _, name := range notification.SubscriberNames() {
+			subscriber := notification.Subscribers[name]
+			if !subscriber.Enabled {
+				continue
+			}
+			generators = append(generators, Generator{
+				Name:     id + "/" + name,
+				Generate: func() []detector.Settings { return generateMetricSettings(id, name, subscriber, backend) },
+			})
+		}
 	}
-}
-
-func toSettings[T detector.Settings](items []T) []detector.Settings {
-	result := make([]detector.Settings, 0, len(items))
-	for _, item := range items {
-		result = append(result, item)
-	}
-	return result
-}
-
-func static[T detector.Settings](name string, f func() []T) Generator {
-	return Generator{
-		Name:     name,
-		Static:   true,
-		Generate: func(_ string, _ *http.Client) []detector.Settings { return toSettings(f()) },
-	}
-}
-
-func withBackend[T detector.Settings](name string, f func(string, *http.Client) []T) Generator {
-	return Generator{
-		Name: name,
-		Generate: func(backendUrl string, client *http.Client) []detector.Settings {
-			return toSettings(f(backendUrl, client))
+	return append(generators, Generator{
+		Name: unitTestDegradation,
+		Generate: func() []detector.Settings {
+			return generateUnitTestSettings(config.Notifications[unitTestDegradation], backend)
 		},
-	}
+	})
 }

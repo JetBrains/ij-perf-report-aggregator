@@ -11,6 +11,11 @@ collector:
   buildConfigurations: []
 degradationDetector:
   healthSlackChannel: ""
+  # Kubernetes secret of the GitHub App that can read the releases of JetBrains/ide-infrastructure-alerts, with the
+  # keys `app-id` and `private-key` (the PEM file of the app). Socrat reads its settings with the same app. The
+  # secret is optional: without it the detector uses the settings of the release that is built into its image and
+  # reports that to healthSlackChannel on each run.
+  alertsGithubAppSecret: ide-infrastructure-alerts-github-app
   # One Kubernetes secret per degradation hook, see setting.Hooks. Each one is optional: a missing secret disables
   # only its hook.
   hookSecrets:

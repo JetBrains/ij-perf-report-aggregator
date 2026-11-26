@@ -8,179 +8,140 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTestMatchesPackages(t *testing.T) {
-	t.Parallel()
-	packages := []string{"com.intellij.java", "org.jetbrains.plugins.ruby"}
+const unitTestNotification = `{"unit-test-degradation": {
+	"fallback": "#fallback",
+	"spec": {"reportType": "all", "minimumSegmentLength": 30, "medianDifferenceThreshold": 20, "missingDataDays": 3},
+	"subscribers": {
+		"java": {
+			"enabled": true, "target": {"channel": "#java"}, "spec": {"minimumSegmentLength": 30},
+			"owners": [{"name": "Java", "subgroups": true}],
+			"match": [{"fields": {"test": ["com.intellij.java.*"]}, "target": {"channel": "#java-tests", "mention": ["<@U1>"]},
+				"spec": {"reportType": "degradation", "minimumSegmentLength": 30}}]
+		},
+		"java-twin": {
+			"enabled": true, "target": {"channel": "#java"}, "spec": {"minimumSegmentLength": 30},
+			"owners": [{"name": "Java", "subgroups": true}], "match": []
+		},
+		"rust": {
+			"enabled": true, "target": {"channel": "#rust"}, "spec": {"minimumSegmentLength": 30},
+			"owners": [{"name": "Rust", "subgroups": false}], "match": []
+		},
+		"debugger": {
+			"enabled": true, "target": {"channel": "#debugger"},
+			"spec": {"minimumSegmentLength": 30, "additionalMetrics": {"com.intellij.debugger.PacketsTest": ["*.expected.*"]}},
+			"owners": [], "match": [{"fields": {"test": ["com.intellij.debugger.*"]}, "target": {"channel": "#debugger"},
+				"spec": {"minimumSegmentLength": 30, "additionalMetrics": {"com.intellij.debugger.PacketsTest": ["*.expected.*"]}}}]
+		},
+		"muted": {
+			"enabled": false, "target": {"channel": "#todo"}, "spec": {"minimumSegmentLength": 30},
+			"owners": [{"name": "Muted", "subgroups": true}], "match": []
+		},
+		"tickets": {
+			"enabled": true, "target": {"youtrack": {"project": "IJPL"}}, "spec": {"minimumSegmentLength": 30},
+			"owners": [{"name": "Tickets", "subgroups": true}], "match": []
+		}
+	}
+}}`
 
-	assert.True(t, testMatchesPackages("com.intellij.java.Foo", packages))
-	assert.True(t, testMatchesPackages("org.jetbrains.plugins.ruby.Bar", packages))
-	// The prefix must end on a dot boundary: a longer package that merely starts with
-	// the same characters must not match.
-	assert.False(t, testMatchesPackages("com.intellij.javaScript.Baz", packages))
-	// The bare package name (no trailing class) is not a member of the package.
-	assert.False(t, testMatchesPackages("com.intellij.java", packages))
-	assert.False(t, testMatchesPackages("com.example.Other", packages))
+var unitTestGroups = []detector.CodeOwnerGroup{
+	{Name: "Java"},
+	{Name: "Java Debugger", Parent: "Java"},
+	{Name: "Java Stepping", Parent: "Java Debugger", Aliases: []string{"Stepping"}},
+	{Name: "Rust", Aliases: []string{"Rust Engineering"}},
+	{Name: "Rust Toml", Parent: "Rust"},
+	{Name: "Muted"},
+	{Name: "Tickets"},
 }
 
-func TestResolveRoute(t *testing.T) {
+func TestUnitTestRoutes(t *testing.T) {
 	t.Parallel()
-	// Synthetic routing table: one plain team, one with custom (degradation-only) analysis, and
-	// one with additional metrics — enough to exercise every branch without depending on the real
-	// team/channel/package mappings. Passing it explicitly to resolveRoute keeps the test isolated
-	// from the production mapping data (and free of shared global state, so it can run in parallel).
-	const deltaMention = "<!subteam^SDELTA>"
-	configs := []teamConfig{
-		{Team: "alpha", SlackChannel: "alpha-channel", Packages: []string{"com.test.alpha"}},
-		{Team: "beta", SlackChannel: "beta-channel", Packages: []string{"com.test.beta"}, AnalysisSettings: degradationOnlyAnalysisSettings()},
-		{Team: "gamma", SlackChannel: "gamma-channel", Packages: []string{"com.test.gamma"}, AdditionalTestMetrics: map[string][]string{"com.test.gamma.PacketsTest": {"%.expected.%"}}},
-		{Team: "delta", SlackChannel: "delta-channel", Packages: []string{"com.test.delta"}, Mention: deltaMention},
-	}
-
-	const (
-		plainTest     = "com.test.alpha.SomeTest"
-		degradedTest  = "com.test.beta.SomeTest"
-		metricsTest   = "com.test.gamma.PacketsTest"
-		mentionedTest = "com.test.delta.SomeTest"
-		unknownTest   = "com.test.unknown.SomeTest"
-	)
+	router, err := newUnitTestRouter(parseConfig(t, unitTestNotification).Notifications[unitTestDegradation], unitTestGroups)
+	require.NoError(t, err)
 
 	tests := []struct {
-		name           string
-		test           string
-		projectOwners  map[string]string
-		ownerChannels  map[string]string
-		wantChannel    string
-		wantAnalysis   detector.AnalysisSettings
-		wantHasMetrics bool
-		wantMention    string
+		name     string
+		test     string
+		owner    string
+		channels []string
 	}{
-		{
-			name:         "no package match and no owner falls back to the catch-all channel",
-			test:         unknownTest,
-			wantChannel:  catchAllUnitTestsChannel,
-			wantAnalysis: defaultUnitTestAnalysisSettings,
-		},
-		{
-			name:         "package match routes to the team channel with default analysis",
-			test:         plainTest,
-			wantChannel:  "alpha-channel",
-			wantAnalysis: defaultUnitTestAnalysisSettings,
-		},
-		{
-			name:         "package with custom analysis keeps its analysis settings",
-			test:         degradedTest,
-			wantChannel:  "beta-channel",
-			wantAnalysis: *degradationOnlyAnalysisSettings(),
-		},
-		{
-			name:          "owner channel overrides the package channel but analysis stays from the package",
-			test:          degradedTest,
-			projectOwners: map[string]string{degradedTest: "beta-owner"},
-			ownerChannels: map[string]string{"beta-owner": "owner-specific-channel"},
-			wantChannel:   "owner-specific-channel",
-			wantAnalysis:  *degradationOnlyAnalysisSettings(),
-		},
-		{
-			name:          "owner channel applies to a test that matches no package",
-			test:          unknownTest,
-			projectOwners: map[string]string{unknownTest: "some-owner"},
-			ownerChannels: map[string]string{"some-owner": "owner-channel"},
-			wantChannel:   "owner-channel",
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-		},
-		{
-			// The package team doesn't own this test (the owner does), so the alert must not go to
-			// the package team's channel; with no channel for the owner it goes to the catch-all.
-			name:          "owner without a channel mapping routes to the catch-all, not the package channel",
-			test:          plainTest,
-			projectOwners: map[string]string{plainTest: "unmapped-owner"},
-			ownerChannels: map[string]string{},
-			wantChannel:   catchAllUnitTestsChannel,
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-		},
-		{
-			name:          "owner without a channel mapping and no package match routes to the catch-all",
-			test:          unknownTest,
-			projectOwners: map[string]string{unknownTest: "unmapped-owner"},
-			ownerChannels: map[string]string{},
-			wantChannel:   catchAllUnitTestsChannel,
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-		},
-		{
-			name:          "custom analysis settings are kept when an unrouted owner sends the alert to the catch-all",
-			test:          degradedTest,
-			projectOwners: map[string]string{degradedTest: "unmapped-owner"},
-			ownerChannels: map[string]string{},
-			wantChannel:   catchAllUnitTestsChannel,
-			wantAnalysis:  *degradationOnlyAnalysisSettings(),
-		},
-		{
-			name:          "mention is dropped when an unrouted owner sends the alert to the catch-all",
-			test:          mentionedTest,
-			projectOwners: map[string]string{mentionedTest: "unmapped-owner"},
-			ownerChannels: map[string]string{},
-			wantChannel:   catchAllUnitTestsChannel,
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-			wantMention:   "",
-		},
-		{
-			name:          "empty owner string is ignored and keeps the package channel",
-			test:          plainTest,
-			projectOwners: map[string]string{plainTest: ""},
-			ownerChannels: map[string]string{"": "should-not-be-used"},
-			wantChannel:   "alpha-channel",
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-		},
-		{
-			name:           "additional test metrics are preserved even when the owner overrides the channel",
-			test:           metricsTest,
-			projectOwners:  map[string]string{metricsTest: "gamma-owner"},
-			ownerChannels:  map[string]string{"gamma-owner": "gamma-owner-channel"},
-			wantChannel:    "gamma-owner-channel",
-			wantAnalysis:   defaultUnitTestAnalysisSettings,
-			wantHasMetrics: true,
-		},
-		{
-			name:         "mention is kept when the alert lands in the team's own channel via the package fallback",
-			test:         mentionedTest,
-			wantChannel:  "delta-channel",
-			wantAnalysis: defaultUnitTestAnalysisSettings,
-			wantMention:  deltaMention,
-		},
-		{
-			name:          "mention is kept when owner routing resolves to the team's own channel",
-			test:          mentionedTest,
-			projectOwners: map[string]string{mentionedTest: "delta-owner"},
-			ownerChannels: map[string]string{"delta-owner": "delta-channel"},
-			wantChannel:   "delta-channel",
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-			wantMention:   deltaMention,
-		},
-		{
-			name:          "mention is dropped when owner routing redirects the alert to another channel",
-			test:          mentionedTest,
-			projectOwners: map[string]string{mentionedTest: "delta-owner"},
-			ownerChannels: map[string]string{"delta-owner": "some-other-channel"},
-			wantChannel:   "some-other-channel",
-			wantAnalysis:  defaultUnitTestAnalysisSettings,
-			wantMention:   "",
-		},
+		{"nobody selects the test", "org.other.Test", "", []string{"fallback"}},
+		{"an unknown owner", "org.other.Test", "Unknown", []string{"fallback"}},
+		{"the claimed owner", "org.other.Test", "Java", []string{"java"}},
+		{"a subgroup of the claimed owner", "org.other.Test", "Java Debugger", []string{"java"}},
+		{"a subgroup of a subgroup under its old name", "org.other.Test", "Stepping", []string{"java"}},
+		{"the claimed owner under its old name", "org.other.Test", "Rust Engineering", []string{"rust"}},
+		{"a subgroup of an owner claimed without subgroups", "org.other.Test", "Rust Toml", []string{"fallback"}},
+		{"a block wins over the owner claim of its subscriber", "com.intellij.java.Test", "Java", []string{"java-tests", "java"}},
+		{"a block and the claim of another subscriber", "com.intellij.debugger.Test", "Rust", []string{"debugger", "rust"}},
+		{"a disabled subscriber keeps its test from the fallback", "org.other.Test", "Muted", []string{""}},
+		{"a YouTrack target gets no message", "org.other.Test", "Tickets", []string{""}},
 	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			route := resolveRoute(tc.test, tc.projectOwners, tc.ownerChannels, configs)
-			assert.Equal(t, tc.wantChannel, route.channel)
-			assert.Equal(t, tc.wantAnalysis, route.analysisSettings)
-			assert.Equal(t, tc.wantMention, route.mention)
-			if tc.wantHasMetrics {
-				assert.NotEmpty(t, route.additionalTestMetrics)
-			} else {
-				assert.Empty(t, route.additionalTestMetrics)
+			var channels []string
+			for _, route := range router.resolve(test.test, test.owner) {
+				channels = append(channels, route.slack.Channel)
 			}
+			assert.Equal(t, test.channels, channels)
 		})
 	}
+
+	routes := router.resolve("com.intellij.java.Test", "")
+	require.Len(t, routes, 1)
+	assert.Equal(t, "<@U1>", routes[0].slack.Mention)
+	assert.Equal(t, "degradation", routes[0].spec.ReportType)
+	assert.Equal(t, "perfUnit", routes[0].slack.ProductLink)
+}
+
+func TestUnitTestSettings(t *testing.T) {
+	t.Parallel()
+	config := parseConfig(t, unitTestNotification)
+	backend := fakeBackend{
+		tests: map[string][]string{
+			"report/master/" + bladeUnitTestsMachine:   {"com.intellij.debugger.PacketsTest.test", "org.other.Test"},
+			"report/master/" + hetznerUnitTestsMachine: {"org.other.Test", "org.other.HetznerTest"},
+		},
+		metrics: map[string][]string{"com.intellij.debugger.PacketsTest.test": {"attempt.mean.ms", "a.expected.b", "c.actual.d"}},
+		owners:  map[string]string{"org.other.Test": "Java Debugger"},
+		groups:  unitTestGroups,
+	}
+
+	settings := generate(t, config, backend, unitTestDegradation)
+
+	type series struct{ machine, test, metric, channel string }
+	got := make([]series, 0, len(settings))
+	for _, s := range settings {
+		got = append(got, series{s.Machine, s.Project, s.Metric, s.Channel})
+		assert.Equal(t, "perfUnitTests", s.Db)
+		assert.Equal(t, "report", s.Table)
+		assert.Equal(t, "master", s.Branch)
+		assert.Equal(t, 30, s.MinimumSegmentLength)
+		assert.Equal(t, s.Machine == bladeUnitTestsMachine, !s.IgnoreChangesBefore.IsZero(), "only the Blade series ignore the old changes")
+	}
+	assert.ElementsMatch(t, []series{
+		{bladeUnitTestsMachine, "com.intellij.debugger.PacketsTest.test", "attempt.mean.ms", "debugger"},
+		{bladeUnitTestsMachine, "com.intellij.debugger.PacketsTest.test", "a.expected.b", "debugger"},
+		{bladeUnitTestsMachine, "org.other.Test", "attempt.mean.ms", "java"},
+		{hetznerUnitTestsMachine, "org.other.HetznerTest", "attempt.mean.ms", "fallback"},
+	}, got)
+}
+
+func TestUnitTestsAreRoutedByNameWithoutOwners(t *testing.T) {
+	t.Parallel()
+	config := parseConfig(t, unitTestNotification)
+	backend := fakeBackend{tests: map[string][]string{
+		"report/master/" + bladeUnitTestsMachine:   {"com.intellij.java.Test", "org.other.Test"},
+		"report/master/" + hetznerUnitTestsMachine: {},
+	}}
+
+	settings := generate(t, config, backend, unitTestDegradation)
+
+	channels := map[string]string{}
+	for _, s := range settings {
+		channels[s.Project] = s.Channel
+	}
+	assert.Equal(t, map[string]string{"com.intellij.java.Test": "java-tests", "org.other.Test": "fallback"}, channels)
 }
 
 func TestSplitUnitTestsByMachine(t *testing.T) {

@@ -48,22 +48,21 @@ func (s SlackSettings) mentionPrefix() string {
 	return s.Mention + "\n"
 }
 
-func eventLink(tests string, build string, timestamp int64) string {
-	projects := strings.Split(tests, ",")
-	escapedProjects := make([]string, 0, len(projects))
-	for _, p := range projects {
-		escapedProjects = append(escapedProjects, url.QueryEscape(p))
+// eventLink repeats the test parameter for each test, because a test name can contain a comma.
+func eventLink(tests []string, build string, timestamp int64) string {
+	params := make([]string, 0, len(tests))
+	for _, test := range tests {
+		params = append(params, "test="+url.QueryEscape(test))
 	}
 	date := time.UnixMilli(timestamp).UTC().Format("02-01-2006")
-	project := strings.Join(escapedProjects, ",")
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/degradations/report?tests=%s&build=%s&date=%s|Report event>", project, build, date)
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/degradations/report?%s&build=%s&date=%s|Report event>", strings.Join(params, "&"), url.QueryEscape(build), date)
 }
 
 func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	reason := getReason(d)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
 	link := s.ChartLink(d)
-	tests := strings.ReplaceAll(s.Project, ",", "\n")
+	tests := strings.Join(s.Projects(), "\n")
 	mode := "default"
 	if s.Mode != "" {
 		mode = s.Mode
@@ -77,7 +76,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Date: %s\n"+
 			"Reason: %s\n"+
 			"%s\n"+
-			"%s", icon(d.medianValues), tests, s.Metric, mode, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
+			"%s", icon(d.medianValues), tests, s.Metric, mode, d.Build, s.Branch, date, reason, link, eventLink(s.Projects(), d.Build, d.timestamp))
 	return SlackMessage{
 		Text:    text,
 		Channel: s.Channel,
@@ -110,7 +109,7 @@ func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
 		testPage = "testsDev"
 	}
 	machineGroup := getMachineGroup(s.Machine)
-	projects := strings.Split(s.Project, ",")
+	projects := s.Projects()
 	measurements := strings.Split(s.Metric, ",")
 	escapedProjects := make([]string, 0, len(projects))
 	escapedMeasurements := make([]string, 0, len(measurements))

@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -83,8 +84,9 @@ func (h Hook) matches(s PerformanceSettings) bool {
 	if h.Db != "" && s.Db != h.Db || h.Table != "" && s.Table != h.Table || h.Branch != "" && s.Branch != h.Branch {
 		return false
 	}
-	// MergeDegradations joins the projects and the metrics of one channel, metric and build with commas.
-	return anyHasPrefix(s.Project, h.ProjectPrefix) && anyHasPrefix(s.Metric, h.MetricPrefix)
+	// MergeDegradations merges the projects and the metrics of one channel, metric and build; it joins the metrics with commas.
+	return slices.ContainsFunc(s.Projects(), func(p string) bool { return strings.HasPrefix(p, h.ProjectPrefix) }) &&
+		anyHasPrefix(s.Metric, h.MetricPrefix)
 }
 
 func normalizeChannel(channel string) string {
@@ -118,13 +120,15 @@ func newHookEvent(s PerformanceSettings, d Degradation) HookEvent {
 	if s.Mode != "" {
 		mode = s.Mode
 	}
+	// The receiver gets the merged projects joined with commas, as before they were kept as a list.
+	project := strings.Join(s.Projects(), ",")
 	return HookEvent{
-		EventID:       s.DBTestName() + ":" + d.Build,
+		EventID:       project + "/" + s.Metric + ":" + d.Build,
 		Source:        "ij-perf",
 		Kind:          kind,
 		Db:            s.Db,
 		Table:         s.Table,
-		Project:       s.Project,
+		Project:       project,
 		Metric:        s.Metric,
 		Mode:          mode,
 		Branch:        s.Branch,
@@ -138,7 +142,7 @@ func newHookEvent(s PerformanceSettings, d Degradation) HookEvent {
 		ChangePercent: d.medianValues.PercentageChange(),
 		Reason:        getReason(d),
 		ChartURL:      slackLinkURL(s.ChartLink(d)),
-		ReportURL:     slackLinkURL(eventLink(s.Project, d.Build, d.timestamp)),
+		ReportURL:     slackLinkURL(eventLink(s.Projects(), d.Build, d.timestamp)),
 	}
 }
 

@@ -26,4 +26,7 @@ type PerformanceSettings struct {
 	Project     string
 	MetricAlias string
 	Mode        string
+
+	// mergedProjects holds Project and the tests that MergeDegradations merged into it; see Projects.
+	mergedProjects []string
 }

@@ -1299,6 +1299,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/degradations/ReportDegradation.vue"),
           meta: { pageTitle: "Report degradations" },
           props: (route) => ({
+            test: route.query["test"],
             tests: route.query["tests"],
             build: route.query["build"],
             date: route.query["date"],

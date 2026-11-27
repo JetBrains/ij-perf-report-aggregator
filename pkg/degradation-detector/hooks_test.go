@@ -92,7 +92,9 @@ func TestHookFiltersNarrowTheChannel(t *testing.T) {
 	hook := hookTestHook("X")
 	hook.Db, hook.Table, hook.ProjectPrefix, hook.Branch, hook.MetricPrefix = "perfintDev", "air", "air/", "master", "open."
 	assert.True(t, hook.matches(hookTestSettings("air/long-session/XL")))
-	assert.True(t, hook.matches(hookTestSettings("air/long-session/M,air/long-session/XL")), "a merged degradation")
+	merged, ok := hookTestSettings("idea/indexing").MergeAnother(hookTestSettings("air/long-session/XL")).(PerformanceSettings)
+	require.True(t, ok)
+	assert.True(t, hook.matches(merged), "a merged degradation")
 	for name, change := range map[string]func(*PerformanceSettings){
 		"another database": func(s *PerformanceSettings) { s.Db = "perfint" },
 		"another table":    func(s *PerformanceSettings) { s.Table = "idea" },

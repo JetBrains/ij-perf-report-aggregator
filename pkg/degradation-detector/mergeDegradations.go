@@ -19,8 +19,14 @@ type mergeInfoProvider interface {
 }
 
 func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
-	if !strings.Contains(s.Project, settings.GetProject()) {
-		s.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
+	if other, ok := settings.(PerformanceSettings); ok {
+		projects := s.Projects()
+		for _, project := range other.Projects() {
+			if !slices.Contains(projects, project) {
+				projects = append(projects, project)
+			}
+		}
+		s.mergedProjects = projects
 	}
 	if s.MetricAlias != "" && s.Metric != settings.GetMetric() && !strings.Contains(s.Metric, settings.GetMetric()) {
 		s.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
@@ -45,6 +51,15 @@ func (s PerformanceSettings) GetMetricOrAlias() string {
 
 func (s PerformanceSettings) GetProject() string {
 	return s.Project
+}
+
+// Projects returns the tests of the settings: Project, and the tests that MergeDegradations merged into it.
+// A test name can contain a comma, so the merged tests are kept as a list, not joined into Project.
+func (s PerformanceSettings) Projects() []string {
+	if len(s.mergedProjects) == 0 {
+		return []string{s.Project}
+	}
+	return slices.Clone(s.mergedProjects)
 }
 
 func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {

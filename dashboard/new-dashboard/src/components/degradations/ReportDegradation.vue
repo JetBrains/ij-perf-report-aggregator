@@ -26,11 +26,11 @@
           <div class="flex flex-col space-x-4">
             <div class="text-lg font-bold">Tests:</div>
             <ul
-              v-for="test in testsArray"
-              :key="test"
+              v-for="name in testsArray"
+              :key="name"
               class="list-disc list-inside"
             >
-              <li>{{ test }}</li>
+              <li>{{ name }}</li>
             </ul>
           </div>
 
@@ -65,12 +65,20 @@ import { useToast } from "openvue/usetoast"
 import { AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 
-const { date, tests, build } = defineProps<{
+const { date, test, tests, build } = defineProps<{
   date: string
-  tests: string
+  // The detector repeats the test parameter for each test, because a test name can contain a comma.
+  test?: string | (string | null)[]
+  // Older links join the tests with commas.
+  tests?: string
   build: string
 }>()
-const testsArray = computed(() => tests.split(","))
+const testsArray = computed(() => {
+  if (test !== undefined) {
+    return (Array.isArray(test) ? test : [test]).filter((it): it is string => it !== null && it !== "")
+  }
+  return tests === undefined ? [] : tests.split(",")
+})
 
 const dateFormatted = computed(() => {
   const parts = date.split("-")
@@ -110,8 +118,8 @@ async function reportRegression() {
     })
     return
   }
-  for (const test of testsArray.value) {
-    await accidentReporter.writeAccidentToMetaDb(dateFormatted.value, test, reason.value, build, accidentType.value)
+  for (const name of testsArray.value) {
+    await accidentReporter.writeAccidentToMetaDb(dateFormatted.value, name, reason.value, build, accidentType.value)
   }
   reported.value = true
 }
